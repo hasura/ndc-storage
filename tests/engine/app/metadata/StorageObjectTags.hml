@@ -1,0 +1,33 @@
+---
+kind: Command
+version: v1
+definition:
+  name: StorageObjectTags
+  outputType: Json!
+  arguments:
+    - name: bucket
+      type: String
+    - name: clientId
+      type: StorageClientId
+    - name: object
+      type: String!
+    - name: versionId
+      type: String
+  source:
+    dataConnectorName: storage
+    dataConnectorCommand:
+      function: storageObjectTags
+  graphql:
+    rootFieldName: storageObjectTags
+    rootFieldKind: Query
+  description: fetches Object Tags from the given object.
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: StorageObjectTags
+  permissions:
+    - role: admin
+      allowExecution: true
+

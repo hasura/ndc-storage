@@ -1,0 +1,15 @@
+{
+  "collection_relationships": {},
+  "operations": [
+    {
+      "type": "procedure",
+      "name": "createStorageBucket",
+      "arguments": {
+        "clientId": "minio",
+        "name": "minio-bucket-lock",
+        "objectLocking": true,
+        "region": "us-east-1"
+      }
+    }
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "collection_relationships": {},
+  "operations": [
+    {
+      "type": "procedure",
+      "name": "setStorageBucketTags",
+      "arguments": {
+        "bucket": "minio-bucket-test",
+        "tags": {
+          "Foo": "bar"
+        }
+      }
+    }
+  ]
+}

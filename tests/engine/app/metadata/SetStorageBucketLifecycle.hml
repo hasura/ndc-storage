@@ -1,0 +1,31 @@
+---
+kind: Command
+version: v1
+definition:
+  name: SetStorageBucketLifecycle
+  outputType: Boolean!
+  arguments:
+    - name: bucket
+      type: String
+    - name: clientId
+      type: StorageClientId
+    - name: rules
+      type: "[BucketLifecycleRule!]!"
+  source:
+    dataConnectorName: storage
+    dataConnectorCommand:
+      procedure: setStorageBucketLifecycle
+  graphql:
+    rootFieldName: setStorageBucketLifecycle
+    rootFieldKind: Mutation
+  description: sets lifecycle on bucket or an object prefix.
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: SetStorageBucketLifecycle
+  permissions:
+    - role: admin
+      allowExecution: true
+

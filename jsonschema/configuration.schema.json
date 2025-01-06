@@ -1,0 +1,199 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/hasura/ndc-storage/connector/types/configuration",
+  "$ref": "#/$defs/Configuration",
+  "$defs": {
+    "AuthCredentials": {
+      "oneOf": [
+        {
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": [
+                "static"
+              ]
+            },
+            "accessKeyId": {
+              "$ref": "#/$defs/EnvString"
+            },
+            "secretAccessKey": {
+              "$ref": "#/$defs/EnvString"
+            },
+            "sessionToken": {
+              "$ref": "#/$defs/EnvString"
+            }
+          },
+          "type": "object",
+          "required": [
+            "type",
+            "accessKeyId",
+            "secretAccessKey"
+          ]
+        },
+        {
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": [
+                "iam"
+              ]
+            },
+            "iamAuthEndpoint": {
+              "$ref": "#/$defs/EnvString"
+            }
+          },
+          "type": "object",
+          "required": [
+            "type"
+          ]
+        }
+      ]
+    },
+    "ClientConfig": {
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "type": {
+          "$ref": "#/$defs/EnvStorageProviderType"
+        },
+        "defaultBucket": {
+          "$ref": "#/$defs/EnvString"
+        },
+        "endpoint": {
+          "$ref": "#/$defs/EnvString"
+        },
+        "publicHost": {
+          "$ref": "#/$defs/EnvString"
+        },
+        "region": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/EnvString"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "maxRetries": {
+          "type": "integer",
+          "default": 10
+        },
+        "defaultPresignedExpiry": {
+          "type": "string",
+          "pattern": "[0-9]+(s|m|h)",
+          "default": "24h"
+        },
+        "authentication": {
+          "$ref": "#/$defs/AuthCredentials"
+        },
+        "trailingHeaders": {
+          "type": "boolean"
+        },
+        "allowedBuckets": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object",
+      "required": [
+        "type",
+        "defaultBucket",
+        "authentication"
+      ]
+    },
+    "ConcurrencySettings": {
+      "properties": {
+        "query": {
+          "type": "integer",
+          "default": 10
+        },
+        "mutation": {
+          "type": "integer",
+          "default": 1
+        }
+      },
+      "additionalProperties": false,
+      "type": "object",
+      "required": [
+        "query",
+        "mutation"
+      ]
+    },
+    "Configuration": {
+      "properties": {
+        "clients": {
+          "items": {
+            "$ref": "#/$defs/ClientConfig"
+          },
+          "type": "array"
+        },
+        "concurrency": {
+          "$ref": "#/$defs/ConcurrencySettings"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object",
+      "required": [
+        "clients"
+      ]
+    },
+    "EnvStorageProviderType": {
+      "anyOf": [
+        {
+          "required": [
+            "value"
+          ]
+        },
+        {
+          "required": [
+            "env"
+          ]
+        }
+      ],
+      "properties": {
+        "env": {
+          "type": "string"
+        },
+        "value": {
+          "type": "string",
+          "enum": [
+            "s3",
+            "gs"
+          ]
+        }
+      },
+      "type": "object"
+    },
+    "EnvString": {
+      "anyOf": [
+        {
+          "required": [
+            "value"
+          ],
+          "title": "value"
+        },
+        {
+          "required": [
+            "env"
+          ],
+          "title": "env"
+        }
+      ],
+      "properties": {
+        "value": {
+          "type": "string"
+        },
+        "env": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object"
+    }
+  }
+}

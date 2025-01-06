@@ -1,0 +1,55 @@
+name: Unit tests
+
+on:
+  workflow_call:
+  pull_request:
+  push:
+    branches:
+      - main
+
+jobs:
+  test-go:
+    name: Run unit and integration tests
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: "go.mod"
+      - name: Format
+        run: diff -u <(echo -n) <(gofmt -d -s .)
+      - name: Vet
+        run: go vet ./...
+      - name: Run tests
+        run: |
+          ./scripts/test.sh
+      - name: Go coverage format
+        if: ${{ github.event_name == 'pull_request' }}
+        run: |
+          go get github.com/boumenot/gocover-cobertura
+          go install github.com/boumenot/gocover-cobertura
+          gocover-cobertura < coverage.out > coverage.xml
+      - name: Code Coverage Summary Report
+        uses: irongut/CodeCoverageSummary@v1.3.0
+        if: ${{ github.event_name == 'pull_request' }}
+        with:
+          filename: coverage.xml
+          badge: true
+          fail_below_min: true
+          format: markdown
+          hide_branch_rate: false
+          hide_complexity: true
+          indicators: true
+          output: both
+          thresholds: "40 70"
+      - name: Add Coverage PR Comment
+        uses: marocchino/sticky-pull-request-comment@v2
+        if: ${{ github.event_name == 'pull_request' }}
+        with:
+          path: code-coverage-results.md
+      - name: Dump docker logs on failure
+        if: failure()
+        uses: jwalton/gh-docker-logs@v2

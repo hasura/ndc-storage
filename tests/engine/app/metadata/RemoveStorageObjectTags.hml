@@ -1,0 +1,33 @@
+---
+kind: Command
+version: v1
+definition:
+  name: RemoveStorageObjectTags
+  outputType: Boolean!
+  arguments:
+    - name: bucket
+      type: String
+    - name: clientId
+      type: StorageClientId
+    - name: object
+      type: String!
+    - name: versionId
+      type: String
+  source:
+    dataConnectorName: storage
+    dataConnectorCommand:
+      procedure: removeStorageObjectTags
+  graphql:
+    rootFieldName: removeStorageObjectTags
+    rootFieldKind: Mutation
+  description: removes Object Tags from the given object.
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: RemoveStorageObjectTags
+  permissions:
+    - role: admin
+      allowExecution: true
+

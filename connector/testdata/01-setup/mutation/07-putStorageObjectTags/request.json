@@ -1,0 +1,17 @@
+{
+  "collection_relationships": {},
+  "operations": [
+    {
+      "type": "procedure",
+      "name": "putStorageObjectTags",
+      "arguments": {
+        "bucket": "minio-bucket-test",
+        "object": "I81XNHrIsl-2",
+        "tags": {
+          "Foo": "baz",
+          "UserID": "3"
+        }
+      }
+    }
+  ]
+}

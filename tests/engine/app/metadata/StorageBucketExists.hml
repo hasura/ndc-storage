@@ -1,0 +1,29 @@
+---
+kind: Command
+version: v1
+definition:
+  name: StorageBucketExists
+  outputType: Boolean!
+  arguments:
+    - name: bucket
+      type: String
+    - name: clientId
+      type: StorageClientId
+  source:
+    dataConnectorName: storage
+    dataConnectorCommand:
+      function: storageBucketExists
+  graphql:
+    rootFieldName: storageBucketExists
+    rootFieldKind: Query
+  description: checks if a bucket exists.
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: StorageBucketExists
+  permissions:
+    - role: admin
+      allowExecution: true
+

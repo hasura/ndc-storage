@@ -1,0 +1,192 @@
+{
+  "arguments": {
+    "bucket": {
+      "type": "literal",
+      "value": "minio-bucket-test"
+    }
+  },
+  "collection": "storageBucketReplication",
+  "collection_relationships": {},
+  "query": {
+    "fields": {
+      "__value": {
+        "column": "__value",
+        "fields": {
+          "fields": {
+            "role": {
+              "column": "role",
+              "type": "column"
+            },
+            "rules": {
+              "column": "rules",
+              "fields": {
+                "fields": {
+                  "fields": {
+                    "deleteMarkerReplication": {
+                      "column": "deleteMarkerReplication",
+                      "fields": {
+                        "fields": {
+                          "status": {
+                            "column": "status",
+                            "type": "column"
+                          }
+                        },
+                        "type": "object"
+                      },
+                      "type": "column"
+                    },
+                    "deleteReplication": {
+                      "column": "deleteReplication",
+                      "fields": {
+                        "fields": {
+                          "status": {
+                            "column": "status",
+                            "type": "column"
+                          }
+                        },
+                        "type": "object"
+                      },
+                      "type": "column"
+                    },
+                    "destination": {
+                      "column": "destination",
+                      "fields": {
+                        "fields": {
+                          "bucket": {
+                            "column": "bucket",
+                            "type": "column"
+                          },
+                          "storageClass": {
+                            "column": "storageClass",
+                            "type": "column"
+                          }
+                        },
+                        "type": "object"
+                      },
+                      "type": "column"
+                    },
+                    "existingObjectReplication": {
+                      "column": "existingObjectReplication",
+                      "fields": {
+                        "fields": {
+                          "status": {
+                            "column": "status",
+                            "type": "column"
+                          }
+                        },
+                        "type": "object"
+                      },
+                      "type": "column"
+                    },
+                    "filter": {
+                      "column": "filter",
+                      "fields": {
+                        "fields": {
+                          "and": {
+                            "column": "and",
+                            "fields": {
+                              "fields": {
+                                "rrefix": {
+                                  "column": "rrefix",
+                                  "type": "column"
+                                },
+                                "tag": {
+                                  "column": "tag",
+                                  "fields": {
+                                    "fields": {
+                                      "fields": {
+                                        "key": {
+                                          "column": "key",
+                                          "type": "column"
+                                        },
+                                        "value": {
+                                          "column": "value",
+                                          "type": "column"
+                                        }
+                                      },
+                                      "type": "object"
+                                    },
+                                    "type": "array"
+                                  },
+                                  "type": "column"
+                                }
+                              },
+                              "type": "object"
+                            },
+                            "type": "column"
+                          },
+                          "rrefix": {
+                            "column": "rrefix",
+                            "type": "column"
+                          },
+                          "tag": {
+                            "column": "tag",
+                            "fields": {
+                              "fields": {
+                                "key": {
+                                  "column": "key",
+                                  "type": "column"
+                                },
+                                "value": {
+                                  "column": "value",
+                                  "type": "column"
+                                }
+                              },
+                              "type": "object"
+                            },
+                            "type": "column"
+                          }
+                        },
+                        "type": "object"
+                      },
+                      "type": "column"
+                    },
+                    "id": {
+                      "column": "id",
+                      "type": "column"
+                    },
+                    "priority": {
+                      "column": "priority",
+                      "type": "column"
+                    },
+                    "sourceSelectionCriteria": {
+                      "column": "sourceSelectionCriteria",
+                      "fields": {
+                        "fields": {
+                          "replicaModifications": {
+                            "column": "replicaModifications",
+                            "fields": {
+                              "fields": {
+                                "status": {
+                                  "column": "status",
+                                  "type": "column"
+                                }
+                              },
+                              "type": "object"
+                            },
+                            "type": "column"
+                          }
+                        },
+                        "type": "object"
+                      },
+                      "type": "column"
+                    },
+                    "status": {
+                      "column": "status",
+                      "type": "column"
+                    }
+                  },
+                  "type": "object"
+                },
+                "type": "array"
+              },
+              "type": "column"
+            }
+          },
+          "type": "object"
+        },
+        "type": "column"
+      }
+    }
+  }
+}

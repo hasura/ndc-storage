@@ -1,0 +1,394 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: StorageGrantee
+  description: represents the person being granted permissions.
+  fields:
+    - name: displayName
+      type: String
+    - name: id
+      type: String
+    - name: uri
+      type: String
+  graphql:
+    typeName: StorageGrantee
+    inputTypeName: StorageGranteeInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: storage
+      dataConnectorObjectType: StorageGrantee
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: StorageGrantee
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - displayName
+          - id
+          - uri
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: StorageGrant
+  description: holds grant information.
+  fields:
+    - name: grantee
+      type: StorageGrantee
+    - name: permission
+      type: String
+  graphql:
+    typeName: StorageGrant
+    inputTypeName: StorageGrantInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: storage
+      dataConnectorObjectType: StorageGrant
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: StorageGrant
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - grantee
+          - permission
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: StorageOwner
+  description: name.
+  fields:
+    - name: id
+      type: String
+    - name: name
+      type: String
+  graphql:
+    typeName: StorageOwner
+    inputTypeName: StorageOwnerInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: storage
+      dataConnectorObjectType: StorageOwner
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: StorageOwner
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - id
+          - name
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: StorageRestoreInfo
+  description: contains information of the restore operation of an archived object.
+  fields:
+    - name: expiryTime
+      type: TimestampTz
+    - name: ongoingRestore
+      type: Boolean!
+  graphql:
+    typeName: StorageRestoreInfo
+    inputTypeName: StorageRestoreInfoInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: storage
+      dataConnectorObjectType: StorageRestoreInfo
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: StorageRestoreInfo
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - expiryTime
+          - ongoingRestore
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: StorageObject
+  fields:
+    - name: bucket
+      type: BucketName!
+    - name: checksumCrc32
+      type: String
+    - name: checksumCrc32C
+      type: String
+    - name: checksumCrc64Nvme
+      type: String
+    - name: checksumSha1
+      type: String
+    - name: checksumSha256
+      type: String
+    - name: clientId
+      type: StorageClientId!
+    - name: contentType
+      type: String!
+    - name: etag
+      type: String!
+    - name: expiration
+      type: TimestampTz
+    - name: expirationRuleId
+      type: String
+    - name: expires
+      type: TimestampTz!
+    - name: grant
+      type: "[StorageGrant!]"
+    - name: isDeleteMarker
+      type: Boolean
+    - name: isLatest
+      type: Boolean
+    - name: lastModified
+      type: FilterTimestamp!
+    - name: metadata
+      type: Json
+    - name: name
+      type: ObjectPath!
+    - name: owner
+      type: StorageOwner
+    - name: replicationReady
+      type: Boolean
+    - name: replicationStatus
+      type: String
+    - name: restore
+      type: StorageRestoreInfo
+    - name: size
+      type: Int64!
+    - name: storageClass
+      type: String
+    - name: userMetadata
+      type: Json
+    - name: userTagCount
+      type: Int32
+    - name: userTags
+      type: Json
+    - name: versionId
+      type: String
+  graphql:
+    typeName: StorageObject
+    inputTypeName: StorageObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: storage
+      dataConnectorObjectType: StorageObject
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: StorageObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - bucket
+          - checksumCrc32
+          - checksumCrc32C
+          - checksumCrc64Nvme
+          - checksumSha1
+          - checksumSha256
+          - clientId
+          - contentType
+          - etag
+          - expiration
+          - expirationRuleId
+          - expires
+          - grant
+          - isDeleteMarker
+          - isLatest
+          - lastModified
+          - metadata
+          - name
+          - owner
+          - replicationReady
+          - replicationStatus
+          - restore
+          - size
+          - storageClass
+          - userMetadata
+          - userTagCount
+          - userTags
+          - versionId
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: StorageObjectBoolExp
+  operand:
+    object:
+      type: StorageObject
+      comparableFields:
+        - fieldName: bucket
+          booleanExpressionType: BucketNameBoolExp
+        - fieldName: checksumCrc32
+          booleanExpressionType: StringBoolExp
+        - fieldName: checksumCrc32C
+          booleanExpressionType: StringBoolExp
+        - fieldName: checksumCrc64Nvme
+          booleanExpressionType: StringBoolExp
+        - fieldName: checksumSha1
+          booleanExpressionType: StringBoolExp
+        - fieldName: checksumSha256
+          booleanExpressionType: StringBoolExp
+        - fieldName: clientId
+          booleanExpressionType: StorageClientIdBoolExp
+        - fieldName: contentType
+          booleanExpressionType: StringBoolExp
+        - fieldName: etag
+          booleanExpressionType: StringBoolExp
+        - fieldName: expiration
+          booleanExpressionType: TimestampTzBoolExp
+        - fieldName: expirationRuleId
+          booleanExpressionType: StringBoolExp
+        - fieldName: expires
+          booleanExpressionType: TimestampTzBoolExp
+        - fieldName: isDeleteMarker
+          booleanExpressionType: BooleanBoolExp
+        - fieldName: isLatest
+          booleanExpressionType: BooleanBoolExp
+        - fieldName: lastModified
+          booleanExpressionType: FilterTimestampBoolExp
+        - fieldName: metadata
+          booleanExpressionType: JsonBoolExp
+        - fieldName: name
+          booleanExpressionType: ObjectPathBoolExp
+        - fieldName: replicationReady
+          booleanExpressionType: BooleanBoolExp
+        - fieldName: replicationStatus
+          booleanExpressionType: StringBoolExp
+        - fieldName: size
+          booleanExpressionType: Int64BoolExp
+        - fieldName: storageClass
+          booleanExpressionType: StringBoolExp
+        - fieldName: userMetadata
+          booleanExpressionType: JsonBoolExp
+        - fieldName: userTagCount
+          booleanExpressionType: Int32BoolExp
+        - fieldName: userTags
+          booleanExpressionType: JsonBoolExp
+        - fieldName: versionId
+          booleanExpressionType: StringBoolExp
+      comparableRelationships: []
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: StorageObjectBoolExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: StorageObjectOrderByExp
+  operand:
+    object:
+      orderedType: StorageObject
+      orderableFields:
+        - fieldName: bucket
+          orderByExpression: BucketNameOrderByExp
+        - fieldName: checksumCrc32
+          orderByExpression: StringOrderByExp
+        - fieldName: checksumCrc32C
+          orderByExpression: StringOrderByExp
+        - fieldName: checksumCrc64Nvme
+          orderByExpression: StringOrderByExp
+        - fieldName: checksumSha1
+          orderByExpression: StringOrderByExp
+        - fieldName: checksumSha256
+          orderByExpression: StringOrderByExp
+        - fieldName: clientId
+          orderByExpression: StorageClientIdOrderByExp
+        - fieldName: contentType
+          orderByExpression: StringOrderByExp
+        - fieldName: etag
+          orderByExpression: StringOrderByExp
+        - fieldName: expiration
+          orderByExpression: TimestampTzOrderByExp
+        - fieldName: expirationRuleId
+          orderByExpression: StringOrderByExp
+        - fieldName: expires
+          orderByExpression: TimestampTzOrderByExp
+        - fieldName: isDeleteMarker
+          orderByExpression: BooleanOrderByExp
+        - fieldName: isLatest
+          orderByExpression: BooleanOrderByExp
+        - fieldName: lastModified
+          orderByExpression: FilterTimestampOrderByExp
+        - fieldName: metadata
+          orderByExpression: JsonOrderByExp
+        - fieldName: name
+          orderByExpression: ObjectPathOrderByExp
+        - fieldName: replicationReady
+          orderByExpression: BooleanOrderByExp
+        - fieldName: replicationStatus
+          orderByExpression: StringOrderByExp
+        - fieldName: size
+          orderByExpression: Int64OrderByExp
+        - fieldName: storageClass
+          orderByExpression: StringOrderByExp
+        - fieldName: userMetadata
+          orderByExpression: JsonOrderByExp
+        - fieldName: userTagCount
+          orderByExpression: Int32OrderByExp
+        - fieldName: userTags
+          orderByExpression: JsonOrderByExp
+        - fieldName: versionId
+          orderByExpression: StringOrderByExp
+      orderableRelationships: []
+  graphql:
+    expressionTypeName: StorageObjectOrderByExp
+
+---
+kind: Model
+version: v2
+definition:
+  name: StorageObjects
+  objectType: StorageObject
+  arguments:
+    - name: recursive
+      type: Boolean
+  source:
+    dataConnectorName: storage
+    collection: storageObjects
+  filterExpressionType: StorageObjectBoolExp
+  orderByExpression: StorageObjectOrderByExp
+  graphql:
+    selectMany:
+      queryRootField: storageObjects
+      subscription:
+        rootField: storageObjects
+    selectUniques: []
+    argumentsInputType: StorageObjectsArguments
+  description: The information of an storage object
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: StorageObjects
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+

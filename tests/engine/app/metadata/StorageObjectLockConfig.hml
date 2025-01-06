@@ -1,0 +1,64 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: StorageObjectLockConfig
+  fields:
+    - name: mode
+      type: StorageRetentionMode
+    - name: objectLock
+      type: String!
+    - name: unit
+      type: StorageRetentionValidityUnit
+    - name: validity
+      type: Int32
+  graphql:
+    typeName: StorageObjectLockConfig
+    inputTypeName: StorageObjectLockConfigInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: storage
+      dataConnectorObjectType: StorageObjectLockConfig
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: StorageObjectLockConfig
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - mode
+          - objectLock
+          - unit
+          - validity
+
+---
+kind: Command
+version: v1
+definition:
+  name: StorageObjectLockConfig
+  outputType: StorageObjectLockConfig
+  arguments:
+    - name: bucket
+      type: String
+    - name: clientId
+      type: StorageClientId
+  source:
+    dataConnectorName: storage
+    dataConnectorCommand:
+      function: storageObjectLockConfig
+  graphql:
+    rootFieldName: storageObjectLockConfig
+    rootFieldKind: Query
+  description: gets object lock configuration of given bucket.
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: StorageObjectLockConfig
+  permissions:
+    - role: admin
+      allowExecution: true
+

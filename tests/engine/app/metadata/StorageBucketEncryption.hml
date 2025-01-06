@@ -1,0 +1,115 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: StorageApplySseByDefault
+  description: defines default encryption configuration, KMS or SSE. To activate
+    KMS, SSEAlgoritm needs to be set to `aws:kms“. Minio currently does not
+    support Kms.
+  fields:
+    - name: kmsMasterKeyId
+      type: String
+    - name: sseAlgorithm
+      type: String!
+  graphql:
+    typeName: StorageApplySseByDefault
+    inputTypeName: StorageApplySseByDefaultInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: storage
+      dataConnectorObjectType: StorageApplySSEByDefault
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: StorageApplySseByDefault
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - kmsMasterKeyId
+          - sseAlgorithm
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: ServerSideEncryptionRule
+  description: rule layer encapsulates default encryption configuration
+  fields:
+    - name: apply
+      type: StorageApplySseByDefault!
+  graphql:
+    typeName: ServerSideEncryptionRule
+    inputTypeName: ServerSideEncryptionRuleInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: storage
+      dataConnectorObjectType: ServerSideEncryptionRule
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: ServerSideEncryptionRule
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - apply
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: ServerSideEncryptionConfiguration
+  description: is the default encryption configuration structure.
+  fields:
+    - name: rules
+      type: "[ServerSideEncryptionRule!]!"
+  graphql:
+    typeName: ServerSideEncryptionConfiguration
+    inputTypeName: ServerSideEncryptionConfigurationInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: storage
+      dataConnectorObjectType: ServerSideEncryptionConfiguration
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: ServerSideEncryptionConfiguration
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - rules
+
+---
+kind: Command
+version: v1
+definition:
+  name: StorageBucketEncryption
+  outputType: ServerSideEncryptionConfiguration
+  arguments:
+    - name: bucket
+      type: String
+    - name: clientId
+      type: StorageClientId
+  source:
+    dataConnectorName: storage
+    dataConnectorCommand:
+      function: storageBucketEncryption
+  graphql:
+    rootFieldName: storageBucketEncryption
+    rootFieldKind: Query
+  description: gets default encryption configuration set on a bucket.
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: StorageBucketEncryption
+  permissions:
+    - role: admin
+      allowExecution: true
+

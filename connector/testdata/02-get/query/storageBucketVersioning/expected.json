@@ -1,0 +1,14 @@
+[
+  {
+    "rows": [
+      {
+        "__value": {
+          "excludeFolders": false,
+          "excludedPrefixes": [],
+          "mfaDelete": null,
+          "status": "Enabled"
+        }
+      }
+    ]
+  }
+]

@@ -1,0 +1,28 @@
+---
+kind: Command
+version: v1
+definition:
+  name: RemoveStorageBucketReplication
+  outputType: Boolean!
+  arguments:
+    - name: bucket
+      type: String
+    - name: clientId
+      type: StorageClientId
+  source:
+    dataConnectorName: storage
+    dataConnectorCommand:
+      procedure: removeStorageBucketReplication
+  graphql:
+    rootFieldName: removeStorageBucketReplication
+    rootFieldKind: Mutation
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: RemoveStorageBucketReplication
+  permissions:
+    - role: admin
+      allowExecution: true
+

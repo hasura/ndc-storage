@@ -1,0 +1,39 @@
+---
+kind: Command
+version: v1
+definition:
+  name: PutStorageObjectRetention
+  outputType: Boolean!
+  arguments:
+    - name: bucket
+      type: String
+    - name: clientId
+      type: StorageClientId
+    - name: governanceBypass
+      type: Boolean
+    - name: mode
+      type: StorageRetentionMode
+    - name: object
+      type: String!
+    - name: retainUntilDate
+      type: TimestampTz
+    - name: versionId
+      type: String
+  source:
+    dataConnectorName: storage
+    dataConnectorCommand:
+      procedure: putStorageObjectRetention
+  graphql:
+    rootFieldName: putStorageObjectRetention
+    rootFieldKind: Mutation
+  description: applies object retention lock onto an object.
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: PutStorageObjectRetention
+  permissions:
+    - role: admin
+      allowExecution: true
+

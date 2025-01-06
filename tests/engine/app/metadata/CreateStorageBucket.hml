@@ -1,0 +1,33 @@
+---
+kind: Command
+version: v1
+definition:
+  name: CreateStorageBucket
+  outputType: Boolean!
+  arguments:
+    - name: clientId
+      type: StorageClientId
+    - name: name
+      type: String!
+    - name: objectLocking
+      type: Boolean
+    - name: region
+      type: String
+  source:
+    dataConnectorName: storage
+    dataConnectorCommand:
+      procedure: createStorageBucket
+  graphql:
+    rootFieldName: createStorageBucket
+    rootFieldKind: Mutation
+  description: creates a new bucket.
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: CreateStorageBucket
+  permissions:
+    - role: admin
+      allowExecution: true
+

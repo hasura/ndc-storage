@@ -1,0 +1,29 @@
+---
+kind: Command
+version: v1
+definition:
+  name: EnableStorageBucketVersioning
+  outputType: Boolean!
+  arguments:
+    - name: bucket
+      type: String
+    - name: clientId
+      type: StorageClientId
+  source:
+    dataConnectorName: storage
+    dataConnectorCommand:
+      procedure: enableStorageBucketVersioning
+  graphql:
+    rootFieldName: enableStorageBucketVersioning
+    rootFieldKind: Mutation
+  description: enables bucket versioning support.
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: EnableStorageBucketVersioning
+  permissions:
+    - role: admin
+      allowExecution: true
+

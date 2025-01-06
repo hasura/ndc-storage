@@ -1,0 +1,39 @@
+{
+  "arguments": {
+    "bucket": {
+      "type": "literal",
+      "value": "minio-bucket-test"
+    }
+  },
+  "collection": "storageBucketVersioning",
+  "collection_relationships": {},
+  "query": {
+    "fields": {
+      "__value": {
+        "column": "__value",
+        "fields": {
+          "fields": {
+            "excludeFolders": {
+              "column": "excludeFolders",
+              "type": "column"
+            },
+            "excludedPrefixes": {
+              "column": "excludedPrefixes",
+              "type": "column"
+            },
+            "mfaDelete": {
+              "column": "mfaDelete",
+              "type": "column"
+            },
+            "status": {
+              "column": "status",
+              "type": "column"
+            }
+          },
+          "type": "object"
+        },
+        "type": "column"
+      }
+    }
+  }
+}

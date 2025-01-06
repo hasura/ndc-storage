@@ -1,0 +1,15 @@
+{
+  "collection_relationships": {},
+  "operations": [
+    {
+      "type": "procedure",
+      "name": "createStorageBucket",
+      "arguments": {
+        "clientId": "s3",
+        "name": "s3-bucket-test",
+        "objectLocking": true,
+        "region": "us-east-1"
+      }
+    }
+  ]
+}

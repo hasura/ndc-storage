@@ -1,0 +1,13 @@
+{
+  "collection_relationships": {},
+  "operations": [
+    {
+      "type": "procedure",
+      "name": "setStorageBucketNotification",
+      "arguments": {
+        "bucket": "minio-bucket-test",
+        "queueConfigurations": []
+      }
+    }
+  ]
+}

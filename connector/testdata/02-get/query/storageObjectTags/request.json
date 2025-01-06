@@ -1,0 +1,22 @@
+{
+  "arguments": {
+    "bucket": {
+      "type": "literal",
+      "value": "minio-bucket-test"
+    },
+    "object": {
+      "type": "literal",
+      "value": "I81XNHrIsl"
+    }
+  },
+  "collection": "storageObjectTags",
+  "collection_relationships": {},
+  "query": {
+    "fields": {
+      "__value": {
+        "column": "__value",
+        "type": "column"
+      }
+    }
+  }
+}

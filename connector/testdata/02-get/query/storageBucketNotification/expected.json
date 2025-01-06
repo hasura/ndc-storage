@@ -1,0 +1,13 @@
+[
+  {
+    "rows": [
+      {
+        "__value": {
+          "cloudFunctionConfigurations": [],
+          "queueConfigurations": [],
+          "topicConfigurations": []
+        }
+      }
+    ]
+  }
+]

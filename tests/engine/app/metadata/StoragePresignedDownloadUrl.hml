@@ -1,0 +1,69 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: PresignedUrlResponse
+  description: holds the presigned URL and expiry information.
+  fields:
+    - name: expiredAt
+      type: String!
+    - name: url
+      type: String!
+  graphql:
+    typeName: PresignedUrlResponse
+    inputTypeName: PresignedUrlResponseInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: storage
+      dataConnectorObjectType: PresignedURLResponse
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: PresignedUrlResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - expiredAt
+          - url
+
+---
+kind: Command
+version: v1
+definition:
+  name: StoragePresignedDownloadUrl
+  outputType: PresignedUrlResponse!
+  arguments:
+    - name: bucket
+      type: String
+    - name: clientId
+      type: StorageClientId
+    - name: expiry
+      type: Duration
+    - name: object
+      type: String!
+    - name: requestParams
+      type: Json
+  source:
+    dataConnectorName: storage
+    dataConnectorCommand:
+      function: storagePresignedDownloadUrl
+  graphql:
+    rootFieldName: storagePresignedDownloadUrl
+    rootFieldKind: Query
+  description: generates a presigned URL for HTTP GET operations. Browsers/Mobile
+    clients may point to this URL to directly download objects even if the
+    bucket is private. This presigned URL can have an associated expiration time
+    in seconds after which it is no longer operational. The maximum expiry is
+    604800 seconds (i.e. 7 days) and minimum is 1 second.
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: StoragePresignedDownloadUrl
+  permissions:
+    - role: admin
+      allowExecution: true
+

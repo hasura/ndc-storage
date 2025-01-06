@@ -1,0 +1,39 @@
+---
+kind: Command
+version: v1
+definition:
+  name: StoragePresignedHeadUrl
+  outputType: PresignedUrlResponse!
+  arguments:
+    - name: bucket
+      type: String
+    - name: clientId
+      type: StorageClientId
+    - name: expiry
+      type: Duration
+    - name: object
+      type: String!
+    - name: requestParams
+      type: Json
+  source:
+    dataConnectorName: storage
+    dataConnectorCommand:
+      function: storagePresignedHeadUrl
+  graphql:
+    rootFieldName: storagePresignedHeadUrl
+    rootFieldKind: Query
+  description: generates a presigned URL for HTTP HEAD operations. Browsers/Mobile
+    clients may point to this URL to directly get metadata from objects even if
+    the bucket is private. This presigned URL can have an associated expiration
+    time in seconds after which it is no longer operational. The default expiry
+    is set to 7 days.
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: StoragePresignedHeadUrl
+  permissions:
+    - role: admin
+      allowExecution: true
+

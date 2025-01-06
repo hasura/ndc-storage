@@ -1,0 +1,22 @@
+{
+  "operation_results": [
+    {
+      "result": {
+        "bucket": "minio-bucket-test",
+        "checksumCrc32": null,
+        "checksumCrc32C": null,
+        "checksumCrc64Nvme": null,
+        "checksumSha1": null,
+        "checksumSha256": null,
+        "etag": "299d2d913ceaa8377d22244db39723ca",
+        "expiration": null,
+        "expirationRuleId": null,
+        "expires": null,
+        "location": null,
+        "name": "I81XNHrIsl-2",
+        "size": 0
+      },
+      "type": "procedure"
+    }
+  ]
+}

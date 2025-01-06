@@ -1,0 +1,13 @@
+{
+  "collection_relationships": {},
+  "operations": [
+    {
+      "type": "procedure",
+      "name": "removeStorageObjectTags",
+      "arguments": {
+        "bucket": "minio-bucket-test",
+        "object": "a9cSGZGzM2"
+      }
+    }
+  ]
+}

@@ -1,0 +1,29 @@
+---
+kind: Command
+version: v1
+definition:
+  name: RemoveStorageBucket
+  outputType: Boolean!
+  arguments:
+    - name: bucket
+      type: String
+    - name: clientId
+      type: StorageClientId
+  source:
+    dataConnectorName: storage
+    dataConnectorCommand:
+      procedure: removeStorageBucket
+  graphql:
+    rootFieldName: removeStorageBucket
+    rootFieldKind: Mutation
+  description: removes a bucket, bucket should be empty to be successfully removed.
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: RemoveStorageBucket
+  permissions:
+    - role: admin
+      allowExecution: true
+

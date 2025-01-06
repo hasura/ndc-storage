@@ -1,0 +1,54 @@
+{
+  "arguments": {
+    "bucket": {
+      "type": "literal",
+      "value": "minio-bucket-test"
+    },
+    "prefix": {
+      "type": "literal",
+      "value": ""
+    },
+    "recursive": {
+      "type": "literal",
+      "value": true
+    }
+  },
+  "collection": "storageIncompleteUploads",
+  "collection_relationships": {},
+  "query": {
+    "fields": {
+      "__value": {
+        "column": "__value",
+        "fields": {
+          "fields": {
+            "fields": {
+              "initiated": {
+                "column": "initiated",
+                "type": "column"
+              },
+              "key": {
+                "column": "key",
+                "type": "column"
+              },
+              "size": {
+                "column": "size",
+                "type": "column"
+              },
+              "storageClass": {
+                "column": "storageClass",
+                "type": "column"
+              },
+              "uploadId": {
+                "column": "uploadId",
+                "type": "column"
+              }
+            },
+            "type": "object"
+          },
+          "type": "array"
+        },
+        "type": "column"
+      }
+    }
+  }
+}

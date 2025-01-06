@@ -1,0 +1,194 @@
+{
+  "arguments": {
+    "bucket": {
+      "type": "literal",
+      "value": "minio-bucket-test"
+    },
+    "checksum": {
+      "type": "literal",
+      "value": true
+    },
+    "object": {
+      "type": "literal",
+      "value": "I81XNHrIsl"
+    }
+  },
+  "collection": "storageObject",
+  "collection_relationships": {},
+  "query": {
+    "fields": {
+      "__value": {
+        "column": "__value",
+        "fields": {
+          "fields": {
+            "bucket": {
+              "column": "bucket",
+              "type": "column"
+            },
+            "checksumCrc32": {
+              "column": "checksumCrc32",
+              "type": "column"
+            },
+            "checksumCrc32C": {
+              "column": "checksumCrc32C",
+              "type": "column"
+            },
+            "checksumCrc64Nvme": {
+              "column": "checksumCrc64Nvme",
+              "type": "column"
+            },
+            "checksumSha1": {
+              "column": "checksumSha1",
+              "type": "column"
+            },
+            "checksumSha256": {
+              "column": "checksumSha256",
+              "type": "column"
+            },
+            "clientId": {
+              "column": "clientId",
+              "type": "column"
+            },
+            "contentType": {
+              "column": "contentType",
+              "type": "column"
+            },
+            "etag": {
+              "column": "etag",
+              "type": "column"
+            },
+            "expiration": {
+              "column": "expiration",
+              "type": "column"
+            },
+            "expirationRuleId": {
+              "column": "expirationRuleId",
+              "type": "column"
+            },
+            "expires": {
+              "column": "expires",
+              "type": "column"
+            },
+            "grant": {
+              "column": "grant",
+              "fields": {
+                "fields": {
+                  "fields": {
+                    "grantee": {
+                      "column": "grantee",
+                      "fields": {
+                        "fields": {
+                          "displayName": {
+                            "column": "displayName",
+                            "type": "column"
+                          },
+                          "id": {
+                            "column": "id",
+                            "type": "column"
+                          },
+                          "uri": {
+                            "column": "uri",
+                            "type": "column"
+                          }
+                        },
+                        "type": "object"
+                      },
+                      "type": "column"
+                    },
+                    "permission": {
+                      "column": "permission",
+                      "type": "column"
+                    }
+                  },
+                  "type": "object"
+                },
+                "type": "array"
+              },
+              "type": "column"
+            },
+            "isDeleteMarker": {
+              "column": "isDeleteMarker",
+              "type": "column"
+            },
+            "isLatest": {
+              "column": "isLatest",
+              "type": "column"
+            },
+            "metadata": {
+              "column": "metadata",
+              "type": "column"
+            },
+            "name": {
+              "column": "name",
+              "type": "column"
+            },
+            "owner": {
+              "column": "owner",
+              "fields": {
+                "fields": {
+                  "id": {
+                    "column": "id",
+                    "type": "column"
+                  },
+                  "name": {
+                    "column": "name",
+                    "type": "column"
+                  }
+                },
+                "type": "object"
+              },
+              "type": "column"
+            },
+            "replicationReady": {
+              "column": "replicationReady",
+              "type": "column"
+            },
+            "replicationStatus": {
+              "column": "replicationStatus",
+              "type": "column"
+            },
+            "restore": {
+              "column": "restore",
+              "fields": {
+                "fields": {
+                  "expiryTime": {
+                    "column": "expiryTime",
+                    "type": "column"
+                  },
+                  "ongoingRestore": {
+                    "column": "ongoingRestore",
+                    "type": "column"
+                  }
+                },
+                "type": "object"
+              },
+              "type": "column"
+            },
+            "size": {
+              "column": "size",
+              "type": "column"
+            },
+            "storageClass": {
+              "column": "storageClass",
+              "type": "column"
+            },
+            "userMetadata": {
+              "column": "userMetadata",
+              "type": "column"
+            },
+            "userTagCount": {
+              "column": "userTagCount",
+              "type": "column"
+            },
+            "userTags": {
+              "column": "userTags",
+              "type": "column"
+            }
+          },
+          "type": "object"
+        },
+        "type": "column"
+      }
+    }
+  }
+}

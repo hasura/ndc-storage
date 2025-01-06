@@ -1,0 +1,29 @@
+---
+kind: Command
+version: v1
+definition:
+  name: RemoveStorageBucketTags
+  outputType: Boolean!
+  arguments:
+    - name: bucket
+      type: String
+    - name: clientId
+      type: StorageClientId
+  source:
+    dataConnectorName: storage
+    dataConnectorCommand:
+      procedure: removeStorageBucketTags
+  graphql:
+    rootFieldName: removeStorageBucketTags
+    rootFieldKind: Mutation
+  description: removes all tags on a bucket.
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: RemoveStorageBucketTags
+  permissions:
+    - role: admin
+      allowExecution: true
+

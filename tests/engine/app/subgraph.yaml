@@ -1,0 +1,14 @@
+kind: Subgraph
+version: v2
+definition:
+  name: app
+  generator:
+    rootPath: .
+    namingConvention: graphql
+  includePaths:
+    - metadata
+  envMapping:
+    APP_STORAGE_READ_URL:
+      fromEnv: APP_STORAGE_READ_URL
+    APP_STORAGE_WRITE_URL:
+      fromEnv: APP_STORAGE_WRITE_URL

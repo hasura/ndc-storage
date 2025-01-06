@@ -1,0 +1,44 @@
+[
+  {
+    "rows": [
+      {
+        "__value": {
+          "rules": [
+            {
+              "abortIncompleteMultipartUpload": null,
+              "allVersionsExpiration": null,
+              "delMarkerExpiration": null,
+              "expiration": {
+                "date": null,
+                "days": 4,
+                "expiredObjectAllVersions": null,
+                "expiredObjectDeleteMarker": false
+              },
+              "filter": {
+                "and": {
+                  "objectSizeGreaterThan": 1000000,
+                  "objectSizeLessThan": 1,
+                  "prefix": "JSqXP0pJZF",
+                  "tags": [{ "key": "7Uw1or2jrq", "value": "00sA2cRTCB" }]
+                },
+                "objectSizeGreaterThan": null,
+                "objectSizeLessThan": null,
+                "prefix": null,
+                "tag": null
+              },
+              "id": "aXD6eFi5JE",
+              "noncurrentVersionExpiration": {
+                "newerNoncurrentVersions": 108,
+                "noncurrentDays": 12
+              },
+              "noncurrentVersionTransition": null,
+              "prefix": "GPJel0xa2s",
+              "status": "Enabled",
+              "transition": null
+            }
+          ]
+        }
+      }
+    ]
+  }
+]

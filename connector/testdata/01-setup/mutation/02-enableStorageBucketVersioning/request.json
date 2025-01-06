@@ -1,0 +1,12 @@
+{
+  "collection_relationships": {},
+  "operations": [
+    {
+      "type": "procedure",
+      "name": "enableStorageBucketVersioning",
+      "arguments": {
+        "bucket": "minio-bucket-test"
+      }
+    }
+  ]
+}

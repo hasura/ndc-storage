@@ -1,0 +1,57 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: StorageBucketInfo
+  description: container for bucket metadata.
+  fields:
+    - name: creationDate
+      type: TimestampTz!
+    - name: name
+      type: String!
+  graphql:
+    typeName: StorageBucketInfo
+    inputTypeName: StorageBucketInfoInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: storage
+      dataConnectorObjectType: StorageBucketInfo
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: StorageBucketInfo
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - creationDate
+          - name
+
+---
+kind: Command
+version: v1
+definition:
+  name: StorageBuckets
+  outputType: "[StorageBucketInfo!]!"
+  arguments:
+    - name: clientId
+      type: StorageClientId
+  source:
+    dataConnectorName: storage
+    dataConnectorCommand:
+      function: storageBuckets
+  graphql:
+    rootFieldName: storageBuckets
+    rootFieldKind: Query
+  description: list all buckets.
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: StorageBuckets
+  permissions:
+    - role: admin
+      allowExecution: true
+

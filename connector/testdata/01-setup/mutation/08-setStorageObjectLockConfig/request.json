@@ -1,0 +1,15 @@
+{
+  "collection_relationships": {},
+  "operations": [
+    {
+      "type": "procedure",
+      "name": "setStorageObjectLockConfig",
+      "arguments": {
+        "bucket": "minio-bucket-lock",
+        "mode": "GOVERNANCE",
+        "unit": "DAYS",
+        "validity": 1
+      }
+    }
+  ]
+}

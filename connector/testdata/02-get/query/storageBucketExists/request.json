@@ -1,0 +1,22 @@
+{
+  "arguments": {
+    "clientId": {
+      "type": "literal",
+      "value": "minio"
+    },
+    "bucket": {
+      "type": "literal",
+      "value": "minio-bucket-test"
+    }
+  },
+  "collection": "storageBucketExists",
+  "collection_relationships": {},
+  "query": {
+    "fields": {
+      "__value": {
+        "column": "__value",
+        "type": "column"
+      }
+    }
+  }
+}

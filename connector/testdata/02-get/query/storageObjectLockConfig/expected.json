@@ -1,0 +1,14 @@
+[
+  {
+    "rows": [
+      {
+        "__value": {
+          "mode": "GOVERNANCE",
+          "objectLock": "Enabled",
+          "unit": "DAYS",
+          "validity": 1
+        }
+      }
+    ]
+  }
+]

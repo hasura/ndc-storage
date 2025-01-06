@@ -1,0 +1,23 @@
+{
+  "operation_results": [
+    {
+      "result": {
+        "bucket": "minio-bucket-test",
+        "checksumCrc32": null,
+        "checksumCrc32C": null,
+        "checksumCrc64Nvme": null,
+        "checksumSha1": null,
+        "checksumSha256": null,
+        "etag": "64372db0af1ea1279271d7d4dcedbe3d-1",
+        "expiration": null,
+        "expirationRuleId": null,
+        "expires": null,
+        "lastModified": null,
+        "location": "http://localhost:9000/minio-bucket-test/a9cSGZGzM2",
+        "name": "a9cSGZGzM2",
+        "size": 10
+      },
+      "type": "procedure"
+    }
+  ]
+}

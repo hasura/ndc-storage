@@ -1,0 +1,16 @@
+{
+  "collection_relationships": {},
+  "operations": [
+    {
+      "type": "procedure",
+      "name": "putStorageObjectRetention",
+      "arguments": {
+        "bucket": "minio-bucket-lock",
+        "governanceBypass": true,
+        "mode": "COMPLIANCE",
+        "object": "SiKBc6ifDC",
+        "retainUntilDate": "2099-01-01T00:00:00Z"
+      }
+    }
+  ]
+}

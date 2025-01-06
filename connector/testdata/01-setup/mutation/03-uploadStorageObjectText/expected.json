@@ -1,0 +1,22 @@
+{
+  "operation_results": [
+    {
+      "result": {
+        "bucket": "minio-bucket-lock",
+        "checksumCrc32": "5qWdvg==",
+        "checksumCrc32C": null,
+        "checksumCrc64Nvme": null,
+        "checksumSha1": null,
+        "checksumSha256": null,
+        "etag": "eaa542050b6be94b64f717af19071987",
+        "expiration": null,
+        "expirationRuleId": null,
+        "lastModified": null,
+        "location": null,
+        "name": "SiKBc6ifDC",
+        "size": 16
+      },
+      "type": "procedure"
+    }
+  ]
+}

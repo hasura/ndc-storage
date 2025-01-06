@@ -1,0 +1,67 @@
+linters:
+  enable-all: true
+  disable:
+    - err113
+    - lll
+    - exportloopref
+    - depguard
+    - godot
+    - wrapcheck
+    - varnamelen
+    - exhaustruct
+    - ireturn
+    - gochecknoglobals
+    - nilnil
+    - mnd
+    - recvcheck
+
+linters-settings:
+  lll:
+    line-length: 180
+
+  funlen:
+    lines: 100
+    statements: 50
+    ignore-comments: true
+
+  cyclop:
+    max-complexity: 20
+    skip-tests: true
+
+  dupl:
+    # Tokens count to trigger issue.
+    # Default: 150
+    threshold: 200
+
+  nestif:
+    min-complexity: 10
+
+  wsl:
+    strict-append: false
+    allow-cuddle-declarations: true
+
+  gosec:
+    excludes:
+      - G115
+      - G306
+
+  #   gocritic:
+  #     disabled-checks:
+  #       - appendAssign
+  #   gocyclo:
+  #     min-complexity: 40
+
+  revive:
+    max-open-files: 2048
+    rules:
+      - name: var-naming
+        disabled: true
+
+  stylecheck:
+    checks:
+      - all
+      - -ST1003
+
+issues:
+  exclude-files:
+    - ".*_test\\.go$"

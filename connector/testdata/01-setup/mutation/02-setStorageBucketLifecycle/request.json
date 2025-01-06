@@ -1,0 +1,62 @@
+{
+  "collection_relationships": {},
+  "operations": [
+    {
+      "type": "procedure",
+      "name": "setStorageBucketLifecycle",
+      "arguments": {
+        "bucket": "minio-bucket-test",
+        "rules": [
+          {
+            "abortIncompleteMultipartUpload": {
+              "daysAfterInitiation": 1
+            },
+            "allVersionsExpiration": {
+              "days": 2,
+              "deleteMarker": false
+            },
+            "expiration": {
+              "days": 4,
+              "expiredObjectAllVersions": false,
+              "expiredObjectDeleteMarker": false
+            },
+            "filter": {
+              "and": {
+                "objectSizeGreaterThan": 1000000,
+                "objectSizeLessThan": 1,
+                "prefix": "JSqXP0pJZF",
+                "tags": [
+                  {
+                    "key": "7Uw1or2jrq",
+                    "value": "00sA2cRTCB"
+                  }
+                ]
+              },
+              "objectSizeGreaterThan": 1000000,
+              "objectSizeLessThan": 1,
+              "prefix": "30LomArtyT",
+              "tag": {
+                "key": "raZx9yPMwi",
+                "value": "JbBh0wCDaQ"
+              }
+            },
+            "id": "aXD6eFi5JE",
+            "noncurrentVersionExpiration": {
+              "newerNoncurrentVersions": 108,
+              "noncurrentDays": 12
+            },
+            "noncurrentVersionTransition": {
+              "newerNoncurrentVersions": 155,
+              "noncurrentDays": 7
+            },
+            "prefix": "GPJel0xa2s",
+            "status": "Enabled",
+            "transition": {
+              "days": 5583
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

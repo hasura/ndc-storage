@@ -1,0 +1,440 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: AbortIncompleteMultipartUpload
+  description: structure, not supported yet on MinIO
+  fields:
+    - name: daysAfterInitiation
+      type: Int32
+  graphql:
+    typeName: AbortIncompleteMultipartUpload
+    inputTypeName: AbortIncompleteMultipartUploadInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: storage
+      dataConnectorObjectType: AbortIncompleteMultipartUpload
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: AbortIncompleteMultipartUpload
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - daysAfterInitiation
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: LifecycleAllVersionsExpiration
+  description: represents AllVersionsExpiration actions element in an ILM policy
+  fields:
+    - name: days
+      type: Int32
+    - name: deleteMarker
+      type: Boolean
+  graphql:
+    typeName: LifecycleAllVersionsExpiration
+    inputTypeName: LifecycleAllVersionsExpirationInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: storage
+      dataConnectorObjectType: LifecycleAllVersionsExpiration
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: LifecycleAllVersionsExpiration
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - days
+          - deleteMarker
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: LifecycleDelMarkerExpiration
+  description: represents DelMarkerExpiration actions element in an ILM policy
+  fields:
+    - name: days
+      type: Int32
+  graphql:
+    typeName: LifecycleDelMarkerExpiration
+    inputTypeName: LifecycleDelMarkerExpirationInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: storage
+      dataConnectorObjectType: LifecycleDelMarkerExpiration
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: LifecycleDelMarkerExpiration
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - days
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: LifecycleExpiration
+  description: expiration details of lifecycle configuration
+  fields:
+    - name: date
+      type: Date
+    - name: days
+      type: Int32
+    - name: expiredObjectAllVersions
+      type: Boolean
+    - name: expiredObjectDeleteMarker
+      type: Boolean
+  graphql:
+    typeName: LifecycleExpiration
+    inputTypeName: LifecycleExpirationInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: storage
+      dataConnectorObjectType: LifecycleExpiration
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: LifecycleExpiration
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - date
+          - days
+          - expiredObjectAllVersions
+          - expiredObjectDeleteMarker
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: StorageTag
+  description: structure key/value pair representing an object tag to apply configuration
+  fields:
+    - name: key
+      type: String
+    - name: value
+      type: String
+  graphql:
+    typeName: StorageTag
+    inputTypeName: StorageTagInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: storage
+      dataConnectorObjectType: StorageTag
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: StorageTag
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - key
+          - value
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: LifecycleFilterAnd
+  description: the And Rule for LifecycleTag, to be used in LifecycleRuleFilter
+  fields:
+    - name: objectSizeGreaterThan
+      type: Int64
+    - name: objectSizeLessThan
+      type: Int64
+    - name: prefix
+      type: String
+    - name: tags
+      type: "[StorageTag!]"
+  graphql:
+    typeName: LifecycleFilterAnd
+    inputTypeName: LifecycleFilterAndInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: storage
+      dataConnectorObjectType: LifecycleFilterAnd
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: LifecycleFilterAnd
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - objectSizeGreaterThan
+          - objectSizeLessThan
+          - prefix
+          - tags
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: LifecycleFilter
+  description: will be used in selecting rule(s) for lifecycle configuration
+  fields:
+    - name: and
+      type: LifecycleFilterAnd
+    - name: objectSizeGreaterThan
+      type: Int64
+    - name: objectSizeLessThan
+      type: Int64
+    - name: prefix
+      type: String
+    - name: tag
+      type: StorageTag
+  graphql:
+    typeName: LifecycleFilter
+    inputTypeName: LifecycleFilterInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: storage
+      dataConnectorObjectType: LifecycleFilter
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: LifecycleFilter
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - and
+          - objectSizeGreaterThan
+          - objectSizeLessThan
+          - prefix
+          - tag
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: LifecycleNoncurrentVersionExpiration
+  description: "- Specifies when noncurrent object versions expire. Upon
+    expiration, server permanently deletes the noncurrent object versions. Set
+    this lifecycle configuration action on a bucket that has versioning enabled
+    (or suspended) to request server delete noncurrent object versions at a
+    specific period in the object's lifetime."
+  fields:
+    - name: newerNoncurrentVersions
+      type: Int32
+    - name: noncurrentDays
+      type: Int32
+  graphql:
+    typeName: LifecycleNoncurrentVersionExpiration
+    inputTypeName: LifecycleNoncurrentVersionExpirationInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: storage
+      dataConnectorObjectType: LifecycleNoncurrentVersionExpiration
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: LifecycleNoncurrentVersionExpiration
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - newerNoncurrentVersions
+          - noncurrentDays
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: LifecycleNoncurrentVersionTransition
+  description: sets this action to request server to transition noncurrent object
+    versions to different set storage classes at a specific period in the
+    object's lifetime.
+  fields:
+    - name: newerNoncurrentVersions
+      type: Int32
+    - name: noncurrentDays
+      type: Int32
+    - name: storageClass
+      type: String
+  graphql:
+    typeName: LifecycleNoncurrentVersionTransition
+    inputTypeName: LifecycleNoncurrentVersionTransitionInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: storage
+      dataConnectorObjectType: LifecycleNoncurrentVersionTransition
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: LifecycleNoncurrentVersionTransition
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - newerNoncurrentVersions
+          - noncurrentDays
+          - storageClass
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: LifecycleTransition
+  description: transition details of lifecycle configuration
+  fields:
+    - name: date
+      type: Date
+    - name: days
+      type: Int32
+    - name: storageClass
+      type: String
+  graphql:
+    typeName: LifecycleTransition
+    inputTypeName: LifecycleTransitionInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: storage
+      dataConnectorObjectType: LifecycleTransition
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: LifecycleTransition
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - date
+          - days
+          - storageClass
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: BucketLifecycleRule
+  description: represents a single rule in lifecycle configuration
+  fields:
+    - name: abortIncompleteMultipartUpload
+      type: AbortIncompleteMultipartUpload
+    - name: allVersionsExpiration
+      type: LifecycleAllVersionsExpiration
+    - name: delMarkerExpiration
+      type: LifecycleDelMarkerExpiration
+    - name: expiration
+      type: LifecycleExpiration
+    - name: filter
+      type: LifecycleFilter
+    - name: id
+      type: String!
+    - name: noncurrentVersionExpiration
+      type: LifecycleNoncurrentVersionExpiration
+    - name: noncurrentVersionTransition
+      type: LifecycleNoncurrentVersionTransition
+    - name: prefix
+      type: String
+    - name: status
+      type: String
+    - name: transition
+      type: LifecycleTransition
+  graphql:
+    typeName: BucketLifecycleRule
+    inputTypeName: BucketLifecycleRuleInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: storage
+      dataConnectorObjectType: BucketLifecycleRule
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: BucketLifecycleRule
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - abortIncompleteMultipartUpload
+          - allVersionsExpiration
+          - delMarkerExpiration
+          - expiration
+          - filter
+          - id
+          - noncurrentVersionExpiration
+          - noncurrentVersionTransition
+          - prefix
+          - status
+          - transition
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: BucketLifecycleConfiguration
+  description: is a collection of lifecycle Rule objects.
+  fields:
+    - name: rules
+      type: "[BucketLifecycleRule!]!"
+  graphql:
+    typeName: BucketLifecycleConfiguration
+    inputTypeName: BucketLifecycleConfigurationInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: storage
+      dataConnectorObjectType: BucketLifecycleConfiguration
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: BucketLifecycleConfiguration
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - rules
+
+---
+kind: Command
+version: v1
+definition:
+  name: StorageBucketLifecycle
+  outputType: BucketLifecycleConfiguration
+  arguments:
+    - name: bucket
+      type: String
+    - name: clientId
+      type: StorageClientId
+  source:
+    dataConnectorName: storage
+    dataConnectorCommand:
+      function: storageBucketLifecycle
+  graphql:
+    rootFieldName: storageBucketLifecycle
+    rootFieldKind: Query
+  description: gets lifecycle on a bucket or a prefix.
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: StorageBucketLifecycle
+  permissions:
+    - role: admin
+      allowExecution: true
+
