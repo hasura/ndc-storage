@@ -34,4 +34,8 @@ http_wait http://localhost:9000/minio/health/live
 ./tmp/ndc-test test --endpoint http://localhost:8080
 
 # go tests
-go test -v -coverpkg=./connector/... -race -timeout 3m -coverprofile=coverage.out ./...
+go test -v -coverpkg=./... -race -timeout 3m -coverprofile=coverage.out.tmp ./...
+cat coverage.out.tmp | grep -v "main.go" > coverage.out.tmp2
+cat coverage.out.tmp2 | grep -v "version.go" > coverage.out.tmp
+cat coverage.out.tmp | grep -v "jsonschema" > coverage.out
+rm coverage.out.tmp coverage.out.tmp2

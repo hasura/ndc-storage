@@ -1,0 +1,23 @@
+[
+  {
+    "rows": [
+      {
+        "bucket": "minio-bucket-test",
+        "checksumSha256": null,
+        "contentType": null,
+        "etag": "299d2d913ceaa8377d22244db39723ca",
+        "expires": null,
+        "metadata": null,
+        "name": "I81XNHrIsl",
+        "userMetadata": {
+          "X-Amz-Meta-Foo": "Bar",
+          "cache-control": "max-age=180, public",
+          "content-disposition": "attachment",
+          "content-encoding": "gzip",
+          "content-language": "en-US",
+          "content-type": "text/plain"
+        }
+      }
+    ]
+  }
+]
