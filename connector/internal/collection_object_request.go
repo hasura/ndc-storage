@@ -117,6 +117,15 @@ func (cor *CollectionObjectRequest) evalQueryPredicate(expression schema.Express
 			return false, fmt.Errorf("%s: unsupported comparison target `%s`", expr.Column.Name, expr.Column.Type)
 		}
 
+		isNull, err := cor.evalIsNullBoolExp(expr)
+		if err != nil {
+			return false, err
+		}
+
+		if isNull != nil && *isNull {
+			return false, nil
+		}
+
 		switch expr.Column.Name {
 		case StorageObjectColumnClientID:
 			return cor.evalPredicateClientID(expr)
@@ -125,34 +134,51 @@ func (cor *CollectionObjectRequest) evalQueryPredicate(expression schema.Express
 		case StorageObjectColumnName:
 			return cor.evalObjectName(expr)
 		case StorageObjectColumnLastModified:
-			switch expr.Operator {
-			case OperatorGreater:
-				value, err := getComparisonValueDateTime(expr.Value, cor.variables)
-				if err != nil {
-					return false, fmt.Errorf("lastModified: %w", err)
-				}
-
-				if value == nil {
-					return true, nil
-				}
-
-				valueStr := value.Format(time.RFC3339)
-				if cor.Options.StartAfter == "" {
-					cor.Options.StartAfter = valueStr
-
-					return true, nil
-				}
-
-				return cor.Options.StartAfter == valueStr, nil
-			default:
-				return false, fmt.Errorf("unsupported operator `%s` for object name", expr.Operator)
-			}
+			return cor.evalPredicateLastModified(expr)
 		default:
 			return false, errors.New("unsupport predicate on column " + expr.Column.Name)
 		}
 	default:
 		return false, fmt.Errorf("unsupported expression: %+v", expression)
 	}
+}
+
+func (cor *CollectionObjectRequest) evalPredicateLastModified(expr *schema.ExpressionBinaryComparisonOperator) (bool, error) {
+	switch expr.Operator {
+	case OperatorGreater:
+		value, err := getComparisonValueDateTime(expr.Value, cor.variables)
+		if err != nil {
+			return false, fmt.Errorf("lastModified: %w", err)
+		}
+
+		if value == nil {
+			return true, nil
+		}
+
+		valueStr := value.Format(time.RFC3339)
+		if cor.Options.StartAfter == "" {
+			cor.Options.StartAfter = valueStr
+
+			return true, nil
+		}
+
+		return cor.Options.StartAfter == valueStr, nil
+	default:
+		return false, fmt.Errorf("unsupported operator `%s` for object name", expr.Operator)
+	}
+}
+
+func (cor *CollectionObjectRequest) evalIsNullBoolExp(expr *schema.ExpressionBinaryComparisonOperator) (*bool, error) {
+	if expr.Operator != OperatorIsNull {
+		return nil, nil
+	}
+
+	boolValue, err := getComparisonValueBoolean(expr.Value, cor.variables)
+	if err != nil {
+		return nil, fmt.Errorf("%s: %w", expr.Column.Name, err)
+	}
+
+	return boolValue, nil
 }
 
 func (cor *CollectionObjectRequest) evalPredicateClientID(expr *schema.ExpressionBinaryComparisonOperator) (bool, error) {
@@ -271,9 +297,6 @@ func (cor *CollectionObjectRequest) evalOrderBy(orderBy *schema.OrderBy) ([]Colu
 	for _, elem := range orderBy.Elements {
 		switch target := elem.Target.Interface().(type) {
 		case *schema.OrderByColumn:
-			// if slices.Contains([]string{metadata.LabelsKey, metadata.ValuesKey}, target.Name) {
-			// 	return nil, fmt.Errorf("ordering by `%s` is unsupported", target.Name)
-			// }
 			orderBy := ColumnOrder{
 				Name:       target.Name,
 				Descending: elem.OrderDirection == schema.OrderDirectionDesc,
