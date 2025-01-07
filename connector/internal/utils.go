@@ -36,6 +36,15 @@ func getComparisonValueString(input schema.ComparisonValue, variables map[string
 	return utils.DecodeNullableString(rawValue)
 }
 
+func getComparisonValueBoolean(input schema.ComparisonValue, variables map[string]any) (*bool, error) {
+	rawValue, err := getComparisonValue(input, variables)
+	if err != nil {
+		return nil, err
+	}
+
+	return utils.DecodeNullableBoolean(rawValue)
+}
+
 func getComparisonValueDateTime(input schema.ComparisonValue, variables map[string]any) (*time.Time, error) {
 	rawValue, err := getComparisonValue(input, variables)
 	if err != nil {

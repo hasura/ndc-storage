@@ -22,6 +22,7 @@ const (
 	OperatorEqual      = "_eq"
 	OperatorStartsWith = "_starts_with"
 	OperatorGreater    = "_gt"
+	OperatorIsNull     = "_is_null"
 )
 
 const (

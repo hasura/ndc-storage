@@ -1,0 +1,47 @@
+{
+  "collection": "storageObjects",
+  "query": {
+    "fields": {
+      "bucket": { "type": "column", "column": "bucket", "fields": null },
+      "name": { "type": "column", "column": "name", "fields": null },
+      "checksumSha256": {
+        "type": "column",
+        "column": "checksumSha256",
+        "fields": null
+      },
+      "metadata": { "type": "column", "column": "metadata", "fields": null },
+      "contentType": {
+        "type": "column",
+        "column": "contentType",
+        "fields": null
+      },
+      "etag": { "type": "column", "column": "etag", "fields": null },
+      "expires": { "type": "column", "column": "expires", "fields": null },
+      "userMetadata": {
+        "type": "column",
+        "column": "userMetadata",
+        "fields": null
+      }
+    },
+    "limit": 1,
+    "predicate": {
+      "type": "and",
+      "expressions": [
+        {
+          "type": "binary_comparison_operator",
+          "column": { "type": "column", "name": "bucket", "path": [] },
+          "operator": "_eq",
+          "value": { "type": "scalar", "value": "minio-bucket-test" }
+        },
+        {
+          "type": "binary_comparison_operator",
+          "column": { "type": "column", "name": "name", "path": [] },
+          "operator": "_starts_with",
+          "value": { "type": "scalar", "value": "I81XNHrIsl" }
+        }
+      ]
+    }
+  },
+  "arguments": { "recursive": { "type": "literal", "value": true } },
+  "collection_relationships": {}
+}

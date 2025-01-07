@@ -22,7 +22,7 @@ func (mc *Client) ListObjects(ctx context.Context, opts *common.ListStorageObjec
 	ctx, span := mc.startOtelSpan(ctx, "ListObjects", opts.Bucket)
 	defer span.End()
 
-	objChan := mc.client.ListObjects(ctx, opts.Bucket, serializeListObjectsOptions(span, opts))
+	objChan := mc.client.ListObjects(ctx, opts.Bucket, mc.validateListObjectsOptions(span, opts))
 	objects := make([]common.StorageObject, 0)
 
 	for obj := range objChan {
@@ -338,7 +338,7 @@ func (mc *Client) RemoveObjects(ctx context.Context, opts *common.RemoveStorageO
 	ctx, span := mc.startOtelSpan(ctx, "RemoveObjects", opts.Bucket)
 	defer span.End()
 
-	listOptions := serializeListObjectsOptions(span, &opts.ListStorageObjectsOptions)
+	listOptions := mc.validateListObjectsOptions(span, &opts.ListStorageObjectsOptions)
 	span.SetAttributes(attribute.Bool("storage.options.governance_bypass", opts.GovernanceBypass))
 
 	objectChan := mc.client.ListObjects(ctx, opts.Bucket, listOptions)

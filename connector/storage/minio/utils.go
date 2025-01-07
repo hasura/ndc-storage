@@ -64,12 +64,9 @@ func serializeObjectInfo(obj minio.ObjectInfo) common.StorageObject {
 	}
 
 	object := common.StorageObject{
-		ETag:                  obj.ETag,
 		Name:                  obj.Key,
 		LastModified:          obj.LastModified,
 		Size:                  obj.Size,
-		ContentType:           obj.ContentType,
-		Expires:               obj.Expires,
 		Metadata:              obj.Metadata,
 		UserMetadata:          obj.UserMetadata,
 		UserTags:              obj.UserTags,
@@ -79,6 +76,18 @@ func serializeObjectInfo(obj minio.ObjectInfo) common.StorageObject {
 		IsDeleteMarker:        &obj.IsDeleteMarker,
 		ReplicationReady:      &obj.ReplicationReady,
 		StorageObjectChecksum: checksum,
+	}
+
+	if !isStringNull(obj.ETag) {
+		object.ETag = &obj.ETag
+	}
+
+	if !isStringNull(obj.ContentType) {
+		object.ContentType = &obj.ContentType
+	}
+
+	if !obj.Expires.IsZero() {
+		object.Expires = &obj.Expires
 	}
 
 	if !isStringNull(obj.Owner.DisplayName) || !isStringNull(obj.Owner.ID) {
@@ -126,7 +135,12 @@ func serializeObjectInfo(obj minio.ObjectInfo) common.StorageObject {
 	return object
 }
 
-func serializeListObjectsOptions(span trace.Span, opts *common.ListStorageObjectsOptions) minio.ListObjectsOptions {
+func (mc *Client) validateListObjectsOptions(span trace.Span, opts *common.ListStorageObjectsOptions) minio.ListObjectsOptions {
+	if mc.providerType == common.GoogleStorage && opts.WithVersions {
+		// Force versioning off. GCS doesn't support AWS S3 compatible versioning API.
+		opts.WithVersions = false
+	}
+
 	span.SetAttributes(
 		attribute.Bool("storage.options.recursive", opts.Recursive),
 		attribute.Bool("storage.options.with_versions", opts.WithVersions),
