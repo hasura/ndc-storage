@@ -257,6 +257,39 @@ definition:
               type:
                 type: named
                 name: StorageReplicationRuleStatus
+        GetStorageObjectOptions:
+          description: are used to specify additional headers or options during GET requests.
+          fields:
+            checksum:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            headers:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: JSON
+            partNumber:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Int32
+            requestParams:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: JSON
+            versionId:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
         LifecycleAllVersionsExpiration:
           description: represents AllVersionsExpiration actions element in an ILM policy
           fields:
@@ -430,18 +463,6 @@ definition:
         ListStorageObjectsOptions:
           description: holds all options of a list object request.
           fields:
-            bucket:
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: String
-            clientId:
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: StorageClientID
             maxKeys:
               type:
                 type: named
@@ -638,6 +659,21 @@ definition:
               type:
                 type: named
                 name: String
+        PresignedGetStorageObjectOptions:
+          description: represent the options for the PresignedGetObject method.
+          fields:
+            expiry:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Duration
+            requestParams:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: JSON
         PresignedURLResponse:
           description: holds the presigned URL and expiry information.
           fields:
@@ -674,6 +710,12 @@ definition:
                 underlying_type:
                   type: named
                   name: PutStorageObjectOptions
+            where:
+              type:
+                type: nullable
+                underlying_type:
+                  type: predicate
+                  object_type_name: StorageObjectSimple
         PutStorageObjectOptions:
           description: represents options specified by user for PutObject call.
           fields:
@@ -820,6 +862,60 @@ definition:
               type:
                 type: named
                 name: String
+        RemoveStorageObjectOptions:
+          description: represents options specified by user for RemoveObject call.
+          fields:
+            forceDelete:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            governanceBypass:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            versionId:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
+        RemoveStorageObjectsOptions:
+          description: represents options specified by user for RemoveObjects call.
+          fields:
+            governanceBypass:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            maxKeys:
+              type:
+                type: named
+                name: Int32
+            prefix:
+              type:
+                type: named
+                name: String
+            recursive:
+              type:
+                type: named
+                name: Boolean
+            startAfter:
+              type:
+                type: named
+                name: String
+            withMetadata:
+              type:
+                type: named
+                name: Boolean
+            withVersions:
+              type:
+                type: named
+                name: Boolean
         ReplicaModifications:
           description: specifies if replica modification sync is enabled
           fields:
@@ -1475,6 +1571,20 @@ definition:
               type:
                 type: named
                 name: Int32
+        StorageObjectSimple:
+          fields:
+            bucket:
+              type:
+                type: named
+                name: BucketName
+            clientId:
+              type:
+                type: named
+                name: StorageClientID
+            object:
+              type:
+                type: named
+                name: ObjectPath
         StorageOwner:
           description: name.
           fields:
@@ -1776,6 +1886,12 @@ definition:
                 underlying_type:
                   type: named
                   name: String
+            where:
+              type:
+                type: nullable
+                underlying_type:
+                  type: predicate
+                  object_type_name: StorageObjectSimple
           result_type:
             type: nullable
             underlying_type:
@@ -1830,6 +1946,12 @@ definition:
                 underlying_type:
                   type: named
                   name: String
+            where:
+              type:
+                type: nullable
+                underlying_type:
+                  type: predicate
+                  object_type_name: StorageObjectSimple
           result_type:
             type: nullable
             underlying_type:
@@ -2081,6 +2203,12 @@ definition:
                 underlying_type:
                   type: named
                   name: String
+            where:
+              type:
+                type: nullable
+                underlying_type:
+                  type: predicate
+                  object_type_name: StorageObjectSimple
           result_type:
             type: nullable
             underlying_type:
@@ -2235,43 +2363,17 @@ definition:
                 underlying_type:
                   type: named
                   name: JSON
+            where:
+              type:
+                type: nullable
+                underlying_type:
+                  type: predicate
+                  object_type_name: StorageObjectSimple
           result_type:
-            type: named
-            name: PresignedURLResponse
-        - name: storagePresignedHeadUrl
-          description: generates a presigned URL for HTTP HEAD operations. Browsers/Mobile clients may point to this URL to directly get metadata from objects even if the bucket is private. This presigned URL can have an associated expiration time in seconds after which it is no longer operational. The default expiry is set to 7 days.
-          arguments:
-            bucket:
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: String
-            clientId:
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: StorageClientID
-            expiry:
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: Duration
-            object:
-              type:
-                type: named
-                name: String
-            requestParams:
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: JSON
-          result_type:
-            type: named
-            name: PresignedURLResponse
+            type: nullable
+            underlying_type:
+              type: named
+              name: PresignedURLResponse
         - name: storagePresignedUploadUrl
           description: generates a presigned URL for HTTP PUT operations. Browsers/Mobile clients may point to this URL to upload objects directly to a bucket even if it is private. This presigned URL can have an associated expiration time in seconds after which it is no longer operational. The default expiry is set to 7 days.
           arguments:
@@ -2297,9 +2399,17 @@ definition:
               type:
                 type: named
                 name: String
+            where:
+              type:
+                type: nullable
+                underlying_type:
+                  type: predicate
+                  object_type_name: StorageObjectSimple
           result_type:
-            type: named
-            name: PresignedURLResponse
+            type: nullable
+            underlying_type:
+              type: named
+              name: PresignedURLResponse
       procedures:
         - name: composeStorageObject
           description: creates an object by concatenating a list of source objects using server-side copying.
@@ -2613,6 +2723,12 @@ definition:
                 underlying_type:
                   type: named
                   name: String
+            where:
+              type:
+                type: nullable
+                underlying_type:
+                  type: predicate
+                  object_type_name: StorageObjectSimple
           result_type:
             type: named
             name: Boolean
@@ -2681,6 +2797,12 @@ definition:
               type:
                 type: named
                 name: String
+            where:
+              type:
+                type: nullable
+                underlying_type:
+                  type: predicate
+                  object_type_name: StorageObjectSimple
             withMetadata:
               type:
                 type: named
@@ -2912,6 +3034,12 @@ definition:
                 underlying_type:
                   type: named
                   name: PutStorageObjectOptions
+            where:
+              type:
+                type: nullable
+                underlying_type:
+                  type: predicate
+                  object_type_name: StorageObjectSimple
           result_type:
             type: named
             name: StorageUploadInfo
@@ -2944,6 +3072,12 @@ definition:
                 underlying_type:
                   type: named
                   name: PutStorageObjectOptions
+            where:
+              type:
+                type: nullable
+                underlying_type:
+                  type: predicate
+                  object_type_name: StorageObjectSimple
           result_type:
             type: named
             name: StorageUploadInfo

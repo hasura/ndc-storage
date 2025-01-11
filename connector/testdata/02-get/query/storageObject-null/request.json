@@ -21,7 +21,7 @@
             "type": "binary_comparison_operator",
             "column": { "type": "column", "name": "name", "path": [] },
             "operator": "_starts_with",
-            "value": { "type": "scalar", "value": "I81XN" }
+            "value": { "type": "scalar", "value": "not-found" }
           },
           {
             "type": "binary_comparison_operator",

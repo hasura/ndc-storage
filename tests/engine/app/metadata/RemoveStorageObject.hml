@@ -17,6 +17,8 @@ definition:
       type: String!
     - name: versionId
       type: String
+    - name: where
+      type: StorageObjectSimpleBoolExp
   source:
     dataConnectorName: storage
     dataConnectorCommand:

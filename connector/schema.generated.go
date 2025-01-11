@@ -92,6 +92,26 @@ func GetConnectorSchema() *schema.SchemaResponse {
 					},
 				},
 			},
+			"GetStorageObjectOptions": schema.ObjectType{
+				Description: toPtr("are used to specify additional headers or options during GET requests."),
+				Fields: schema.ObjectTypeFields{
+					"checksum": schema.ObjectField{
+						Type: schema.NewNullableType(schema.NewNamedType("Boolean")).Encode(),
+					},
+					"headers": schema.ObjectField{
+						Type: schema.NewNullableType(schema.NewNamedType("JSON")).Encode(),
+					},
+					"partNumber": schema.ObjectField{
+						Type: schema.NewNullableType(schema.NewNamedType("Int32")).Encode(),
+					},
+					"requestParams": schema.ObjectField{
+						Type: schema.NewNullableType(schema.NewNamedType("JSON")).Encode(),
+					},
+					"versionId": schema.ObjectField{
+						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
+					},
+				},
+			},
 			"LifecycleAllVersionsExpiration": schema.ObjectType{
 				Description: toPtr("represents AllVersionsExpiration actions element in an ILM policy"),
 				Fields: schema.ObjectTypeFields{
@@ -207,12 +227,6 @@ func GetConnectorSchema() *schema.SchemaResponse {
 			"ListStorageObjectsOptions": schema.ObjectType{
 				Description: toPtr("holds all options of a list object request."),
 				Fields: schema.ObjectTypeFields{
-					"bucket": schema.ObjectField{
-						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
-					},
-					"clientId": schema.ObjectField{
-						Type: schema.NewNullableType(schema.NewNamedType("StorageClientID")).Encode(),
-					},
 					"maxKeys": schema.ObjectField{
 						Type: schema.NewNamedType("Int32").Encode(),
 					},
@@ -351,6 +365,17 @@ func GetConnectorSchema() *schema.SchemaResponse {
 					},
 				},
 			},
+			"PresignedGetStorageObjectOptions": schema.ObjectType{
+				Description: toPtr("represent the options for the PresignedGetObject method."),
+				Fields: schema.ObjectTypeFields{
+					"expiry": schema.ObjectField{
+						Type: schema.NewNullableType(schema.NewNamedType("Duration")).Encode(),
+					},
+					"requestParams": schema.ObjectField{
+						Type: schema.NewNullableType(schema.NewNamedType("JSON")).Encode(),
+					},
+				},
+			},
 			"PresignedURLResponse": schema.ObjectType{
 				Description: toPtr("holds the presigned URL and expiry information."),
 				Fields: schema.ObjectTypeFields{
@@ -376,6 +401,9 @@ func GetConnectorSchema() *schema.SchemaResponse {
 					},
 					"options": schema.ObjectField{
 						Type: schema.NewNullableType(schema.NewNamedType("PutStorageObjectOptions")).Encode(),
+					},
+					"where": schema.ObjectField{
+						Type: schema.NewNullableType(schema.NewPredicateType("StorageObjectSimple")).Encode(),
 					},
 				},
 			},
@@ -458,6 +486,46 @@ func GetConnectorSchema() *schema.SchemaResponse {
 					},
 					"versionId": schema.ObjectField{
 						Type: schema.NewNamedType("String").Encode(),
+					},
+				},
+			},
+			"RemoveStorageObjectOptions": schema.ObjectType{
+				Description: toPtr("represents options specified by user for RemoveObject call."),
+				Fields: schema.ObjectTypeFields{
+					"forceDelete": schema.ObjectField{
+						Type: schema.NewNullableType(schema.NewNamedType("Boolean")).Encode(),
+					},
+					"governanceBypass": schema.ObjectField{
+						Type: schema.NewNullableType(schema.NewNamedType("Boolean")).Encode(),
+					},
+					"versionId": schema.ObjectField{
+						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
+					},
+				},
+			},
+			"RemoveStorageObjectsOptions": schema.ObjectType{
+				Description: toPtr("represents options specified by user for RemoveObjects call."),
+				Fields: schema.ObjectTypeFields{
+					"governanceBypass": schema.ObjectField{
+						Type: schema.NewNullableType(schema.NewNamedType("Boolean")).Encode(),
+					},
+					"maxKeys": schema.ObjectField{
+						Type: schema.NewNamedType("Int32").Encode(),
+					},
+					"prefix": schema.ObjectField{
+						Type: schema.NewNamedType("String").Encode(),
+					},
+					"recursive": schema.ObjectField{
+						Type: schema.NewNamedType("Boolean").Encode(),
+					},
+					"startAfter": schema.ObjectField{
+						Type: schema.NewNamedType("String").Encode(),
+					},
+					"withMetadata": schema.ObjectField{
+						Type: schema.NewNamedType("Boolean").Encode(),
+					},
+					"withVersions": schema.ObjectField{
+						Type: schema.NewNamedType("Boolean").Encode(),
 					},
 				},
 			},
@@ -674,10 +742,10 @@ func GetConnectorSchema() *schema.SchemaResponse {
 						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
 					},
 					"contentType": schema.ObjectField{
-						Type: schema.NewNamedType("String").Encode(),
+						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
 					},
 					"etag": schema.ObjectField{
-						Type: schema.NewNamedType("String").Encode(),
+						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
 					},
 					"expiration": schema.ObjectField{
 						Type: schema.NewNullableType(schema.NewNamedType("TimestampTZ")).Encode(),
@@ -686,7 +754,7 @@ func GetConnectorSchema() *schema.SchemaResponse {
 						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
 					},
 					"expires": schema.ObjectField{
-						Type: schema.NewNamedType("TimestampTZ").Encode(),
+						Type: schema.NewNullableType(schema.NewNamedType("TimestampTZ")).Encode(),
 					},
 					"grant": schema.ObjectField{
 						Type: schema.NewNullableType(schema.NewArrayType(schema.NewNamedType("StorageGrant"))).Encode(),
@@ -1076,6 +1144,9 @@ func GetConnectorSchema() *schema.SchemaResponse {
 					"versionId": {
 						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
 					},
+					"where": {
+						Type: schema.NewNullableType(schema.NewPredicateType("StorageObjectSimple")).Encode(),
+					},
 				},
 			},
 			{
@@ -1106,6 +1177,9 @@ func GetConnectorSchema() *schema.SchemaResponse {
 					},
 					"versionId": {
 						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
+					},
+					"where": {
+						Type: schema.NewNullableType(schema.NewPredicateType("StorageObjectSimple")).Encode(),
 					},
 				},
 			},
@@ -1270,6 +1344,9 @@ func GetConnectorSchema() *schema.SchemaResponse {
 					"versionId": {
 						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
 					},
+					"where": {
+						Type: schema.NewNullableType(schema.NewPredicateType("StorageObjectSimple")).Encode(),
+					},
 				},
 			},
 			{
@@ -1351,7 +1428,7 @@ func GetConnectorSchema() *schema.SchemaResponse {
 			{
 				Name:        "storagePresignedDownloadUrl",
 				Description: toPtr("generates a presigned URL for HTTP GET operations. Browsers/Mobile clients may point to this URL to directly download objects even if the bucket is private. This presigned URL can have an associated expiration time in seconds after which it is no longer operational. The maximum expiry is 604800 seconds (i.e. 7 days) and minimum is 1 second."),
-				ResultType:  schema.NewNamedType("PresignedURLResponse").Encode(),
+				ResultType:  schema.NewNullableType(schema.NewNamedType("PresignedURLResponse")).Encode(),
 				Arguments: map[string]schema.ArgumentInfo{
 					"bucket": {
 						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
@@ -1368,34 +1445,15 @@ func GetConnectorSchema() *schema.SchemaResponse {
 					"requestParams": {
 						Type: schema.NewNullableType(schema.NewNamedType("JSON")).Encode(),
 					},
-				},
-			},
-			{
-				Name:        "storagePresignedHeadUrl",
-				Description: toPtr("generates a presigned URL for HTTP HEAD operations. Browsers/Mobile clients may point to this URL to directly get metadata from objects even if the bucket is private. This presigned URL can have an associated expiration time in seconds after which it is no longer operational. The default expiry is set to 7 days."),
-				ResultType:  schema.NewNamedType("PresignedURLResponse").Encode(),
-				Arguments: map[string]schema.ArgumentInfo{
-					"bucket": {
-						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
-					},
-					"clientId": {
-						Type: schema.NewNullableType(schema.NewNamedType("StorageClientID")).Encode(),
-					},
-					"expiry": {
-						Type: schema.NewNullableType(schema.NewNamedType("Duration")).Encode(),
-					},
-					"object": {
-						Type: schema.NewNamedType("String").Encode(),
-					},
-					"requestParams": {
-						Type: schema.NewNullableType(schema.NewNamedType("JSON")).Encode(),
+					"where": {
+						Type: schema.NewNullableType(schema.NewPredicateType("StorageObjectSimple")).Encode(),
 					},
 				},
 			},
 			{
 				Name:        "storagePresignedUploadUrl",
 				Description: toPtr("generates a presigned URL for HTTP PUT operations. Browsers/Mobile clients may point to this URL to upload objects directly to a bucket even if it is private. This presigned URL can have an associated expiration time in seconds after which it is no longer operational. The default expiry is set to 7 days."),
-				ResultType:  schema.NewNamedType("PresignedURLResponse").Encode(),
+				ResultType:  schema.NewNullableType(schema.NewNamedType("PresignedURLResponse")).Encode(),
 				Arguments: map[string]schema.ArgumentInfo{
 					"bucket": {
 						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
@@ -1408,6 +1466,9 @@ func GetConnectorSchema() *schema.SchemaResponse {
 					},
 					"object": {
 						Type: schema.NewNamedType("String").Encode(),
+					},
+					"where": {
+						Type: schema.NewNullableType(schema.NewPredicateType("StorageObjectSimple")).Encode(),
 					},
 				},
 			},
@@ -1626,6 +1687,9 @@ func GetConnectorSchema() *schema.SchemaResponse {
 					"versionId": {
 						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
 					},
+					"where": {
+						Type: schema.NewNullableType(schema.NewPredicateType("StorageObjectSimple")).Encode(),
+					},
 				},
 			},
 			{
@@ -1672,6 +1736,9 @@ func GetConnectorSchema() *schema.SchemaResponse {
 					},
 					"startAfter": {
 						Type: schema.NewNamedType("String").Encode(),
+					},
+					"where": {
+						Type: schema.NewNullableType(schema.NewPredicateType("StorageObjectSimple")).Encode(),
 					},
 					"withMetadata": {
 						Type: schema.NewNamedType("Boolean").Encode(),
@@ -1824,6 +1891,9 @@ func GetConnectorSchema() *schema.SchemaResponse {
 					"options": {
 						Type: schema.NewNullableType(schema.NewNamedType("PutStorageObjectOptions")).Encode(),
 					},
+					"where": {
+						Type: schema.NewNullableType(schema.NewPredicateType("StorageObjectSimple")).Encode(),
+					},
 				},
 			},
 			{
@@ -1845,6 +1915,9 @@ func GetConnectorSchema() *schema.SchemaResponse {
 					},
 					"options": {
 						Type: schema.NewNullableType(schema.NewNamedType("PutStorageObjectOptions")).Encode(),
+					},
+					"where": {
+						Type: schema.NewNullableType(schema.NewPredicateType("StorageObjectSimple")).Encode(),
 					},
 				},
 			},

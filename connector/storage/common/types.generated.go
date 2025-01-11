@@ -5,9 +5,32 @@ import (
 	"encoding/json"
 	"errors"
 	"github.com/hasura/ndc-sdk-go/scalar"
+	"github.com/hasura/ndc-sdk-go/schema"
 	"github.com/hasura/ndc-sdk-go/utils"
 	"slices"
 )
+
+// FromValue decodes values from map
+func (j *GetStorageObjectArguments) FromValue(input map[string]any) error {
+	var err error
+	j.GetStorageObjectOptions, err = utils.DecodeObject[GetStorageObjectOptions](input)
+	if err != nil {
+		return err
+	}
+	j.StorageBucketArguments, err = utils.DecodeObject[StorageBucketArguments](input)
+	if err != nil {
+		return err
+	}
+	j.Object, err = utils.GetString(input, "object")
+	if err != nil {
+		return err
+	}
+	j.Where, err = utils.DecodeObjectValueDefault[schema.Expression](input, "where")
+	if err != nil {
+		return err
+	}
+	return nil
+}
 
 // FromValue decodes values from map
 func (j *GetStorageObjectLegalHoldOptions) FromValue(input map[string]any) error {
@@ -30,19 +53,11 @@ func (j *GetStorageObjectLegalHoldOptions) FromValue(input map[string]any) error
 // FromValue decodes values from map
 func (j *GetStorageObjectOptions) FromValue(input map[string]any) error {
 	var err error
-	j.StorageBucketArguments, err = utils.DecodeObject[StorageBucketArguments](input)
-	if err != nil {
-		return err
-	}
 	j.Checksum, err = utils.GetNullableBoolean(input, "checksum")
 	if err != nil {
 		return err
 	}
 	j.Headers, err = utils.DecodeObjectValueDefault[map[string]string](input, "headers")
-	if err != nil {
-		return err
-	}
-	j.Object, err = utils.GetString(input, "object")
 	if err != nil {
 		return err
 	}
@@ -92,15 +107,29 @@ func (j *ListStorageBucketArguments) FromValue(input map[string]any) error {
 // FromValue decodes values from map
 func (j *PresignedGetStorageObjectArguments) FromValue(input map[string]any) error {
 	var err error
+	j.PresignedGetStorageObjectOptions, err = utils.DecodeObject[PresignedGetStorageObjectOptions](input)
+	if err != nil {
+		return err
+	}
 	j.StorageBucketArguments, err = utils.DecodeObject[StorageBucketArguments](input)
 	if err != nil {
 		return err
 	}
-	j.Expiry, err = utils.DecodeNullableObjectValue[scalar.Duration](input, "expiry")
+	j.Object, err = utils.GetString(input, "object")
 	if err != nil {
 		return err
 	}
-	j.Object, err = utils.GetString(input, "object")
+	j.Where, err = utils.DecodeObjectValueDefault[schema.Expression](input, "where")
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// FromValue decodes values from map
+func (j *PresignedGetStorageObjectOptions) FromValue(input map[string]any) error {
+	var err error
+	j.Expiry, err = utils.DecodeNullableObjectValue[scalar.Duration](input, "expiry")
 	if err != nil {
 		return err
 	}
@@ -123,6 +152,10 @@ func (j *PresignedPutStorageObjectArguments) FromValue(input map[string]any) err
 		return err
 	}
 	j.Object, err = utils.GetString(input, "object")
+	if err != nil {
+		return err
+	}
+	j.Where, err = utils.DecodeObjectValueDefault[schema.Expression](input, "where")
 	if err != nil {
 		return err
 	}
@@ -266,6 +299,18 @@ func (j ExistingObjectReplication) ToMap() map[string]any {
 }
 
 // ToMap encodes the struct to a value map
+func (j GetStorageObjectOptions) ToMap() map[string]any {
+	r := make(map[string]any)
+	r["checksum"] = j.Checksum
+	r["headers"] = j.Headers
+	r["partNumber"] = j.PartNumber
+	r["requestParams"] = j.RequestParams
+	r["versionId"] = j.VersionID
+
+	return r
+}
+
+// ToMap encodes the struct to a value map
 func (j LifecycleAllVersionsExpiration) ToMap() map[string]any {
 	r := make(map[string]any)
 	r["days"] = j.Days
@@ -356,7 +401,6 @@ func (j LifecycleTransition) ToMap() map[string]any {
 // ToMap encodes the struct to a value map
 func (j ListStorageObjectsOptions) ToMap() map[string]any {
 	r := make(map[string]any)
-	r = utils.MergeMap(r, j.StorageBucketArguments.ToMap())
 	r["maxKeys"] = j.MaxKeys
 	r["prefix"] = j.Prefix
 	r["recursive"] = j.Recursive
@@ -461,20 +505,19 @@ func (j NotificationTopicConfig) ToMap() map[string]any {
 }
 
 // ToMap encodes the struct to a value map
-func (j PresignedURLResponse) ToMap() map[string]any {
+func (j PresignedGetStorageObjectOptions) ToMap() map[string]any {
 	r := make(map[string]any)
-	r["expiredAt"] = j.ExpiredAt
-	r["url"] = j.URL
+	r["expiry"] = j.Expiry
+	r["requestParams"] = j.RequestParams
 
 	return r
 }
 
 // ToMap encodes the struct to a value map
-func (j PutStorageObjectArguments) ToMap() map[string]any {
+func (j PresignedURLResponse) ToMap() map[string]any {
 	r := make(map[string]any)
-	r = utils.MergeMap(r, j.StorageBucketArguments.ToMap())
-	r["object"] = j.Object
-	r["options"] = j.Options
+	r["expiredAt"] = j.ExpiredAt
+	r["url"] = j.URL
 
 	return r
 }
@@ -513,6 +556,25 @@ func (j RemoveStorageObjectError) ToMap() map[string]any {
 	r["error"] = j.Error
 	r["objectName"] = j.ObjectName
 	r["versionId"] = j.VersionID
+
+	return r
+}
+
+// ToMap encodes the struct to a value map
+func (j RemoveStorageObjectOptions) ToMap() map[string]any {
+	r := make(map[string]any)
+	r["forceDelete"] = j.ForceDelete
+	r["governanceBypass"] = j.GovernanceBypass
+	r["versionId"] = j.VersionID
+
+	return r
+}
+
+// ToMap encodes the struct to a value map
+func (j RemoveStorageObjectsOptions) ToMap() map[string]any {
+	r := make(map[string]any)
+	r = utils.MergeMap(r, j.ListStorageObjectsOptions.ToMap())
+	r["governanceBypass"] = j.GovernanceBypass
 
 	return r
 }

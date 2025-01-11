@@ -1,4 +1,4 @@
-package internal
+package collection
 
 import (
 	"github.com/hasura/ndc-sdk-go/schema"
@@ -6,23 +6,27 @@ import (
 )
 
 const (
-	CollectionStorageObject         = "storageObjects"
+	CollectionStorageObjects        = "storageObjects"
 	StorageObjectName               = "StorageObject"
 	StorageObjectColumnClientID     = "clientId"
+	StorageObjectColumnObject       = "object"
 	StorageObjectColumnName         = "name"
 	StorageObjectColumnBucket       = "bucket"
 	StorageObjectColumnLastModified = "lastModified"
 	StorageObjectColumnMetadata     = "metadata"
 	StorageObjectColumnUserMetadata = "userMetadata"
 	StorageObjectColumnVersionID    = "versionId"
+	StorageObjectArgumentWhere      = "where"
 	StorageObjectArgumentRecursive  = "recursive"
 )
 
 const (
-	OperatorEqual      = "_eq"
-	OperatorStartsWith = "_starts_with"
-	OperatorGreater    = "_gt"
-	OperatorIsNull     = "_is_null"
+	OperatorEqual               = "_eq"
+	OperatorStartsWith          = "_starts_with"
+	OperatorContains            = "_contains"
+	OperatorInsensitiveContains = "_icontains"
+	OperatorGreater             = "_gt"
+	OperatorIsNull              = "_is_null"
 )
 
 const (
@@ -37,7 +41,7 @@ func GetConnectorSchema(clientIDs []string) *schema.SchemaResponse { //nolint:fu
 	return &schema.SchemaResponse{
 		Collections: []schema.CollectionInfo{
 			{
-				Name:        CollectionStorageObject,
+				Name:        CollectionStorageObjects,
 				Description: utils.ToPtr("The information of an storage object"),
 				Type:        StorageObjectName,
 				Arguments: schema.CollectionInfoArguments{
@@ -50,6 +54,19 @@ func GetConnectorSchema(clientIDs []string) *schema.SchemaResponse { //nolint:fu
 			},
 		},
 		ObjectTypes: schema.SchemaResponseObjectTypes{
+			"StorageObjectSimple": schema.ObjectType{
+				Fields: schema.ObjectTypeFields{
+					StorageObjectColumnClientID: schema.ObjectField{
+						Type: schema.NewNamedType(ScalarStorageClientID).Encode(),
+					},
+					StorageObjectColumnBucket: schema.ObjectField{
+						Type: schema.NewNamedType(ScalarBucketName).Encode(),
+					},
+					StorageObjectColumnObject: schema.ObjectField{
+						Type: schema.NewNamedType(ScalarObjectPath).Encode(),
+					},
+				},
+			},
 			StorageObjectName: schema.ObjectType{
 				Fields: schema.ObjectTypeFields{
 					StorageObjectColumnClientID: schema.ObjectField{
@@ -150,7 +167,10 @@ func GetConnectorSchema(clientIDs []string) *schema.SchemaResponse { //nolint:fu
 			ScalarObjectPath: schema.ScalarType{
 				AggregateFunctions: schema.ScalarTypeAggregateFunctions{},
 				ComparisonOperators: map[string]schema.ComparisonOperatorDefinition{
-					OperatorStartsWith: schema.NewComparisonOperatorCustom(schema.NewNamedType(ScalarObjectPath)).Encode(),
+					OperatorEqual:               schema.NewComparisonOperatorEqual().Encode(),
+					OperatorStartsWith:          schema.NewComparisonOperatorCustom(schema.NewNamedType(ScalarObjectPath)).Encode(),
+					OperatorContains:            schema.NewComparisonOperatorCustom(schema.NewNamedType(ScalarObjectPath)).Encode(),
+					OperatorInsensitiveContains: schema.NewComparisonOperatorCustom(schema.NewNamedType(ScalarObjectPath)).Encode(),
 				},
 				Representation: schema.NewTypeRepresentationString().Encode(),
 			},

@@ -1,12 +1,18 @@
-package internal
+package collection
 
 import (
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/hasura/ndc-sdk-go/schema"
 	"github.com/hasura/ndc-sdk-go/utils"
 )
+
+func normalizeObjectName(objectName string) string {
+	// replace Unix-compatible backslashes in the file path when run on Windows OS
+	return strings.ReplaceAll(objectName, "\\", "/")
+}
 
 func getComparisonValue(input schema.ComparisonValue, variables map[string]any) (any, error) {
 	if len(input) == 0 {

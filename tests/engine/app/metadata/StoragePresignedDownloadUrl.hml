@@ -33,7 +33,7 @@ kind: Command
 version: v1
 definition:
   name: StoragePresignedDownloadUrl
-  outputType: PresignedUrlResponse!
+  outputType: PresignedUrlResponse
   arguments:
     - name: bucket
       type: String
@@ -45,6 +45,8 @@ definition:
       type: String!
     - name: requestParams
       type: Json
+    - name: where
+      type: StorageObjectSimpleBoolExp
   source:
     dataConnectorName: storage
     dataConnectorCommand:

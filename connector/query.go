@@ -6,7 +6,7 @@ import (
 
 	"github.com/hasura/ndc-sdk-go/schema"
 	"github.com/hasura/ndc-sdk-go/utils"
-	"github.com/hasura/ndc-storage/connector/internal"
+	"github.com/hasura/ndc-storage/connector/collection"
 	"github.com/hasura/ndc-storage/connector/types"
 	"go.opentelemetry.io/otel/codes"
 	"golang.org/x/sync/errgroup"
@@ -88,8 +88,8 @@ func (c *Connector) execQuery(ctx context.Context, state *types.State, request *
 		})
 	}
 
-	if request.Collection == internal.CollectionStorageObject {
-		executor := internal.CollectionObjectExecutor{
+	if request.Collection == collection.CollectionStorageObjects {
+		executor := collection.CollectionObjectExecutor{
 			Storage:   state.Storage,
 			Request:   request,
 			Arguments: rawArgs,
@@ -98,7 +98,7 @@ func (c *Connector) execQuery(ctx context.Context, state *types.State, request *
 		return executor.Execute(ctx)
 	}
 
-	result, err := c.apiHandler.Query(ctx, state, request, rawArgs)
+	result, err := c.apiHandler.Query(context.WithValue(ctx, types.QueryVariablesContextKey, variables), state, request, rawArgs)
 	if err != nil {
 		span.SetStatus(codes.Error, fmt.Sprintf("failed to execute function %d", index))
 		span.RecordError(err)

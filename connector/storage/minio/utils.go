@@ -218,7 +218,7 @@ func serializeUploadObjectInfo(obj minio.UploadInfo) common.StorageUploadInfo {
 	return object
 }
 
-func serializeGetObjectOptions(span trace.Span, opts *common.GetStorageObjectOptions) minio.GetObjectOptions {
+func serializeGetObjectOptions(span trace.Span, opts common.GetStorageObjectOptions) minio.GetObjectOptions {
 	options := minio.GetObjectOptions{}
 	if opts.VersionID != nil && !isStringNull(*opts.VersionID) {
 		options.VersionID = *opts.VersionID

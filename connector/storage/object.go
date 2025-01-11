@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"context"
 	"io"
-	"strings"
 	"time"
 
 	"github.com/hasura/ndc-sdk-go/scalar"
@@ -14,15 +13,13 @@ import (
 )
 
 // ListObjects lists objects in a bucket.
-func (m *Manager) ListObjects(ctx context.Context, args *common.ListStorageObjectsOptions) ([]common.StorageObject, error) {
-	client, bucketName, err := m.GetClientAndBucket(args.ClientID, args.Bucket)
+func (m *Manager) ListObjects(ctx context.Context, bucketInfo common.StorageBucketArguments, opts *common.ListStorageObjectsOptions) ([]common.StorageObject, error) {
+	client, bucketName, err := m.GetClientAndBucket(bucketInfo.ClientID, bucketInfo.Bucket)
 	if err != nil {
 		return nil, err
 	}
 
-	args.Bucket = bucketName
-
-	return client.ListObjects(ctx, args)
+	return client.ListObjects(ctx, bucketName, opts)
 }
 
 // ListIncompleteUploads list partially uploaded objects in a bucket.
@@ -33,36 +30,29 @@ func (m *Manager) ListIncompleteUploads(ctx context.Context, args *common.ListIn
 	}
 
 	args.Bucket = bucketName
-	args.Prefix = normalizeObjectName(args.Prefix)
 
 	return client.ListIncompleteUploads(ctx, args)
 }
 
 // GetObject returns a stream of the object data. Most of the common errors occur when reading the stream.
-func (m *Manager) GetObject(ctx context.Context, args *common.GetStorageObjectOptions) (io.ReadCloser, error) {
-	client, bucketName, err := m.GetClientAndBucket(args.ClientID, args.Bucket)
+func (m *Manager) GetObject(ctx context.Context, bucketInfo common.StorageBucketArguments, objectName string, opts common.GetStorageObjectOptions) (io.ReadCloser, error) {
+	client, bucketName, err := m.GetClientAndBucket(bucketInfo.ClientID, bucketInfo.Bucket)
 	if err != nil {
 		return nil, err
 	}
 
-	args.Bucket = bucketName
-	args.Object = normalizeObjectName(args.Object)
-
-	return client.GetObject(ctx, args)
+	return client.GetObject(ctx, bucketName, objectName, opts)
 }
 
 // PutObject uploads objects that are less than 128MiB in a single PUT operation. For objects that are greater than 128MiB in size,
 // PutObject seamlessly uploads the object as parts of 128MiB or more depending on the actual file size. The max upload size for an object is 5TB.
-func (m *Manager) PutObject(ctx context.Context, args *common.PutStorageObjectArguments, data []byte) (*common.StorageUploadInfo, error) {
-	client, bucketName, err := m.GetClientAndBucket(args.ClientID, args.Bucket)
+func (m *Manager) PutObject(ctx context.Context, bucketInfo common.StorageBucketArguments, objectName string, opts *common.PutStorageObjectOptions, data []byte) (*common.StorageUploadInfo, error) {
+	client, bucketName, err := m.GetClientAndBucket(bucketInfo.ClientID, bucketInfo.Bucket)
 	if err != nil {
 		return nil, err
 	}
 
-	args.Bucket = bucketName
-	args.Object = normalizeObjectName(args.Object)
-
-	return client.PutObject(ctx, args, bytes.NewReader(data), int64(len(data)))
+	return client.PutObject(ctx, bucketName, objectName, opts, bytes.NewReader(data), int64(len(data)))
 }
 
 // CopyObject creates or replaces an object through server-side copying of an existing object.
@@ -75,11 +65,9 @@ func (m *Manager) CopyObject(ctx context.Context, args *common.CopyStorageObject
 	}
 
 	args.Dest.Bucket = bucketName
-	args.Dest.Object = normalizeObjectName(args.Dest.Object)
 
 	if args.Source.Bucket == "" {
 		args.Source.Bucket = client.defaultBucket
-		args.Source.Object = normalizeObjectName(args.Source.Object)
 	}
 
 	return client.CopyObject(ctx, args.Dest, args.Source)
@@ -93,15 +81,12 @@ func (m *Manager) ComposeObject(ctx context.Context, args *common.ComposeStorage
 	}
 
 	args.Dest.Bucket = bucketName
-	args.Dest.Object = normalizeObjectName(args.Dest.Object)
 	srcs := make([]common.StorageCopySrcOptions, len(args.Sources))
 
 	for i, src := range args.Sources {
 		if src.Bucket == "" {
 			src.Bucket = client.defaultBucket
 		}
-
-		src.Object = normalizeObjectName(src.Object)
 
 		srcs[i] = src
 	}
@@ -110,29 +95,23 @@ func (m *Manager) ComposeObject(ctx context.Context, args *common.ComposeStorage
 }
 
 // StatObject fetches metadata of an object.
-func (m *Manager) StatObject(ctx context.Context, args *common.GetStorageObjectOptions) (*common.StorageObject, error) {
-	client, bucketName, err := m.GetClientAndBucket(args.ClientID, args.Bucket)
+func (m *Manager) StatObject(ctx context.Context, bucketInfo common.StorageBucketArguments, objectName string, opts common.GetStorageObjectOptions) (*common.StorageObject, error) {
+	client, bucketName, err := m.GetClientAndBucket(bucketInfo.ClientID, bucketInfo.Bucket)
 	if err != nil {
 		return nil, err
 	}
 
-	args.Bucket = bucketName
-	args.Object = normalizeObjectName(args.Object)
-
-	return client.StatObject(ctx, args)
+	return client.StatObject(ctx, bucketName, objectName, opts)
 }
 
 // RemoveObject removes an object with some specified options.
-func (m *Manager) RemoveObject(ctx context.Context, args *common.RemoveStorageObjectOptions) error {
-	client, bucketName, err := m.GetClientAndBucket(args.ClientID, args.Bucket)
+func (m *Manager) RemoveObject(ctx context.Context, bucketInfo common.StorageBucketArguments, objectName string, opts common.RemoveStorageObjectOptions) error {
+	client, bucketName, err := m.GetClientAndBucket(bucketInfo.ClientID, bucketInfo.Bucket)
 	if err != nil {
 		return err
 	}
 
-	args.Bucket = bucketName
-	args.Object = normalizeObjectName(args.Object)
-
-	return client.RemoveObject(ctx, args)
+	return client.RemoveObject(ctx, bucketName, objectName, opts)
 }
 
 // PutObjectRetention applies object retention lock onto an object.
@@ -143,23 +122,19 @@ func (m *Manager) PutObjectRetention(ctx context.Context, args *common.PutStorag
 	}
 
 	args.Bucket = bucketName
-	args.Object = normalizeObjectName(args.Object)
 
 	return client.PutObjectRetention(ctx, args)
 }
 
 // RemoveObjects remove a list of objects obtained from an input channel. The call sends a delete request to the server up to 1000 objects at a time.
 // The errors observed are sent over the error channel.
-func (m *Manager) RemoveObjects(ctx context.Context, args *common.RemoveStorageObjectsOptions) ([]common.RemoveStorageObjectError, error) {
-	client, bucketName, err := m.GetClientAndBucket(args.ClientID, args.Bucket)
+func (m *Manager) RemoveObjects(ctx context.Context, bucketInfo common.StorageBucketArguments, opts *common.RemoveStorageObjectsOptions) ([]common.RemoveStorageObjectError, error) {
+	client, bucketName, err := m.GetClientAndBucket(bucketInfo.ClientID, bucketInfo.Bucket)
 	if err != nil {
 		return nil, err
 	}
 
-	args.Bucket = bucketName
-	args.Prefix = normalizeObjectName(args.Prefix)
-
-	return client.RemoveObjects(ctx, args), nil
+	return client.RemoveObjects(ctx, bucketName, opts), nil
 }
 
 // PutObjectLegalHold applies legal-hold onto an object.
@@ -170,7 +145,6 @@ func (m *Manager) PutObjectLegalHold(ctx context.Context, args *common.PutStorag
 	}
 
 	args.Bucket = bucketName
-	args.Object = normalizeObjectName(args.Object)
 
 	return client.PutObjectLegalHold(ctx, args)
 }
@@ -183,7 +157,6 @@ func (m *Manager) GetObjectLegalHold(ctx context.Context, args *common.GetStorag
 	}
 
 	args.Bucket = bucketName
-	args.Object = normalizeObjectName(args.Object)
 
 	return client.GetObjectLegalHold(ctx, args)
 }
@@ -196,7 +169,6 @@ func (m *Manager) PutObjectTagging(ctx context.Context, args *common.PutStorageO
 	}
 
 	args.Bucket = bucketName
-	args.Object = normalizeObjectName(args.Object)
 
 	return client.PutObjectTagging(ctx, args)
 }
@@ -209,7 +181,6 @@ func (m *Manager) GetObjectTagging(ctx context.Context, args *common.StorageObje
 	}
 
 	args.Bucket = bucketName
-	args.Object = normalizeObjectName(args.Object)
 
 	return client.GetObjectTagging(ctx, args)
 }
@@ -222,7 +193,6 @@ func (m *Manager) RemoveObjectTagging(ctx context.Context, args *common.StorageO
 	}
 
 	args.Bucket = bucketName
-	args.Object = normalizeObjectName(args.Object)
 
 	return client.RemoveObjectTagging(ctx, args)
 }
@@ -235,7 +205,6 @@ func (m *Manager) GetObjectAttributes(ctx context.Context, args *common.StorageO
 	}
 
 	args.Bucket = bucketName
-	args.Object = normalizeObjectName(args.Object)
 
 	return client.GetObjectAttributes(ctx, args)
 }
@@ -248,7 +217,6 @@ func (m *Manager) RemoveIncompleteUpload(ctx context.Context, args *common.Remov
 	}
 
 	args.Bucket = bucketName
-	args.Object = normalizeObjectName(args.Object)
 
 	return client.RemoveIncompleteUpload(ctx, args)
 }
@@ -256,36 +224,36 @@ func (m *Manager) RemoveIncompleteUpload(ctx context.Context, args *common.Remov
 // PresignedGetObject generates a presigned URL for HTTP GET operations. Browsers/Mobile clients may point to this URL to directly download objects even if the bucket is private.
 // This presigned URL can have an associated expiration time in seconds after which it is no longer operational.
 // The maximum expiry is 604800 seconds (i.e. 7 days) and minimum is 1 second.
-func (m *Manager) PresignedGetObject(ctx context.Context, args *common.PresignedGetStorageObjectArguments) (common.PresignedURLResponse, error) {
-	if err := s3utils.CheckValidObjectName(args.Object); err != nil {
-		return common.PresignedURLResponse{}, schema.UnprocessableContentError(err.Error(), nil)
+func (m *Manager) PresignedGetObject(ctx context.Context, bucketInfo common.StorageBucketArguments, objectName string, opts common.PresignedGetStorageObjectOptions) (*common.PresignedURLResponse, error) {
+	if err := s3utils.CheckValidObjectName(objectName); err != nil {
+		return nil, schema.UnprocessableContentError(err.Error(), nil)
 	}
 
-	client, bucketName, err := m.GetClientAndBucket(args.ClientID, args.Bucket)
+	client, bucketName, err := m.GetClientAndBucket(bucketInfo.ClientID, bucketInfo.Bucket)
 	if err != nil {
-		return common.PresignedURLResponse{}, err
+		return nil, err
 	}
 
-	args.Bucket = bucketName
-	args.Object = normalizeObjectName(args.Object)
+	var exp time.Duration
 
-	if args.Expiry == nil {
-		if client.defaultPresignedExpiry != nil {
-			expiry := scalar.NewDuration(*client.defaultPresignedExpiry)
-			args.Expiry = &expiry
-		}
-
-		return common.PresignedURLResponse{}, schema.UnprocessableContentError("expiry is required", nil)
+	if opts.Expiry != nil {
+		exp = opts.Expiry.Duration
+	} else if client.defaultPresignedExpiry != nil {
+		exp = *client.defaultPresignedExpiry
 	}
 
-	rawURL, err := client.PresignedGetObject(ctx, args)
+	if exp == 0 {
+		return nil, schema.UnprocessableContentError("expiry is required and must be larger than 0", nil)
+	}
+
+	rawURL, err := client.PresignedGetObject(ctx, bucketName, objectName, opts)
 	if err != nil {
-		return common.PresignedURLResponse{}, err
+		return nil, err
 	}
 
-	return common.PresignedURLResponse{
+	return &common.PresignedURLResponse{
 		URL:       rawURL.String(),
-		ExpiredAt: FormatTimestamp(time.Now().Add(args.Expiry.Duration)),
+		ExpiredAt: FormatTimestamp(time.Now().Add(opts.Expiry.Duration)),
 	}, nil
 }
 
@@ -293,76 +261,35 @@ func (m *Manager) PresignedGetObject(ctx context.Context, args *common.Presigned
 // Browsers/Mobile clients may point to this URL to upload objects directly to a bucket even if it is private.
 // This presigned URL can have an associated expiration time in seconds after which it is no longer operational.
 // The default expiry is set to 7 days.
-func (m *Manager) PresignedPutObject(ctx context.Context, args *common.PresignedPutStorageObjectArguments) (common.PresignedURLResponse, error) {
-	if err := s3utils.CheckValidObjectName(args.Object); err != nil {
-		return common.PresignedURLResponse{}, schema.UnprocessableContentError(err.Error(), nil)
+func (m *Manager) PresignedPutObject(ctx context.Context, bucketInfo common.StorageBucketArguments, objectName string, expiry *scalar.Duration) (*common.PresignedURLResponse, error) {
+	if err := s3utils.CheckValidObjectName(objectName); err != nil {
+		return nil, schema.UnprocessableContentError(err.Error(), nil)
 	}
 
-	client, bucketName, err := m.GetClientAndBucket(args.ClientID, args.Bucket)
+	client, bucketName, err := m.GetClientAndBucket(bucketInfo.ClientID, bucketInfo.Bucket)
 	if err != nil {
-		return common.PresignedURLResponse{}, err
+		return nil, err
 	}
 
-	args.Bucket = bucketName
-	args.Object = normalizeObjectName(args.Object)
+	var exp time.Duration
 
-	if args.Expiry == nil {
-		if client.defaultPresignedExpiry != nil {
-			expiry := scalar.NewDuration(*client.defaultPresignedExpiry)
-			args.Expiry = &expiry
-		}
-
-		return common.PresignedURLResponse{}, schema.UnprocessableContentError("expiry is required", nil)
+	if expiry != nil {
+		exp = expiry.Duration
+	} else if client.defaultPresignedExpiry != nil {
+		exp = *client.defaultPresignedExpiry
 	}
 
-	rawURL, err := client.PresignedPutObject(ctx, args)
+	if exp == 0 {
+		return nil, schema.UnprocessableContentError("expiry is required and must be larger than 0", nil)
+	}
+
+	rawURL, err := client.PresignedPutObject(ctx, bucketName, objectName, exp)
 	if err != nil {
-		return common.PresignedURLResponse{}, err
+		return nil, err
 	}
 
-	return common.PresignedURLResponse{
+	return &common.PresignedURLResponse{
 		URL:       rawURL.String(),
-		ExpiredAt: FormatTimestamp(time.Now().Add(args.Expiry.Duration)),
+		ExpiredAt: FormatTimestamp(time.Now().Add(exp)),
 	}, nil
-}
-
-// PresignedHeadObject generates a presigned URL for HTTP HEAD operations.
-// Browsers/Mobile clients may point to this URL to directly get metadata from objects even if the bucket is private.
-// This presigned URL can have an associated expiration time in seconds after which it is no longer operational. The default expiry is set to 7 days.
-func (m *Manager) PresignedHeadObject(ctx context.Context, args *common.PresignedGetStorageObjectArguments) (common.PresignedURLResponse, error) {
-	if err := s3utils.CheckValidObjectName(args.Object); err != nil {
-		return common.PresignedURLResponse{}, schema.UnprocessableContentError(err.Error(), nil)
-	}
-
-	client, bucketName, err := m.GetClientAndBucket(args.ClientID, args.Bucket)
-	if err != nil {
-		return common.PresignedURLResponse{}, err
-	}
-
-	args.Bucket = bucketName
-	args.Object = normalizeObjectName(args.Object)
-
-	if args.Expiry == nil {
-		if client.defaultPresignedExpiry != nil {
-			expiry := scalar.NewDuration(*client.defaultPresignedExpiry)
-			args.Expiry = &expiry
-		}
-
-		return common.PresignedURLResponse{}, schema.UnprocessableContentError("expiry is required", nil)
-	}
-
-	rawURL, err := client.PresignedHeadObject(ctx, args)
-	if err != nil {
-		return common.PresignedURLResponse{}, err
-	}
-
-	return common.PresignedURLResponse{
-		URL:       rawURL.String(),
-		ExpiredAt: FormatTimestamp(time.Now().Add(args.Expiry.Duration)),
-	}, nil
-}
-
-func normalizeObjectName(objectName string) string {
-	// replace Unix-compatible backslashes in the file path when run on Windows OS
-	return strings.ReplaceAll(objectName, "\\", "/")
 }

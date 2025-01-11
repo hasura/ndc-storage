@@ -102,6 +102,8 @@ definition:
       type: String!
     - name: options
       type: PutStorageObjectOptions
+    - name: where
+      type: StorageObjectSimpleBoolExp
   source:
     dataConnectorName: storage
     dataConnectorCommand:
