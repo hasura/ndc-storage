@@ -24,6 +24,19 @@
       }
     },
     "limit": 1,
+    "offset": 1,
+    "order_by": {
+      "elements": [
+        {
+          "order_direction": "asc",
+          "target": {
+            "type": "column",
+            "name": "name",
+            "path": []
+          }
+        }
+      ]
+    },
     "predicate": {
       "type": "and",
       "expressions": [
@@ -37,7 +50,13 @@
           "type": "binary_comparison_operator",
           "column": { "type": "column", "name": "name", "path": [] },
           "operator": "_starts_with",
-          "value": { "type": "scalar", "value": "I81XNHrIsl" }
+          "value": { "type": "scalar", "value": "public" }
+        },
+        {
+          "type": "binary_comparison_operator",
+          "column": { "type": "column", "name": "lastModified", "path": [] },
+          "operator": "_gt",
+          "value": { "type": "scalar", "value": "2000-01-01T00:00:00Z" }
         }
       ]
     }

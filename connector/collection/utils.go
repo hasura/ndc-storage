@@ -1,12 +1,18 @@
-package internal
+package collection
 
 import (
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/hasura/ndc-sdk-go/schema"
 	"github.com/hasura/ndc-sdk-go/utils"
 )
+
+func normalizeObjectName(objectName string) string {
+	// replace Unix-compatible backslashes in the file path when run on Windows OS
+	return strings.ReplaceAll(objectName, "\\", "/")
+}
 
 func getComparisonValue(input schema.ComparisonValue, variables map[string]any) (any, error) {
 	if len(input) == 0 {
@@ -52,4 +58,60 @@ func getComparisonValueDateTime(input schema.ComparisonValue, variables map[stri
 	}
 
 	return utils.DecodeNullableDateTime(rawValue)
+}
+
+func compareNullableString(a, b *string) int {
+	if a == nil && b == nil {
+		return 0
+	}
+
+	if a != nil && b == nil {
+		return 1
+	}
+
+	if a == nil && b != nil {
+		return -1
+	}
+
+	return strings.Compare(*a, *b)
+}
+
+func compareNullableBoolean(a, b *bool) int {
+	if a == nil && b == nil {
+		return 0
+	}
+
+	if a != nil && b == nil {
+		return 1
+	}
+
+	if a == nil && b != nil {
+		return -1
+	}
+
+	if *a == *b {
+		return 0
+	}
+
+	if *a && !*b {
+		return 1
+	}
+
+	return -1
+}
+
+func compareNullableTime(a, b *time.Time) int {
+	if a == nil && b == nil {
+		return 0
+	}
+
+	if a != nil && b == nil {
+		return 1
+	}
+
+	if a == nil && b != nil {
+		return -1
+	}
+
+	return int(a.Sub(*b))
 }

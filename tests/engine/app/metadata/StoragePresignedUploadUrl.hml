@@ -3,7 +3,7 @@ kind: Command
 version: v1
 definition:
   name: StoragePresignedUploadUrl
-  outputType: PresignedUrlResponse!
+  outputType: PresignedUrlResponse
   arguments:
     - name: bucket
       type: String
@@ -13,6 +13,8 @@ definition:
       type: Duration
     - name: object
       type: String!
+    - name: where
+      type: StorageObjectSimpleBoolExp
   source:
     dataConnectorName: storage
     dataConnectorCommand:

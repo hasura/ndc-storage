@@ -5,7 +5,7 @@
       "type": "procedure",
       "name": "removeStorageBucket",
       "arguments": {
-        "bucket": "minio-bucket-test"
+        "bucket": "minio-bucket-empty"
       }
     }
   ]

@@ -17,7 +17,7 @@
             "bucket": "minio-bucket-test",
             "end": 34,
             "noMatchETag": "ic0R0GYP3Z",
-            "object": "I81XNHrIsl",
+            "object": "public/hello.txt",
             "start": 0
           }
         ]

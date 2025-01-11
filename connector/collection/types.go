@@ -1,4 +1,4 @@
-package internal
+package collection
 
 // ColumnOrder the structured sorting columns.
 type ColumnOrder struct {

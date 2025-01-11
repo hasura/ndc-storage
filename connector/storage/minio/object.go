@@ -18,11 +18,11 @@ import (
 )
 
 // ListObjects list objects in a bucket.
-func (mc *Client) ListObjects(ctx context.Context, opts *common.ListStorageObjectsOptions) ([]common.StorageObject, error) {
-	ctx, span := mc.startOtelSpan(ctx, "ListObjects", opts.Bucket)
+func (mc *Client) ListObjects(ctx context.Context, bucketName string, opts *common.ListStorageObjectsOptions) ([]common.StorageObject, error) {
+	ctx, span := mc.startOtelSpan(ctx, "ListObjects", bucketName)
 	defer span.End()
 
-	objChan := mc.client.ListObjects(ctx, opts.Bucket, mc.validateListObjectsOptions(span, opts))
+	objChan := mc.client.ListObjects(ctx, bucketName, mc.validateListObjectsOptions(span, opts))
 	objects := make([]common.StorageObject, 0)
 
 	for obj := range objChan {
@@ -34,7 +34,7 @@ func (mc *Client) ListObjects(ctx context.Context, opts *common.ListStorageObjec
 		}
 
 		object := serializeObjectInfo(obj)
-		object.Bucket = opts.Bucket
+		object.Bucket = bucketName
 		objects = append(objects, object)
 	}
 
@@ -99,14 +99,14 @@ func (mc *Client) RemoveIncompleteUpload(ctx context.Context, args *common.Remov
 }
 
 // GetObject returns a stream of the object data. Most of the common errors occur when reading the stream.
-func (mc *Client) GetObject(ctx context.Context, opts *common.GetStorageObjectOptions) (io.ReadCloser, error) {
-	ctx, span := mc.startOtelSpan(ctx, "GetObject", opts.Bucket)
+func (mc *Client) GetObject(ctx context.Context, bucketName, objectName string, opts common.GetStorageObjectOptions) (io.ReadCloser, error) {
+	ctx, span := mc.startOtelSpan(ctx, "GetObject", bucketName)
 	defer span.End()
 
-	span.SetAttributes(attribute.String("storage.key", opts.Object))
+	span.SetAttributes(attribute.String("storage.key", objectName))
 	options := serializeGetObjectOptions(span, opts)
 
-	object, err := mc.client.GetObject(ctx, opts.Bucket, opts.Object, options)
+	object, err := mc.client.GetObject(ctx, bucketName, objectName, options)
 	if err != nil {
 		span.SetStatus(codes.Error, err.Error())
 		span.RecordError(err)
@@ -119,46 +119,46 @@ func (mc *Client) GetObject(ctx context.Context, opts *common.GetStorageObjectOp
 
 // PutObject uploads objects that are less than 128MiB in a single PUT operation. For objects that are greater than 128MiB in size,
 // PutObject seamlessly uploads the object as parts of 128MiB or more depending on the actual file size. The max upload size for an object is 5TB.
-func (mc *Client) PutObject(ctx context.Context, args *common.PutStorageObjectArguments, reader io.Reader, objectSize int64) (*common.StorageUploadInfo, error) {
-	ctx, span := mc.startOtelSpan(ctx, "PutObject", args.Bucket)
+func (mc *Client) PutObject(ctx context.Context, bucketName string, objectName string, opts *common.PutStorageObjectOptions, reader io.Reader, objectSize int64) (*common.StorageUploadInfo, error) {
+	ctx, span := mc.startOtelSpan(ctx, "PutObject", bucketName)
 	defer span.End()
 
 	span.SetAttributes(
-		attribute.String("storage.key", args.Object),
+		attribute.String("storage.key", objectName),
 		attribute.Int64("http.response.body.size", objectSize),
 	)
 
 	options := minio.PutObjectOptions{
-		UserMetadata:            args.Options.UserMetadata,
-		UserTags:                args.Options.UserTags,
-		ContentType:             args.Options.ContentType,
-		ContentEncoding:         args.Options.ContentEncoding,
-		ContentDisposition:      args.Options.ContentDisposition,
-		ContentLanguage:         args.Options.ContentLanguage,
-		CacheControl:            args.Options.CacheControl,
-		NumThreads:              args.Options.NumThreads,
-		StorageClass:            args.Options.StorageClass,
-		PartSize:                args.Options.PartSize,
-		SendContentMd5:          args.Options.SendContentMd5,
-		DisableContentSha256:    args.Options.DisableContentSha256,
-		DisableMultipart:        args.Options.DisableMultipart,
-		WebsiteRedirectLocation: args.Options.WebsiteRedirectLocation,
-		ConcurrentStreamParts:   args.Options.ConcurrentStreamParts,
+		UserMetadata:            opts.UserMetadata,
+		UserTags:                opts.UserTags,
+		ContentType:             opts.ContentType,
+		ContentEncoding:         opts.ContentEncoding,
+		ContentDisposition:      opts.ContentDisposition,
+		ContentLanguage:         opts.ContentLanguage,
+		CacheControl:            opts.CacheControl,
+		NumThreads:              opts.NumThreads,
+		StorageClass:            opts.StorageClass,
+		PartSize:                opts.PartSize,
+		SendContentMd5:          opts.SendContentMd5,
+		DisableContentSha256:    opts.DisableContentSha256,
+		DisableMultipart:        opts.DisableMultipart,
+		WebsiteRedirectLocation: opts.WebsiteRedirectLocation,
+		ConcurrentStreamParts:   opts.ConcurrentStreamParts,
 	}
 
-	if args.Options.Expires != nil {
-		options.Expires = *args.Options.Expires
+	if opts.Expires != nil {
+		options.Expires = *opts.Expires
 	}
 
-	if args.Options.RetainUntilDate != nil {
-		options.RetainUntilDate = *args.Options.RetainUntilDate
-		span.SetAttributes(attribute.String("storage.options.retain_util_date", args.Options.RetainUntilDate.Format(time.RFC3339)))
+	if opts.RetainUntilDate != nil {
+		options.RetainUntilDate = *opts.RetainUntilDate
+		span.SetAttributes(attribute.String("storage.options.retain_util_date", opts.RetainUntilDate.Format(time.RFC3339)))
 	}
 
-	if args.Options.Mode != nil {
-		mode := minio.RetentionMode(string(*args.Options.Mode))
+	if opts.Mode != nil {
+		mode := minio.RetentionMode(string(*opts.Mode))
 		if !mode.IsValid() {
-			errorMsg := fmt.Sprintf("invalid RetentionMode: %s", *args.Options.Mode)
+			errorMsg := fmt.Sprintf("invalid RetentionMode: %s", *opts.Mode)
 			span.SetStatus(codes.Error, errorMsg)
 
 			return nil, schema.UnprocessableContentError(errorMsg, nil)
@@ -167,10 +167,10 @@ func (mc *Client) PutObject(ctx context.Context, args *common.PutStorageObjectAr
 		options.Mode = mode
 	}
 
-	if args.Options.LegalHold != nil {
-		legalHold := minio.LegalHoldStatus(*args.Options.LegalHold)
+	if opts.LegalHold != nil {
+		legalHold := minio.LegalHoldStatus(*opts.LegalHold)
 		if !legalHold.IsValid() {
-			errorMsg := fmt.Sprintf("invalid LegalHoldStatus: %s", *args.Options.LegalHold)
+			errorMsg := fmt.Sprintf("invalid LegalHoldStatus: %s", *opts.LegalHold)
 			span.SetStatus(codes.Error, errorMsg)
 
 			return nil, schema.UnprocessableContentError(errorMsg, nil)
@@ -179,15 +179,15 @@ func (mc *Client) PutObject(ctx context.Context, args *common.PutStorageObjectAr
 		options.LegalHold = legalHold
 	}
 
-	if args.Options.Checksum != nil {
-		options.Checksum = parseChecksumType(*args.Options.Checksum)
+	if opts.Checksum != nil {
+		options.Checksum = parseChecksumType(*opts.Checksum)
 	}
 
-	if args.Options.AutoChecksum != nil {
-		options.AutoChecksum = parseChecksumType(*args.Options.AutoChecksum)
+	if opts.AutoChecksum != nil {
+		options.AutoChecksum = parseChecksumType(*opts.AutoChecksum)
 	}
 
-	object, err := mc.client.PutObject(ctx, args.Bucket, args.Object, reader, objectSize, options)
+	object, err := mc.client.PutObject(ctx, bucketName, objectName, reader, objectSize, options)
 	if err != nil {
 		span.SetStatus(codes.Error, err.Error())
 		span.RecordError(err)
@@ -278,14 +278,14 @@ func (mc *Client) ComposeObject(ctx context.Context, dest common.StorageCopyDest
 }
 
 // StatObject fetches metadata of an object.
-func (mc *Client) StatObject(ctx context.Context, opts *common.GetStorageObjectOptions) (*common.StorageObject, error) {
-	ctx, span := mc.startOtelSpan(ctx, "StatObject", opts.Bucket)
+func (mc *Client) StatObject(ctx context.Context, bucketName, objectName string, opts common.GetStorageObjectOptions) (*common.StorageObject, error) {
+	ctx, span := mc.startOtelSpan(ctx, "StatObject", bucketName)
 	defer span.End()
 
-	span.SetAttributes(attribute.String("storage.key", opts.Object))
+	span.SetAttributes(attribute.String("storage.key", objectName))
 	options := serializeGetObjectOptions(span, opts)
 
-	object, err := mc.client.StatObject(ctx, opts.Bucket, opts.Object, options)
+	object, err := mc.client.StatObject(ctx, bucketName, objectName, options)
 	if err != nil {
 		span.SetStatus(codes.Error, err.Error())
 		span.RecordError(err)
@@ -294,19 +294,19 @@ func (mc *Client) StatObject(ctx context.Context, opts *common.GetStorageObjectO
 	}
 
 	result := serializeObjectInfo(object)
-	result.Bucket = opts.Bucket
+	result.Bucket = bucketName
 	common.SetObjectInfoSpanAttributes(span, &result)
 
 	return &result, nil
 }
 
 // RemoveObject removes an object with some specified options.
-func (mc *Client) RemoveObject(ctx context.Context, opts *common.RemoveStorageObjectOptions) error {
-	ctx, span := mc.startOtelSpan(ctx, "RemoveObject", opts.Bucket)
+func (mc *Client) RemoveObject(ctx context.Context, bucketName string, objectName string, opts common.RemoveStorageObjectOptions) error {
+	ctx, span := mc.startOtelSpan(ctx, "RemoveObject", bucketName)
 	defer span.End()
 
 	span.SetAttributes(
-		attribute.String("storage.key", opts.Object),
+		attribute.String("storage.key", objectName),
 		attribute.Bool("storage.options.force_delete", opts.ForceDelete),
 		attribute.Bool("storage.options.governance_bypass", opts.GovernanceBypass),
 	)
@@ -321,7 +321,7 @@ func (mc *Client) RemoveObject(ctx context.Context, opts *common.RemoveStorageOb
 		VersionID:        opts.VersionID,
 	}
 
-	err := mc.client.RemoveObject(ctx, opts.Bucket, opts.Object, options)
+	err := mc.client.RemoveObject(ctx, bucketName, objectName, options)
 	if err != nil {
 		span.SetStatus(codes.Error, err.Error())
 		span.RecordError(err)
@@ -334,20 +334,38 @@ func (mc *Client) RemoveObject(ctx context.Context, opts *common.RemoveStorageOb
 
 // RemoveObjects removes a list of objects obtained from an input channel. The call sends a delete request to the server up to 1000 objects at a time.
 // The errors observed are sent over the error channel.
-func (mc *Client) RemoveObjects(ctx context.Context, opts *common.RemoveStorageObjectsOptions) []common.RemoveStorageObjectError {
-	ctx, span := mc.startOtelSpan(ctx, "RemoveObjects", opts.Bucket)
+func (mc *Client) RemoveObjects(ctx context.Context, bucketName string, opts *common.RemoveStorageObjectsOptions, predicate func(string) bool) []common.RemoveStorageObjectError {
+	ctx, span := mc.startOtelSpan(ctx, "RemoveObjects", bucketName)
 	defer span.End()
 
 	listOptions := mc.validateListObjectsOptions(span, &opts.ListStorageObjectsOptions)
 	span.SetAttributes(attribute.Bool("storage.options.governance_bypass", opts.GovernanceBypass))
 
-	objectChan := mc.client.ListObjects(ctx, opts.Bucket, listOptions)
+	objectChan := mc.client.ListObjects(ctx, bucketName, listOptions)
 
 	options := minio.RemoveObjectsOptions{
 		GovernanceBypass: opts.GovernanceBypass,
 	}
 
-	errChan := mc.client.RemoveObjects(ctx, opts.Bucket, objectChan, options)
+	removeObjectChan := objectChan
+	if predicate != nil {
+		removeObjectChan := make(chan minio.ObjectInfo, 1)
+		defer close(removeObjectChan)
+
+		go func() {
+			for ch := range objectChan {
+				if !predicate(ch.Key) {
+					continue
+				}
+
+				removeObjectChan <- ch
+			}
+
+			close(removeObjectChan)
+		}()
+	}
+
+	errChan := mc.client.RemoveObjects(ctx, bucketName, removeObjectChan, options)
 	errs := make([]common.RemoveStorageObjectError, 0)
 
 	for err := range errChan {
@@ -661,39 +679,39 @@ func (mc *Client) GetObjectAttributes(ctx context.Context, opts *common.StorageO
 // PresignedGetObject generates a presigned URL for HTTP GET operations. Browsers/Mobile clients may point to this URL to directly download objects even if the bucket is private.
 // This presigned URL can have an associated expiration time in seconds after which it is no longer operational.
 // The maximum expiry is 604800 seconds (i.e. 7 days) and minimum is 1 second.
-func (mc *Client) PresignedGetObject(ctx context.Context, args *common.PresignedGetStorageObjectArguments) (*url.URL, error) {
-	return mc.presignObject(ctx, http.MethodGet, args)
+func (mc *Client) PresignedGetObject(ctx context.Context, bucketName string, objectName string, opts common.PresignedGetStorageObjectOptions) (*url.URL, error) {
+	return mc.presignObject(ctx, http.MethodGet, bucketName, objectName, opts)
 }
 
 // PresignedHeadObject generates a presigned URL for HTTP HEAD operations.
 // Browsers/Mobile clients may point to this URL to directly get metadata from objects even if the bucket is private.
 // This presigned URL can have an associated expiration time in seconds after which it is no longer operational. The default expiry is set to 7 days.
-func (mc *Client) PresignedHeadObject(ctx context.Context, args *common.PresignedGetStorageObjectArguments) (*url.URL, error) {
-	return mc.presignObject(ctx, http.MethodHead, args)
+func (mc *Client) PresignedHeadObject(ctx context.Context, bucketName string, objectName string, opts common.PresignedGetStorageObjectOptions) (*url.URL, error) {
+	return mc.presignObject(ctx, http.MethodHead, bucketName, objectName, opts)
 }
 
-func (mc *Client) presignObject(ctx context.Context, method string, args *common.PresignedGetStorageObjectArguments) (*url.URL, error) {
-	ctx, span := mc.startOtelSpan(ctx, method+" PresignedObject", args.Bucket)
+func (mc *Client) presignObject(ctx context.Context, method string, bucketName string, objectName string, opts common.PresignedGetStorageObjectOptions) (*url.URL, error) {
+	ctx, span := mc.startOtelSpan(ctx, method+" PresignedObject", bucketName)
 	defer span.End()
 
 	reqParams := url.Values{}
 
-	for key, params := range args.RequestParams {
+	for key, params := range opts.RequestParams {
 		for _, param := range params {
 			reqParams.Add(key, param)
 		}
 	}
 
 	span.SetAttributes(
-		attribute.String("storage.key", args.Object),
+		attribute.String("storage.key", objectName),
 		attribute.String("url.query", reqParams.Encode()),
 	)
 
-	if args.Expiry != nil {
-		span.SetAttributes(attribute.String("storage.expiry", args.Expiry.String()))
+	if opts.Expiry != nil {
+		span.SetAttributes(attribute.String("storage.expiry", opts.Expiry.String()))
 	}
 
-	fileName := filepath.Base(args.Object)
+	fileName := filepath.Base(objectName)
 	// Set request Parameters: for content-disposition.
 	reqParams.Set("response-content-disposition", fmt.Sprintf(`attachment; filename="%s"`, fileName))
 
@@ -705,7 +723,7 @@ func (mc *Client) presignObject(ctx context.Context, method string, args *common
 		header.Set("Host", mc.publicHost.Host)
 	}
 
-	result, err = mc.client.PresignHeader(ctx, method, args.Bucket, args.Object, args.Expiry.Duration, reqParams, header)
+	result, err = mc.client.PresignHeader(ctx, method, bucketName, objectName, opts.Expiry.Duration, reqParams, header)
 	if err != nil {
 		span.SetStatus(codes.Error, err.Error())
 		span.RecordError(err)
@@ -725,15 +743,12 @@ func (mc *Client) presignObject(ctx context.Context, method string, args *common
 
 // PresignedPutObject generates a presigned URL for HTTP PUT operations. Browsers/Mobile clients may point to this URL to upload objects directly to a bucket even if it is private.
 // This presigned URL can have an associated expiration time in seconds after which it is no longer operational. The default expiry is set to 7 days.
-func (mc *Client) PresignedPutObject(ctx context.Context, args *common.PresignedPutStorageObjectArguments) (*url.URL, error) {
-	ctx, span := mc.startOtelSpan(ctx, "PresignedPutObject", args.Bucket)
+func (mc *Client) PresignedPutObject(ctx context.Context, bucketName string, objectName string, expiry time.Duration) (*url.URL, error) {
+	ctx, span := mc.startOtelSpan(ctx, "PresignedPutObject", bucketName)
 	defer span.End()
 
-	span.SetAttributes(attribute.String("storage.key", args.Object))
-
-	if args.Expiry != nil {
-		span.SetAttributes(attribute.String("storage.expiry", args.Expiry.String()))
-	}
+	span.SetAttributes(attribute.String("storage.key", objectName))
+	span.SetAttributes(attribute.String("storage.expiry", expiry.String()))
 
 	header := http.Header{}
 
@@ -741,7 +756,7 @@ func (mc *Client) PresignedPutObject(ctx context.Context, args *common.Presigned
 		header.Set("Host", mc.publicHost.Host)
 	}
 
-	result, err := mc.client.PresignHeader(ctx, http.MethodPut, args.Bucket, args.Object, args.Expiry.Duration, url.Values{}, header)
+	result, err := mc.client.PresignHeader(ctx, http.MethodPut, bucketName, objectName, expiry, url.Values{}, header)
 	if err != nil {
 		span.SetStatus(codes.Error, err.Error())
 		span.RecordError(err)

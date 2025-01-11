@@ -3,34 +3,43 @@
   "operations": [
     {
       "type": "procedure",
-      "name": "copyStorageObject",
+      "name": "uploadStorageObject",
       "arguments": {
-        "dest": {
-          "bucket": "minio-bucket-test",
-          "object": "public/workd2.txt",
-          "replaceMetadata": false,
-          "replaceTags": true,
-          "size": 8502136105187820186,
+        "bucket": "minio-bucket-test",
+        "data": "SVpHWjhMMHZzVw==",
+        "object": "public/hello2.txt",
+        "options": {
+          "autoChecksum": "SHA256",
+          "cacheControl": "max-age=180, public",
+          "checksum": "SHA256",
+          "clientId": "s3",
+          "concurrentStreamParts": false,
+          "contentDisposition": "attachment",
+          "contentEncoding": "gzip",
+          "contentLanguage": "en-US",
+          "contentType": "text/plain",
+          "disableContentSha256": false,
+          "disableMultipart": false,
+          "expires": "2099-01-01T00:00:00Z",
+          "numThreads": 1,
+          "partSize": 3573915715657741285,
+          "sendContentMd5": false,
+          "storageClass": "STANDARD",
           "userMetadata": {
-            "UserID": "2"
+            "Foo": "Bar"
           },
           "userTags": {
-            "Copy": "true"
-          }
-        },
-        "source": {
-          "bucket": "minio-bucket-test",
-          "end": 1730102302880743319,
-          "matchModifiedSince": "1970-01-01T00:00:01Z",
-          "matchRange": true,
-          "matchUnmodifiedSince": "2099-01-01T00:00:01Z",
-          "noMatchETag": "ic0R0GYP3Z",
-          "object": "public/hello.txt",
-          "start": 1
+            "UserID": "1"
+          },
+          "websiteRedirectLocation": "http://localhost:9001"
         }
       },
       "fields": {
         "fields": {
+          "clientId": {
+            "column": "clientId",
+            "type": "column"
+          },
           "bucket": {
             "column": "bucket",
             "type": "column"
@@ -67,8 +76,8 @@
             "column": "expirationRuleId",
             "type": "column"
           },
-          "expires": {
-            "column": "expires",
+          "lastModified": {
+            "column": "lastModified",
             "type": "column"
           },
           "location": {

@@ -6,7 +6,7 @@
       "name": "putStorageObjectTags",
       "arguments": {
         "bucket": "minio-bucket-test",
-        "object": "I81XNHrIsl-2",
+        "object": "public/workd2.txt",
         "tags": {
           "Foo": "baz",
           "UserID": "3"

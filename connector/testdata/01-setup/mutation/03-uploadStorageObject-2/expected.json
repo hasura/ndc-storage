@@ -2,19 +2,20 @@
   "operation_results": [
     {
       "result": {
+        "clientId": "minio",
         "bucket": "minio-bucket-test",
         "checksumCrc32": null,
         "checksumCrc32C": null,
         "checksumCrc64Nvme": null,
         "checksumSha1": null,
-        "checksumSha256": null,
+        "checksumSha256": "rUiPKiW98se3IJ8h0sXCX33z81tncK1sF4FXb09vrZM=",
         "etag": "299d2d913ceaa8377d22244db39723ca",
         "expiration": null,
         "expirationRuleId": null,
-        "expires": null,
+        "lastModified": null,
         "location": null,
-        "name": "public/workd2.txt",
-        "size": 0
+        "name": "public/hello2.txt",
+        "size": 10
       },
       "type": "procedure"
     }

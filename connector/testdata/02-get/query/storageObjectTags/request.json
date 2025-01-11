@@ -6,7 +6,7 @@
     },
     "object": {
       "type": "literal",
-      "value": "I81XNHrIsl"
+      "value": "public/hello.txt"
     }
   },
   "collection": "storageObjectTags",

@@ -21,6 +21,8 @@ definition:
       type: Json
     - name: versionId
       type: String
+    - name: where
+      type: StorageObjectSimpleBoolExp
   source:
     dataConnectorName: storage
     dataConnectorCommand:
@@ -39,4 +41,59 @@ definition:
   permissions:
     - role: admin
       allowExecution: true
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: StorageObjectSimple
+  fields:
+    - name: bucket
+      type: BucketName!
+    - name: clientId
+      type: StorageClientId!
+    - name: object
+      type: ObjectPath!
+  graphql:
+    typeName: StorageObjectSimple
+    inputTypeName: StorageObjectSimpleInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: storage
+      dataConnectorObjectType: StorageObjectSimple
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: StorageObjectSimple
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - bucket
+          - clientId
+          - object
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: StorageObjectSimpleBoolExp
+  operand:
+    object:
+      type: StorageObjectSimple
+      comparableFields:
+        - fieldName: bucket
+          booleanExpressionType: BucketNameBoolExp
+        - fieldName: clientId
+          booleanExpressionType: StorageClientIdBoolExp
+        - fieldName: object
+          booleanExpressionType: ObjectPathBoolExp
+      comparableRelationships: []
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: StorageObjectSimpleBoolExp
 

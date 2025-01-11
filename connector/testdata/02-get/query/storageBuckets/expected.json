@@ -3,6 +3,7 @@
     "rows": [
       {
         "__value": [
+          { "name": "minio-bucket-empty" },
           { "name": "minio-bucket-lock" },
           { "name": "minio-bucket-test" }
         ]

@@ -17,19 +17,19 @@ func main() {
 
 func jsonSchemaConfiguration() error {
 	r := new(jsonschema.Reflector)
-	if err := r.AddGoComments("github.com/hasura/ndc-storage/connector/types", "../connector/types"); err != nil {
+	if err := r.AddGoComments("github.com/hasura/ndc-storage/connector/types", "../connector/types", jsonschema.WithFullComment()); err != nil {
 		return err
 	}
 
-	if err := r.AddGoComments("github.com/hasura/ndc-storage/connector/storage", "../connector/storage"); err != nil {
+	if err := r.AddGoComments("github.com/hasura/ndc-storage/connector/storage", "../connector/storage", jsonschema.WithFullComment()); err != nil {
 		return err
 	}
 
-	if err := r.AddGoComments("github.com/hasura/ndc-storage/connector/storage/common", "../connector/storage/common"); err != nil {
+	if err := r.AddGoComments("github.com/hasura/ndc-storage/connector/storage/common", "../connector/storage/common", jsonschema.WithFullComment()); err != nil {
 		return err
 	}
 
-	reflectSchema := r.Reflect(&types.Configuration{})
+	reflectSchema := r.Reflect(types.Configuration{})
 
 	schemaBytes, err := json.MarshalIndent(reflectSchema, "", "  ")
 	if err != nil {

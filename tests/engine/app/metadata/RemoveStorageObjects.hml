@@ -52,6 +52,8 @@ definition:
       type: Boolean!
     - name: startAfter
       type: String!
+    - name: where
+      type: StorageObjectSimpleBoolExp
     - name: withMetadata
       type: Boolean!
     - name: withVersions

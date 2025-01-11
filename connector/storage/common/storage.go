@@ -28,14 +28,14 @@ type StorageClient interface { //nolint:interfacebloat
 	// GetBucketPolicy gets access permissions on a bucket or a prefix.
 	GetBucketPolicy(ctx context.Context, bucketName string) (string, error)
 	// ListObjects lists objects in a bucket.
-	ListObjects(ctx context.Context, opts *ListStorageObjectsOptions) ([]StorageObject, error)
+	ListObjects(ctx context.Context, bucketName string, opts *ListStorageObjectsOptions) ([]StorageObject, error)
 	// ListIncompleteUploads list partially uploaded objects in a bucket.
 	ListIncompleteUploads(ctx context.Context, args *ListIncompleteUploadsArguments) ([]StorageObjectMultipartInfo, error)
 	// GetObject returns a stream of the object data. Most of the common errors occur when reading the stream.
-	GetObject(ctx context.Context, opts *GetStorageObjectOptions) (io.ReadCloser, error)
+	GetObject(ctx context.Context, bucketName string, objectName string, opts GetStorageObjectOptions) (io.ReadCloser, error)
 	// PutObject uploads objects that are less than 128MiB in a single PUT operation. For objects that are greater than 128MiB in size,
 	// PutObject seamlessly uploads the object as parts of 128MiB or more depending on the actual file size. The max upload size for an object is 5TB.
-	PutObject(ctx context.Context, args *PutStorageObjectArguments, reader io.Reader, objectSize int64) (*StorageUploadInfo, error)
+	PutObject(ctx context.Context, bucketName string, objectName string, opts *PutStorageObjectOptions, reader io.Reader, objectSize int64) (*StorageUploadInfo, error)
 	// CopyObject creates or replaces an object through server-side copying of an existing object.
 	// It supports conditional copying, copying a part of an object and server-side encryption of destination and decryption of source.
 	// To copy multiple source objects into a single destination object see the ComposeObject API.
@@ -43,14 +43,14 @@ type StorageClient interface { //nolint:interfacebloat
 	// ComposeObject creates an object by concatenating a list of source objects using server-side copying.
 	ComposeObject(ctx context.Context, dest StorageCopyDestOptions, srcs []StorageCopySrcOptions) (*StorageUploadInfo, error)
 	// StatObject fetches metadata of an object.
-	StatObject(ctx context.Context, opts *GetStorageObjectOptions) (*StorageObject, error)
+	StatObject(ctx context.Context, bucketName string, objectName string, opts GetStorageObjectOptions) (*StorageObject, error)
 	// RemoveObject removes an object with some specified options
-	RemoveObject(ctx context.Context, opts *RemoveStorageObjectOptions) error
+	RemoveObject(ctx context.Context, bucketName string, objectName string, opts RemoveStorageObjectOptions) error
 	// PutObjectRetention applies object retention lock onto an object.
 	PutObjectRetention(ctx context.Context, opts *PutStorageObjectRetentionOptions) error
 	// RemoveObjects remove a list of objects obtained from an input channel. The call sends a delete request to the server up to 1000 objects at a time.
 	// The errors observed are sent over the error channel.
-	RemoveObjects(ctx context.Context, opts *RemoveStorageObjectsOptions) []RemoveStorageObjectError
+	RemoveObjects(ctx context.Context, bucketName string, opts *RemoveStorageObjectsOptions, predicate func(string) bool) []RemoveStorageObjectError
 	// PutObjectLegalHold applies legal-hold onto an object.
 	PutObjectLegalHold(ctx context.Context, opts *PutStorageObjectLegalHoldOptions) error
 	// GetObjectLegalHold returns legal-hold status on a given object.
@@ -68,16 +68,12 @@ type StorageClient interface { //nolint:interfacebloat
 	// PresignedGetObject generates a presigned URL for HTTP GET operations. Browsers/Mobile clients may point to this URL to directly download objects even if the bucket is private.
 	// This presigned URL can have an associated expiration time in seconds after which it is no longer operational.
 	// The maximum expiry is 604800 seconds (i.e. 7 days) and minimum is 1 second.
-	PresignedGetObject(ctx context.Context, args *PresignedGetStorageObjectArguments) (*url.URL, error)
+	PresignedGetObject(ctx context.Context, bucketName string, objectName string, opts PresignedGetStorageObjectOptions) (*url.URL, error)
 	// PresignedPutObject generates a presigned URL for HTTP PUT operations.
 	// Browsers/Mobile clients may point to this URL to upload objects directly to a bucket even if it is private.
 	// This presigned URL can have an associated expiration time in seconds after which it is no longer operational.
 	// The default expiry is set to 7 days.
-	PresignedPutObject(ctx context.Context, args *PresignedPutStorageObjectArguments) (*url.URL, error)
-	// PresignedHeadObject generates a presigned URL for HTTP HEAD operations.
-	// Browsers/Mobile clients may point to this URL to directly get metadata from objects even if the bucket is private.
-	// This presigned URL can have an associated expiration time in seconds after which it is no longer operational. The default expiry is set to 7 days.
-	PresignedHeadObject(ctx context.Context, args *PresignedGetStorageObjectArguments) (*url.URL, error)
+	PresignedPutObject(ctx context.Context, bucketName string, objectName string, expiry time.Duration) (*url.URL, error)
 	// GetBucketNotification gets notification configuration on a bucket.
 	GetBucketNotification(ctx context.Context, bucketName string) (*NotificationConfig, error)
 	// Set a new bucket notification on a bucket.
@@ -155,6 +151,7 @@ type StorageObject struct {
 	// each parts concatenated into one string.
 	ETag *string `json:"etag"`
 
+	ClientID     string     `json:"clientId"`     // Client ID
 	Bucket       string     `json:"bucket"`       // Name of the bucket
 	Name         string     `json:"name"`         // Name of the object
 	LastModified time.Time  `json:"lastModified"` // Date and time the object was last modified.
@@ -226,6 +223,7 @@ type StorageUploadInfo struct {
 	// each parts concatenated into one string.
 	ETag string `json:"etag"`
 
+	ClientID     string     `json:"clientId"`     // Client ID
 	Bucket       string     `json:"bucket"`       // Name of the bucket
 	Name         string     `json:"name"`         // Name of the object
 	LastModified *time.Time `json:"lastModified"` // Date and time the object was last modified.

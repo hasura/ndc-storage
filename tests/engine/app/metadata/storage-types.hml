@@ -233,6 +233,12 @@ definition:
       comparisonOperators:
         - name: _starts_with
           argumentType: ObjectPath!
+        - name: _contains
+          argumentType: ObjectPath!
+        - name: _eq
+          argumentType: ObjectPath!
+        - name: _icontains
+          argumentType: ObjectPath!
       dataConnectorOperatorMapping:
         - dataConnectorName: storage
           dataConnectorScalarType: ObjectPath

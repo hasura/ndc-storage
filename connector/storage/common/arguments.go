@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/hasura/ndc-sdk-go/scalar"
+	"github.com/hasura/ndc-sdk-go/schema"
 )
 
 // ListStorageBucketArguments represent the input arguments for the ListBuckets methods.
@@ -73,8 +74,14 @@ type RemoveIncompleteUploadArguments struct {
 // PresignedGetStorageObjectArguments represent the input arguments for the PresignedGetObject method.
 type PresignedGetStorageObjectArguments struct {
 	StorageBucketArguments
+	PresignedGetStorageObjectOptions
 
-	Object        string              `json:"object"`
+	Object string            `json:"object"`
+	Where  schema.Expression `json:"where"  ndc:"predicate=StorageObjectSimple"`
+}
+
+// PresignedGetStorageObjectOptions represent the options for the PresignedGetObject method.
+type PresignedGetStorageObjectOptions struct {
 	Expiry        *scalar.Duration    `json:"expiry"`
 	RequestParams map[string][]string `json:"requestParams,omitempty"`
 }
@@ -83,14 +90,19 @@ type PresignedGetStorageObjectArguments struct {
 type PresignedPutStorageObjectArguments struct {
 	StorageBucketArguments
 
-	Object string           `json:"object"`
-	Expiry *scalar.Duration `json:"expiry"`
+	Object string            `json:"object"`
+	Expiry *scalar.Duration  `json:"expiry"`
+	Where  schema.Expression `json:"where"  ndc:"predicate=StorageObjectSimple"`
+}
+
+// ListStorageObjectsArguments holds all arguments of a list object request.
+type ListStorageObjectsArguments struct {
+	StorageBucketArguments
+	ListStorageObjectsOptions
 }
 
 // ListStorageObjectsOptions holds all options of a list object request.
 type ListStorageObjectsOptions struct {
-	StorageBucketArguments
-
 	// Include objects versions in the listing
 	WithVersions bool `json:"withVersions"`
 	// Include objects metadata in the listing
@@ -107,11 +119,17 @@ type ListStorageObjectsOptions struct {
 	StartAfter string `json:"startAfter"`
 }
 
+// GetStorageObjectArguments are used to specify additional headers or options during GET requests.
+type GetStorageObjectArguments struct {
+	StorageBucketArguments
+	GetStorageObjectOptions
+
+	Object string            `json:"object"`
+	Where  schema.Expression `json:"where"  ndc:"predicate=StorageObjectSimple"`
+}
+
 // GetStorageObjectOptions are used to specify additional headers or options during GET requests.
 type GetStorageObjectOptions struct {
-	StorageBucketArguments
-
-	Object        string              `json:"object"`
 	Headers       map[string]string   `json:"headers,omitempty"`
 	RequestParams map[string][]string `json:"requestParams,omitempty"`
 	// ServerSideEncryption *ServerSideEncryptionMethod `json:"serverSideEncryption"`
@@ -186,11 +204,17 @@ type StorageCopySrcOptions struct {
 	// Encryption           *ServerSideEncryptionMethod `json:"encryption"`
 }
 
+// RemoveStorageObjectArguments represent arguments specified by user for RemoveObject call.
+type RemoveStorageObjectArguments struct {
+	StorageBucketArguments
+	RemoveStorageObjectOptions
+
+	Object string            `json:"object"`
+	Where  schema.Expression `json:"where"  ndc:"predicate=StorageObjectSimple"`
+}
+
 // RemoveStorageObjectOptions represents options specified by user for RemoveObject call.
 type RemoveStorageObjectOptions struct {
-	StorageBucketArguments
-
-	Object           string `json:"object"`
 	ForceDelete      bool   `json:"forceDelete,omitempty"`
 	GovernanceBypass bool   `json:"governanceBypass,omitempty"`
 	VersionID        string `json:"versionId,omitempty"`
@@ -205,6 +229,14 @@ type PutStorageObjectRetentionOptions struct {
 	Mode             *StorageRetentionMode `json:"mode"`
 	RetainUntilDate  *time.Time            `json:"retainUntilDate,omitempty"`
 	VersionID        string                `json:"versionId,omitempty"`
+}
+
+// RemoveStorageObjectsArguments represents arguments specified by user for RemoveObjects call.
+type RemoveStorageObjectsArguments struct {
+	StorageBucketArguments
+	RemoveStorageObjectsOptions
+
+	Where schema.Expression `json:"where" ndc:"predicate=StorageObjectSimple"`
 }
 
 // RemoveStorageObjectsOptions represents options specified by user for RemoveObjects call.
@@ -229,14 +261,6 @@ type GetStorageObjectLegalHoldOptions struct {
 
 	Object    string `json:"object"`
 	VersionID string `json:"versionId,omitempty"`
-}
-
-// PutStorageObjectArguments represents input arguments of the PutObject method.
-type PutStorageObjectArguments struct {
-	StorageBucketArguments
-
-	Object  string                  `json:"object"`
-	Options PutStorageObjectOptions `json:"options,omitempty"`
 }
 
 // PutStorageObjectOptions represents options specified by user for PutObject call.
