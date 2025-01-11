@@ -401,9 +401,14 @@ func (cor CollectionObjectRequest) CheckPostObjectPredicate(input common.Storage
 		return true
 	}
 
+	return cor.CheckPostObjectNamePredicate(input.Name)
+}
+
+// CheckPostObjectPredicate the predicate function to filter the object with post conditions
+func (cor CollectionObjectRequest) CheckPostObjectNamePredicate(name string) bool {
 	for _, pred := range cor.objectNamePostPredicates {
-		if (pred.Operator == OperatorContains && !strings.Contains(input.Name, pred.Value)) ||
-			(pred.Operator == OperatorInsensitiveContains && !strings.Contains(strings.ToLower(input.Name), strings.ToLower(pred.Value))) {
+		if (pred.Operator == OperatorContains && !strings.Contains(name, pred.Value)) ||
+			(pred.Operator == OperatorInsensitiveContains && !strings.Contains(strings.ToLower(name), strings.ToLower(pred.Value))) {
 			return false
 		}
 	}

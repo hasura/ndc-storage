@@ -334,7 +334,7 @@ func (mc *Client) RemoveObject(ctx context.Context, bucketName string, objectNam
 
 // RemoveObjects removes a list of objects obtained from an input channel. The call sends a delete request to the server up to 1000 objects at a time.
 // The errors observed are sent over the error channel.
-func (mc *Client) RemoveObjects(ctx context.Context, bucketName string, opts *common.RemoveStorageObjectsOptions) []common.RemoveStorageObjectError {
+func (mc *Client) RemoveObjects(ctx context.Context, bucketName string, opts *common.RemoveStorageObjectsOptions, predicate func(string) bool) []common.RemoveStorageObjectError {
 	ctx, span := mc.startOtelSpan(ctx, "RemoveObjects", bucketName)
 	defer span.End()
 
@@ -347,7 +347,25 @@ func (mc *Client) RemoveObjects(ctx context.Context, bucketName string, opts *co
 		GovernanceBypass: opts.GovernanceBypass,
 	}
 
-	errChan := mc.client.RemoveObjects(ctx, bucketName, objectChan, options)
+	removeObjectChan := objectChan
+	if predicate != nil {
+		removeObjectChan := make(chan minio.ObjectInfo, 1)
+		defer close(removeObjectChan)
+
+		go func() {
+			for ch := range objectChan {
+				if !predicate(ch.Key) {
+					continue
+				}
+
+				removeObjectChan <- ch
+			}
+
+			close(removeObjectChan)
+		}()
+	}
+
+	errChan := mc.client.RemoveObjects(ctx, bucketName, removeObjectChan, options)
 	errs := make([]common.RemoveStorageObjectError, 0)
 
 	for err := range errChan {

@@ -118,10 +118,15 @@ func ProcedureRemoveStorageObjects(ctx context.Context, state *types.State, args
 		return nil, nil
 	}
 
+	predicate := request.CheckPostObjectNamePredicate
+	if !request.HasPostPredicate() {
+		predicate = nil
+	}
+
 	return state.Storage.RemoveObjects(ctx, request.StorageBucketArguments, &common.RemoveStorageObjectsOptions{
 		ListStorageObjectsOptions: request.Options,
 		GovernanceBypass:          args.GovernanceBypass,
-	})
+	}, predicate)
 }
 
 // ProcedurePutStorageObjectLegalHold applies legal-hold onto an object.

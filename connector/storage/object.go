@@ -128,13 +128,13 @@ func (m *Manager) PutObjectRetention(ctx context.Context, args *common.PutStorag
 
 // RemoveObjects remove a list of objects obtained from an input channel. The call sends a delete request to the server up to 1000 objects at a time.
 // The errors observed are sent over the error channel.
-func (m *Manager) RemoveObjects(ctx context.Context, bucketInfo common.StorageBucketArguments, opts *common.RemoveStorageObjectsOptions) ([]common.RemoveStorageObjectError, error) {
+func (m *Manager) RemoveObjects(ctx context.Context, bucketInfo common.StorageBucketArguments, opts *common.RemoveStorageObjectsOptions, predicate func(string) bool) ([]common.RemoveStorageObjectError, error) {
 	client, bucketName, err := m.GetClientAndBucket(bucketInfo.ClientID, bucketInfo.Bucket)
 	if err != nil {
 		return nil, err
 	}
 
-	return client.RemoveObjects(ctx, bucketName, opts), nil
+	return client.RemoveObjects(ctx, bucketName, opts, predicate), nil
 }
 
 // PutObjectLegalHold applies legal-hold onto an object.

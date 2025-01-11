@@ -50,7 +50,7 @@ type StorageClient interface { //nolint:interfacebloat
 	PutObjectRetention(ctx context.Context, opts *PutStorageObjectRetentionOptions) error
 	// RemoveObjects remove a list of objects obtained from an input channel. The call sends a delete request to the server up to 1000 objects at a time.
 	// The errors observed are sent over the error channel.
-	RemoveObjects(ctx context.Context, bucketName string, opts *RemoveStorageObjectsOptions) []RemoveStorageObjectError
+	RemoveObjects(ctx context.Context, bucketName string, opts *RemoveStorageObjectsOptions, predicate func(string) bool) []RemoveStorageObjectError
 	// PutObjectLegalHold applies legal-hold onto an object.
 	PutObjectLegalHold(ctx context.Context, opts *PutStorageObjectLegalHoldOptions) error
 	// GetObjectLegalHold returns legal-hold status on a given object.
