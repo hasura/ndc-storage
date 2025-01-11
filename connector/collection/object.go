@@ -99,7 +99,7 @@ func (coe *CollectionObjectExecutor) Execute(ctx context.Context) (*schema.RowSe
 	}, nil
 }
 
-func (coe *CollectionObjectExecutor) sortObjects(objects []common.StorageObject, orderBys []ColumnOrder) []common.StorageObject { //nolint:funlen,gocognit,gocyclo
+func (coe *CollectionObjectExecutor) sortObjects(objects []common.StorageObject, orderBys []ColumnOrder) []common.StorageObject { //nolint:funlen,gocognit,gocyclo,cyclop
 	slices.SortFunc(objects, func(a, b common.StorageObject) int {
 		for _, ob := range orderBys {
 			ordering := 1
