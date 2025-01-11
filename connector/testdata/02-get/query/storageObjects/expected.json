@@ -8,7 +8,7 @@
         "etag": "299d2d913ceaa8377d22244db39723ca",
         "expires": null,
         "metadata": null,
-        "name": "I81XNHrIsl",
+        "name": "public/hello2.txt",
         "userMetadata": {
           "X-Amz-Meta-Foo": "Bar",
           "cache-control": "max-age=180, public",

@@ -380,7 +380,12 @@ func (cor *CollectionObjectRequest) evalOrderBy(orderBy *schema.OrderBy) ([]Colu
 	}
 
 	for _, elem := range orderBy.Elements {
-		switch target := elem.Target.Interface().(type) {
+		targetT, err := elem.Target.InterfaceT()
+		if err != nil {
+			return nil, err
+		}
+
+		switch target := targetT.(type) {
 		case *schema.OrderByColumn:
 			orderBy := ColumnOrder{
 				Name:       target.Name,

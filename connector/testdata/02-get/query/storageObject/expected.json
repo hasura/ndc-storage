@@ -9,7 +9,7 @@
           "checksumCrc64Nvme": null,
           "checksumSha1": null,
           "checksumSha256": "rUiPKiW98se3IJ8h0sXCX33z81tncK1sF4FXb09vrZM=",
-          "clientId": null,
+          "clientId": "minio",
           "contentType": "text/plain",
           "etag": "299d2d913ceaa8377d22244db39723ca",
           "expiration": null,
@@ -27,7 +27,7 @@
             "X-Amz-Meta-Foo": ["Bar"],
             "X-Amz-Tagging-Count": ["1"]
           },
-          "name": "I81XNHrIsl",
+          "name": "public/hello.txt",
           "owner": null,
           "replicationReady": false,
           "replicationStatus": null,

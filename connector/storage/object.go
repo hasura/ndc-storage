@@ -19,7 +19,16 @@ func (m *Manager) ListObjects(ctx context.Context, bucketInfo common.StorageBuck
 		return nil, err
 	}
 
-	return client.ListObjects(ctx, bucketName, opts)
+	results, err := client.ListObjects(ctx, bucketName, opts)
+	if err != nil {
+		return nil, err
+	}
+
+	for i := range results {
+		results[i].ClientID = string(client.id)
+	}
+
+	return results, nil
 }
 
 // ListIncompleteUploads list partially uploaded objects in a bucket.
@@ -52,7 +61,14 @@ func (m *Manager) PutObject(ctx context.Context, bucketInfo common.StorageBucket
 		return nil, err
 	}
 
-	return client.PutObject(ctx, bucketName, objectName, opts, bytes.NewReader(data), int64(len(data)))
+	result, err := client.PutObject(ctx, bucketName, objectName, opts, bytes.NewReader(data), int64(len(data)))
+	if err != nil {
+		return nil, err
+	}
+
+	result.ClientID = string(client.id)
+
+	return result, nil
 }
 
 // CopyObject creates or replaces an object through server-side copying of an existing object.
@@ -70,7 +86,14 @@ func (m *Manager) CopyObject(ctx context.Context, args *common.CopyStorageObject
 		args.Source.Bucket = client.defaultBucket
 	}
 
-	return client.CopyObject(ctx, args.Dest, args.Source)
+	result, err := client.CopyObject(ctx, args.Dest, args.Source)
+	if err != nil {
+		return nil, err
+	}
+
+	result.ClientID = string(client.id)
+
+	return result, nil
 }
 
 // ComposeObject creates an object by concatenating a list of source objects using server-side copying.
@@ -91,7 +114,14 @@ func (m *Manager) ComposeObject(ctx context.Context, args *common.ComposeStorage
 		srcs[i] = src
 	}
 
-	return client.ComposeObject(ctx, args.Dest, srcs)
+	result, err := client.ComposeObject(ctx, args.Dest, srcs)
+	if err != nil {
+		return nil, err
+	}
+
+	result.ClientID = string(client.id)
+
+	return result, nil
 }
 
 // StatObject fetches metadata of an object.
@@ -101,7 +131,14 @@ func (m *Manager) StatObject(ctx context.Context, bucketInfo common.StorageBucke
 		return nil, err
 	}
 
-	return client.StatObject(ctx, bucketName, objectName, opts)
+	result, err := client.StatObject(ctx, bucketName, objectName, opts)
+	if err != nil {
+		return nil, err
+	}
+
+	result.ClientID = string(client.id)
+
+	return result, nil
 }
 
 // RemoveObject removes an object with some specified options.

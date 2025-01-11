@@ -741,6 +741,9 @@ func GetConnectorSchema() *schema.SchemaResponse {
 					"checksumSha256": schema.ObjectField{
 						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
 					},
+					"clientId": schema.ObjectField{
+						Type: schema.NewNamedType("String").Encode(),
+					},
 					"contentType": schema.ObjectField{
 						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
 					},
@@ -1086,6 +1089,9 @@ func GetConnectorSchema() *schema.SchemaResponse {
 					},
 					"checksumSha256": schema.ObjectField{
 						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
+					},
+					"clientId": schema.ObjectField{
+						Type: schema.NewNamedType("String").Encode(),
 					},
 					"etag": schema.ObjectField{
 						Type: schema.NewNamedType("String").Encode(),

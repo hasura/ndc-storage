@@ -141,6 +141,8 @@ definition:
       type: Int64!
     - name: versionId
       type: String
+    - name: clientId
+      type: String!
   graphql:
     typeName: StorageUploadInfo
     inputTypeName: StorageUploadInfoInput
@@ -171,6 +173,7 @@ definition:
           - name
           - size
           - versionId
+          - clientId
 
 ---
 kind: Command

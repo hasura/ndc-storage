@@ -725,6 +725,7 @@ func (j StorageObject) ToMap() map[string]any {
 	r := make(map[string]any)
 	r = utils.MergeMap(r, j.StorageObjectChecksum.ToMap())
 	r["bucket"] = j.Bucket
+	r["clientId"] = j.ClientID
 	r["contentType"] = j.ContentType
 	r["etag"] = j.ETag
 	r["expiration"] = j.Expiration
@@ -949,6 +950,7 @@ func (j StorageUploadInfo) ToMap() map[string]any {
 	r := make(map[string]any)
 	r = utils.MergeMap(r, j.StorageObjectChecksum.ToMap())
 	r["bucket"] = j.Bucket
+	r["clientId"] = j.ClientID
 	r["etag"] = j.ETag
 	r["expiration"] = j.Expiration
 	r["expirationRuleId"] = j.ExpirationRuleID

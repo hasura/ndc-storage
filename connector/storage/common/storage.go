@@ -151,6 +151,7 @@ type StorageObject struct {
 	// each parts concatenated into one string.
 	ETag *string `json:"etag"`
 
+	ClientID     string     `json:"clientId"`     // Client ID
 	Bucket       string     `json:"bucket"`       // Name of the bucket
 	Name         string     `json:"name"`         // Name of the object
 	LastModified time.Time  `json:"lastModified"` // Date and time the object was last modified.
@@ -222,6 +223,7 @@ type StorageUploadInfo struct {
 	// each parts concatenated into one string.
 	ETag string `json:"etag"`
 
+	ClientID     string     `json:"clientId"`     // Client ID
 	Bucket       string     `json:"bucket"`       // Name of the bucket
 	Name         string     `json:"name"`         // Name of the object
 	LastModified *time.Time `json:"lastModified"` // Date and time the object was last modified.

@@ -6,18 +6,36 @@ import (
 )
 
 const (
-	CollectionStorageObjects        = "storageObjects"
-	StorageObjectName               = "StorageObject"
-	StorageObjectColumnClientID     = "clientId"
-	StorageObjectColumnObject       = "object"
-	StorageObjectColumnName         = "name"
-	StorageObjectColumnBucket       = "bucket"
-	StorageObjectColumnLastModified = "lastModified"
-	StorageObjectColumnMetadata     = "metadata"
-	StorageObjectColumnUserMetadata = "userMetadata"
-	StorageObjectColumnVersionID    = "versionId"
-	StorageObjectArgumentWhere      = "where"
-	StorageObjectArgumentRecursive  = "recursive"
+	CollectionStorageObjects             = "storageObjects"
+	StorageObjectName                    = "StorageObject"
+	StorageObjectColumnClientID          = "clientId"
+	StorageObjectColumnObject            = "object"
+	StorageObjectColumnName              = "name"
+	StorageObjectColumnBucket            = "bucket"
+	StorageObjectColumnLastModified      = "lastModified"
+	StorageObjectColumnMetadata          = "metadata"
+	StorageObjectColumnUserMetadata      = "userMetadata"
+	StorageObjectColumnVersionID         = "versionId"
+	StorageObjectColumnChecksumCrc32     = "checksumCrc32"
+	StorageObjectColumnChecksumCrc32C    = "checksumCrc32C"
+	StorageObjectColumnChecksumCrc64Nvme = "checksumCrc64Nvme"
+	StorageObjectColumnChecksumSha1      = "checksumSha1"
+	StorageObjectColumnChecksumSha256    = "checksumSha256"
+	StorageObjectColumnContentType       = "contentType"
+	StorageObjectColumnETag              = "etag"
+	StorageObjectColumnExpiration        = "expiration"
+	StorageObjectColumnExpirationRuleID  = "expirationRuleId"
+	StorageObjectColumnExpires           = "expires"
+	StorageObjectColumnSize              = "size"
+	StorageObjectColumnStorageClass      = "storageClass"
+	StorageObjectColumnUserTagCount      = "userTagCount"
+	StorageObjectColumnIsDeleteMarker    = "isDeleteMarker"
+	StorageObjectColumnIsLatest          = "isLatest"
+	StorageObjectColumnReplicationReady  = "replicationReady"
+	StorageObjectColumnReplicationStatus = "replicationStatus"
+
+	StorageObjectArgumentWhere     = "where"
+	StorageObjectArgumentRecursive = "recursive"
 )
 
 const (
@@ -81,43 +99,43 @@ func GetConnectorSchema(clientIDs []string) *schema.SchemaResponse { //nolint:fu
 					StorageObjectColumnLastModified: schema.ObjectField{
 						Type: schema.NewNamedType(ScalarFilterTimestamp).Encode(),
 					},
-					"checksumCrc32": schema.ObjectField{
+					StorageObjectColumnChecksumCrc32: schema.ObjectField{
 						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
 					},
-					"checksumCrc32C": schema.ObjectField{
+					StorageObjectColumnChecksumCrc32C: schema.ObjectField{
 						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
 					},
-					"checksumCrc64Nvme": schema.ObjectField{
+					StorageObjectColumnChecksumCrc64Nvme: schema.ObjectField{
 						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
 					},
-					"checksumSha1": schema.ObjectField{
+					StorageObjectColumnChecksumSha1: schema.ObjectField{
 						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
 					},
-					"checksumSha256": schema.ObjectField{
+					StorageObjectColumnChecksumSha256: schema.ObjectField{
 						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
 					},
-					"contentType": schema.ObjectField{
+					StorageObjectColumnContentType: schema.ObjectField{
 						Type: schema.NewNamedType("String").Encode(),
 					},
-					"etag": schema.ObjectField{
+					StorageObjectColumnETag: schema.ObjectField{
 						Type: schema.NewNamedType("String").Encode(),
 					},
-					"expiration": schema.ObjectField{
+					StorageObjectColumnExpiration: schema.ObjectField{
 						Type: schema.NewNullableType(schema.NewNamedType("TimestampTZ")).Encode(),
 					},
-					"expirationRuleId": schema.ObjectField{
+					StorageObjectColumnExpirationRuleID: schema.ObjectField{
 						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
 					},
-					"expires": schema.ObjectField{
+					StorageObjectColumnExpires: schema.ObjectField{
 						Type: schema.NewNamedType("TimestampTZ").Encode(),
 					},
 					"grant": schema.ObjectField{
 						Type: schema.NewNullableType(schema.NewArrayType(schema.NewNamedType("StorageGrant"))).Encode(),
 					},
-					"isDeleteMarker": schema.ObjectField{
+					StorageObjectColumnIsDeleteMarker: schema.ObjectField{
 						Type: schema.NewNullableType(schema.NewNamedType("Boolean")).Encode(),
 					},
-					"isLatest": schema.ObjectField{
+					StorageObjectColumnIsLatest: schema.ObjectField{
 						Type: schema.NewNullableType(schema.NewNamedType("Boolean")).Encode(),
 					},
 					StorageObjectColumnMetadata: schema.ObjectField{
@@ -126,25 +144,25 @@ func GetConnectorSchema(clientIDs []string) *schema.SchemaResponse { //nolint:fu
 					"owner": schema.ObjectField{
 						Type: schema.NewNullableType(schema.NewNamedType("StorageOwner")).Encode(),
 					},
-					"replicationReady": schema.ObjectField{
+					StorageObjectColumnReplicationReady: schema.ObjectField{
 						Type: schema.NewNullableType(schema.NewNamedType("Boolean")).Encode(),
 					},
-					"replicationStatus": schema.ObjectField{
+					StorageObjectColumnReplicationStatus: schema.ObjectField{
 						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
 					},
 					"restore": schema.ObjectField{
 						Type: schema.NewNullableType(schema.NewNamedType("StorageRestoreInfo")).Encode(),
 					},
-					"size": schema.ObjectField{
+					StorageObjectColumnSize: schema.ObjectField{
 						Type: schema.NewNamedType("Int64").Encode(),
 					},
-					"storageClass": schema.ObjectField{
+					StorageObjectColumnStorageClass: schema.ObjectField{
 						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
 					},
 					StorageObjectColumnUserMetadata: schema.ObjectField{
 						Type: schema.NewNullableType(schema.NewNamedType("JSON")).Encode(),
 					},
-					"userTagCount": schema.ObjectField{
+					StorageObjectColumnUserTagCount: schema.ObjectField{
 						Type: schema.NewNullableType(schema.NewNamedType("Int32")).Encode(),
 					},
 					"userTags": schema.ObjectField{

@@ -10,7 +10,7 @@
     },
     "object": {
       "type": "literal",
-      "value": "I81XNHrIsl"
+      "value": "public/hello.txt"
     },
     "where": {
       "type": "literal",
@@ -21,7 +21,7 @@
             "type": "binary_comparison_operator",
             "column": { "type": "column", "name": "name", "path": [] },
             "operator": "_starts_with",
-            "value": { "type": "scalar", "value": "I81XN" }
+            "value": { "type": "scalar", "value": "public" }
           },
           {
             "type": "binary_comparison_operator",

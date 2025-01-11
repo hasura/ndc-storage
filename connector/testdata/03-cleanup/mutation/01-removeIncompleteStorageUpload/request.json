@@ -6,7 +6,7 @@
       "name": "removeIncompleteStorageUpload",
       "arguments": {
         "bucket": "minio-bucket-test",
-        "object": "I81XNHrIsl-2"
+        "object": "public/hello.txt-2"
       }
     }
   ]

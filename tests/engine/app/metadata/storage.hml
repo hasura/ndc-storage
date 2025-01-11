@@ -83,6 +83,18 @@ definition:
             type: string
           aggregate_functions: {}
           comparison_operators:
+            _contains:
+              type: custom
+              argument_type:
+                type: named
+                name: ObjectPath
+            _eq:
+              type: equal
+            _icontains:
+              type: custom
+              argument_type:
+                type: named
+                name: ObjectPath
             _starts_with:
               type: custom
               argument_type:
@@ -1781,6 +1793,10 @@ definition:
                 underlying_type:
                   type: named
                   name: String
+            clientId:
+              type:
+                type: named
+                name: String
             etag:
               type:
                 type: named
