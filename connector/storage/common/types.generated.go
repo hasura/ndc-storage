@@ -73,6 +73,10 @@ func (j *GetStorageObjectOptions) FromValue(input map[string]any) error {
 	if err != nil {
 		return err
 	}
+	j.WithTags, err = utils.GetNullableBoolean(input, "withTags")
+	if err != nil {
+		return err
+	}
 	return nil
 }
 
@@ -97,7 +101,33 @@ func (j *ListIncompleteUploadsArguments) FromValue(input map[string]any) error {
 // FromValue decodes values from map
 func (j *ListStorageBucketArguments) FromValue(input map[string]any) error {
 	var err error
-	j.ClientID, err = utils.DecodeObjectValueDefault[StorageClientID](input, "clientId")
+	j.ClientID, err = utils.DecodeNullableObjectValue[StorageClientID](input, "clientId")
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// FromValue decodes values from map
+func (j *ListStorageObjectsArguments) FromValue(input map[string]any) error {
+	var err error
+	j.StorageBucketArguments, err = utils.DecodeObject[StorageBucketArguments](input)
+	if err != nil {
+		return err
+	}
+	j.MaxResults, err = utils.GetNullableInt[int](input, "maxResults")
+	if err != nil {
+		return err
+	}
+	j.Recursive, err = utils.GetBooleanDefault(input, "recursive")
+	if err != nil {
+		return err
+	}
+	j.StartAfter, err = utils.GetNullableString(input, "startAfter")
+	if err != nil {
+		return err
+	}
+	j.Where, err = utils.DecodeObjectValueDefault[schema.Expression](input, "where")
 	if err != nil {
 		return err
 	}
@@ -170,50 +200,6 @@ func (j *StorageBucketArguments) FromValue(input map[string]any) error {
 		return err
 	}
 	j.ClientID, err = utils.DecodeNullableObjectValue[StorageClientID](input, "clientId")
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
-// FromValue decodes values from map
-func (j *StorageObjectAttributesOptions) FromValue(input map[string]any) error {
-	var err error
-	j.StorageBucketArguments, err = utils.DecodeObject[StorageBucketArguments](input)
-	if err != nil {
-		return err
-	}
-	j.MaxParts, err = utils.GetIntDefault[int](input, "maxParts")
-	if err != nil {
-		return err
-	}
-	j.Object, err = utils.GetString(input, "object")
-	if err != nil {
-		return err
-	}
-	j.PartNumberMarker, err = utils.GetIntDefault[int](input, "partNumberMarker")
-	if err != nil {
-		return err
-	}
-	j.VersionID, err = utils.GetStringDefault(input, "versionId")
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
-// FromValue decodes values from map
-func (j *StorageObjectTaggingOptions) FromValue(input map[string]any) error {
-	var err error
-	j.StorageBucketArguments, err = utils.DecodeObject[StorageBucketArguments](input)
-	if err != nil {
-		return err
-	}
-	j.Object, err = utils.GetString(input, "object")
-	if err != nil {
-		return err
-	}
-	j.VersionID, err = utils.GetStringDefault(input, "versionId")
 	if err != nil {
 		return err
 	}
@@ -306,6 +292,7 @@ func (j GetStorageObjectOptions) ToMap() map[string]any {
 	r["partNumber"] = j.PartNumber
 	r["requestParams"] = j.RequestParams
 	r["versionId"] = j.VersionID
+	r["withTags"] = j.WithTags
 
 	return r
 }
@@ -401,12 +388,24 @@ func (j LifecycleTransition) ToMap() map[string]any {
 // ToMap encodes the struct to a value map
 func (j ListStorageObjectsOptions) ToMap() map[string]any {
 	r := make(map[string]any)
-	r["maxKeys"] = j.MaxKeys
+	r["maxResults"] = j.MaxResults
 	r["prefix"] = j.Prefix
 	r["recursive"] = j.Recursive
 	r["startAfter"] = j.StartAfter
 	r["withMetadata"] = j.WithMetadata
+	r["withTags"] = j.WithTags
 	r["withVersions"] = j.WithVersions
+
+	return r
+}
+
+// ToMap encodes the struct to a value map
+func (j MakeStorageBucketOptions) ToMap() map[string]any {
+	r := make(map[string]any)
+	r["name"] = j.Name
+	r["objectLocking"] = j.ObjectLocking
+	r["region"] = j.Region
+	r["tags"] = j.Tags
 
 	return r
 }
@@ -618,6 +617,15 @@ func (j SetStorageObjectLockConfig) ToMap() map[string]any {
 }
 
 // ToMap encodes the struct to a value map
+func (j SetStorageObjectTagsOptions) ToMap() map[string]any {
+	r := make(map[string]any)
+	r["tags"] = j.Tags
+	r["versionId"] = j.VersionID
+
+	return r
+}
+
+// ToMap encodes the struct to a value map
 func (j SourceSelectionCriteria) ToMap() map[string]any {
 	r := make(map[string]any)
 	if j.ReplicaModifications != nil {
@@ -650,6 +658,7 @@ func (j StorageBucketInfo) ToMap() map[string]any {
 	r := make(map[string]any)
 	r["creationDate"] = j.CreationDate
 	r["name"] = j.Name
+	r["tags"] = j.Tags
 
 	return r
 }
@@ -724,9 +733,33 @@ func (j StorageGrantee) ToMap() map[string]any {
 func (j StorageObject) ToMap() map[string]any {
 	r := make(map[string]any)
 	r = utils.MergeMap(r, j.StorageObjectChecksum.ToMap())
+	r["accessTier"] = j.AccessTier
+	r["accessTierChangeTime"] = j.AccessTierChangeTime
+	r["accessTierInferred"] = j.AccessTierInferred
+	r["acl"] = j.ACL
+	r["archiveStatus"] = j.ArchiveStatus
+	r["blobSequenceNumber"] = j.BlobSequenceNumber
+	r["blobType"] = j.BlobType
 	r["bucket"] = j.Bucket
+	r["cacheControl"] = j.CacheControl
 	r["clientId"] = j.ClientID
+	r["contentDisposition"] = j.ContentDisposition
+	r["contentEncoding"] = j.ContentEncoding
+	r["contentLanguage"] = j.ContentLanguage
+	r["contentMd5"] = j.ContentMD5
 	r["contentType"] = j.ContentType
+	r["copyCompletionTime"] = j.CopyCompletionTime
+	r["copyId"] = j.CopyID
+	r["copyProgress"] = j.CopyProgress
+	r["copySource"] = j.CopySource
+	r["copyStatus"] = j.CopyStatus
+	r["copyStatusDescription"] = j.CopyStatusDescription
+	r["creationTime"] = j.CreationTime
+	r["customerProvidedKeySha256"] = j.CustomerProvidedKeySHA256
+	r["deleted"] = j.Deleted
+	r["deletedTime"] = j.DeletedTime
+	r["destinationSnapshot"] = j.DestinationSnapshot
+	r["encryptionScope"] = j.EncryptionScope
 	r["etag"] = j.ETag
 	r["expiration"] = j.Expiration
 	r["expirationRuleId"] = j.ExpirationRuleID
@@ -736,57 +769,39 @@ func (j StorageObject) ToMap() map[string]any {
 		j_Grant[i] = j_Grant_v
 	}
 	r["grant"] = j_Grant
-	r["isDeleteMarker"] = j.IsDeleteMarker
+	r["group"] = j.Group
+	r["immutabilityPolicyMode"] = j.ImmutabilityPolicyMode
+	r["immutabilityPolicyUntilDate"] = j.ImmutabilityPolicyUntilDate
+	r["incrementalCopy"] = j.IncrementalCopy
 	r["isLatest"] = j.IsLatest
+	r["lastAccessTime"] = j.LastAccessTime
 	r["lastModified"] = j.LastModified
+	r["leaseDuration"] = j.LeaseDuration
+	r["leaseState"] = j.LeaseState
+	r["leaseStatus"] = j.LeaseStatus
+	r["legalHold"] = j.LegalHold
 	r["metadata"] = j.Metadata
 	r["name"] = j.Name
 	if j.Owner != nil {
 		r["owner"] = (*j.Owner)
 	}
+	r["permissions"] = j.Permissions
+	r["rehydratePriority"] = j.RehydratePriority
+	r["remainingRetentionDays"] = j.RemainingRetentionDays
 	r["replicationReady"] = j.ReplicationReady
 	r["replicationStatus"] = j.ReplicationStatus
+	r["resourceType"] = j.ResourceType
 	if j.Restore != nil {
 		r["restore"] = (*j.Restore)
 	}
+	r["sealed"] = j.IsSealed
+	r["serverEncrypted"] = j.ServerEncrypted
 	r["size"] = j.Size
 	r["storageClass"] = j.StorageClass
 	r["userMetadata"] = j.UserMetadata
 	r["userTagCount"] = j.UserTagCount
 	r["userTags"] = j.UserTags
 	r["versionId"] = j.VersionID
-
-	return r
-}
-
-// ToMap encodes the struct to a value map
-func (j StorageObjectAttributePart) ToMap() map[string]any {
-	r := make(map[string]any)
-	r = utils.MergeMap(r, j.StorageObjectChecksum.ToMap())
-	r["partNumber"] = j.PartNumber
-	r["size"] = j.Size
-
-	return r
-}
-
-// ToMap encodes the struct to a value map
-func (j StorageObjectAttributes) ToMap() map[string]any {
-	r := make(map[string]any)
-	r = utils.MergeMap(r, j.StorageObjectAttributesResponse.ToMap())
-	r["lastModified"] = j.LastModified
-	r["versionId"] = j.VersionID
-
-	return r
-}
-
-// ToMap encodes the struct to a value map
-func (j StorageObjectAttributesResponse) ToMap() map[string]any {
-	r := make(map[string]any)
-	r["checksum"] = j.Checksum
-	r["etag"] = j.ETag
-	r["objectParts"] = j.ObjectParts
-	r["objectSize"] = j.ObjectSize
-	r["storageClass"] = j.StorageClass
 
 	return r
 }
@@ -820,25 +835,6 @@ func (j StorageObjectMultipartInfo) ToMap() map[string]any {
 	r["size"] = j.Size
 	r["storageClass"] = j.StorageClass
 	r["uploadId"] = j.UploadID
-
-	return r
-}
-
-// ToMap encodes the struct to a value map
-func (j StorageObjectParts) ToMap() map[string]any {
-	r := make(map[string]any)
-	r["isTruncated"] = j.IsTruncated
-	r["maxParts"] = j.MaxParts
-	r["nextPartNumberMarker"] = j.NextPartNumberMarker
-	r["partNumberMarker"] = j.PartNumberMarker
-	j_Parts := make([]any, len(j.Parts))
-	for i, j_Parts_v := range j.Parts {
-		if j_Parts_v != nil {
-			j_Parts[i] = (*j_Parts_v)
-		}
-	}
-	r["parts"] = j_Parts
-	r["partsCount"] = j.PartsCount
 
 	return r
 }
@@ -951,6 +947,7 @@ func (j StorageUploadInfo) ToMap() map[string]any {
 	r = utils.MergeMap(r, j.StorageObjectChecksum.ToMap())
 	r["bucket"] = j.Bucket
 	r["clientId"] = j.ClientID
+	r["contentMd5"] = j.ContentMD5
 	r["etag"] = j.ETag
 	r["expiration"] = j.Expiration
 	r["expirationRuleId"] = j.ExpirationRuleID

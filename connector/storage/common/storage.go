@@ -3,7 +3,6 @@ package common
 import (
 	"context"
 	"io"
-	"net/url"
 	"time"
 
 	"github.com/hasura/ndc-sdk-go/scalar"
@@ -14,17 +13,15 @@ type StorageClient interface { //nolint:interfacebloat
 	// MakeBucket creates a new bucket.
 	MakeBucket(ctx context.Context, options *MakeStorageBucketOptions) error
 	// ListBuckets list all buckets.
-	ListBuckets(ctx context.Context) ([]StorageBucketInfo, error)
+	ListBuckets(ctx context.Context, options BucketOptions) ([]StorageBucketInfo, error)
+	// GetBucket gets a bucket by name.
+	GetBucket(ctx context.Context, name string, options BucketOptions) (*StorageBucketInfo, error)
 	// BucketExists checks if a bucket exists.
 	BucketExists(ctx context.Context, bucketName string) (bool, error)
 	// RemoveBucket removes a bucket, bucket should be empty to be successfully removed.
 	RemoveBucket(ctx context.Context, bucketName string) error
 	// SetBucketTagging sets tags to a bucket.
-	SetBucketTagging(ctx context.Context, args *SetStorageBucketTaggingArguments) error
-	// GetBucketTagging gets tags of a bucket.
-	GetBucketTagging(ctx context.Context, bucketName string) (map[string]string, error)
-	// RemoveBucketTagging removes all tags on a bucket.
-	RemoveBucketTagging(ctx context.Context, bucketName string) error
+	SetBucketTagging(ctx context.Context, bucketName string, bucketTags map[string]string) error
 	// GetBucketPolicy gets access permissions on a bucket or a prefix.
 	GetBucketPolicy(ctx context.Context, bucketName string) (string, error)
 	// ListObjects lists objects in a bucket.
@@ -55,25 +52,19 @@ type StorageClient interface { //nolint:interfacebloat
 	PutObjectLegalHold(ctx context.Context, opts *PutStorageObjectLegalHoldOptions) error
 	// GetObjectLegalHold returns legal-hold status on a given object.
 	GetObjectLegalHold(ctx context.Context, options *GetStorageObjectLegalHoldOptions) (StorageLegalHoldStatus, error)
-	// PutObjectTagging sets new object Tags to the given object, replaces/overwrites any existing tags.
-	PutObjectTagging(ctx context.Context, options *PutStorageObjectTaggingOptions) error
-	// GetObjectTagging fetches Object Tags from the given object
-	GetObjectTagging(ctx context.Context, options *StorageObjectTaggingOptions) (map[string]string, error)
-	// RemoveObjectTagging removes Object Tags from the given object
-	RemoveObjectTagging(ctx context.Context, options *StorageObjectTaggingOptions) error
-	// GetObjectAttributes returns a stream of the object data. Most of the common errors occur when reading the stream.
-	GetObjectAttributes(ctx context.Context, opts *StorageObjectAttributesOptions) (*StorageObjectAttributes, error)
+	// SetObjectTags sets new object Tags to the given object, replaces/overwrites any existing tags.
+	SetObjectTags(ctx context.Context, bucketName string, objectName string, options SetStorageObjectTagsOptions) error
 	// RemoveIncompleteUpload removes a partially uploaded object.
-	RemoveIncompleteUpload(ctx context.Context, args *RemoveIncompleteUploadArguments) error
+	RemoveIncompleteUpload(ctx context.Context, bucketName string, objectName string) error
 	// PresignedGetObject generates a presigned URL for HTTP GET operations. Browsers/Mobile clients may point to this URL to directly download objects even if the bucket is private.
 	// This presigned URL can have an associated expiration time in seconds after which it is no longer operational.
 	// The maximum expiry is 604800 seconds (i.e. 7 days) and minimum is 1 second.
-	PresignedGetObject(ctx context.Context, bucketName string, objectName string, opts PresignedGetStorageObjectOptions) (*url.URL, error)
+	PresignedGetObject(ctx context.Context, bucketName string, objectName string, opts PresignedGetStorageObjectOptions) (string, error)
 	// PresignedPutObject generates a presigned URL for HTTP PUT operations.
 	// Browsers/Mobile clients may point to this URL to upload objects directly to a bucket even if it is private.
 	// This presigned URL can have an associated expiration time in seconds after which it is no longer operational.
 	// The default expiry is set to 7 days.
-	PresignedPutObject(ctx context.Context, bucketName string, objectName string, expiry time.Duration) (*url.URL, error)
+	PresignedPutObject(ctx context.Context, bucketName string, objectName string, expiry time.Duration) (string, error)
 	// GetBucketNotification gets notification configuration on a bucket.
 	GetBucketNotification(ctx context.Context, bucketName string) (*NotificationConfig, error)
 	// Set a new bucket notification on a bucket.
@@ -109,12 +100,19 @@ type StorageClient interface { //nolint:interfacebloat
 	RemoveBucketReplication(ctx context.Context, bucketName string) error
 }
 
+// BucketOptions hold options to get bucket information.
+type BucketOptions struct {
+	IncludeTags bool `json:"includeTags,omitempty"`
+}
+
 // StorageBucketInfo container for bucket metadata.
 type StorageBucketInfo struct {
 	// The name of the bucket.
 	Name string `json:"name"`
 	// Date the bucket was created.
 	CreationDate time.Time `json:"creationDate"`
+	// Bucket tags or metadata.
+	Tags map[string]string `json:"tags,omitempty"`
 }
 
 // StorageOwner name.
@@ -151,17 +149,21 @@ type StorageObject struct {
 	// each parts concatenated into one string.
 	ETag *string `json:"etag"`
 
-	ClientID     string     `json:"clientId"`     // Client ID
-	Bucket       string     `json:"bucket"`       // Name of the bucket
-	Name         string     `json:"name"`         // Name of the object
-	LastModified time.Time  `json:"lastModified"` // Date and time the object was last modified.
-	Size         int64      `json:"size"`         // Size in bytes of the object.
-	ContentType  *string    `json:"contentType"`  // A standard MIME type describing the format of the object data.
-	Expires      *time.Time `json:"expires"`      // The date and time at which the object is no longer able to be cached.
+	ClientID           string     `json:"clientId"`     // Client ID
+	Bucket             string     `json:"bucket"`       // Name of the bucket
+	Name               string     `json:"name"`         // Name of the object
+	LastModified       time.Time  `json:"lastModified"` // Date and time the object was last modified.
+	Size               *int64     `json:"size"`         // Size in bytes of the object.
+	ContentType        *string    `json:"contentType"`  // A standard MIME type describing the format of the object data.
+	ContentEncoding    *string    `json:"contentEncoding,omitempty"`
+	ContentDisposition *string    `json:"contentDisposition,omitempty"`
+	ContentLanguage    *string    `json:"contentLanguage,omitempty"`
+	CacheControl       *string    `json:"cacheControl,omitempty"`
+	Expires            *time.Time `json:"expires"` // The date and time at which the object is no longer able to be cached.
 
 	// Collection of additional metadata on the object.
 	// eg: x-amz-meta-*, content-encoding etc.
-	Metadata map[string][]string `json:"metadata,omitempty"`
+	Metadata map[string]string `json:"metadata,omitempty"`
 
 	// x-amz-meta-* headers stripped "x-amz-meta-" prefix containing the first value.
 	// Only returned by MinIO servers.
@@ -184,9 +186,9 @@ type StorageObject struct {
 	StorageClass *string `json:"storageClass,omitempty"`
 
 	// Versioning related information
-	IsLatest       *bool   `json:"isLatest"`
-	IsDeleteMarker *bool   `json:"isDeleteMarker"`
-	VersionID      *string `json:"versionId,omitempty"`
+	IsLatest  *bool   `json:"isLatest"`
+	Deleted   *bool   `json:"deleted"`
+	VersionID *string `json:"versionId,omitempty"`
 
 	// x-amz-replication-status value is either in one of the following states
 	ReplicationStatus *StorageObjectReplicationStatus `json:"replicationStatus"`
@@ -201,6 +203,47 @@ type StorageObject struct {
 
 	// Checksum values
 	StorageObjectChecksum
+
+	// Azure Blob Store properties
+	ACL                       *string    `json:"acl"`
+	AccessTier                *string    `json:"accessTier"`
+	AccessTierChangeTime      *time.Time `json:"accessTierChangeTime"`
+	AccessTierInferred        *bool      `json:"accessTierInferred"`
+	ArchiveStatus             *string    `json:"archiveStatus"`
+	BlobSequenceNumber        *int64     `json:"blobSequenceNumber"`
+	BlobType                  *string    `json:"blobType"`
+	ContentMD5                *string    `json:"contentMd5"`
+	CopyCompletionTime        *time.Time `json:"copyCompletionTime"`
+	CopyID                    *string    `json:"copyId"`
+	CopyProgress              *string    `json:"copyProgress"`
+	CopySource                *string    `json:"copySource"`
+	CopyStatus                *string    `json:"copyStatus"`
+	CopyStatusDescription     *string    `json:"copyStatusDescription"`
+	CreationTime              *time.Time `json:"creationTime"`
+	DeletedTime               *time.Time `json:"deletedTime"`
+	CustomerProvidedKeySHA256 *string    `json:"customerProvidedKeySha256"`
+	DestinationSnapshot       *string    `json:"destinationSnapshot"`
+
+	// The name of the encryption scope under which the blob is encrypted.
+	EncryptionScope             *string    `json:"encryptionScope"`
+	Group                       *string    `json:"group"`
+	ImmutabilityPolicyUntilDate *time.Time `json:"immutabilityPolicyUntilDate"`
+	ImmutabilityPolicyMode      *string    `json:"immutabilityPolicyMode"`
+	IncrementalCopy             *bool      `json:"incrementalCopy"`
+	IsSealed                    *bool      `json:"sealed"`
+	LastAccessTime              *time.Time `json:"lastAccessTime"`
+	LeaseDuration               *string    `json:"leaseDuration"`
+	LeaseState                  *string    `json:"leaseState"`
+	LeaseStatus                 *string    `json:"leaseStatus"`
+	LegalHold                   *bool      `json:"legalHold"`
+	Permissions                 *string    `json:"permissions"`
+
+	// If an object is in rehydrate pending state then this header is returned with priority of rehydrate. Valid values are High
+	// and Standard.
+	RehydratePriority      *string `json:"rehydratePriority"`
+	RemainingRetentionDays *int32  `json:"remainingRetentionDays"`
+	ResourceType           *string `json:"resourceType"`
+	ServerEncrypted        *bool   `json:"serverEncrypted"`
 }
 
 // StorageObjectReplicationStatus represents the x-amz-replication-status value enum.
@@ -230,6 +273,7 @@ type StorageUploadInfo struct {
 	Size         int64      `json:"size"`         // Size in bytes of the object.
 	Location     *string    `json:"location"`
 	VersionID    *string    `json:"versionId"`
+	ContentMD5   *string    `json:"contentMd5"`
 
 	// Lifecycle expiry-date and ruleID associated with the expiry
 	// not to be confused with `Expires` HTTP header.
@@ -280,46 +324,6 @@ type RemoveStorageObjectError struct {
 // ChecksumType contains information about the checksum type.
 // @enum SHA256,SHA1,CRC32,CRC32C,CRC64NVME,FullObjectCRC32,FullObjectCRC32C,None
 type ChecksumType string
-
-// StorageObjectAttributes is the response object returned by the GetObjectAttributes API.
-type StorageObjectAttributes struct {
-	// The object version
-	VersionID *string `json:"versionId"`
-	// The last time the object was modified
-	LastModified time.Time `json:"lastModified"`
-	// Contains more information about the object
-	StorageObjectAttributesResponse
-}
-
-type StorageObjectParts struct {
-	// Contains the total part count for the object (not the current response)
-	PartsCount int `json:"partsCount"`
-	// Pagination of parts will begin at (but not include) PartNumberMarker
-	PartNumberMarker int `json:"partNumberMarker"`
-	// The next PartNumberMarker to be used in order to continue pagination
-	NextPartNumberMarker int `json:"nextPartNumberMarker"`
-	// Reflects the MaxParts used by the caller or the default MaxParts value of the API
-	MaxParts int `json:"maxParts"`
-	// Indicates if the last part is included in the request (does not check if parts are missing from the start of the list, ONLY the end)
-	IsTruncated bool                          `json:"isTruncated"`
-	Parts       []*StorageObjectAttributePart `json:"parts"`
-}
-
-// ObjectAttributePart is used by ObjectAttributesResponse to describe an object part.
-type StorageObjectAttributePart struct {
-	StorageObjectChecksum
-	PartNumber int `json:"partNumber"`
-	Size       int `json:"size"`
-}
-
-// StorageObjectAttributesResponse contains details returned by the GetObjectAttributes API.
-type StorageObjectAttributesResponse struct {
-	ETag         string                `json:"etag,omitempty"`
-	StorageClass string                `json:"storageClass"`
-	ObjectSize   int                   `json:"objectSize"`
-	Checksum     StorageObjectChecksum `json:"checksum"`
-	ObjectParts  StorageObjectParts    `json:"objectParts"`
-}
 
 // NotificationCommonConfig - represents one single notification configuration
 // such as topic, queue or lambda configuration.

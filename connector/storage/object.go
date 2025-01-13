@@ -66,6 +66,7 @@ func (m *Manager) PutObject(ctx context.Context, bucketInfo common.StorageBucket
 		return nil, err
 	}
 
+	result.Bucket = bucketName
 	result.ClientID = string(client.id)
 
 	return result, nil
@@ -199,51 +200,13 @@ func (m *Manager) GetObjectLegalHold(ctx context.Context, args *common.GetStorag
 }
 
 // PutObjectTagging sets new object Tags to the given object, replaces/overwrites any existing tags.
-func (m *Manager) PutObjectTagging(ctx context.Context, args *common.PutStorageObjectTaggingOptions) error {
-	client, bucketName, err := m.GetClientAndBucket(args.ClientID, args.Bucket)
+func (m *Manager) SetObjectTags(ctx context.Context, bucketInfo common.StorageBucketArguments, objectName string, opts common.SetStorageObjectTagsOptions) error {
+	client, bucketName, err := m.GetClientAndBucket(bucketInfo.ClientID, bucketInfo.Bucket)
 	if err != nil {
 		return err
 	}
 
-	args.Bucket = bucketName
-
-	return client.PutObjectTagging(ctx, args)
-}
-
-// GetObjectTagging fetches Object Tags from the given object.
-func (m *Manager) GetObjectTagging(ctx context.Context, args *common.StorageObjectTaggingOptions) (map[string]string, error) {
-	client, bucketName, err := m.GetClientAndBucket(args.ClientID, args.Bucket)
-	if err != nil {
-		return nil, err
-	}
-
-	args.Bucket = bucketName
-
-	return client.GetObjectTagging(ctx, args)
-}
-
-// RemoveObjectTagging removes Object Tags from the given object.
-func (m *Manager) RemoveObjectTagging(ctx context.Context, args *common.StorageObjectTaggingOptions) error {
-	client, bucketName, err := m.GetClientAndBucket(args.ClientID, args.Bucket)
-	if err != nil {
-		return err
-	}
-
-	args.Bucket = bucketName
-
-	return client.RemoveObjectTagging(ctx, args)
-}
-
-// GetObjectAttributes returns a stream of the object data. Most of the common errors occur when reading the stream.
-func (m *Manager) GetObjectAttributes(ctx context.Context, args *common.StorageObjectAttributesOptions) (*common.StorageObjectAttributes, error) {
-	client, bucketName, err := m.GetClientAndBucket(args.ClientID, args.Bucket)
-	if err != nil {
-		return nil, err
-	}
-
-	args.Bucket = bucketName
-
-	return client.GetObjectAttributes(ctx, args)
+	return client.SetObjectTags(ctx, bucketName, objectName, opts)
 }
 
 // RemoveIncompleteUpload removes a partially uploaded object.
@@ -253,9 +216,7 @@ func (m *Manager) RemoveIncompleteUpload(ctx context.Context, args *common.Remov
 		return err
 	}
 
-	args.Bucket = bucketName
-
-	return client.RemoveIncompleteUpload(ctx, args)
+	return client.RemoveIncompleteUpload(ctx, bucketName, args.Object)
 }
 
 // PresignedGetObject generates a presigned URL for HTTP GET operations. Browsers/Mobile clients may point to this URL to directly download objects even if the bucket is private.
@@ -289,7 +250,7 @@ func (m *Manager) PresignedGetObject(ctx context.Context, bucketInfo common.Stor
 	}
 
 	return &common.PresignedURLResponse{
-		URL:       rawURL.String(),
+		URL:       rawURL,
 		ExpiredAt: FormatTimestamp(time.Now().Add(opts.Expiry.Duration)),
 	}, nil
 }
@@ -326,7 +287,7 @@ func (m *Manager) PresignedPutObject(ctx context.Context, bucketInfo common.Stor
 	}
 
 	return &common.PresignedURLResponse{
-		URL:       rawURL.String(),
+		URL:       rawURL,
 		ExpiredAt: FormatTimestamp(time.Now().Add(exp)),
 	}, nil
 }

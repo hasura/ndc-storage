@@ -2,7 +2,7 @@
 kind: Command
 version: v1
 definition:
-  name: RemoveStorageObjectTags
+  name: SetStorageObjectTags
   outputType: Boolean!
   arguments:
     - name: bucket
@@ -11,22 +11,27 @@ definition:
       type: StorageClientId
     - name: object
       type: String!
+    - name: tags
+      type: Json!
     - name: versionId
       type: String
+    - name: where
+      type: StorageObjectSimpleBoolExp
   source:
     dataConnectorName: storage
     dataConnectorCommand:
-      procedure: removeStorageObjectTags
+      procedure: setStorageObjectTags
   graphql:
-    rootFieldName: removeStorageObjectTags
+    rootFieldName: setStorageObjectTags
     rootFieldKind: Mutation
-  description: removes Object Tags from the given object.
+  description: sets new object Tags to the given object, replaces/overwrites any
+    existing tags.
 
 ---
 kind: CommandPermissions
 version: v1
 definition:
-  commandName: RemoveStorageObjectTags
+  commandName: SetStorageObjectTags
   permissions:
     - role: admin
       allowExecution: true

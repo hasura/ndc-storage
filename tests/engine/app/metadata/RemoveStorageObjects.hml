@@ -44,7 +44,7 @@ definition:
       type: StorageClientId
     - name: governanceBypass
       type: Boolean
-    - name: maxKeys
+    - name: maxResults
       type: Int32!
     - name: prefix
       type: String!
@@ -55,6 +55,8 @@ definition:
     - name: where
       type: StorageObjectSimpleBoolExp
     - name: withMetadata
+      type: Boolean!
+    - name: withTags
       type: Boolean!
     - name: withVersions
       type: Boolean!

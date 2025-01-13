@@ -37,8 +37,11 @@ func SetObjectChecksumSpanAttributes(span trace.Span, object *StorageObjectCheck
 
 // SetObjectInfoSpanAttributes sets span attributes from the object info.
 func SetObjectInfoSpanAttributes(span trace.Span, object *StorageObject) {
-	span.SetAttributes(attribute.Int64("storage.object.size", object.Size))
 	SetObjectChecksumSpanAttributes(span, &object.StorageObjectChecksum)
+
+	if object.Size != nil {
+		span.SetAttributes(attribute.Int64("storage.object.size", *object.Size))
+	}
 
 	if object.ETag != nil {
 		span.SetAttributes(attribute.String("storage.object.etag", *object.ETag))

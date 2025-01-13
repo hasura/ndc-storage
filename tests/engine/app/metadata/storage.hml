@@ -53,16 +53,6 @@ definition:
             type: json
           aggregate_functions: {}
           comparison_operators: {}
-        FilterTimestamp:
-          representation:
-            type: timestamptz
-          aggregate_functions: {}
-          comparison_operators:
-            _gt:
-              type: custom
-              argument_type:
-                type: named
-                name: TimestampTZ
         Int32:
           representation:
             type: int32
@@ -302,6 +292,12 @@ definition:
                 underlying_type:
                   type: named
                   name: String
+            withTags:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
         LifecycleAllVersionsExpiration:
           description: represents AllVersionsExpiration actions element in an ILM policy
           fields:
@@ -475,7 +471,7 @@ definition:
         ListStorageObjectsOptions:
           description: holds all options of a list object request.
           fields:
-            maxKeys:
+            maxResults:
               type:
                 type: named
                 name: Int32
@@ -495,10 +491,39 @@ definition:
               type:
                 type: named
                 name: Boolean
+            withTags:
+              type:
+                type: named
+                name: Boolean
             withVersions:
               type:
                 type: named
                 name: Boolean
+        MakeStorageBucketOptions:
+          description: holds all options to tweak bucket creation.
+          fields:
+            name:
+              type:
+                type: named
+                name: String
+            objectLocking:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            region:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
+            tags:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: JSON
         NotificationCommonConfig:
           description: '- represents one single notification configuration such as topic, queue or lambda configuration.'
           fields:
@@ -904,7 +929,7 @@ definition:
                 underlying_type:
                   type: named
                   name: Boolean
-            maxKeys:
+            maxResults:
               type:
                 type: named
                 name: Int32
@@ -921,6 +946,10 @@ definition:
                 type: named
                 name: String
             withMetadata:
+              type:
+                type: named
+                name: Boolean
+            withTags:
               type:
                 type: named
                 name: Boolean
@@ -972,6 +1001,19 @@ definition:
                 underlying_type:
                   type: named
                   name: Int32
+        SetStorageObjectTagsOptions:
+          description: holds an object version id to update tag(s) of a specific object version.
+          fields:
+            tags:
+              type:
+                type: named
+                name: JSON
+            versionId:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
         SourceSelectionCriteria:
           description: specifies additional source selection criteria in ReplicationConfiguration.
           fields:
@@ -1020,6 +1062,12 @@ definition:
               type:
                 type: named
                 name: String
+            tags:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: JSON
         StorageBucketVersioningConfiguration:
           description: is the versioning configuration structure
           fields:
@@ -1208,11 +1256,60 @@ definition:
                   type: named
                   name: String
         StorageObject:
+          description: container for object metadata.
           fields:
+            accessTier:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
+            accessTierChangeTime:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: TimestampTZ
+            accessTierInferred:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            acl:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
+            archiveStatus:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
+            blobSequenceNumber:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Int64
+            blobType:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
             bucket:
               type:
                 type: named
-                name: BucketName
+                name: String
+            cacheControl:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
             checksumCrc32:
               type:
                 type: nullable
@@ -1246,15 +1343,115 @@ definition:
             clientId:
               type:
                 type: named
-                name: StorageClientID
+                name: String
+            contentDisposition:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
+            contentEncoding:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
+            contentLanguage:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
+            contentMd5:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
             contentType:
               type:
-                type: named
-                name: String
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
+            copyCompletionTime:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: TimestampTZ
+            copyId:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
+            copyProgress:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
+            copySource:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
+            copyStatus:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
+            copyStatusDescription:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
+            creationTime:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: TimestampTZ
+            customerProvidedKeySha256:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
+            deleted:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            deletedTime:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: TimestampTZ
+            destinationSnapshot:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
+            encryptionScope:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
             etag:
               type:
-                type: named
-                name: String
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
             expiration:
               type:
                 type: nullable
@@ -1269,8 +1466,10 @@ definition:
                   name: String
             expires:
               type:
-                type: named
-                name: TimestampTZ
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: TimestampTZ
             grant:
               type:
                 type: nullable
@@ -1279,7 +1478,25 @@ definition:
                   element_type:
                     type: named
                     name: StorageGrant
-            isDeleteMarker:
+            group:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
+            immutabilityPolicyMode:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
+            immutabilityPolicyUntilDate:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: TimestampTZ
+            incrementalCopy:
               type:
                 type: nullable
                 underlying_type:
@@ -1291,10 +1508,40 @@ definition:
                 underlying_type:
                   type: named
                   name: Boolean
+            lastAccessTime:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: TimestampTZ
             lastModified:
               type:
                 type: named
-                name: FilterTimestamp
+                name: TimestampTZ
+            leaseDuration:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
+            leaseState:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
+            leaseStatus:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
+            legalHold:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
             metadata:
               type:
                 type: nullable
@@ -1304,13 +1551,31 @@ definition:
             name:
               type:
                 type: named
-                name: ObjectPath
+                name: String
             owner:
               type:
                 type: nullable
                 underlying_type:
                   type: named
                   name: StorageOwner
+            permissions:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
+            rehydratePriority:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
+            remainingRetentionDays:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Int32
             replicationReady:
               type:
                 type: nullable
@@ -1322,6 +1587,12 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
+                  name: StorageObjectReplicationStatus
+            resourceType:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
                   name: String
             restore:
               type:
@@ -1329,10 +1600,24 @@ definition:
                 underlying_type:
                   type: named
                   name: StorageRestoreInfo
+            sealed:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            serverEncrypted:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
             size:
               type:
-                type: named
-                name: Int64
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Int64
             storageClass:
               type:
                 type: nullable
@@ -1363,106 +1648,6 @@ definition:
                 underlying_type:
                   type: named
                   name: String
-        StorageObjectAttributePart:
-          fields:
-            checksumCrc32:
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: String
-            checksumCrc32C:
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: String
-            checksumCrc64Nvme:
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: String
-            checksumSha1:
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: String
-            checksumSha256:
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: String
-            partNumber:
-              type:
-                type: named
-                name: Int32
-            size:
-              type:
-                type: named
-                name: Int32
-        StorageObjectAttributes:
-          description: is the response object returned by the GetObjectAttributes API.
-          fields:
-            checksum:
-              type:
-                type: named
-                name: StorageObjectChecksum
-            etag:
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: String
-            lastModified:
-              type:
-                type: named
-                name: TimestampTZ
-            objectParts:
-              type:
-                type: named
-                name: StorageObjectParts
-            objectSize:
-              type:
-                type: named
-                name: Int32
-            storageClass:
-              type:
-                type: named
-                name: String
-            versionId:
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: String
-        StorageObjectAttributesResponse:
-          description: contains details returned by the GetObjectAttributes API.
-          fields:
-            checksum:
-              type:
-                type: named
-                name: StorageObjectChecksum
-            etag:
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: String
-            objectParts:
-              type:
-                type: named
-                name: StorageObjectParts
-            objectSize:
-              type:
-                type: named
-                name: Int32
-            storageClass:
-              type:
-                type: named
-                name: String
         StorageObjectChecksum:
           description: represents checksum values of the object.
           fields:
@@ -1553,36 +1738,6 @@ definition:
                 underlying_type:
                   type: named
                   name: String
-        StorageObjectParts:
-          fields:
-            isTruncated:
-              type:
-                type: named
-                name: Boolean
-            maxParts:
-              type:
-                type: named
-                name: Int32
-            nextPartNumberMarker:
-              type:
-                type: named
-                name: Int32
-            partNumberMarker:
-              type:
-                type: named
-                name: Int32
-            parts:
-              type:
-                type: array
-                element_type:
-                  type: nullable
-                  underlying_type:
-                    type: named
-                    name: StorageObjectAttributePart
-            partsCount:
-              type:
-                type: named
-                name: Int32
         StorageObjectSimple:
           fields:
             bucket:
@@ -1797,6 +1952,12 @@ definition:
               type:
                 type: named
                 name: String
+            contentMd5:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
             etag:
               type:
                 type: named
@@ -1839,19 +2000,7 @@ definition:
                 underlying_type:
                   type: named
                   name: String
-      collections:
-        - name: storageObjects
-          description: The information of an storage object
-          arguments:
-            recursive:
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: Boolean
-          type: StorageObject
-          uniqueness_constraints: {}
-          foreign_keys: {}
+      collections: []
       functions:
         - name: downloadStorageObject
           description: returns a stream of the object data. Most of the common errors occur when reading the stream.
@@ -1908,6 +2057,12 @@ definition:
                 underlying_type:
                   type: predicate
                   object_type_name: StorageObjectSimple
+            withTags:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
           result_type:
             type: nullable
             underlying_type:
@@ -1968,6 +2123,12 @@ definition:
                 underlying_type:
                   type: predicate
                   object_type_name: StorageObjectSimple
+            withTags:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
           result_type:
             type: nullable
             underlying_type:
@@ -2088,24 +2249,6 @@ definition:
             underlying_type:
               type: named
               name: StorageReplicationConfig
-        - name: storageBucketTags
-          description: gets tags of a bucket.
-          arguments:
-            bucket:
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: String
-            clientId:
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: StorageClientID
-          result_type:
-            type: named
-            name: JSON
         - name: storageBucketVersioning
           description: gets versioning configuration set on a bucket.
           arguments:
@@ -2225,53 +2368,17 @@ definition:
                 underlying_type:
                   type: predicate
                   object_type_name: StorageObjectSimple
+            withTags:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
           result_type:
             type: nullable
             underlying_type:
               type: named
               name: StorageObject
-        - name: storageObjectAttributes
-          description: returns a stream of the object data. Most of the common errors occur when reading the stream.
-          arguments:
-            bucket:
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: String
-            clientId:
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: StorageClientID
-            maxParts:
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: Int32
-            object:
-              type:
-                type: named
-                name: String
-            partNumberMarker:
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: Int32
-            versionId:
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: String
-          result_type:
-            type: nullable
-            underlying_type:
-              type: named
-              name: StorageObjectAttributes
         - name: storageObjectLegalHold
           description: returns legal-hold status on a given object.
           arguments:
@@ -2320,8 +2427,8 @@ definition:
             underlying_type:
               type: named
               name: StorageObjectLockConfig
-        - name: storageObjectTags
-          description: fetches Object Tags from the given object.
+        - name: storageObjects
+          description: lists objects in a bucket.
           arguments:
             bucket:
               type:
@@ -2335,19 +2442,35 @@ definition:
                 underlying_type:
                   type: named
                   name: StorageClientID
-            object:
+            maxResults:
               type:
-                type: named
-                name: String
-            versionId:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Int32
+            recursive:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            startAfter:
               type:
                 type: nullable
                 underlying_type:
                   type: named
                   name: String
+            where:
+              type:
+                type: nullable
+                underlying_type:
+                  type: predicate
+                  object_type_name: StorageObjectSimple
           result_type:
-            type: named
-            name: JSON
+            type: array
+            element_type:
+              type: named
+              name: StorageObject
         - name: storagePresignedDownloadUrl
           description: generates a presigned URL for HTTP GET operations. Browsers/Mobile clients may point to this URL to directly download objects even if the bucket is private. This presigned URL can have an associated expiration time in seconds after which it is no longer operational. The maximum expiry is 604800 seconds (i.e. 7 days) and minimum is 1 second.
           arguments:
@@ -2494,6 +2617,12 @@ definition:
                 underlying_type:
                   type: named
                   name: String
+            tags:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: JSON
           result_type:
             type: named
             name: Boolean
@@ -2595,38 +2724,6 @@ definition:
           result_type:
             type: named
             name: Boolean
-        - name: putStorageObjectTags
-          description: sets new object Tags to the given object, replaces/overwrites any existing tags.
-          arguments:
-            bucket:
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: String
-            clientId:
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: StorageClientID
-            object:
-              type:
-                type: named
-                name: String
-            tags:
-              type:
-                type: named
-                name: JSON
-            versionId:
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: String
-          result_type:
-            type: named
-            name: Boolean
         - name: removeIncompleteStorageUpload
           description: removes a partially uploaded object.
           arguments:
@@ -2668,24 +2765,6 @@ definition:
             type: named
             name: Boolean
         - name: removeStorageBucketReplication
-          arguments:
-            bucket:
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: String
-            clientId:
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: StorageClientID
-          result_type:
-            type: named
-            name: Boolean
-        - name: removeStorageBucketTags
-          description: removes all tags on a bucket.
           arguments:
             bucket:
               type:
@@ -2748,34 +2827,6 @@ definition:
           result_type:
             type: named
             name: Boolean
-        - name: removeStorageObjectTags
-          description: removes Object Tags from the given object.
-          arguments:
-            bucket:
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: String
-            clientId:
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: StorageClientID
-            object:
-              type:
-                type: named
-                name: String
-            versionId:
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: String
-          result_type:
-            type: named
-            name: Boolean
         - name: removeStorageObjects
           description: remove a list of objects obtained from an input channel. The call sends a delete request to the server up to 1000 objects at a time. The errors observed are sent over the error channel.
           arguments:
@@ -2797,7 +2848,7 @@ definition:
                 underlying_type:
                   type: named
                   name: Boolean
-            maxKeys:
+            maxResults:
               type:
                 type: named
                 name: Int32
@@ -2820,6 +2871,10 @@ definition:
                   type: predicate
                   object_type_name: StorageObjectSimple
             withMetadata:
+              type:
+                type: named
+                name: Boolean
+            withTags:
               type:
                 type: named
                 name: Boolean
@@ -3000,6 +3055,44 @@ definition:
                 underlying_type:
                   type: named
                   name: Int32
+          result_type:
+            type: named
+            name: Boolean
+        - name: setStorageObjectTags
+          description: sets new object Tags to the given object, replaces/overwrites any existing tags.
+          arguments:
+            bucket:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
+            clientId:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: StorageClientID
+            object:
+              type:
+                type: named
+                name: String
+            tags:
+              type:
+                type: named
+                name: JSON
+            versionId:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
+            where:
+              type:
+                type: nullable
+                underlying_type:
+                  type: predicate
+                  object_type_name: StorageObjectSimple
           result_type:
             type: named
             name: Boolean

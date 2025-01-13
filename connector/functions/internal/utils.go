@@ -1,4 +1,4 @@
-package collection
+package internal
 
 import (
 	"fmt"
@@ -58,60 +58,4 @@ func getComparisonValueDateTime(input schema.ComparisonValue, variables map[stri
 	}
 
 	return utils.DecodeNullableDateTime(rawValue)
-}
-
-func compareNullableString(a, b *string) int {
-	if a == nil && b == nil {
-		return 0
-	}
-
-	if a != nil && b == nil {
-		return 1
-	}
-
-	if a == nil && b != nil {
-		return -1
-	}
-
-	return strings.Compare(*a, *b)
-}
-
-func compareNullableBoolean(a, b *bool) int {
-	if a == nil && b == nil {
-		return 0
-	}
-
-	if a != nil && b == nil {
-		return 1
-	}
-
-	if a == nil && b != nil {
-		return -1
-	}
-
-	if *a == *b {
-		return 0
-	}
-
-	if *a && !*b {
-		return 1
-	}
-
-	return -1
-}
-
-func compareNullableTime(a, b *time.Time) int {
-	if a == nil && b == nil {
-		return 0
-	}
-
-	if a != nil && b == nil {
-		return 1
-	}
-
-	if a == nil && b != nil {
-		return -1
-	}
-
-	return int(a.Sub(*b))
 }

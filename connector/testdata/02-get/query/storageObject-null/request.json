@@ -126,8 +126,8 @@
               },
               "type": "column"
             },
-            "isDeleteMarker": {
-              "column": "isDeleteMarker",
+            "deleted": {
+              "column": "deleted",
               "type": "column"
             },
             "isLatest": {

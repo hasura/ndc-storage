@@ -195,7 +195,6 @@ func (mrt debugRoundTripper) RoundTrip(req *http.Request) (*http.Response, error
 
 		respLogAttrs["body"] = string(respBody)
 		logAttrs = append(logAttrs, slog.Any("response", respLogAttrs))
-		slog.Debug(resp.Status, logAttrs...)
 
 		resp.Body.Close()
 		resp.Body = io.NopCloser(bytes.NewBuffer(respBody))
@@ -203,10 +202,10 @@ func (mrt debugRoundTripper) RoundTrip(req *http.Request) (*http.Response, error
 		span.SetAttributes(attribute.Int("http.response.size", len(respBody)))
 	}
 
+	slog.Debug(resp.Status, logAttrs...)
+
 	if resp.StatusCode >= http.StatusBadRequest {
 		span.SetStatus(codes.Error, resp.Status)
-	} else {
-		slog.Debug("executed request successfully", logAttrs...)
 	}
 
 	return resp, err
@@ -221,38 +220,6 @@ func (rt roundTripper) RoundTrip(req *http.Request) (*http.Response, error) {
 	rt.propagator.Inject(req.Context(), propagation.HeaderCarrier(req.Header))
 
 	return rt.transport.RoundTrip(req)
-}
-
-// EnableVersioning enables bucket versioning support.
-func (mc *Client) EnableVersioning(ctx context.Context, bucketName string) error {
-	ctx, span := mc.startOtelSpan(ctx, "EnableVersioning", bucketName)
-	defer span.End()
-
-	err := mc.client.EnableVersioning(ctx, bucketName)
-	if err != nil {
-		span.SetStatus(codes.Error, err.Error())
-		span.RecordError(err)
-
-		return serializeErrorResponse(err)
-	}
-
-	return nil
-}
-
-// SuspendVersioning disables bucket versioning support.
-func (mc *Client) SuspendVersioning(ctx context.Context, bucketName string) error {
-	ctx, span := mc.startOtelSpan(ctx, "SuspendVersioning", bucketName)
-	defer span.End()
-
-	err := mc.client.SuspendVersioning(ctx, bucketName)
-	if err != nil {
-		span.SetStatus(codes.Error, err.Error())
-		span.RecordError(err)
-
-		return serializeErrorResponse(err)
-	}
-
-	return nil
 }
 
 func (mc *Client) startOtelSpan(ctx context.Context, name string, bucketName string) (context.Context, trace.Span) {

@@ -3,9 +3,20 @@
     "rows": [
       {
         "__value": [
-          { "name": "minio-bucket-empty" },
-          { "name": "minio-bucket-lock" },
-          { "name": "minio-bucket-test" }
+          {
+            "name": "minio-bucket-empty",
+            "tags": null
+          },
+          {
+            "name": "minio-bucket-lock",
+            "tags": null
+          },
+          {
+            "name": "minio-bucket-test",
+            "tags": {
+              "Foo": "bar"
+            }
+          }
         ]
       }
     ]

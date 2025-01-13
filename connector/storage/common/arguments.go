@@ -10,7 +10,7 @@ import (
 // ListStorageBucketArguments represent the input arguments for the ListBuckets methods.
 type ListStorageBucketArguments struct {
 	// The storage client ID.
-	ClientID StorageClientID `json:"clientId,omitempty"`
+	ClientID *StorageClientID `json:"clientId,omitempty"`
 }
 
 // StorageBucketArguments represent the common input arguments for bucket-related methods.
@@ -37,16 +37,30 @@ type ComposeStorageObjectArguments struct {
 	Sources  []StorageCopySrcOptions `json:"sources"`
 }
 
+// MakeStorageBucketArguments holds all arguments to tweak bucket creation.
+type MakeStorageBucketArguments struct {
+	ClientID *StorageClientID `json:"clientId,omitempty"`
+
+	MakeStorageBucketOptions
+}
+
 // MakeStorageBucketOptions holds all options to tweak bucket creation.
 type MakeStorageBucketOptions struct {
-	// The storage client ID
-	ClientID *StorageClientID `json:"clientId,omitempty"`
 	// Bucket name
 	Name string `json:"name"`
 	// Bucket location
 	Region string `json:"region,omitempty"`
 	// Enable object locking
 	ObjectLocking bool `json:"objectLocking,omitempty"`
+	// Optional tags
+	Tags map[string]string `json:"tags,omitempty"`
+}
+
+// SetBucketTaggingArguments represent the input arguments for the SetBucketTagging method.
+type SetStorageBucketTaggingArguments struct {
+	StorageBucketArguments
+
+	Tags map[string]string `json:"tags"`
 }
 
 // ListIncompleteUploadsArguments the input arguments of the ListIncompleteUploads method.
@@ -55,13 +69,6 @@ type ListIncompleteUploadsArguments struct {
 
 	Prefix    string `json:"prefix"`
 	Recursive bool   `json:"recursive,omitempty"`
-}
-
-// SetBucketTaggingArguments represent the input arguments for the SetBucketTagging method.
-type SetStorageBucketTaggingArguments struct {
-	StorageBucketArguments
-
-	Tags map[string]string `json:"tags"`
 }
 
 // RemoveIncompleteUploadArguments represent the input arguments for the RemoveIncompleteUpload method.
@@ -98,7 +105,17 @@ type PresignedPutStorageObjectArguments struct {
 // ListStorageObjectsArguments holds all arguments of a list object request.
 type ListStorageObjectsArguments struct {
 	StorageBucketArguments
-	ListStorageObjectsOptions
+
+	// Ignore '/' delimiter
+	Recursive bool `json:"recursive,omitempty"`
+	// The maximum number of objects requested per
+	// batch, advanced use-case not useful for most
+	// applications
+	MaxResults *int `json:"maxResults"`
+	// StartAfter start listing lexically at this object onwards.
+	StartAfter *string `json:"startAfter,omitempty"`
+
+	Where schema.Expression `json:"where" ndc:"predicate=StorageObjectSimple"`
 }
 
 // ListStorageObjectsOptions holds all options of a list object request.
@@ -107,6 +124,8 @@ type ListStorageObjectsOptions struct {
 	WithVersions bool `json:"withVersions"`
 	// Include objects metadata in the listing
 	WithMetadata bool `json:"withMetadata"`
+	// Include user tags in the listing
+	WithTags bool `json:"withTags"`
 	// Only list objects with the prefix
 	Prefix string `json:"prefix"`
 	// Ignore '/' delimiter
@@ -114,7 +133,7 @@ type ListStorageObjectsOptions struct {
 	// The maximum number of objects requested per
 	// batch, advanced use-case not useful for most
 	// applications
-	MaxKeys int `json:"maxKeys"`
+	MaxResults int `json:"maxResults"`
 	// StartAfter start listing lexically at this object onwards.
 	StartAfter string `json:"startAfter"`
 }
@@ -140,6 +159,9 @@ type GetStorageObjectOptions struct {
 	// For multipart objects this is a checksum of part checksums.
 	// https://docs.aws.amazon.com/AmazonS3/latest/userguide/checking-object-integrity.html
 	Checksum *bool `json:"checksum"`
+
+	// Include user tags in the listing
+	WithTags *bool `json:"withTags"`
 }
 
 // StorageCopyDestOptions represents options specified by user for CopyObject/ComposeObject APIs.
@@ -303,36 +325,19 @@ type PutStorageObjectOptions struct {
 	ConcurrentStreamParts bool `json:"concurrentStreamParts,omitempty"`
 }
 
-// StorageObjectTaggingOptions holds an object version id to update tag(s) of a specific object version.
-type StorageObjectTaggingOptions struct {
+// SetStorageObjectTagsArguments holds an object version id to update tag(s) of a specific object version.
+type SetStorageObjectTagsArguments struct {
 	StorageBucketArguments
+	SetStorageObjectTagsOptions
 
-	Object    string `json:"object"`
-	VersionID string `json:"versionId,omitempty"`
+	Object string            `json:"object"`
+	Where  schema.Expression `json:"where"  ndc:"predicate=StorageObjectSimple"`
 }
 
-// PutStorageObjectTaggingOptions holds an object version id to update tag(s) of a specific object version.
-type PutStorageObjectTaggingOptions struct {
-	StorageBucketArguments
-
-	Object    string            `json:"object"`
+// SetStorageObjectTagsOptions holds an object version id to update tag(s) of a specific object version.
+type SetStorageObjectTagsOptions struct {
 	Tags      map[string]string `json:"tags"`
 	VersionID string            `json:"versionId,omitempty"`
-}
-
-// StorageObjectAttributesOptions are options used for the GetObjectAttributes API.
-type StorageObjectAttributesOptions struct {
-	StorageBucketArguments
-
-	Object string `json:"object"`
-	// MaxParts How many parts the caller wants to be returned (default: 1000)
-	MaxParts int `json:"maxParts,omitempty"`
-	// VersionID The object version you want to attributes for
-	VersionID string `json:"versionId,omitempty"`
-	// PartNumberMarker the listing will start AFTER the part matching PartNumberMarker
-	PartNumberMarker int `json:"partNumberMarker,omitempty"`
-	// ServerSideEncryption The server-side encryption algorithm used when storing this object in Minio
-	// ServerSideEncryption *ServerSideEncryptionMethod `json:"serverSideEncryption"`
 }
 
 // SetBucketNotificationArguments represents input arguments for the SetBucketNotification method.

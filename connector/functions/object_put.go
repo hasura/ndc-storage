@@ -5,7 +5,7 @@ import (
 
 	"github.com/hasura/ndc-sdk-go/scalar"
 	"github.com/hasura/ndc-sdk-go/schema"
-	"github.com/hasura/ndc-storage/connector/collection"
+	"github.com/hasura/ndc-storage/connector/functions/internal"
 	"github.com/hasura/ndc-storage/connector/storage/common"
 	"github.com/hasura/ndc-storage/connector/types"
 )
@@ -33,7 +33,7 @@ func ProcedureUploadStorageObject(ctx context.Context, state *types.State, args 
 }
 
 func uploadStorageObject(ctx context.Context, state *types.State, args *PutStorageObjectArguments, data []byte) (common.StorageUploadInfo, error) {
-	request, err := collection.EvalCollectionObjectPredicate(args.StorageBucketArguments, args.Object, args.Where, types.QueryVariablesFromContext(ctx))
+	request, err := internal.EvalObjectPredicate(args.StorageBucketArguments, args.Object, args.Where, types.QueryVariablesFromContext(ctx))
 	if err != nil {
 		return common.StorageUploadInfo{}, err
 	}
@@ -82,4 +82,22 @@ func ProcedureComposeStorageObject(ctx context.Context, state *types.State, args
 	}
 
 	return *result, nil
+}
+
+// ProcedureSetStorageObjectTags sets new object Tags to the given object, replaces/overwrites any existing tags.
+func ProcedureSetStorageObjectTags(ctx context.Context, state *types.State, args *common.SetStorageObjectTagsArguments) (bool, error) {
+	request, err := internal.EvalObjectPredicate(args.StorageBucketArguments, args.Object, args.Where, types.QueryVariablesFromContext(ctx))
+	if err != nil {
+		return false, err
+	}
+
+	if !request.IsValid {
+		return false, errPermissionDenied
+	}
+
+	if err := state.Storage.SetObjectTags(ctx, request.StorageBucketArguments, request.Options.Prefix, args.SetStorageObjectTagsOptions); err != nil {
+		return false, err
+	}
+
+	return true, nil
 }

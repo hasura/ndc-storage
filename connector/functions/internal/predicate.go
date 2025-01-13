@@ -1,75 +1,30 @@
-package collection
+package internal
 
 import (
 	"errors"
 	"fmt"
 	"slices"
 	"strings"
-	"time"
 
 	"github.com/hasura/ndc-sdk-go/schema"
-	"github.com/hasura/ndc-sdk-go/utils"
 	"github.com/hasura/ndc-storage/connector/storage/common"
 )
 
-// CollectionObjectRequest the structured predicate result which is evaluated from the raw expression.
-type CollectionObjectRequest struct {
+// ObjectPredicate the structured predicate result which is evaluated from the raw expression.
+type ObjectPredicate struct {
 	common.StorageBucketArguments
 
 	IsValid bool
 	Options common.ListStorageObjectsOptions
-	OrderBy []ColumnOrder
 
 	variables                map[string]any
 	objectNamePrePredicate   *StringComparisonOperator
 	objectNamePostPredicates []StringComparisonOperator
 }
 
-// EvalCollectionObjectsRequest evaluates the requested collection data of the query request.
-func EvalCollectionObjectsRequest(request *schema.QueryRequest, arguments map[string]any, variables map[string]any) (*CollectionObjectRequest, error) {
-	result := &CollectionObjectRequest{
-		variables: variables,
-	}
-
-	if len(request.Query.Predicate) > 0 {
-		ok, err := result.evalQueryPredicate(request.Query.Predicate)
-		if err != nil {
-			return nil, err
-		}
-
-		if !ok {
-			return result, nil
-		}
-	}
-
-	if result.objectNamePrePredicate != nil {
-		result.Options.Prefix = result.objectNamePrePredicate.Value
-	}
-
-	if err := result.evalArguments(arguments); err != nil {
-		return nil, err
-	}
-
-	result.evalSelection(request.Query.Fields)
-
-	if request.Query.Limit != nil && *request.Query.Limit > 0 {
-		result.Options.MaxKeys = *request.Query.Limit
-	}
-
-	orderBy, err := result.evalOrderBy(request.Query.OrderBy)
-	if err != nil {
-		return nil, err
-	}
-
-	result.OrderBy = orderBy
-	result.IsValid = true
-
-	return result, nil
-}
-
-// EvalCollectionObjectPredicate evaluates the predicate condition of the query request.
-func EvalCollectionObjectPredicate(bucketInfo common.StorageBucketArguments, objectName string, predicate schema.Expression, variables map[string]any) (*CollectionObjectRequest, error) {
-	result := &CollectionObjectRequest{
+// EvalObjectPredicate evaluates the predicate condition of the query request.
+func EvalObjectPredicate(bucketInfo common.StorageBucketArguments, objectName string, predicate schema.Expression, variables map[string]any) (*ObjectPredicate, error) {
+	result := &ObjectPredicate{
 		StorageBucketArguments: bucketInfo,
 		Options:                common.ListStorageObjectsOptions{},
 		variables:              variables,
@@ -103,44 +58,45 @@ func EvalCollectionObjectPredicate(bucketInfo common.StorageBucketArguments, obj
 }
 
 // HasPostPredicate checks if the request has post-predicate expressions
-func (cor CollectionObjectRequest) HasPostPredicate() bool {
+func (cor ObjectPredicate) HasPostPredicate() bool {
 	return len(cor.objectNamePostPredicates) > 0
 }
 
-func (cor *CollectionObjectRequest) evalSelection(selection schema.QueryFields) {
-	if _, metadataExists := selection[StorageObjectColumnMetadata]; metadataExists {
-		cor.Options.WithMetadata = true
-	}
-
-	if _, metadataExists := selection[StorageObjectColumnUserMetadata]; metadataExists {
-		cor.Options.WithMetadata = true
-	}
-
-	if _, versionExists := selection[StorageObjectColumnVersionID]; versionExists {
-		cor.Options.WithVersions = true
-	}
-}
-
-func (cor *CollectionObjectRequest) evalArguments(arguments map[string]any) error {
-	if len(arguments) == 0 {
+func (cor *ObjectPredicate) EvalSelection(selection schema.NestedField) error {
+	if len(selection) == 0 {
 		return nil
 	}
 
-	if rawRecursive, ok := arguments[StorageObjectArgumentRecursive]; ok {
-		recursive, err := utils.DecodeNullableBoolean(rawRecursive)
-		if err != nil {
-			return fmt.Errorf("%s: %w", StorageObjectArgumentRecursive, err)
+	exprT, err := selection.InterfaceT()
+	if err != nil {
+		return schema.UnprocessableContentError("failed to evaluate selection: "+err.Error(), nil)
+	}
+
+	switch expr := exprT.(type) {
+	case *schema.NestedArray:
+		return cor.EvalSelection(expr.Fields)
+	case *schema.NestedObject:
+		if _, metadataExists := expr.Fields["metadata"]; metadataExists {
+			cor.Options.WithMetadata = true
+		} else if _, metadataExists := expr.Fields["userMetadata"]; metadataExists {
+			cor.Options.WithMetadata = true
 		}
 
-		if recursive != nil {
-			cor.Options.Recursive = *recursive
+		if _, metadataExists := expr.Fields["userTags"]; metadataExists {
+			cor.Options.WithTags = true
+		} else if _, metadataExists := expr.Fields["tags"]; metadataExists {
+			cor.Options.WithTags = true
+		}
+
+		if _, versionExists := expr.Fields["versionId"]; versionExists {
+			cor.Options.WithVersions = true
 		}
 	}
 
 	return nil
 }
 
-func (cor *CollectionObjectRequest) evalQueryPredicate(expression schema.Expression) (bool, error) {
+func (cor *ObjectPredicate) evalQueryPredicate(expression schema.Expression) (bool, error) {
 	exprT, err := expression.InterfaceT()
 	if err != nil {
 		return false, err
@@ -181,8 +137,6 @@ func (cor *CollectionObjectRequest) evalQueryPredicate(expression schema.Express
 			return cor.evalPredicateBucket(expr)
 		case StorageObjectColumnName:
 			return cor.evalObjectName(expr)
-		case StorageObjectColumnLastModified:
-			return cor.evalPredicateLastModified(expr)
 		default:
 			return false, errors.New("unsupport predicate on column " + expr.Column.Name)
 		}
@@ -191,32 +145,7 @@ func (cor *CollectionObjectRequest) evalQueryPredicate(expression schema.Express
 	}
 }
 
-func (cor *CollectionObjectRequest) evalPredicateLastModified(expr *schema.ExpressionBinaryComparisonOperator) (bool, error) {
-	switch expr.Operator {
-	case OperatorGreater:
-		value, err := getComparisonValueDateTime(expr.Value, cor.variables)
-		if err != nil {
-			return false, fmt.Errorf("lastModified: %w", err)
-		}
-
-		if value == nil {
-			return true, nil
-		}
-
-		valueStr := value.Format(time.RFC3339)
-		if cor.Options.StartAfter == "" {
-			cor.Options.StartAfter = valueStr
-
-			return true, nil
-		}
-
-		return cor.Options.StartAfter == valueStr, nil
-	default:
-		return false, fmt.Errorf("unsupported operator `%s` for object name", expr.Operator)
-	}
-}
-
-func (cor *CollectionObjectRequest) evalIsNullBoolExp(expr *schema.ExpressionBinaryComparisonOperator) (*bool, error) {
+func (cor *ObjectPredicate) evalIsNullBoolExp(expr *schema.ExpressionBinaryComparisonOperator) (*bool, error) {
 	if expr.Operator != OperatorIsNull {
 		return nil, nil
 	}
@@ -229,7 +158,7 @@ func (cor *CollectionObjectRequest) evalIsNullBoolExp(expr *schema.ExpressionBin
 	return boolValue, nil
 }
 
-func (cor *CollectionObjectRequest) evalPredicateClientID(expr *schema.ExpressionBinaryComparisonOperator) (bool, error) {
+func (cor *ObjectPredicate) evalPredicateClientID(expr *schema.ExpressionBinaryComparisonOperator) (bool, error) {
 	switch expr.Operator {
 	case OperatorEqual:
 		value, err := getComparisonValueString(expr.Value, cor.variables)
@@ -254,7 +183,7 @@ func (cor *CollectionObjectRequest) evalPredicateClientID(expr *schema.Expressio
 	}
 }
 
-func (cor *CollectionObjectRequest) evalPredicateBucket(expr *schema.ExpressionBinaryComparisonOperator) (bool, error) {
+func (cor *ObjectPredicate) evalPredicateBucket(expr *schema.ExpressionBinaryComparisonOperator) (bool, error) {
 	switch expr.Operator {
 	case OperatorEqual:
 		value, err := getComparisonValueString(expr.Value, cor.variables)
@@ -278,7 +207,7 @@ func (cor *CollectionObjectRequest) evalPredicateBucket(expr *schema.ExpressionB
 	}
 }
 
-func (cor *CollectionObjectRequest) evalObjectName(expr *schema.ExpressionBinaryComparisonOperator) (bool, error) { //nolint:gocognit,cyclop
+func (cor *ObjectPredicate) evalObjectName(expr *schema.ExpressionBinaryComparisonOperator) (bool, error) { //nolint:gocognit,cyclop
 	if !slices.Contains([]string{OperatorStartsWith, OperatorEqual}, expr.Operator) {
 		return false, fmt.Errorf("unsupported operator `%s` for object name", expr.Operator)
 	}
@@ -373,35 +302,8 @@ func (cor *CollectionObjectRequest) evalObjectName(expr *schema.ExpressionBinary
 	return true, nil
 }
 
-func (cor *CollectionObjectRequest) evalOrderBy(orderBy *schema.OrderBy) ([]ColumnOrder, error) {
-	var results []ColumnOrder
-	if orderBy == nil {
-		return results, nil
-	}
-
-	for _, elem := range orderBy.Elements {
-		targetT, err := elem.Target.InterfaceT()
-		if err != nil {
-			return nil, err
-		}
-
-		switch target := targetT.(type) {
-		case *schema.OrderByColumn:
-			orderBy := ColumnOrder{
-				Name:       target.Name,
-				Descending: elem.OrderDirection == schema.OrderDirectionDesc,
-			}
-			results = append(results, orderBy)
-		default:
-			return nil, fmt.Errorf("support ordering by column only, got: %v", elem.Target)
-		}
-	}
-
-	return results, nil
-}
-
 // CheckPostObjectPredicate the predicate function to filter the object with post conditions
-func (cor CollectionObjectRequest) CheckPostObjectPredicate(input common.StorageObject) bool {
+func (cor ObjectPredicate) CheckPostObjectPredicate(input common.StorageObject) bool {
 	if len(cor.objectNamePostPredicates) == 0 {
 		return true
 	}
@@ -410,7 +312,7 @@ func (cor CollectionObjectRequest) CheckPostObjectPredicate(input common.Storage
 }
 
 // CheckPostObjectPredicate the predicate function to filter the object with post conditions
-func (cor CollectionObjectRequest) CheckPostObjectNamePredicate(name string) bool {
+func (cor ObjectPredicate) CheckPostObjectNamePredicate(name string) bool {
 	for _, pred := range cor.objectNamePostPredicates {
 		if (pred.Operator == OperatorContains && !strings.Contains(name, pred.Value)) ||
 			(pred.Operator == OperatorInsensitiveContains && !strings.Contains(strings.ToLower(name), strings.ToLower(pred.Value))) {
