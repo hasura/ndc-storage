@@ -54,7 +54,7 @@ func CalculateContentMd5(reader io.Reader) (io.Reader, []byte, error) {
 	} else {
 		// Create a buffer.
 		rawBytes, err := io.ReadAll(reader)
-		if err != nil && err != io.ErrUnexpectedEOF && err != io.EOF {
+		if err != nil {
 			return nil, nil, err
 		}
 

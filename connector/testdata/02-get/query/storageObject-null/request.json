@@ -19,7 +19,7 @@
         "expressions": [
           {
             "type": "binary_comparison_operator",
-            "column": { "type": "column", "name": "name", "path": [] },
+            "column": { "type": "column", "name": "object", "path": [] },
             "operator": "_starts_with",
             "value": { "type": "scalar", "value": "not-found" }
           },

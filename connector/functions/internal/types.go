@@ -5,11 +5,9 @@ import (
 )
 
 const (
-	CollectionStorageObjects    = "storageObjects"
 	StorageObjectName           = "StorageObject"
 	StorageObjectColumnClientID = "clientId"
 	StorageObjectColumnObject   = "object"
-	StorageObjectColumnName     = "name"
 	StorageObjectColumnBucket   = "bucket"
 )
 

@@ -3,7 +3,6 @@ package internal
 import (
 	"fmt"
 	"strings"
-	"time"
 
 	"github.com/hasura/ndc-sdk-go/schema"
 	"github.com/hasura/ndc-sdk-go/utils"
@@ -49,13 +48,4 @@ func getComparisonValueBoolean(input schema.ComparisonValue, variables map[strin
 	}
 
 	return utils.DecodeNullableBoolean(rawValue)
-}
-
-func getComparisonValueDateTime(input schema.ComparisonValue, variables map[string]any) (*time.Time, error) {
-	rawValue, err := getComparisonValue(input, variables)
-	if err != nil {
-		return nil, err
-	}
-
-	return utils.DecodeNullableDateTime(rawValue)
 }

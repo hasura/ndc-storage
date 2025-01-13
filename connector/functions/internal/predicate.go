@@ -135,7 +135,7 @@ func (cor *ObjectPredicate) evalQueryPredicate(expression schema.Expression) (bo
 			return cor.evalPredicateClientID(expr)
 		case StorageObjectColumnBucket:
 			return cor.evalPredicateBucket(expr)
-		case StorageObjectColumnName:
+		case StorageObjectColumnObject:
 			return cor.evalObjectName(expr)
 		default:
 			return false, errors.New("unsupport predicate on column " + expr.Column.Name)

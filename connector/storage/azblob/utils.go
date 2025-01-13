@@ -122,7 +122,7 @@ func serializeObjectInfo(item *container.BlobItem) common.StorageObject { //noli
 	object.LegalHold = item.Properties.LegalHold
 	object.Permissions = item.Properties.Permissions
 	object.RehydratePriority = (*string)(item.Properties.RehydratePriority)
-	object.ResourceType = (*string)(item.Properties.ResourceType)
+	object.ResourceType = item.Properties.ResourceType
 	object.RemainingRetentionDays = item.Properties.RemainingRetentionDays
 
 	return object
