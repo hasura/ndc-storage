@@ -3,9 +3,11 @@ module github.com/hasura/ndc-storage
 go 1.23
 
 require (
+	github.com/Azure/azure-sdk-for-go/sdk/azcore v1.16.0
 	github.com/Azure/azure-sdk-for-go/sdk/azidentity v1.8.0
 	github.com/Azure/azure-sdk-for-go/sdk/storage/azblob v1.5.0
 	github.com/alecthomas/kong v1.6.1
+	github.com/go-viper/mapstructure/v2 v2.2.1
 	github.com/hasura/ndc-sdk-go v1.7.1-0.20250110162227-07a388cb4471
 	github.com/invopop/jsonschema v0.13.0
 	github.com/lmittmann/tint v1.0.6
@@ -19,7 +21,6 @@ require (
 )
 
 require (
-	github.com/Azure/azure-sdk-for-go/sdk/azcore v1.16.0 // indirect
 	github.com/Azure/azure-sdk-for-go/sdk/internal v1.10.0 // indirect
 	github.com/AzureAD/microsoft-authentication-library-for-go v1.2.2 // indirect
 	github.com/bahlo/generic-list-go v0.2.0 // indirect
@@ -31,7 +32,6 @@ require (
 	github.com/go-ini/ini v1.67.0 // indirect
 	github.com/go-logr/logr v1.4.2 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect
-	github.com/go-viper/mapstructure/v2 v2.2.1 // indirect
 	github.com/goccy/go-json v0.10.4 // indirect
 	github.com/golang-jwt/jwt/v5 v5.2.1 // indirect
 	github.com/google/go-cmp v0.6.0 // indirect

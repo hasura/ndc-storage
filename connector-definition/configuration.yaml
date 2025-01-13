@@ -1,7 +1,6 @@
 # yaml-language-server: $schema=https://raw.githubusercontent.com/hasura/ndc-storage/main/jsonschema/configuration.schema.json
 clients:
-  - type:
-      env: STORAGE_PROVIDER_TYPE
+  - type: s3
     endpoint:
       env: STORAGE_ENDPOINT
     defaultBucket:

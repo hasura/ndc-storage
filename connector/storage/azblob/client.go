@@ -2,10 +2,8 @@ package azblob
 
 import (
 	"context"
-	"fmt"
 	"log/slog"
 
-	"github.com/Azure/azure-sdk-for-go/sdk/azidentity"
 	"github.com/Azure/azure-sdk-for-go/sdk/storage/azblob"
 	"github.com/hasura/ndc-storage/connector/storage/common"
 	"go.opentelemetry.io/otel/attribute"
@@ -13,10 +11,6 @@ import (
 )
 
 // https://github.com/Azure/azure-sdk-for-go/blob/main/sdk/storage/azblob/examples_test.go
-
-type ClientConfig struct {
-	AccountName string
-}
 
 // Client prepresents a Minio client wrapper.
 type Client struct {
@@ -27,14 +21,7 @@ var _ common.StorageClient = &Client{}
 
 // New creates a new Minio client.
 func New(ctx context.Context, cfg *ClientConfig, logger *slog.Logger) (*Client, error) {
-	serviceURL := fmt.Sprintf("https://%s.blob.core.windows.net/", cfg.AccountName)
-
-	cred, err := azidentity.NewDefaultAzureCredential(nil)
-	if err != nil {
-		return nil, err
-	}
-
-	client, err := azblob.NewClient(serviceURL, cred, &azblob.ClientOptions{})
+	client, err := cfg.toAzureBlobClient(logger)
 	if err != nil {
 		return nil, err
 	}

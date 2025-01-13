@@ -1,8 +1,7 @@
 # yaml-language-server: $schema=../../jsonschema/configuration.schema.json
 clients:
   - id: minio
-    type:
-      value: s3
+    type: s3
     endpoint:
       env: STORAGE_ENDPOINT
     publicHost:
@@ -17,8 +16,7 @@ clients:
       secretAccessKey:
         env: SECRET_ACCESS_KEY
   - id: s3
-    type:
-      value: s3
+    type: s3
     endpoint:
       env: S3_STORAGE_ENDPOINT
     publicHost:
@@ -34,6 +32,18 @@ clients:
         env: S3_ACCESS_KEY_ID
       secretAccessKey:
         env: S3_SECRET_ACCESS_KEY
+  - id: azblob
+    type: azblob
+    endpoint:
+      env: AZURE_STORAGE_ENDPOINT
+    publicHost:
+      env: AZURE_STORAGE_PUBLIC_HOST
+    defaultBucket:
+      env: AZURE_STORAGE_DEFAULT_BUCKET
+    authentication:
+      type: azureAD
+      accountName:
+        env: AZURE_STORAGE_ACCOUNT_NAME
 concurrency:
   query: 10
   mutation: 10

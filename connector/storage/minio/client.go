@@ -13,8 +13,6 @@ import (
 	"github.com/hasura/ndc-sdk-go/utils"
 	"github.com/hasura/ndc-storage/connector/storage/common"
 	"github.com/minio/minio-go/v7"
-	"github.com/minio/minio-go/v7/pkg/credentials"
-	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/codes"
 	"go.opentelemetry.io/otel/propagation"
@@ -22,31 +20,6 @@ import (
 )
 
 var tracer = connector.NewTracer("connector/storage/minio")
-
-// AuthConfig represent the authentication config of the minio client.
-type AuthConfig struct {
-	AccessKeyID     string
-	SecretAccessKey string
-	SessionToken    string
-	UseIAMAuth      bool
-	IAMAuthEndpoint string
-}
-
-// ClientConfig represent the configuration of the minio client.
-type ClientConfig struct {
-	Type       common.StorageProviderType
-	Endpoint   string
-	Region     string
-	PublicHost *url.URL
-	Port       int
-	MaxRetries int
-	Secure     bool
-	// TrailingHeaders indicates server support of trailing headers.
-	// Only supported for v4 signatures.
-	TrailingHeaders bool
-
-	AuthConfig
-}
 
 // Client prepresents a Minio client wrapper.
 type Client struct {
@@ -59,47 +32,24 @@ type Client struct {
 var _ common.StorageClient = &Client{}
 
 // New creates a new Minio client.
-func New(ctx context.Context, cfg *ClientConfig, logger *slog.Logger) (*Client, error) {
-	mc := &Client{
-		publicHost:   cfg.PublicHost,
-		providerType: cfg.Type,
-		isDebug:      utils.IsDebug(logger),
-	}
-
-	transport, err := minio.DefaultTransport(cfg.Secure)
+func New(ctx context.Context, providerType common.StorageProviderType, cfg *ClientConfig, logger *slog.Logger) (*Client, error) {
+	publicHost, err := cfg.ValidatePublicHost()
 	if err != nil {
 		return nil, err
 	}
 
-	opts := &minio.Options{
-		Secure:          cfg.Secure,
-		Transport:       transport,
-		Region:          cfg.Region,
-		MaxRetries:      cfg.MaxRetries,
-		TrailingHeaders: cfg.TrailingHeaders,
+	mc := &Client{
+		publicHost:   publicHost,
+		providerType: providerType,
+		isDebug:      utils.IsDebug(logger),
 	}
 
-	if utils.IsDebug(logger) {
-		opts.Transport = debugRoundTripper{
-			transport:  transport,
-			propagator: otel.GetTextMapPropagator(),
-			port:       cfg.Port,
-			logger:     logger,
-		}
-	} else {
-		opts.Transport = roundTripper{
-			transport:  transport,
-			propagator: otel.GetTextMapPropagator(),
-		}
+	opts, endpoint, err := cfg.toMinioOptions(providerType, logger)
+	if err != nil {
+		return nil, err
 	}
 
-	if cfg.UseIAMAuth {
-		opts.Creds = credentials.NewIAM(cfg.IAMAuthEndpoint)
-	} else {
-		opts.Creds = credentials.NewStaticV4(cfg.AccessKeyID, cfg.SecretAccessKey, cfg.SessionToken)
-	}
-
-	c, err := minio.New(cfg.Endpoint, opts)
+	c, err := minio.New(endpoint, opts)
 	if err != nil {
 		return nil, fmt.Errorf("failed to initialize the minio client: %w", err)
 	}

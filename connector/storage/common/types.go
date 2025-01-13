@@ -23,12 +23,13 @@ type StorageClientID string
 type StorageProviderType string
 
 const (
-	S3            StorageProviderType = "s3"
-	GoogleStorage StorageProviderType = "gs"
+	S3             StorageProviderType = "s3"
+	GoogleStorage  StorageProviderType = "gs"
+	AzureBlobStore StorageProviderType = "azblob"
 )
 
 var enumValues_StorageProviderType = []StorageProviderType{
-	S3, GoogleStorage,
+	S3, GoogleStorage, AzureBlobStore,
 }
 
 // ParseStorageProviderType parses the StorageProviderType from string.

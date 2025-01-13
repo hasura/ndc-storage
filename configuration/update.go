@@ -9,6 +9,8 @@ import (
 
 	"github.com/hasura/ndc-sdk-go/utils"
 	"github.com/hasura/ndc-storage/connector/storage"
+	"github.com/hasura/ndc-storage/connector/storage/common"
+	"github.com/hasura/ndc-storage/connector/storage/minio"
 	"github.com/hasura/ndc-storage/connector/types"
 	"gopkg.in/yaml.v3"
 )
@@ -63,13 +65,11 @@ var defaultConfiguration = types.Configuration{
 	},
 	Clients: []storage.ClientConfig{
 		{
-			Type: storage.EnvStorageProviderType{
-				EnvString: utils.NewEnvStringVariable("STORAGE_PROVIDER_TYPE"),
-			},
-			Endpoint:      utils.ToPtr(utils.NewEnvStringVariable("STORAGE_ENDPOINT")),
-			DefaultBucket: utils.NewEnvStringVariable("DEFAULT_BUCKET"),
-			Authentication: storage.AuthCredentials{
-				Type:            storage.AuthTypeStatic,
+			"type":          common.S3,
+			"endpoint":      utils.ToPtr(utils.NewEnvStringVariable("STORAGE_ENDPOINT")),
+			"defaultBucket": utils.NewEnvStringVariable("DEFAULT_BUCKET"),
+			"authentication": minio.AuthCredentials{
+				Type:            minio.AuthTypeStatic,
 				AccessKeyID:     utils.ToPtr(utils.NewEnvStringVariable("ACCESS_KEY_ID")),
 				SecretAccessKey: utils.ToPtr(utils.NewEnvStringVariable("SECRET_ACCESS_KEY")),
 			},
