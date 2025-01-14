@@ -819,6 +819,19 @@ func (j StorageObjectChecksum) ToMap() map[string]any {
 }
 
 // ToMap encodes the struct to a value map
+func (j StorageObjectListResults) ToMap() map[string]any {
+	r := make(map[string]any)
+	j_Objects := make([]any, len(j.Objects))
+	for i, j_Objects_v := range j.Objects {
+		j_Objects[i] = j_Objects_v
+	}
+	r["objects"] = j_Objects
+	r["pageInfo"] = j.PageInfo
+
+	return r
+}
+
+// ToMap encodes the struct to a value map
 func (j StorageObjectLockConfig) ToMap() map[string]any {
 	r := make(map[string]any)
 	r = utils.MergeMap(r, j.SetStorageObjectLockConfig.ToMap())
@@ -835,6 +848,16 @@ func (j StorageObjectMultipartInfo) ToMap() map[string]any {
 	r["size"] = j.Size
 	r["storageClass"] = j.StorageClass
 	r["uploadId"] = j.UploadID
+
+	return r
+}
+
+// ToMap encodes the struct to a value map
+func (j StorageObjectPaginationInfo) ToMap() map[string]any {
+	r := make(map[string]any)
+	r["cursor"] = j.Cursor
+	r["hasNextPage"] = j.HasNextPage
+	r["nextCursor"] = j.NextCursor
 
 	return r
 }

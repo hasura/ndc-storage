@@ -13,7 +13,6 @@ import (
 	"github.com/invopop/jsonschema"
 	"github.com/minio/minio-go/v7"
 	"github.com/minio/minio-go/v7/pkg/credentials"
-	"go.opentelemetry.io/otel"
 )
 
 var (
@@ -37,7 +36,10 @@ func (cc ClientConfig) JSONSchema() *jsonschema.Schema {
 
 	result.Properties.Set("region", &jsonschema.Schema{
 		Description: "Optional region",
-		Ref:         envStringRef,
+		OneOf: []*jsonschema.Schema{
+			{Type: "null"},
+			{Ref: envStringRef},
+		},
 	})
 	result.Properties.Set("authentication", cc.Authentication.JSONSchema())
 	result.Properties.Set("trailingHeaders", &jsonschema.Schema{
@@ -51,21 +53,23 @@ func (cc ClientConfig) JSONSchema() *jsonschema.Schema {
 // OtherConfig holds MinIO-specific configurations
 type OtherConfig struct {
 	// Optional region.
-	Region *utils.EnvString `json:"region,omitempty" jsonschema:"nullable" yaml:"region,omitempty"`
+	Region *utils.EnvString `json:"region,omitempty" mapstructure:"region" yaml:"region,omitempty"`
 	// Authentication credentials.
-	Authentication AuthCredentials `json:"authentication" yaml:"authentication"`
+	Authentication AuthCredentials `json:"authentication" mapstructure:"authentication" yaml:"authentication"`
 	// TrailingHeaders indicates server support of trailing headers.
 	// Only supported for v4 signatures.
-	TrailingHeaders bool `json:"trailingHeaders,omitempty" yaml:"trailingHeaders,omitempty"`
+	TrailingHeaders bool `json:"trailingHeaders,omitempty" mapstructure:"trailingHeaders" yaml:"trailingHeaders,omitempty"`
 }
 
 func (cc ClientConfig) toMinioOptions(providerType common.StorageProviderType, logger *slog.Logger) (*minio.Options, string, error) {
-	endpoint, port, useSSL, err := cc.BaseClientConfig.ValidateEndpoint()
+	endpointURL, port, useSSL, err := cc.BaseClientConfig.ValidateEndpoint()
 	if err != nil {
 		return nil, "", err
 	}
 
-	if endpoint == "" {
+	var endpoint string
+
+	if endpointURL == nil {
 		switch providerType {
 		case common.S3:
 			endpoint = "s3.amazonaws.com"
@@ -78,31 +82,15 @@ func (cc ClientConfig) toMinioOptions(providerType common.StorageProviderType, l
 		default:
 			return nil, "", errRequireStorageEndpoint
 		}
+	} else {
+		endpoint = endpointURL.Host
 	}
 
-	transport, err := minio.DefaultTransport(useSSL)
-	if err != nil {
-		return nil, "", err
-	}
-
+	transport := common.NewTransport(logger, port, useSSL)
 	opts := &minio.Options{
 		Secure:          useSSL,
 		Transport:       transport,
 		TrailingHeaders: cc.TrailingHeaders,
-	}
-
-	if utils.IsDebug(logger) {
-		opts.Transport = debugRoundTripper{
-			transport:  transport,
-			propagator: otel.GetTextMapPropagator(),
-			port:       port,
-			logger:     logger,
-		}
-	} else {
-		opts.Transport = roundTripper{
-			transport:  transport,
-			propagator: otel.GetTextMapPropagator(),
-		}
 	}
 
 	opts.Creds, err = cc.Authentication.toCredentials()
@@ -161,16 +149,16 @@ func (at AuthType) Validate() error {
 // AuthCredentials represent the authentication credentials infomartion.
 type AuthCredentials struct {
 	// The authentication type
-	Type AuthType `json:"type" yaml:"type"`
+	Type AuthType `json:"type" mapstructure:"type" yaml:"type"`
 	// Access Key ID.
-	AccessKeyID *utils.EnvString `json:"accessKeyId,omitempty" yaml:"accessKeyId,omitempty"`
+	AccessKeyID *utils.EnvString `json:"accessKeyId,omitempty" mapstructure:"accessKeyId" yaml:"accessKeyId,omitempty"`
 	// Secret Access Key.
-	SecretAccessKey *utils.EnvString `json:"secretAccessKey,omitempty" yaml:"secretAccessKey,omitempty"`
+	SecretAccessKey *utils.EnvString `json:"secretAccessKey,omitempty" mapstructure:"secretAccessKey" yaml:"secretAccessKey,omitempty"`
 	// Optional temporary session token credentials. Used for testing only.
 	// See https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_temp_use-resources.html
-	SessionToken *utils.EnvString `json:"sessionToken,omitempty" yaml:"sessionToken,omitempty"`
+	SessionToken *utils.EnvString `json:"sessionToken,omitempty" mapstructure:"sessionToken" yaml:"sessionToken,omitempty"`
 	// Custom endpoint to fetch IAM role credentials.
-	IAMAuthEndpoint *utils.EnvString `json:"iamAuthEndpoint,omitempty" yaml:"iamAuthEndpoint,omitempty"`
+	IAMAuthEndpoint *utils.EnvString `json:"iamAuthEndpoint,omitempty" mapstructure:"iamAuthEndpoint" yaml:"iamAuthEndpoint,omitempty"`
 }
 
 // JSONSchema is used to generate a custom jsonschema.

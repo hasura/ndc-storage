@@ -1,0 +1,16 @@
+{
+  "collection_relationships": {},
+  "operations": [
+    {
+      "type": "procedure",
+      "name": "setStorageBucketTags",
+      "arguments": {
+        "clientId": "azblob",
+        "bucket": "azblob-bucket-test",
+        "tags": {
+          "Foo": "baz"
+        }
+      }
+    }
+  ]
+}

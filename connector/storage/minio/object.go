@@ -18,10 +18,18 @@ import (
 )
 
 // ListObjects list objects in a bucket.
-func (mc *Client) ListObjects(ctx context.Context, bucketName string, opts *common.ListStorageObjectsOptions) ([]common.StorageObject, error) {
+func (mc *Client) ListObjects(ctx context.Context, bucketName string, opts *common.ListStorageObjectsOptions, predicate func(string) bool) (*common.StorageObjectListResults, error) {
 	ctx, span := mc.startOtelSpan(ctx, "ListObjects", bucketName)
 	defer span.End()
 
+	maxResults := opts.MaxResults
+	// Do not set the limit if the post-predicate function exists.
+	// Results will be filtered and paginated by the client.
+	if predicate != nil {
+		opts.MaxResults = 0
+	}
+
+	var count int
 	objChan := mc.client.ListObjects(ctx, bucketName, mc.validateListObjectsOptions(span, opts))
 	objects := make([]common.StorageObject, 0)
 
@@ -33,14 +41,23 @@ func (mc *Client) ListObjects(ctx context.Context, bucketName string, opts *comm
 			return nil, serializeErrorResponse(obj.Err)
 		}
 
-		object := serializeObjectInfo(obj, true)
-		object.Bucket = bucketName
-		objects = append(objects, object)
+		if predicate != nil && !predicate(obj.Key) {
+			continue
+		}
+
+		if maxResults > 0 && count < maxResults {
+			object := serializeObjectInfo(obj, true)
+			object.Bucket = bucketName
+			objects = append(objects, object)
+			count++
+		}
 	}
 
-	span.SetAttributes(attribute.Int("storage.object_count", len(objects)))
+	span.SetAttributes(attribute.Int("storage.object_count", count))
 
-	return objects, nil
+	return &common.StorageObjectListResults{
+		Objects: objects,
+	}, nil
 }
 
 // ListIncompleteUploads list partially uploaded objects in a bucket.

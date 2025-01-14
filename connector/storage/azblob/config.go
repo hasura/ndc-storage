@@ -3,15 +3,19 @@ package azblob
 import (
 	"errors"
 	"fmt"
+	"log"
 	"log/slog"
+	"net/http"
 	"slices"
 
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/policy"
 	"github.com/Azure/azure-sdk-for-go/sdk/azidentity"
 	"github.com/Azure/azure-sdk-for-go/sdk/storage/azblob"
+	"github.com/Azure/azure-sdk-for-go/sdk/tracing/azotel"
 	"github.com/hasura/ndc-sdk-go/utils"
 	"github.com/hasura/ndc-storage/connector/storage/common"
 	"github.com/invopop/jsonschema"
+	"go.opentelemetry.io/otel"
 )
 
 var (
@@ -36,7 +40,7 @@ func (cc ClientConfig) JSONSchema() *jsonschema.Schema {
 }
 
 func (cc ClientConfig) toAzureBlobClient(logger *slog.Logger) (*azblob.Client, error) {
-	endpoint, _, useSSL, err := cc.BaseClientConfig.ValidateEndpoint()
+	endpointURL, port, useSSL, err := cc.BaseClientConfig.ValidateEndpoint()
 	if err != nil {
 		return nil, err
 	}
@@ -47,6 +51,7 @@ func (cc ClientConfig) toAzureBlobClient(logger *slog.Logger) (*azblob.Client, e
 	}
 
 	isDebug := utils.IsDebug(logger)
+	transport := common.NewTransport(logger, port, true)
 
 	opts := &azblob.ClientOptions{
 		ClientOptions: policy.ClientOptions{
@@ -57,7 +62,16 @@ func (cc ClientConfig) toAzureBlobClient(logger *slog.Logger) (*azblob.Client, e
 				IncludeBody: isDebug,
 			},
 			InsecureAllowCredentialWithHTTP: !useSSL,
+			TracingProvider:                 azotel.NewTracingProvider(otel.GetTracerProvider(), nil),
+			Transport: &http.Client{
+				Transport: transport,
+			},
 		},
+	}
+
+	var endpoint string
+	if endpointURL != nil {
+		endpoint = endpointURL.String()
 	}
 
 	return cc.Authentication.toAzureBlobClient(endpoint, opts)
@@ -66,7 +80,7 @@ func (cc ClientConfig) toAzureBlobClient(logger *slog.Logger) (*azblob.Client, e
 // OtherConfig holds MinIO-specific configurations
 type OtherConfig struct {
 	// Authentication credentials.
-	Authentication AuthCredentials `json:"authentication" yaml:"authentication"`
+	Authentication AuthCredentials `json:"authentication" mapstructure:"authentication" yaml:"authentication"`
 }
 
 // AuthType represents the authentication type enum.
@@ -106,11 +120,11 @@ func (at AuthType) Validate() error {
 // AuthCredentials represent the authentication credentials infomartion.
 type AuthCredentials struct {
 	// The authentication type
-	Type AuthType `json:"type" yaml:"type"`
+	Type AuthType `json:"type" mapstructure:"type" yaml:"type"`
 	// Access Key ID.
-	AccountName *utils.EnvString `json:"accountName,omitempty" yaml:"accountName,omitempty"`
+	AccountName *utils.EnvString `json:"accountName,omitempty" mapstructure:"accountName" yaml:"accountName,omitempty"`
 	// Secret Access Key.
-	AccountKey *utils.EnvString `json:"accountKey,omitempty" yaml:"accountKey,omitempty"`
+	AccountKey *utils.EnvString `json:"accountKey,omitempty" mapstructure:"accountKey" yaml:"accountKey,omitempty"`
 }
 
 // JSONSchema is used to generate a custom jsonschema.
@@ -172,6 +186,8 @@ func (ac AuthCredentials) toAzureBlobClient(endpoint string, options *azblob.Cli
 		serviceURL = fmt.Sprintf("https://%s.blob.core.windows.net/", accountKey)
 	}
 
+	log.Println("serviceURL", serviceURL)
+
 	switch ac.Type {
 	case AuthTypeNone:
 		return azblob.NewClientWithNoCredential(serviceURL, options)
@@ -209,14 +225,21 @@ func (ac AuthCredentials) toAzureBlobClient(endpoint string, options *azblob.Cli
 }
 
 func (ac AuthCredentials) parseAccountNameAndKey() (string, string, error) {
-	accountName, err := ac.AccountName.GetOrDefault("")
-	if err != nil {
-		return "", "", fmt.Errorf("accountKey: %w", err)
+	var accountName, accountKey string
+	var err error
+
+	if ac.AccountName != nil {
+		accountName, err = ac.AccountName.GetOrDefault("")
+		if err != nil {
+			return "", "", fmt.Errorf("accountKey: %w", err)
+		}
 	}
 
-	accountKey, err := ac.AccountKey.GetOrDefault("")
-	if err != nil {
-		return "", "", fmt.Errorf("accountKey: %w", err)
+	if ac.AccountKey != nil {
+		accountKey, err = ac.AccountKey.GetOrDefault("")
+		if err != nil {
+			return "", "", fmt.Errorf("accountKey: %w", err)
+		}
 	}
 
 	return accountName, accountKey, nil

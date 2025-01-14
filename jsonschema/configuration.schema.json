@@ -51,7 +51,14 @@
               "description": "Allowed buckets. This setting prevents users to get buckets and objects outside the list. However, it's recommended to restrict the permissions for the IAM credentials"
             },
             "region": {
-              "$ref": "#/$defs/EnvString",
+              "oneOf": [
+                {
+                  "type": "null"
+                },
+                {
+                  "$ref": "#/$defs/EnvString"
+                }
+              ],
               "description": "Optional region"
             },
             "authentication": {

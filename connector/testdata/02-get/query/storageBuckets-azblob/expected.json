@@ -1,0 +1,9 @@
+[
+  {
+    "rows": [
+      {
+        "__value": [{ "name": "azblob-bucket-test", "tags": { "foo": "baz" } }]
+      }
+    ]
+  }
+]

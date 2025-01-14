@@ -1,6 +1,9 @@
 package azblob
 
 import (
+	"errors"
+
+	"github.com/Azure/azure-sdk-for-go/sdk/azcore"
 	"github.com/Azure/azure-sdk-for-go/sdk/storage/azblob"
 	"github.com/Azure/azure-sdk-for-go/sdk/storage/azblob/container"
 	"github.com/hasura/ndc-sdk-go/connector"
@@ -148,4 +151,29 @@ func serializeUploadObjectInfo(resp azblob.UploadStreamResponse) common.StorageU
 	}
 
 	return object
+}
+
+func serializeAzureErrorResponse(respErr *azcore.ResponseError) *schema.ConnectorError {
+	details := map[string]any{
+		"statusCode": respErr.StatusCode,
+	}
+
+	if respErr.ErrorCode != "" {
+		details["code"] = respErr.ErrorCode
+	}
+
+	if respErr.StatusCode >= 500 {
+		return schema.NewConnectorError(respErr.StatusCode, respErr.Error(), details)
+	}
+
+	return schema.UnprocessableContentError(respErr.Error(), details)
+}
+
+func serializeErrorResponse(err error) *schema.ConnectorError {
+	var respErr *azcore.ResponseError
+	if !errors.As(err, &respErr) {
+		return schema.UnprocessableContentError(err.Error(), nil)
+	}
+
+	return serializeAzureErrorResponse(respErr)
 }

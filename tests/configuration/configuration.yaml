@@ -41,9 +41,11 @@ clients:
     defaultBucket:
       env: AZURE_STORAGE_DEFAULT_BUCKET
     authentication:
-      type: azureAD
+      type: sharedKey
       accountName:
         env: AZURE_STORAGE_ACCOUNT_NAME
+      accountKey:
+        env: AZURE_STORAGE_ACCOUNT_KEY
 concurrency:
   query: 10
   mutation: 10

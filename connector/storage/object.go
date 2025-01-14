@@ -13,19 +13,19 @@ import (
 )
 
 // ListObjects lists objects in a bucket.
-func (m *Manager) ListObjects(ctx context.Context, bucketInfo common.StorageBucketArguments, opts *common.ListStorageObjectsOptions) ([]common.StorageObject, error) {
+func (m *Manager) ListObjects(ctx context.Context, bucketInfo common.StorageBucketArguments, opts *common.ListStorageObjectsOptions, predicate func(string) bool) (*common.StorageObjectListResults, error) {
 	client, bucketName, err := m.GetClientAndBucket(bucketInfo.ClientID, bucketInfo.Bucket)
 	if err != nil {
 		return nil, err
 	}
 
-	results, err := client.ListObjects(ctx, bucketName, opts)
+	results, err := client.ListObjects(ctx, bucketName, opts, predicate)
 	if err != nil {
 		return nil, err
 	}
 
-	for i := range results {
-		results[i].ClientID = string(client.id)
+	for i := range results.Objects {
+		results.Objects[i].ClientID = string(client.id)
 	}
 
 	return results, nil

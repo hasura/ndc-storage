@@ -2,10 +2,14 @@ package azblob
 
 import (
 	"context"
+	"errors"
 
+	"github.com/Azure/azure-sdk-for-go/sdk/azcore"
 	"github.com/Azure/azure-sdk-for-go/sdk/storage/azblob"
+	"github.com/Azure/azure-sdk-for-go/sdk/storage/azblob/bloberror"
 	"github.com/Azure/azure-sdk-for-go/sdk/storage/azblob/container"
 	"github.com/Azure/azure-sdk-for-go/sdk/storage/azblob/service"
+	"github.com/hasura/ndc-sdk-go/schema"
 	"github.com/hasura/ndc-storage/connector/storage/common"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/codes"
@@ -29,7 +33,7 @@ func (c *Client) MakeBucket(ctx context.Context, args *common.MakeStorageBucketO
 		span.SetStatus(codes.Error, err.Error())
 		span.RecordError(err)
 
-		return err
+		return serializeErrorResponse(err)
 	}
 
 	return nil
@@ -55,7 +59,7 @@ func (c *Client) ListBuckets(ctx context.Context, options common.BucketOptions) 
 			span.SetStatus(codes.Error, err.Error())
 			span.RecordError(err)
 
-			return nil, err
+			return nil, serializeErrorResponse(err)
 		}
 
 		for _, container := range resp.ContainerItems {
@@ -135,7 +139,7 @@ func (c *Client) getBucket(ctx context.Context, bucketName string, options commo
 	for pager.More() {
 		resp, err := pager.NextPage(ctx)
 		if err != nil {
-			return nil, err
+			return nil, serializeErrorResponse(err)
 		}
 
 		for _, container := range resp.ContainerItems {
@@ -177,10 +181,22 @@ func (c *Client) RemoveBucket(ctx context.Context, bucketName string) error {
 
 	_, err := c.client.DeleteContainer(ctx, bucketName, nil)
 	if err != nil {
+		var respErr *azcore.ResponseError
+		if errors.As(err, &respErr) {
+			if respErr.ErrorCode == string(bloberror.ContainerBeingDeleted) || respErr.ErrorCode == string(bloberror.ContainerNotFound) {
+				return nil
+			}
+
+			span.SetStatus(codes.Error, err.Error())
+			span.RecordError(err)
+
+			return serializeAzureErrorResponse(respErr)
+		}
+
 		span.SetStatus(codes.Error, err.Error())
 		span.RecordError(err)
 
-		return err
+		return schema.UnprocessableContentError(err.Error(), nil)
 	}
 
 	return nil
@@ -213,9 +229,11 @@ func (c *Client) SetBucketTagging(ctx context.Context, bucketName string, bucket
 	if err != nil {
 		span.SetStatus(codes.Error, err.Error())
 		span.RecordError(err)
+
+		return serializeErrorResponse(err)
 	}
 
-	return err
+	return nil
 }
 
 // GetBucketPolicy gets access permissions on a bucket or a prefix.
@@ -229,6 +247,8 @@ func (c *Client) GetBucketPolicy(ctx context.Context, bucketName string) (string
 	if err != nil {
 		span.SetStatus(codes.Error, err.Error())
 		span.RecordError(err)
+
+		return "", serializeErrorResponse(err)
 	}
 
 	result := ""

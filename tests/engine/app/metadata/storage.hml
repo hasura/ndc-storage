@@ -96,6 +96,7 @@ definition:
             one_of:
               - minio
               - s3
+              - azblob
           aggregate_functions: {}
           comparison_operators:
             _eq:
@@ -1681,6 +1682,19 @@ definition:
                 underlying_type:
                   type: named
                   name: String
+        StorageObjectListResults:
+          description: hold the paginated results of the storage object list.
+          fields:
+            objects:
+              type:
+                type: array
+                element_type:
+                  type: named
+                  name: StorageObject
+            pageInfo:
+              type:
+                type: named
+                name: StorageObjectPaginationInfo
         StorageObjectLockConfig:
           fields:
             mode:
@@ -1733,6 +1747,25 @@ definition:
                   type: named
                   name: String
             uploadId:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
+        StorageObjectPaginationInfo:
+          description: holds the pagination information.
+          fields:
+            cursor:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
+            hasNextPage:
+              type:
+                type: named
+                name: Boolean
+            nextCursor:
               type:
                 type: nullable
                 underlying_type:
@@ -2467,10 +2500,8 @@ definition:
                   type: predicate
                   object_type_name: StorageObjectSimple
           result_type:
-            type: array
-            element_type:
-              type: named
-              name: StorageObject
+            type: named
+            name: StorageObjectListResults
         - name: storagePresignedDownloadUrl
           description: generates a presigned URL for HTTP GET operations. Browsers/Mobile clients may point to this URL to directly download objects even if the bucket is private. This presigned URL can have an associated expiration time in seconds after which it is no longer operational. The maximum expiry is 604800 seconds (i.e. 7 days) and minimum is 1 second.
           arguments:

@@ -6,9 +6,10 @@ require (
 	github.com/Azure/azure-sdk-for-go/sdk/azcore v1.16.0
 	github.com/Azure/azure-sdk-for-go/sdk/azidentity v1.8.0
 	github.com/Azure/azure-sdk-for-go/sdk/storage/azblob v1.5.0
+	github.com/Azure/azure-sdk-for-go/sdk/tracing/azotel v0.4.0
 	github.com/alecthomas/kong v1.6.1
 	github.com/go-viper/mapstructure/v2 v2.2.1
-	github.com/hasura/ndc-sdk-go v1.7.1-0.20250110162227-07a388cb4471
+	github.com/hasura/ndc-sdk-go v1.7.1-0.20250114022611-5cf791dac3b5
 	github.com/invopop/jsonschema v0.13.0
 	github.com/lmittmann/tint v1.0.6
 	github.com/minio/md5-simd v1.1.2

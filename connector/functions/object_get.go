@@ -13,25 +13,27 @@ import (
 )
 
 // FunctionStorageObjects lists objects in a bucket.
-func FunctionStorageObjects(ctx context.Context, state *types.State, args *common.ListStorageObjectsArguments) ([]common.StorageObject, error) {
+func FunctionStorageObjects(ctx context.Context, state *types.State, args *common.ListStorageObjectsArguments) (common.StorageObjectListResults, error) {
 	if args.MaxResults != nil && *args.MaxResults <= 0 {
-		return nil, schema.UnprocessableContentError("maxResults must be larger than 0", nil)
+		return common.StorageObjectListResults{}, schema.UnprocessableContentError("maxResults must be larger than 0", nil)
 	}
 
 	request, err := internal.EvalObjectPredicate(args.StorageBucketArguments, "", args.Where, types.QueryVariablesFromContext(ctx))
 	if err != nil {
-		return nil, err
+		return common.StorageObjectListResults{}, err
 	}
 
 	if !request.IsValid {
-		return []common.StorageObject{}, nil
+		return common.StorageObjectListResults{
+			Objects: []common.StorageObject{},
+		}, nil
 	}
 
 	if err := request.EvalSelection(utils.CommandSelectionFieldFromContext(ctx)); err != nil {
-		return nil, err
+		return common.StorageObjectListResults{}, err
 	}
 
-	if !request.HasPostPredicate() && args.MaxResults != nil {
+	if args.MaxResults != nil {
 		request.Options.MaxResults = *args.MaxResults
 	}
 
@@ -40,34 +42,18 @@ func FunctionStorageObjects(ctx context.Context, state *types.State, args *commo
 	}
 
 	request.Options.Recursive = args.Recursive
+	predicate := request.CheckPostObjectNamePredicate
 
-	objects, err := state.Storage.ListObjects(ctx, request.StorageBucketArguments, &request.Options)
+	if !request.HasPostPredicate() {
+		predicate = nil
+	}
+
+	objects, err := state.Storage.ListObjects(ctx, request.StorageBucketArguments, &request.Options, predicate)
 	if err != nil {
-		return nil, err
+		return common.StorageObjectListResults{}, err
 	}
 
-	var filtered []common.StorageObject
-
-	if request.HasPostPredicate() {
-		for _, item := range objects {
-			if request.CheckPostObjectPredicate(item) {
-				filtered = append(filtered, item)
-			}
-		}
-	} else {
-		filtered = objects
-	}
-
-	if args.MaxResults != nil {
-		limit := len(filtered)
-		if *args.MaxResults < limit {
-			limit = *args.MaxResults
-		}
-
-		filtered = filtered[:limit]
-	}
-
-	return filtered, nil
+	return *objects, nil
 }
 
 // FunctionStorageObject fetches metadata of an object.
@@ -135,4 +121,38 @@ func downloadStorageObject(ctx context.Context, state *types.State, args *common
 	}
 
 	return state.Storage.GetObject(ctx, request.StorageBucketArguments, request.Options.Prefix, args.GetStorageObjectOptions)
+}
+
+// FunctionStoragePresignedDownloadUrl generates a presigned URL for HTTP GET operations.
+// Browsers/Mobile clients may point to this URL to directly download objects even if the bucket is private.
+// This presigned URL can have an associated expiration time in seconds after which it is no longer operational.
+// The maximum expiry is 604800 seconds (i.e. 7 days) and minimum is 1 second.
+func FunctionStoragePresignedDownloadUrl(ctx context.Context, state *types.State, args *common.PresignedGetStorageObjectArguments) (*common.PresignedURLResponse, error) {
+	request, err := internal.EvalObjectPredicate(args.StorageBucketArguments, args.Object, args.Where, types.QueryVariablesFromContext(ctx))
+	if err != nil {
+		return nil, err
+	}
+
+	if !request.IsValid {
+		return nil, nil
+	}
+
+	return state.Storage.PresignedGetObject(ctx, request.StorageBucketArguments, request.Options.Prefix, args.PresignedGetStorageObjectOptions)
+}
+
+// FunctionStoragePresignedUploadUrl generates a presigned URL for HTTP PUT operations.
+// Browsers/Mobile clients may point to this URL to upload objects directly to a bucket even if it is private.
+// This presigned URL can have an associated expiration time in seconds after which it is no longer operational.
+// The default expiry is set to 7 days.
+func FunctionStoragePresignedUploadUrl(ctx context.Context, state *types.State, args *common.PresignedPutStorageObjectArguments) (*common.PresignedURLResponse, error) {
+	request, err := internal.EvalObjectPredicate(args.StorageBucketArguments, args.Object, args.Where, types.QueryVariablesFromContext(ctx))
+	if err != nil {
+		return nil, err
+	}
+
+	if !request.IsValid {
+		return nil, nil
+	}
+
+	return state.Storage.PresignedPutObject(ctx, request.StorageBucketArguments, request.Options.Prefix, args.Expiry)
 }

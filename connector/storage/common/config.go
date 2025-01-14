@@ -15,24 +15,24 @@ import (
 // BaseClientConfig holds common configurations of a storage client
 type BaseClientConfig struct {
 	// The unique identity of a client. Use this setting if there are many configured clients.
-	ID string `json:"id,omitempty" yaml:"id,omitempty"`
+	ID string `json:"id,omitempty" mapstructure:"id" yaml:"id,omitempty"`
 	// Cloud provider type of the storage client.
-	Type StorageProviderType `json:"type" yaml:"type"`
+	Type StorageProviderType `json:"type" mapstructure:"type" yaml:"type"`
 	// Default bucket name to be set if the user doesn't specify any bucket.
-	DefaultBucket utils.EnvString `json:"defaultBucket" yaml:"defaultBucket"`
+	DefaultBucket utils.EnvString `json:"defaultBucket" mapstructure:"defaultBucket" yaml:"defaultBucket"`
 	// Endpoint of the storage server. Required for other S3 compatible services such as MinIO, Cloudflare R2, DigitalOcean Spaces, etc...
-	Endpoint *utils.EnvString `json:"endpoint,omitempty" yaml:"endpoint,omitempty"`
+	Endpoint *utils.EnvString `json:"endpoint,omitempty" mapstructure:"endpoint" yaml:"endpoint,omitempty"`
 	// The public host to be used for presigned URL generation.
-	PublicHost *utils.EnvString `json:"publicHost,omitempty" yaml:"publicHost,omitempty"`
+	PublicHost *utils.EnvString `json:"publicHost,omitempty" mapstructure:"publicHost" yaml:"publicHost,omitempty"`
 	// Maximum number of retry times.
-	MaxRetries *int `json:"maxRetries,omitempty" jsonschema:"min=1,default=10" yaml:"maxRetries,omitempty"`
+	MaxRetries *int `json:"maxRetries,omitempty" mapstructure:"maxRetries" yaml:"maxRetries,omitempty"`
 	// The default expiry for presigned URL generation. The maximum expiry is 604800 seconds (i.e. 7 days) and minimum is 1 second.
-	DefaultPresignedExpiry *string `json:"defaultPresignedExpiry,omitempty" jsonschema:"pattern=[0-9]+(s|m|h),default=24h" yaml:"defaultPresignedExpiry,omitempty"`
+	DefaultPresignedExpiry *string `json:"defaultPresignedExpiry,omitempty" mapstructure:"defaultPresignedExpiry" yaml:"defaultPresignedExpiry,omitempty"`
 	// Allowed buckets. This setting prevents users to get buckets and objects outside the list.
 	// However, it's recommended to restrict the permissions for the IAM credentials.
 	// This setting is useful to let the connector know which buckets belong to this client.
 	// The empty value means all buckets are allowed. The storage server will handle the validation.
-	AllowedBuckets []string `json:"allowedBuckets,omitempty" yaml:"allowedBuckets,omitempty"`
+	AllowedBuckets []string `json:"allowedBuckets,omitempty" mapstructure:"allowedBuckets" yaml:"allowedBuckets,omitempty"`
 }
 
 // Validate checks if the configration is valid.
@@ -78,34 +78,31 @@ func (bcc BaseClientConfig) ValidatePublicHost() (*url.URL, error) {
 }
 
 // ValidateEndpoint gets and validates endpoint settings
-func (bcc BaseClientConfig) ValidateEndpoint() (string, int, bool, error) {
+func (bcc BaseClientConfig) ValidateEndpoint() (*url.URL, int, bool, error) {
 	port := 80
 	if bcc.Endpoint == nil {
-		return "", port, false, nil
+		return nil, port, false, nil
 	}
 
-	var endpoint string
 	var useSSL bool
 
 	rawEndpoint, err := bcc.Endpoint.GetOrDefault("")
 	if err != nil {
-		return "", port, false, fmt.Errorf("endpoint: %w", err)
+		return nil, port, false, fmt.Errorf("endpoint: %w", err)
 	}
 
 	if rawEndpoint == "" {
-		return endpoint, port, useSSL, nil
+		return nil, port, useSSL, nil
 	}
 
 	endpointURL, err := url.Parse(rawEndpoint)
 	if err != nil {
-		return "", port, false, fmt.Errorf("invalid endpoint url: %w", err)
+		return nil, port, false, fmt.Errorf("invalid endpoint url: %w", err)
 	}
 
 	if !strings.HasPrefix(endpointURL.Scheme, "http") {
-		return "", port, false, errors.New("invalid endpoint url http scheme: " + endpointURL.Scheme)
+		return nil, port, false, errors.New("invalid endpoint url http scheme: " + endpointURL.Scheme)
 	}
-
-	endpoint = endpointURL.Host
 
 	if endpointURL.Scheme == "https" {
 		useSSL = true
@@ -116,13 +113,13 @@ func (bcc BaseClientConfig) ValidateEndpoint() (string, int, bool, error) {
 	if rawPort != "" {
 		p, err := strconv.Atoi(rawPort)
 		if err != nil {
-			return "", 0, false, fmt.Errorf("invalid endpoint port: %s", rawPort)
+			return nil, 0, false, fmt.Errorf("invalid endpoint port: %s", rawPort)
 		}
 
 		port = p
 	}
 
-	return endpoint, port, useSSL, nil
+	return endpointURL, port, useSSL, nil
 }
 
 // GetJSONSchema is used to generate a custom jsonschema.

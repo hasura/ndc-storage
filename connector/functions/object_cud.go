@@ -101,3 +101,44 @@ func ProcedureSetStorageObjectTags(ctx context.Context, state *types.State, args
 
 	return true, nil
 }
+
+// ProcedureRemoveStorageObject removes an object with some specified options.
+func ProcedureRemoveStorageObject(ctx context.Context, state *types.State, args *common.RemoveStorageObjectArguments) (bool, error) {
+	request, err := internal.EvalObjectPredicate(args.StorageBucketArguments, args.Object, args.Where, types.QueryVariablesFromContext(ctx))
+	if err != nil {
+		return false, err
+	}
+
+	if !request.IsValid {
+		return false, errPermissionDenied
+	}
+
+	if err := state.Storage.RemoveObject(ctx, request.StorageBucketArguments, request.Options.Prefix, args.RemoveStorageObjectOptions); err != nil {
+		return false, err
+	}
+
+	return true, nil
+}
+
+// ProcedureRemoveStorageObjects remove a list of objects obtained from an input channel. The call sends a delete request to the server up to 1000 objects at a time.
+// The errors observed are sent over the error channel.
+func ProcedureRemoveStorageObjects(ctx context.Context, state *types.State, args *common.RemoveStorageObjectsArguments) ([]common.RemoveStorageObjectError, error) {
+	request, err := internal.EvalObjectPredicate(args.StorageBucketArguments, "", args.Where, types.QueryVariablesFromContext(ctx))
+	if err != nil {
+		return nil, err
+	}
+
+	if !request.IsValid {
+		return nil, nil
+	}
+
+	predicate := request.CheckPostObjectNamePredicate
+	if !request.HasPostPredicate() {
+		predicate = nil
+	}
+
+	return state.Storage.RemoveObjects(ctx, request.StorageBucketArguments, &common.RemoveStorageObjectsOptions{
+		ListStorageObjectsOptions: request.Options,
+		GovernanceBypass:          args.GovernanceBypass,
+	}, predicate)
+}

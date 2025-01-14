@@ -983,6 +983,17 @@ func GetConnectorSchema() *schema.SchemaResponse {
 					},
 				},
 			},
+			"StorageObjectListResults": schema.ObjectType{
+				Description: toPtr("hold the paginated results of the storage object list."),
+				Fields: schema.ObjectTypeFields{
+					"objects": schema.ObjectField{
+						Type: schema.NewArrayType(schema.NewNamedType("StorageObject")).Encode(),
+					},
+					"pageInfo": schema.ObjectField{
+						Type: schema.NewNamedType("StorageObjectPaginationInfo").Encode(),
+					},
+				},
+			},
 			"StorageObjectLockConfig": schema.ObjectType{
 				Fields: schema.ObjectTypeFields{
 					"mode": schema.ObjectField{
@@ -1015,6 +1026,20 @@ func GetConnectorSchema() *schema.SchemaResponse {
 						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
 					},
 					"uploadId": schema.ObjectField{
+						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
+					},
+				},
+			},
+			"StorageObjectPaginationInfo": schema.ObjectType{
+				Description: toPtr("holds the pagination information."),
+				Fields: schema.ObjectTypeFields{
+					"cursor": schema.ObjectField{
+						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
+					},
+					"hasNextPage": schema.ObjectField{
+						Type: schema.NewNamedType("Boolean").Encode(),
+					},
+					"nextCursor": schema.ObjectField{
 						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
 					},
 				},
@@ -1450,7 +1475,7 @@ func GetConnectorSchema() *schema.SchemaResponse {
 			{
 				Name:        "storageObjects",
 				Description: toPtr("lists objects in a bucket."),
-				ResultType:  schema.NewArrayType(schema.NewNamedType("StorageObject")).Encode(),
+				ResultType:  schema.NewNamedType("StorageObjectListResults").Encode(),
 				Arguments: map[string]schema.ArgumentInfo{
 					"bucket": {
 						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),

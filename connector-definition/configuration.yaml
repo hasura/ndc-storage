@@ -18,4 +18,4 @@ clients:
     allowedBuckets: []
 concurrency:
   query: 5
-  mutation: 1
+  mutation: 3

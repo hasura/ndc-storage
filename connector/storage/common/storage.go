@@ -25,7 +25,7 @@ type StorageClient interface { //nolint:interfacebloat
 	// GetBucketPolicy gets access permissions on a bucket or a prefix.
 	GetBucketPolicy(ctx context.Context, bucketName string) (string, error)
 	// ListObjects lists objects in a bucket.
-	ListObjects(ctx context.Context, bucketName string, opts *ListStorageObjectsOptions) ([]StorageObject, error)
+	ListObjects(ctx context.Context, bucketName string, opts *ListStorageObjectsOptions, predicate func(string) bool) (*StorageObjectListResults, error)
 	// ListIncompleteUploads list partially uploaded objects in a bucket.
 	ListIncompleteUploads(ctx context.Context, args *ListIncompleteUploadsArguments) ([]StorageObjectMultipartInfo, error)
 	// GetObject returns a stream of the object data. Most of the common errors occur when reading the stream.
@@ -244,6 +244,19 @@ type StorageObject struct {
 	RemainingRetentionDays *int32  `json:"remainingRetentionDays"`
 	ResourceType           *string `json:"resourceType"`
 	ServerEncrypted        *bool   `json:"serverEncrypted"`
+}
+
+// StorageObjectPaginationInfo holds the pagination information.
+type StorageObjectPaginationInfo struct {
+	HasNextPage bool    `json:"hasNextPage"`
+	Cursor      *string `json:"cursor"`
+	NextCursor  *string `json:"nextCursor"`
+}
+
+// StorageObjectListResults hold the paginated results of the storage object list.
+type StorageObjectListResults struct {
+	Objects  []StorageObject             `json:"objects"`
+	PageInfo StorageObjectPaginationInfo `json:"pageInfo"`
 }
 
 // StorageObjectReplicationStatus represents the x-amz-replication-status value enum.

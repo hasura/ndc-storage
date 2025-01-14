@@ -2,21 +2,25 @@ package azblob
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"io"
 	"time"
 
+	"github.com/Azure/azure-sdk-for-go/sdk/azcore"
 	"github.com/Azure/azure-sdk-for-go/sdk/storage/azblob"
 	"github.com/Azure/azure-sdk-for-go/sdk/storage/azblob/blob"
+	"github.com/Azure/azure-sdk-for-go/sdk/storage/azblob/bloberror"
 	"github.com/Azure/azure-sdk-for-go/sdk/storage/azblob/container"
 	"github.com/Azure/azure-sdk-for-go/sdk/storage/azblob/sas"
+	"github.com/hasura/ndc-sdk-go/schema"
 	"github.com/hasura/ndc-storage/connector/storage/common"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/codes"
 )
 
 // ListObjects list objects in a bucket.
-func (c *Client) ListObjects(ctx context.Context, bucketName string, opts *common.ListStorageObjectsOptions) ([]common.StorageObject, error) {
+func (c *Client) ListObjects(ctx context.Context, bucketName string, opts *common.ListStorageObjectsOptions, predicate func(string) bool) (*common.StorageObjectListResults, error) {
 	ctx, span := c.startOtelSpan(ctx, "ListObjects", bucketName)
 	defer span.End()
 
@@ -33,8 +37,8 @@ func (c *Client) ListObjects(ctx context.Context, bucketName string, opts *commo
 		options.Prefix = &opts.Prefix
 	}
 
-	if opts.MaxResults > 0 {
-		maxResults := int32(opts.MaxResults)
+	maxResults := int32(opts.MaxResults)
+	if opts.MaxResults > 0 && predicate == nil {
 		options.MaxResults = &maxResults
 	}
 
@@ -42,8 +46,10 @@ func (c *Client) ListObjects(ctx context.Context, bucketName string, opts *commo
 		options.Marker = &opts.StartAfter
 	}
 
+	var count int32
 	objects := make([]common.StorageObject, 0)
 	pager := c.client.NewListBlobsFlatPager(bucketName, options)
+	pageInfo := common.StorageObjectPaginationInfo{}
 
 	for pager.More() {
 		resp, err := pager.NextPage(ctx)
@@ -51,17 +57,35 @@ func (c *Client) ListObjects(ctx context.Context, bucketName string, opts *commo
 			span.SetStatus(codes.Error, err.Error())
 			span.RecordError(err)
 
-			return nil, err
+			return nil, serializeErrorResponse(err)
 		}
 
 		for _, item := range resp.Segment.BlobItems {
+			if item.Name == nil || (predicate != nil && !predicate(*item.Name)) {
+				continue
+			}
+
 			objects = append(objects, serializeObjectInfo(item))
+			count++
+		}
+
+		if maxResults > 0 && count >= maxResults {
+			pageInfo.HasNextPage = pager.More()
+			pageInfo.Cursor = resp.Marker
+			pageInfo.NextCursor = resp.NextMarker
+
+			break
 		}
 	}
 
-	span.SetAttributes(attribute.Int("storage.object_count", len(objects)))
+	span.SetAttributes(attribute.Int("storage.object_count", int(count)))
 
-	return objects, nil
+	results := &common.StorageObjectListResults{
+		Objects:  objects,
+		PageInfo: pageInfo,
+	}
+
+	return results, nil
 }
 
 // ListIncompleteUploads list partially uploaded objects in a bucket.
@@ -86,7 +110,7 @@ func (c *Client) GetObject(ctx context.Context, bucketName, objectName string, o
 		span.SetStatus(codes.Error, err.Error())
 		span.RecordError(err)
 
-		return nil, err
+		return nil, serializeErrorResponse(err)
 	}
 
 	return result.Body, nil
@@ -153,7 +177,7 @@ func (c *Client) PutObject(ctx context.Context, bucketName string, objectName st
 		span.SetStatus(codes.Error, err.Error())
 		span.RecordError(err)
 
-		return nil, err
+		return nil, serializeErrorResponse(err)
 	}
 
 	result := serializeUploadObjectInfo(resp)
@@ -181,21 +205,21 @@ func (c *Client) StatObject(ctx context.Context, bucketName, objectName string, 
 
 	span.SetAttributes(attribute.String("storage.key", objectName))
 
-	objects, err := c.ListObjects(ctx, bucketName, &common.ListStorageObjectsOptions{
+	results, err := c.ListObjects(ctx, bucketName, &common.ListStorageObjectsOptions{
 		Prefix:       objectName,
 		WithVersions: true,
 		WithMetadata: true,
 		WithTags:     opts.WithTags != nil && *opts.WithTags,
 		MaxResults:   1,
-	})
+	}, nil)
 	if err != nil {
 		span.SetStatus(codes.Error, err.Error())
 		span.RecordError(err)
 
-		return nil, err
+		return nil, serializeErrorResponse(err)
 	}
 
-	for _, obj := range objects {
+	for _, obj := range results.Objects {
 		if obj.Name == objectName {
 			return &obj, nil
 		}
@@ -225,11 +249,25 @@ func (c *Client) removeObject(ctx context.Context, spanName string, bucketName s
 
 	_, err := c.client.DeleteBlob(ctx, bucketName, objectName, options)
 	if err != nil {
+		var respErr *azcore.ResponseError
+		if errors.As(err, &respErr) {
+			if respErr.ErrorCode == string(bloberror.BlobNotFound) {
+				return nil
+			}
+
+			span.SetStatus(codes.Error, err.Error())
+			span.RecordError(err)
+
+			return serializeAzureErrorResponse(respErr)
+		}
+
 		span.SetStatus(codes.Error, err.Error())
 		span.RecordError(err)
+
+		return schema.UnprocessableContentError(err.Error(), nil)
 	}
 
-	return err
+	return nil
 }
 
 // RemoveObjects removes a list of objects obtained from an input channel. The call sends a delete request to the server up to 1000 objects at a time.
@@ -238,7 +276,7 @@ func (c *Client) RemoveObjects(ctx context.Context, bucketName string, opts *com
 	ctx, span := c.startOtelSpan(ctx, "RemoveObjects", bucketName)
 	defer span.End()
 
-	objects, err := c.ListObjects(ctx, bucketName, &opts.ListStorageObjectsOptions)
+	results, err := c.ListObjects(ctx, bucketName, &opts.ListStorageObjectsOptions, predicate)
 	if err != nil {
 		span.SetStatus(codes.Error, err.Error())
 		span.RecordError(err)
@@ -252,7 +290,7 @@ func (c *Client) RemoveObjects(ctx context.Context, bucketName string, opts *com
 
 	errs := make([]common.RemoveStorageObjectError, 0)
 
-	for _, obj := range objects {
+	for _, obj := range results.Objects {
 		if err := c.RemoveObject(ctx, bucketName, obj.Name, common.RemoveStorageObjectOptions{
 			ForceDelete: true,
 		}); err != nil {
@@ -325,7 +363,7 @@ func (c *Client) presignedObject(ctx context.Context, method, bucketName, object
 		span.SetStatus(codes.Error, err.Error())
 		span.RecordError(err)
 
-		return "", err
+		return "", serializeErrorResponse(err)
 	}
 
 	return result, nil

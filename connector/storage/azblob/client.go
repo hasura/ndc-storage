@@ -10,8 +10,6 @@ import (
 	"go.opentelemetry.io/otel/trace"
 )
 
-// https://github.com/Azure/azure-sdk-for-go/blob/main/sdk/storage/azblob/examples_test.go
-
 // Client prepresents a Minio client wrapper.
 type Client struct {
 	client *azblob.Client
