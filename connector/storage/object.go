@@ -26,6 +26,7 @@ func (m *Manager) ListObjects(ctx context.Context, bucketInfo common.StorageBuck
 
 	for i := range results.Objects {
 		results.Objects[i].ClientID = string(client.id)
+		results.Objects[i].Bucket = bucketName
 	}
 
 	return results, nil
@@ -138,6 +139,7 @@ func (m *Manager) StatObject(ctx context.Context, bucketInfo common.StorageBucke
 	}
 
 	result.ClientID = string(client.id)
+	result.Bucket = bucketName
 
 	return result, nil
 }

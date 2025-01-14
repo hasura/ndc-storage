@@ -118,14 +118,30 @@ type ListStorageObjectsArguments struct {
 	Where schema.Expression `json:"where" ndc:"predicate=StorageObjectSimple"`
 }
 
+// StorageObjectIncludeOptions hold options to be included for the object information.
+type StorageObjectIncludeOptions struct {
+	// Include any checksums, if object was uploaded with checksum.
+	// For multipart objects this is a checksum of part checksums.
+	// https://docs.aws.amazon.com/AmazonS3/latest/userguide/checking-object-integrity.html
+	Checksum bool
+	// Include user tags in the listing
+	Tags bool
+	// Include objects versions in the listing
+	Versions bool
+	// Include objects metadata in the listing
+	Metadata bool
+
+	Copy                bool
+	Snapshots           bool
+	Deleted             bool
+	LegalHold           bool
+	ImmutabilityPolicy  bool
+	DeletedWithVersions bool
+	Permissions         bool
+}
+
 // ListStorageObjectsOptions holds all options of a list object request.
 type ListStorageObjectsOptions struct {
-	// Include objects versions in the listing
-	WithVersions bool `json:"withVersions"`
-	// Include objects metadata in the listing
-	WithMetadata bool `json:"withMetadata"`
-	// Include user tags in the listing
-	WithTags bool `json:"withTags"`
 	// Only list objects with the prefix
 	Prefix string `json:"prefix"`
 	// Ignore '/' delimiter
@@ -136,6 +152,8 @@ type ListStorageObjectsOptions struct {
 	MaxResults int `json:"maxResults"`
 	// StartAfter start listing lexically at this object onwards.
 	StartAfter string `json:"startAfter"`
+	// Options to be included for the object information.
+	Include StorageObjectIncludeOptions `json:"-"`
 }
 
 // GetStorageObjectArguments are used to specify additional headers or options during GET requests.
@@ -154,14 +172,8 @@ type GetStorageObjectOptions struct {
 	// ServerSideEncryption *ServerSideEncryptionMethod `json:"serverSideEncryption"`
 	VersionID  *string `json:"versionId"`
 	PartNumber *int    `json:"partNumber"`
-
-	// Include any checksums, if object was uploaded with checksum.
-	// For multipart objects this is a checksum of part checksums.
-	// https://docs.aws.amazon.com/AmazonS3/latest/userguide/checking-object-integrity.html
-	Checksum *bool `json:"checksum"`
-
-	// Include user tags in the listing
-	WithTags *bool `json:"withTags"`
+	// Options to be included for the object information.
+	Include StorageObjectIncludeOptions `json:"-"`
 }
 
 // StorageCopyDestOptions represents options specified by user for CopyObject/ComposeObject APIs.

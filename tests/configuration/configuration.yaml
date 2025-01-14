@@ -36,8 +36,6 @@ clients:
     type: azblob
     endpoint:
       env: AZURE_STORAGE_ENDPOINT
-    publicHost:
-      env: AZURE_STORAGE_PUBLIC_HOST
     defaultBucket:
       env: AZURE_STORAGE_DEFAULT_BUCKET
     authentication:
@@ -46,6 +44,9 @@ clients:
         env: AZURE_STORAGE_ACCOUNT_NAME
       accountKey:
         env: AZURE_STORAGE_ACCOUNT_KEY
+    defaultPresignedExpiry: "1h"
+    allowedBuckets:
+      - azblob-bucket-test
 concurrency:
   query: 10
   mutation: 10

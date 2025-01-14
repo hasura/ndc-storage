@@ -53,10 +53,6 @@ func (j *GetStorageObjectLegalHoldOptions) FromValue(input map[string]any) error
 // FromValue decodes values from map
 func (j *GetStorageObjectOptions) FromValue(input map[string]any) error {
 	var err error
-	j.Checksum, err = utils.GetNullableBoolean(input, "checksum")
-	if err != nil {
-		return err
-	}
 	j.Headers, err = utils.DecodeObjectValueDefault[map[string]string](input, "headers")
 	if err != nil {
 		return err
@@ -70,10 +66,6 @@ func (j *GetStorageObjectOptions) FromValue(input map[string]any) error {
 		return err
 	}
 	j.VersionID, err = utils.GetNullableString(input, "versionId")
-	if err != nil {
-		return err
-	}
-	j.WithTags, err = utils.GetNullableBoolean(input, "withTags")
 	if err != nil {
 		return err
 	}
@@ -287,12 +279,10 @@ func (j ExistingObjectReplication) ToMap() map[string]any {
 // ToMap encodes the struct to a value map
 func (j GetStorageObjectOptions) ToMap() map[string]any {
 	r := make(map[string]any)
-	r["checksum"] = j.Checksum
 	r["headers"] = j.Headers
 	r["partNumber"] = j.PartNumber
 	r["requestParams"] = j.RequestParams
 	r["versionId"] = j.VersionID
-	r["withTags"] = j.WithTags
 
 	return r
 }
@@ -392,9 +382,6 @@ func (j ListStorageObjectsOptions) ToMap() map[string]any {
 	r["prefix"] = j.Prefix
 	r["recursive"] = j.Recursive
 	r["startAfter"] = j.StartAfter
-	r["withMetadata"] = j.WithMetadata
-	r["withTags"] = j.WithTags
-	r["withVersions"] = j.WithVersions
 
 	return r
 }

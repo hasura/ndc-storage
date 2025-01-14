@@ -26,6 +26,8 @@ const (
 	ScalarObjectPath      = "ObjectPath"
 )
 
+var checksumColumnNames = []string{"checksumCrc32", "checksumCrc32C", "checksumCrc64Nvme", "checksumSha1", "checksumSha256"}
+
 // StringComparisonOperator represents the explicit comparison expression for string columns.
 type StringComparisonOperator struct {
 	Value    string

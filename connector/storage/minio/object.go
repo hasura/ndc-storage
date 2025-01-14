@@ -313,7 +313,7 @@ func (mc *Client) StatObject(ctx context.Context, bucketName, objectName string,
 	result := serializeObjectInfo(object, false)
 	result.Bucket = bucketName
 
-	if opts.WithTags != nil && *opts.WithTags {
+	if opts.Include.Tags {
 		userTags, err := mc.GetObjectTagging(ctx, bucketName, objectName, opts.VersionID)
 		if err != nil {
 			return nil, err

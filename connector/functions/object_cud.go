@@ -42,7 +42,7 @@ func uploadStorageObject(ctx context.Context, state *types.State, args *PutStora
 		return common.StorageUploadInfo{}, schema.ForbiddenError("permission dennied", nil)
 	}
 
-	result, err := state.Storage.PutObject(ctx, request.StorageBucketArguments, request.Options.Prefix, &args.Options, data)
+	result, err := state.Storage.PutObject(ctx, request.StorageBucketArguments, request.Prefix, &args.Options, data)
 	if err != nil {
 		return common.StorageUploadInfo{}, err
 	}
@@ -95,7 +95,7 @@ func ProcedureSetStorageObjectTags(ctx context.Context, state *types.State, args
 		return false, errPermissionDenied
 	}
 
-	if err := state.Storage.SetObjectTags(ctx, request.StorageBucketArguments, request.Options.Prefix, args.SetStorageObjectTagsOptions); err != nil {
+	if err := state.Storage.SetObjectTags(ctx, request.StorageBucketArguments, request.Prefix, args.SetStorageObjectTagsOptions); err != nil {
 		return false, err
 	}
 
@@ -113,7 +113,7 @@ func ProcedureRemoveStorageObject(ctx context.Context, state *types.State, args 
 		return false, errPermissionDenied
 	}
 
-	if err := state.Storage.RemoveObject(ctx, request.StorageBucketArguments, request.Options.Prefix, args.RemoveStorageObjectOptions); err != nil {
+	if err := state.Storage.RemoveObject(ctx, request.StorageBucketArguments, request.Prefix, args.RemoveStorageObjectOptions); err != nil {
 		return false, err
 	}
 
@@ -138,7 +138,11 @@ func ProcedureRemoveStorageObjects(ctx context.Context, state *types.State, args
 	}
 
 	return state.Storage.RemoveObjects(ctx, request.StorageBucketArguments, &common.RemoveStorageObjectsOptions{
-		ListStorageObjectsOptions: request.Options,
-		GovernanceBypass:          args.GovernanceBypass,
+		ListStorageObjectsOptions: common.ListStorageObjectsOptions{
+			Prefix:     request.Prefix,
+			Recursive:  args.Recursive,
+			StartAfter: args.StartAfter,
+		},
+		GovernanceBypass: args.GovernanceBypass,
 	}, predicate)
 }

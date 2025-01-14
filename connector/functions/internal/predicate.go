@@ -15,7 +15,8 @@ type ObjectPredicate struct {
 	common.StorageBucketArguments
 
 	IsValid bool
-	Options common.ListStorageObjectsOptions
+	Include common.StorageObjectIncludeOptions
+	Prefix  string
 
 	variables                map[string]any
 	objectNamePrePredicate   *StringComparisonOperator
@@ -26,7 +27,7 @@ type ObjectPredicate struct {
 func EvalObjectPredicate(bucketInfo common.StorageBucketArguments, objectName string, predicate schema.Expression, variables map[string]any) (*ObjectPredicate, error) {
 	result := &ObjectPredicate{
 		StorageBucketArguments: bucketInfo,
-		Options:                common.ListStorageObjectsOptions{},
+		Include:                common.StorageObjectIncludeOptions{},
 		variables:              variables,
 	}
 
@@ -49,7 +50,7 @@ func EvalObjectPredicate(bucketInfo common.StorageBucketArguments, objectName st
 	}
 
 	if result.objectNamePrePredicate != nil {
-		result.Options.Prefix = result.objectNamePrePredicate.Value
+		result.Prefix = result.objectNamePrePredicate.Value
 	}
 
 	result.IsValid = true
@@ -76,20 +77,37 @@ func (cor *ObjectPredicate) EvalSelection(selection schema.NestedField) error {
 	case *schema.NestedArray:
 		return cor.EvalSelection(expr.Fields)
 	case *schema.NestedObject:
+		if objectsField, ok := expr.Fields["objects"]; ok {
+			objectsColumn, err := objectsField.AsColumn()
+			if err != nil {
+				return err
+			}
+
+			return cor.EvalSelection(objectsColumn.Fields)
+		}
+
 		if _, metadataExists := expr.Fields["metadata"]; metadataExists {
-			cor.Options.WithMetadata = true
+			cor.Include.Metadata = true
 		} else if _, metadataExists := expr.Fields["userMetadata"]; metadataExists {
-			cor.Options.WithMetadata = true
+			cor.Include.Metadata = true
+		}
+
+		for _, key := range checksumColumnNames {
+			if _, ok := expr.Fields[key]; ok {
+				cor.Include.Checksum = true
+
+				break
+			}
 		}
 
 		if _, metadataExists := expr.Fields["userTags"]; metadataExists {
-			cor.Options.WithTags = true
+			cor.Include.Tags = true
 		} else if _, metadataExists := expr.Fields["tags"]; metadataExists {
-			cor.Options.WithTags = true
+			cor.Include.Tags = true
 		}
 
 		if _, versionExists := expr.Fields["versionId"]; versionExists {
-			cor.Options.WithVersions = true
+			cor.Include.Versions = true
 		}
 	}
 

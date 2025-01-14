@@ -95,9 +95,6 @@ func GetConnectorSchema() *schema.SchemaResponse {
 			"GetStorageObjectOptions": schema.ObjectType{
 				Description: toPtr("are used to specify additional headers or options during GET requests."),
 				Fields: schema.ObjectTypeFields{
-					"checksum": schema.ObjectField{
-						Type: schema.NewNullableType(schema.NewNamedType("Boolean")).Encode(),
-					},
 					"headers": schema.ObjectField{
 						Type: schema.NewNullableType(schema.NewNamedType("JSON")).Encode(),
 					},
@@ -109,9 +106,6 @@ func GetConnectorSchema() *schema.SchemaResponse {
 					},
 					"versionId": schema.ObjectField{
 						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
-					},
-					"withTags": schema.ObjectField{
-						Type: schema.NewNullableType(schema.NewNamedType("Boolean")).Encode(),
 					},
 				},
 			},
@@ -241,15 +235,6 @@ func GetConnectorSchema() *schema.SchemaResponse {
 					},
 					"startAfter": schema.ObjectField{
 						Type: schema.NewNamedType("String").Encode(),
-					},
-					"withMetadata": schema.ObjectField{
-						Type: schema.NewNamedType("Boolean").Encode(),
-					},
-					"withTags": schema.ObjectField{
-						Type: schema.NewNamedType("Boolean").Encode(),
-					},
-					"withVersions": schema.ObjectField{
-						Type: schema.NewNamedType("Boolean").Encode(),
 					},
 				},
 			},
@@ -543,15 +528,6 @@ func GetConnectorSchema() *schema.SchemaResponse {
 					},
 					"startAfter": schema.ObjectField{
 						Type: schema.NewNamedType("String").Encode(),
-					},
-					"withMetadata": schema.ObjectField{
-						Type: schema.NewNamedType("Boolean").Encode(),
-					},
-					"withTags": schema.ObjectField{
-						Type: schema.NewNamedType("Boolean").Encode(),
-					},
-					"withVersions": schema.ObjectField{
-						Type: schema.NewNamedType("Boolean").Encode(),
 					},
 				},
 			},
@@ -1218,9 +1194,6 @@ func GetConnectorSchema() *schema.SchemaResponse {
 					"bucket": {
 						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
 					},
-					"checksum": {
-						Type: schema.NewNullableType(schema.NewNamedType("Boolean")).Encode(),
-					},
 					"clientId": {
 						Type: schema.NewNullableType(schema.NewNamedType("StorageClientID")).Encode(),
 					},
@@ -1241,9 +1214,6 @@ func GetConnectorSchema() *schema.SchemaResponse {
 					},
 					"where": {
 						Type: schema.NewNullableType(schema.NewPredicateType("StorageObjectSimple")).Encode(),
-					},
-					"withTags": {
-						Type: schema.NewNullableType(schema.NewNamedType("Boolean")).Encode(),
 					},
 				},
 			},
@@ -1255,9 +1225,6 @@ func GetConnectorSchema() *schema.SchemaResponse {
 					"bucket": {
 						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
 					},
-					"checksum": {
-						Type: schema.NewNullableType(schema.NewNamedType("Boolean")).Encode(),
-					},
 					"clientId": {
 						Type: schema.NewNullableType(schema.NewNamedType("StorageClientID")).Encode(),
 					},
@@ -1278,9 +1245,6 @@ func GetConnectorSchema() *schema.SchemaResponse {
 					},
 					"where": {
 						Type: schema.NewNullableType(schema.NewPredicateType("StorageObjectSimple")).Encode(),
-					},
-					"withTags": {
-						Type: schema.NewNullableType(schema.NewNamedType("Boolean")).Encode(),
 					},
 				},
 			},
@@ -1411,9 +1375,6 @@ func GetConnectorSchema() *schema.SchemaResponse {
 					"bucket": {
 						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
 					},
-					"checksum": {
-						Type: schema.NewNullableType(schema.NewNamedType("Boolean")).Encode(),
-					},
 					"clientId": {
 						Type: schema.NewNullableType(schema.NewNamedType("StorageClientID")).Encode(),
 					},
@@ -1434,9 +1395,6 @@ func GetConnectorSchema() *schema.SchemaResponse {
 					},
 					"where": {
 						Type: schema.NewNullableType(schema.NewPredicateType("StorageObjectSimple")).Encode(),
-					},
-					"withTags": {
-						Type: schema.NewNullableType(schema.NewNamedType("Boolean")).Encode(),
 					},
 				},
 			},
@@ -1760,15 +1718,6 @@ func GetConnectorSchema() *schema.SchemaResponse {
 					},
 					"where": {
 						Type: schema.NewNullableType(schema.NewPredicateType("StorageObjectSimple")).Encode(),
-					},
-					"withMetadata": {
-						Type: schema.NewNamedType("Boolean").Encode(),
-					},
-					"withTags": {
-						Type: schema.NewNamedType("Boolean").Encode(),
-					},
-					"withVersions": {
-						Type: schema.NewNamedType("Boolean").Encode(),
 					},
 				},
 			},

@@ -189,15 +189,15 @@ func serializeObjectInfo(obj minio.ObjectInfo, fromList bool) common.StorageObje
 }
 
 func (mc *Client) validateListObjectsOptions(span trace.Span, opts *common.ListStorageObjectsOptions) minio.ListObjectsOptions {
-	if mc.providerType == common.GoogleStorage && opts.WithVersions {
+	if mc.providerType == common.GoogleStorage && opts.Include.Versions {
 		// Force versioning off. GCS doesn't support AWS S3 compatible versioning API.
-		opts.WithVersions = false
+		opts.Include.Versions = false
 	}
 
 	span.SetAttributes(
 		attribute.Bool("storage.options.recursive", opts.Recursive),
-		attribute.Bool("storage.options.with_versions", opts.WithVersions),
-		attribute.Bool("storage.options.with_metadata", opts.WithMetadata),
+		attribute.Bool("storage.options.with_versions", opts.Include.Versions),
+		attribute.Bool("storage.options.with_metadata", opts.Include.Metadata),
 	)
 
 	if opts.Prefix != "" {
@@ -213,8 +213,8 @@ func (mc *Client) validateListObjectsOptions(span trace.Span, opts *common.ListS
 	}
 
 	return minio.ListObjectsOptions{
-		WithVersions: opts.WithVersions,
-		WithMetadata: opts.WithMetadata,
+		WithVersions: opts.Include.Versions,
+		WithMetadata: opts.Include.Metadata,
 		Prefix:       opts.Prefix,
 		Recursive:    opts.Recursive,
 		MaxKeys:      opts.MaxResults,
@@ -272,7 +272,12 @@ func serializeUploadObjectInfo(obj minio.UploadInfo) common.StorageUploadInfo {
 }
 
 func serializeGetObjectOptions(span trace.Span, opts common.GetStorageObjectOptions) minio.GetObjectOptions {
-	options := minio.GetObjectOptions{}
+	options := minio.GetObjectOptions{
+		Checksum: opts.Include.Checksum,
+	}
+
+	span.SetAttributes(attribute.Bool("storage.request_object_checksum", options.Checksum))
+
 	if opts.VersionID != nil && !isStringNull(*opts.VersionID) {
 		options.VersionID = *opts.VersionID
 		span.SetAttributes(attribute.String("storage.request_object_version", options.VersionID))
@@ -281,11 +286,6 @@ func serializeGetObjectOptions(span trace.Span, opts common.GetStorageObjectOpti
 	if opts.PartNumber != nil {
 		options.PartNumber = *opts.PartNumber
 		span.SetAttributes(attribute.Int("storage.part_number", options.PartNumber))
-	}
-
-	if opts.Checksum != nil {
-		options.Checksum = *opts.Checksum
-		span.SetAttributes(attribute.Bool("storage.request_object_checksum", options.Checksum))
 	}
 
 	for key, value := range opts.Headers {

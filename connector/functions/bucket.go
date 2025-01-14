@@ -27,7 +27,7 @@ func FunctionStorageBuckets(ctx context.Context, state *types.State, args *commo
 	}
 
 	return state.Storage.ListBuckets(ctx, args.ClientID, common.BucketOptions{
-		IncludeTags: request.Options.WithTags,
+		IncludeTags: request.Include.Tags,
 	})
 }
 

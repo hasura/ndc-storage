@@ -26,10 +26,17 @@ func (c *Client) ListObjects(ctx context.Context, bucketName string, opts *commo
 
 	options := &container.ListBlobsFlatOptions{
 		Include: container.ListBlobsInclude{
-			Versions:         opts.WithVersions,
-			Metadata:         opts.WithMetadata,
-			Tags:             opts.WithTags,
-			UncommittedBlobs: false,
+			Versions:            opts.Include.Versions,
+			Metadata:            opts.Include.Metadata,
+			Tags:                opts.Include.Tags,
+			Copy:                opts.Include.Copy,
+			Snapshots:           opts.Include.Snapshots,
+			Deleted:             opts.Include.Deleted,
+			LegalHold:           opts.Include.LegalHold,
+			ImmutabilityPolicy:  opts.Include.ImmutabilityPolicy,
+			DeletedWithVersions: opts.Include.DeletedWithVersions,
+			Permissions:         opts.Include.Permissions,
+			UncommittedBlobs:    false,
 		},
 	}
 
@@ -70,9 +77,14 @@ func (c *Client) ListObjects(ctx context.Context, bucketName string, opts *commo
 		}
 
 		if maxResults > 0 && count >= maxResults {
-			pageInfo.HasNextPage = pager.More()
-			pageInfo.Cursor = resp.Marker
-			pageInfo.NextCursor = resp.NextMarker
+			if pager.More() {
+				pageInfo.HasNextPage = true
+				pageInfo.NextCursor = resp.NextMarker
+			}
+
+			if resp.Marker != nil && *resp.Marker != "" {
+				pageInfo.Cursor = resp.Marker
+			}
 
 			break
 		}
@@ -181,6 +193,8 @@ func (c *Client) PutObject(ctx context.Context, bucketName string, objectName st
 	}
 
 	result := serializeUploadObjectInfo(resp)
+	result.Name = objectName
+
 	common.SetUploadInfoAttributes(span, &result)
 
 	return &result, nil
@@ -206,11 +220,9 @@ func (c *Client) StatObject(ctx context.Context, bucketName, objectName string, 
 	span.SetAttributes(attribute.String("storage.key", objectName))
 
 	results, err := c.ListObjects(ctx, bucketName, &common.ListStorageObjectsOptions{
-		Prefix:       objectName,
-		WithVersions: true,
-		WithMetadata: true,
-		WithTags:     opts.WithTags != nil && *opts.WithTags,
-		MaxResults:   1,
+		Prefix:     objectName,
+		MaxResults: 1,
+		Include:    opts.Include,
 	}, nil)
 	if err != nil {
 		span.SetStatus(codes.Error, err.Error())
@@ -321,7 +333,29 @@ func (c *Client) GetObjectLegalHold(ctx context.Context, opts *common.GetStorage
 
 // PutObjectTagging sets new object Tags to the given object, replaces/overwrites any existing tags.
 func (c *Client) SetObjectTags(ctx context.Context, bucketName string, objectName string, options common.SetStorageObjectTagsOptions) error {
-	return errNotSupported
+	ctx, span := c.startOtelSpan(ctx, "SetObjectTags", bucketName)
+	defer span.End()
+
+	opts := &blob.SetTagsOptions{
+		VersionID: &options.VersionID,
+	}
+
+	if options.VersionID != "" {
+		span.SetAttributes(attribute.String("storage.options.version", options.VersionID))
+		opts.VersionID = &options.VersionID
+	}
+
+	client := c.client.ServiceClient().NewContainerClient(bucketName).NewBlobClient(objectName)
+
+	_, err := client.SetTags(ctx, options.Tags, opts)
+	if err != nil {
+		span.SetStatus(codes.Error, err.Error())
+		span.RecordError(err)
+
+		return serializeErrorResponse(err)
+	}
+
+	return nil
 }
 
 // PresignedGetObject generates a presigned URL for HTTP GET operations. Browsers/Mobile clients may point to this URL to directly download objects even if the bucket is private.
@@ -334,7 +368,7 @@ func (c *Client) PresignedGetObject(ctx context.Context, bucketName string, obje
 		expiry = opts.Expiry.Duration
 	}
 
-	return c.presignedObject(ctx, "GET", bucketName, objectName, expiry, sas.AccountPermissions{
+	return c.presignedObject(ctx, "GET", bucketName, objectName, expiry, sas.BlobPermissions{
 		Read: true,
 	})
 }
@@ -342,12 +376,14 @@ func (c *Client) PresignedGetObject(ctx context.Context, bucketName string, obje
 // PresignedPutObject generates a presigned URL for HTTP PUT operations. Browsers/Mobile clients may point to this URL to upload objects directly to a bucket even if it is private.
 // This presigned URL can have an associated expiration time in seconds after which it is no longer operational. The default expiry is set to 7 days.
 func (c *Client) PresignedPutObject(ctx context.Context, bucketName string, objectName string, expiry time.Duration) (string, error) {
-	return c.presignedObject(ctx, "PUT", bucketName, objectName, expiry, sas.AccountPermissions{
-		Write: true,
+	return c.presignedObject(ctx, "PUT", bucketName, objectName, expiry, sas.BlobPermissions{
+		Write:  true,
+		Add:    true,
+		Create: true,
 	})
 }
 
-func (c *Client) presignedObject(ctx context.Context, method, bucketName, objectName string, expiry time.Duration, permissions sas.AccountPermissions) (string, error) {
+func (c *Client) presignedObject(ctx context.Context, method, bucketName, objectName string, expiry time.Duration, permissions sas.BlobPermissions) (string, error) {
 	_, span := c.startOtelSpan(ctx, method+"PresignedObject", bucketName)
 	defer span.End()
 
@@ -356,9 +392,8 @@ func (c *Client) presignedObject(ctx context.Context, method, bucketName, object
 
 	expiredAt := time.Now().Add(expiry)
 
-	result, err := c.client.ServiceClient().GetSASURL(sas.AccountResourceTypes{
-		Object: true,
-	}, permissions, expiredAt, nil)
+	result, err := c.client.ServiceClient().NewContainerClient(bucketName).NewBlobClient(objectName).
+		GetSASURL(permissions, expiredAt, nil)
 	if err != nil {
 		span.SetStatus(codes.Error, err.Error())
 		span.RecordError(err)

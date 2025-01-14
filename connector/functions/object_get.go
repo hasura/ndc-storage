@@ -33,22 +33,27 @@ func FunctionStorageObjects(ctx context.Context, state *types.State, args *commo
 		return common.StorageObjectListResults{}, err
 	}
 
+	options := &common.ListStorageObjectsOptions{
+		Prefix:    request.Prefix,
+		Recursive: args.Recursive,
+		Include:   request.Include,
+	}
+
 	if args.MaxResults != nil {
-		request.Options.MaxResults = *args.MaxResults
+		options.MaxResults = *args.MaxResults
 	}
 
 	if args.StartAfter != nil {
-		request.Options.StartAfter = *args.StartAfter
+		options.StartAfter = *args.StartAfter
 	}
 
-	request.Options.Recursive = args.Recursive
 	predicate := request.CheckPostObjectNamePredicate
 
 	if !request.HasPostPredicate() {
 		predicate = nil
 	}
 
-	objects, err := state.Storage.ListObjects(ctx, request.StorageBucketArguments, &request.Options, predicate)
+	objects, err := state.Storage.ListObjects(ctx, request.StorageBucketArguments, options, predicate)
 	if err != nil {
 		return common.StorageObjectListResults{}, err
 	}
@@ -71,7 +76,10 @@ func FunctionStorageObject(ctx context.Context, state *types.State, args *common
 		return nil, err
 	}
 
-	return state.Storage.StatObject(ctx, request.StorageBucketArguments, request.Options.Prefix, args.GetStorageObjectOptions)
+	opts := args.GetStorageObjectOptions
+	opts.Include = request.Include
+
+	return state.Storage.StatObject(ctx, request.StorageBucketArguments, request.Prefix, opts)
 }
 
 // FunctionDownloadStorageObject returns a stream of the object data. Most of the common errors occur when reading the stream.
@@ -120,7 +128,7 @@ func downloadStorageObject(ctx context.Context, state *types.State, args *common
 		return nil, nil
 	}
 
-	return state.Storage.GetObject(ctx, request.StorageBucketArguments, request.Options.Prefix, args.GetStorageObjectOptions)
+	return state.Storage.GetObject(ctx, request.StorageBucketArguments, request.Prefix, args.GetStorageObjectOptions)
 }
 
 // FunctionStoragePresignedDownloadUrl generates a presigned URL for HTTP GET operations.
@@ -137,7 +145,7 @@ func FunctionStoragePresignedDownloadUrl(ctx context.Context, state *types.State
 		return nil, nil
 	}
 
-	return state.Storage.PresignedGetObject(ctx, request.StorageBucketArguments, request.Options.Prefix, args.PresignedGetStorageObjectOptions)
+	return state.Storage.PresignedGetObject(ctx, request.StorageBucketArguments, request.Prefix, args.PresignedGetStorageObjectOptions)
 }
 
 // FunctionStoragePresignedUploadUrl generates a presigned URL for HTTP PUT operations.
@@ -154,5 +162,5 @@ func FunctionStoragePresignedUploadUrl(ctx context.Context, state *types.State, 
 		return nil, nil
 	}
 
-	return state.Storage.PresignedPutObject(ctx, request.StorageBucketArguments, request.Options.Prefix, args.Expiry)
+	return state.Storage.PresignedPutObject(ctx, request.StorageBucketArguments, request.Prefix, args.Expiry)
 }

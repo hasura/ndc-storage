@@ -1,7 +1,9 @@
 package azblob
 
 import (
+	"encoding/base64"
 	"errors"
+	"strconv"
 
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore"
 	"github.com/Azure/azure-sdk-for-go/sdk/storage/azblob"
@@ -72,7 +74,7 @@ func serializeObjectInfo(item *container.BlobItem) common.StorageObject { //noli
 	}
 
 	if len(item.Properties.ContentMD5) > 0 {
-		contentMD5 := string(item.Properties.ContentMD5)
+		contentMD5 := base64.StdEncoding.EncodeToString(item.Properties.ContentMD5)
 		object.ContentMD5 = &contentMD5
 	}
 
@@ -142,12 +144,13 @@ func serializeUploadObjectInfo(resp azblob.UploadStreamResponse) common.StorageU
 	}
 
 	if len(resp.ContentMD5) > 0 {
-		cmd5 := string(resp.ContentMD5)
-		object.ContentMD5 = &cmd5
+		contentMD5 := base64.StdEncoding.EncodeToString(resp.ContentMD5)
+		object.ContentMD5 = &contentMD5
 	}
 
 	if resp.ETag != nil {
-		object.ETag = string(*resp.ETag)
+		etag, _ := strconv.Unquote(string(*resp.ETag))
+		object.ETag = etag
 	}
 
 	return object
