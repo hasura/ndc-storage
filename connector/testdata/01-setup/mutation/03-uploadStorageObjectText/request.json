@@ -21,7 +21,7 @@
           "disableContentSha256": false,
           "disableMultipart": false,
           "expires": "2099-01-01T00:00:00Z",
-          "legalHold": "ON",
+          "legalHold": true,
           "mode": "GOVERNANCE",
           "retainUntilDate": "2099-01-01T00:00:02Z",
           "numThreads": 2,

@@ -1,0 +1,43 @@
+{
+  "arguments": {
+    "bucket": {
+      "type": "literal",
+      "value": "azblob-bucket-test"
+    },
+    "expiry": {
+      "type": "literal",
+      "value": "1h"
+    },
+    "object": {
+      "type": "literal",
+      "value": "public/hello.txt"
+    },
+    "requestParams": {
+      "type": "literal",
+      "value": null
+    }
+  },
+  "collection": "storagePresignedDownloadUrl",
+  "collection_relationships": {},
+  "query": {
+    "fields": {
+      "__value": {
+        "column": "__value",
+        "type": "column",
+        "fields": {
+          "fields": {
+            "url": {
+              "column": "url",
+              "type": "column"
+            },
+            "expiredAt": {
+              "column": "expiredAt",
+              "type": "column"
+            }
+          },
+          "type": "object"
+        }
+      }
+    }
+  }
+}

@@ -13,6 +13,8 @@ definition:
       type: Boolean
     - name: region
       type: String
+    - name: tags
+      type: Json
   source:
     dataConnectorName: storage
     dataConnectorCommand:

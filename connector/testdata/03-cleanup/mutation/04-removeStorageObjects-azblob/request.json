@@ -1,0 +1,38 @@
+{
+  "collection_relationships": {},
+  "operations": [
+    {
+      "type": "procedure",
+      "name": "removeStorageObjects",
+      "arguments": {
+        "bucket": "azblob-bucket-test",
+        "governanceBypass": false,
+        "maxKeys": 385252679,
+        "prefix": "",
+        "recursive": true,
+        "withMetadata": true,
+        "withVersions": true
+      },
+      "fields": {
+        "fields": {
+          "fields": {
+            "error": {
+              "column": "error",
+              "type": "column"
+            },
+            "objectName": {
+              "column": "objectName",
+              "type": "column"
+            },
+            "versionId": {
+              "column": "versionId",
+              "type": "column"
+            }
+          },
+          "type": "object"
+        },
+        "type": "array"
+      }
+    }
+  ]
+}

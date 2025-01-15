@@ -3,9 +3,10 @@
   "operations": [
     {
       "type": "procedure",
-      "name": "removeStorageBucketTags",
+      "name": "setStorageBucketTags",
       "arguments": {
-        "bucket": "minio-bucket-test"
+        "bucket": "minio-bucket-test",
+        "tags": null
       }
     }
   ]

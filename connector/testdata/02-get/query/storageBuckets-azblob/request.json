@@ -1,0 +1,34 @@
+{
+  "arguments": {
+    "clientId": {
+      "type": "literal",
+      "value": "azblob"
+    }
+  },
+  "collection": "storageBuckets",
+  "collection_relationships": {},
+  "query": {
+    "fields": {
+      "__value": {
+        "column": "__value",
+        "fields": {
+          "fields": {
+            "fields": {
+              "name": {
+                "column": "name",
+                "type": "column"
+              },
+              "tags": {
+                "column": "tags",
+                "type": "column"
+              }
+            },
+            "type": "object"
+          },
+          "type": "array"
+        },
+        "type": "column"
+      }
+    }
+  }
+}

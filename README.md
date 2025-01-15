@@ -17,6 +17,7 @@ At this moment, the connector supports S3 Compatible Storage services.
 | Google Cloud Storage | ✅        |
 | Cloudflare R2        | ✅        |
 | DigitalOcean Spaces  | ✅        |
+| Azure Blob Storage   | ✅        |
 
 ## Get Started
 

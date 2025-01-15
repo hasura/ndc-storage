@@ -19,7 +19,7 @@
         "expressions": [
           {
             "type": "binary_comparison_operator",
-            "column": { "type": "column", "name": "name", "path": [] },
+            "column": { "type": "column", "name": "object", "path": [] },
             "operator": "_starts_with",
             "value": { "type": "scalar", "value": "public" }
           },
@@ -35,14 +35,43 @@
   },
   "collection": "storageObject",
   "collection_relationships": {},
+
   "query": {
     "fields": {
       "__value": {
         "column": "__value",
         "fields": {
           "fields": {
+            "accessTierChangeTime": {
+              "column": "accessTierChangeTime",
+              "type": "column"
+            },
+            "accessTierInferred": {
+              "column": "accessTierInferred",
+              "type": "column"
+            },
+            "acl": {
+              "column": "acl",
+              "type": "column"
+            },
+            "archiveStatus": {
+              "column": "archiveStatus",
+              "type": "column"
+            },
+            "blobSequenceNumber": {
+              "column": "blobSequenceNumber",
+              "type": "column"
+            },
+            "blobType": {
+              "column": "blobType",
+              "type": "column"
+            },
             "bucket": {
               "column": "bucket",
+              "type": "column"
+            },
+            "cacheControl": {
+              "column": "cacheControl",
               "type": "column"
             },
             "checksumCrc32": {
@@ -69,8 +98,60 @@
               "column": "clientId",
               "type": "column"
             },
+            "contentDisposition": {
+              "column": "contentDisposition",
+              "type": "column"
+            },
+            "contentEncoding": {
+              "column": "contentEncoding",
+              "type": "column"
+            },
+            "contentLanguage": {
+              "column": "contentLanguage",
+              "type": "column"
+            },
+            "contentMd5": {
+              "column": "contentMd5",
+              "type": "column"
+            },
             "contentType": {
               "column": "contentType",
+              "type": "column"
+            },
+            "copyCompletionTime": {
+              "column": "copyCompletionTime",
+              "type": "column"
+            },
+            "copyId": {
+              "column": "copyId",
+              "type": "column"
+            },
+            "copyProgress": {
+              "column": "copyProgress",
+              "type": "column"
+            },
+            "copySource": {
+              "column": "copySource",
+              "type": "column"
+            },
+            "copyStatus": {
+              "column": "copyStatus",
+              "type": "column"
+            },
+            "copyStatusDescription": {
+              "column": "copyStatusDescription",
+              "type": "column"
+            },
+            "customerProvidedKeySha256": {
+              "column": "customerProvidedKeySha256",
+              "type": "column"
+            },
+            "destinationSnapshot": {
+              "column": "destinationSnapshot",
+              "type": "column"
+            },
+            "encryptionScope": {
+              "column": "encryptionScope",
               "type": "column"
             },
             "etag": {
@@ -126,12 +207,44 @@
               },
               "type": "column"
             },
-            "isDeleteMarker": {
-              "column": "isDeleteMarker",
+            "group": {
+              "column": "group",
               "type": "column"
             },
-            "isLatest": {
-              "column": "isLatest",
+            "immutabilityPolicyMode": {
+              "column": "immutabilityPolicyMode",
+              "type": "column"
+            },
+            "immutabilityPolicyUntilDate": {
+              "column": "immutabilityPolicyUntilDate",
+              "type": "column"
+            },
+            "incrementalCopy": {
+              "column": "incrementalCopy",
+              "type": "column"
+            },
+            "deleted": {
+              "column": "deleted",
+              "type": "column"
+            },
+            "lastAccessTime": {
+              "column": "lastAccessTime",
+              "type": "column"
+            },
+            "leaseDuration": {
+              "column": "leaseDuration",
+              "type": "column"
+            },
+            "leaseState": {
+              "column": "leaseState",
+              "type": "column"
+            },
+            "leaseStatus": {
+              "column": "leaseStatus",
+              "type": "column"
+            },
+            "legalHold": {
+              "column": "legalHold",
               "type": "column"
             },
             "metadata": {
@@ -159,12 +272,28 @@
               },
               "type": "column"
             },
+            "permissions": {
+              "column": "permissions",
+              "type": "column"
+            },
+            "rehydratePriority": {
+              "column": "rehydratePriority",
+              "type": "column"
+            },
+            "remainingRetentionDays": {
+              "column": "remainingRetentionDays",
+              "type": "column"
+            },
             "replicationReady": {
               "column": "replicationReady",
               "type": "column"
             },
             "replicationStatus": {
               "column": "replicationStatus",
+              "type": "column"
+            },
+            "resourceType": {
+              "column": "resourceType",
               "type": "column"
             },
             "restore": {
@@ -182,6 +311,14 @@
                 },
                 "type": "object"
               },
+              "type": "column"
+            },
+            "sealed": {
+              "column": "sealed",
+              "type": "column"
+            },
+            "serverEncrypted": {
+              "column": "serverEncrypted",
               "type": "column"
             },
             "size": {

@@ -8,7 +8,10 @@
         "clientId": "minio",
         "name": "minio-bucket-test",
         "objectLocking": false,
-        "region": "us-east-1"
+        "region": "us-east-1",
+        "tags": {
+          "UserID": "1"
+        }
       }
     }
   ]

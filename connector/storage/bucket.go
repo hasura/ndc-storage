@@ -48,8 +48,8 @@ func (m *Manager) RemoveAllBucketNotification(ctx context.Context, args *common.
 }
 
 // MakeBucket creates a new bucket.
-func (m *Manager) MakeBucket(ctx context.Context, args *common.MakeStorageBucketOptions) error {
-	client, bucketName, err := m.GetClientAndBucket(args.ClientID, args.Name)
+func (m *Manager) MakeBucket(ctx context.Context, clientID *common.StorageClientID, args *common.MakeStorageBucketOptions) error {
+	client, bucketName, err := m.GetClientAndBucket(clientID, args.Name)
 	if err != nil {
 		return err
 	}
@@ -60,13 +60,13 @@ func (m *Manager) MakeBucket(ctx context.Context, args *common.MakeStorageBucket
 }
 
 // ListBuckets list all buckets.
-func (m *Manager) ListBuckets(ctx context.Context, args *common.ListStorageBucketArguments) ([]common.StorageBucketInfo, error) {
-	client, ok := m.GetClient(&args.ClientID)
+func (m *Manager) ListBuckets(ctx context.Context, clientID *common.StorageClientID, options common.BucketOptions) ([]common.StorageBucketInfo, error) {
+	client, ok := m.GetClient(clientID)
 	if !ok {
 		return nil, schema.InternalServerError("client not found", nil)
 	}
 
-	return client.ListBuckets(ctx)
+	return client.ListBuckets(ctx, options)
 }
 
 // BucketExists checks if a bucket exists.
@@ -96,29 +96,7 @@ func (m *Manager) SetBucketTagging(ctx context.Context, args *common.SetStorageB
 		return err
 	}
 
-	args.Bucket = bucketName
-
-	return client.SetBucketTagging(ctx, args)
-}
-
-// GetBucketTagging gets tags of a bucket.
-func (m *Manager) GetBucketTagging(ctx context.Context, args *common.StorageBucketArguments) (map[string]string, error) {
-	client, bucketName, err := m.GetClientAndBucket(args.ClientID, args.Bucket)
-	if err != nil {
-		return nil, err
-	}
-
-	return client.GetBucketTagging(ctx, bucketName)
-}
-
-// RemoveBucketTagging removes all tags on a bucket.
-func (m *Manager) RemoveBucketTagging(ctx context.Context, args *common.StorageBucketArguments) error {
-	client, bucketName, err := m.GetClientAndBucket(args.ClientID, args.Bucket)
-	if err != nil {
-		return err
-	}
-
-	return client.RemoveBucketTagging(ctx, bucketName)
+	return client.SetBucketTagging(ctx, bucketName, args.Tags)
 }
 
 // SetBucketLifecycle sets lifecycle on bucket or an object prefix.

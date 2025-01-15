@@ -1,0 +1,17 @@
+{
+  "collection_relationships": {},
+  "operations": [
+    {
+      "type": "procedure",
+      "name": "setStorageObjectTags",
+      "arguments": {
+        "bucket": "azblob-bucket-test",
+        "object": "public/hello.txt",
+        "tags": {
+          "Foo": "baz",
+          "UserID": "3"
+        }
+      }
+    }
+  ]
+}

@@ -23,6 +23,8 @@ definition:
       type: String
     - name: where
       type: StorageObjectSimpleBoolExp
+    - name: withTags
+      type: Boolean
   source:
     dataConnectorName: storage
     dataConnectorCommand:

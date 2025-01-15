@@ -29,8 +29,6 @@ linters-settings:
     skip-tests: true
 
   dupl:
-    # Tokens count to trigger issue.
-    # Default: 150
     threshold: 200
 
   nestif:
@@ -44,12 +42,8 @@ linters-settings:
     excludes:
       - G115
       - G306
-
-  #   gocritic:
-  #     disabled-checks:
-  #       - appendAssign
-  #   gocyclo:
-  #     min-complexity: 40
+      - G401
+      - G501
 
   revive:
     max-open-files: 2048

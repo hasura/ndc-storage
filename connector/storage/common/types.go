@@ -7,6 +7,14 @@ import (
 	"github.com/invopop/jsonschema"
 )
 
+const (
+	HeaderContentType        string = "content-type"
+	HeaderCacheControl       string = "cache-control"
+	HeaderContentDisposition string = "content-disposition"
+	HeaderContentEncoding    string = "content-encoding"
+	HeaderContentLanguage    string = "content-language"
+)
+
 // StorageClientID the storage client ID enum.
 // @scalar StorageClientID string
 type StorageClientID string
@@ -15,12 +23,13 @@ type StorageClientID string
 type StorageProviderType string
 
 const (
-	S3            StorageProviderType = "s3"
-	GoogleStorage StorageProviderType = "gs"
+	S3             StorageProviderType = "s3"
+	GoogleStorage  StorageProviderType = "gs"
+	AzureBlobStore StorageProviderType = "azblob"
 )
 
 var enumValues_StorageProviderType = []StorageProviderType{
-	S3, GoogleStorage,
+	S3, GoogleStorage, AzureBlobStore,
 }
 
 // ParseStorageProviderType parses the StorageProviderType from string.

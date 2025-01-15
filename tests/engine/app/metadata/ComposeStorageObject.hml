@@ -125,6 +125,10 @@ definition:
       type: String
     - name: checksumSha256
       type: String
+    - name: clientId
+      type: String!
+    - name: contentMd5
+      type: String
     - name: etag
       type: String!
     - name: expiration
@@ -141,8 +145,6 @@ definition:
       type: Int64!
     - name: versionId
       type: String
-    - name: clientId
-      type: String!
   graphql:
     typeName: StorageUploadInfo
     inputTypeName: StorageUploadInfoInput
@@ -165,6 +167,8 @@ definition:
           - checksumCrc64Nvme
           - checksumSha1
           - checksumSha256
+          - clientId
+          - contentMd5
           - etag
           - expiration
           - expirationRuleId
@@ -173,7 +177,6 @@ definition:
           - name
           - size
           - versionId
-          - clientId
 
 ---
 kind: Command

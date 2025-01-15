@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"net/url"
+	"strings"
 
 	"github.com/hasura/ndc-sdk-go/schema"
 	"github.com/hasura/ndc-storage/connector/storage/common"
@@ -12,6 +13,8 @@ import (
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/trace"
 )
+
+const userMetadataHeaderPrefix = "x-amz-meta-"
 
 func serializeGrant(grant minio.Grant) common.StorageGrant {
 	g := common.StorageGrant{}
@@ -39,7 +42,7 @@ func serializeGrant(grant minio.Grant) common.StorageGrant {
 	return g
 }
 
-func serializeObjectInfo(obj minio.ObjectInfo) common.StorageObject {
+func serializeObjectInfo(obj minio.ObjectInfo, fromList bool) common.StorageObject { //nolint:funlen,gocognit,gocyclo,cyclop
 	grants := make([]common.StorageGrant, len(obj.Grant))
 
 	for i, grant := range obj.Grant {
@@ -66,16 +69,66 @@ func serializeObjectInfo(obj minio.ObjectInfo) common.StorageObject {
 	object := common.StorageObject{
 		Name:                  obj.Key,
 		LastModified:          obj.LastModified,
-		Size:                  obj.Size,
-		Metadata:              obj.Metadata,
-		UserMetadata:          obj.UserMetadata,
+		Size:                  &obj.Size,
+		Metadata:              map[string]string{},
+		UserMetadata:          map[string]string{},
 		UserTags:              obj.UserTags,
 		UserTagCount:          obj.UserTagCount,
 		Grant:                 grants,
 		IsLatest:              &obj.IsLatest,
-		IsDeleteMarker:        &obj.IsDeleteMarker,
+		Deleted:               &obj.IsDeleteMarker,
 		ReplicationReady:      &obj.ReplicationReady,
 		StorageObjectChecksum: checksum,
+	}
+
+	if fromList {
+		object.Metadata = obj.UserMetadata
+
+		for key, value := range obj.UserMetadata {
+			lowerKey := strings.ToLower(key)
+			if strings.HasPrefix(lowerKey, userMetadataHeaderPrefix) {
+				object.UserMetadata[key[len(userMetadataHeaderPrefix):]] = value
+
+				continue
+			}
+
+			switch lowerKey {
+			case common.HeaderContentType:
+				object.ContentType = &value
+			case common.HeaderCacheControl:
+				object.CacheControl = &value
+			case common.HeaderContentDisposition:
+				object.ContentDisposition = &value
+			case common.HeaderContentEncoding:
+				object.ContentEncoding = &value
+			case common.HeaderContentLanguage:
+				object.ContentLanguage = &value
+			}
+		}
+	} else {
+		object.UserMetadata = obj.UserMetadata
+
+		for key, values := range obj.Metadata {
+			if len(values) == 0 {
+				continue
+			}
+
+			value := strings.Join(values, ", ")
+			object.Metadata[key] = value
+
+			switch strings.ToLower(key) {
+			case common.HeaderContentType:
+				object.ContentType = &value
+			case common.HeaderCacheControl:
+				object.CacheControl = &value
+			case common.HeaderContentDisposition:
+				object.ContentDisposition = &value
+			case common.HeaderContentEncoding:
+				object.ContentEncoding = &value
+			case common.HeaderContentLanguage:
+				object.ContentLanguage = &value
+			}
+		}
 	}
 
 	if !isStringNull(obj.ETag) {
@@ -136,15 +189,15 @@ func serializeObjectInfo(obj minio.ObjectInfo) common.StorageObject {
 }
 
 func (mc *Client) validateListObjectsOptions(span trace.Span, opts *common.ListStorageObjectsOptions) minio.ListObjectsOptions {
-	if mc.providerType == common.GoogleStorage && opts.WithVersions {
+	if mc.providerType == common.GoogleStorage && opts.Include.Versions {
 		// Force versioning off. GCS doesn't support AWS S3 compatible versioning API.
-		opts.WithVersions = false
+		opts.Include.Versions = false
 	}
 
 	span.SetAttributes(
 		attribute.Bool("storage.options.recursive", opts.Recursive),
-		attribute.Bool("storage.options.with_versions", opts.WithVersions),
-		attribute.Bool("storage.options.with_metadata", opts.WithMetadata),
+		attribute.Bool("storage.options.with_versions", opts.Include.Versions),
+		attribute.Bool("storage.options.with_metadata", opts.Include.Metadata),
 	)
 
 	if opts.Prefix != "" {
@@ -155,16 +208,16 @@ func (mc *Client) validateListObjectsOptions(span trace.Span, opts *common.ListS
 		span.SetAttributes(attribute.String("storage.options.start_after", opts.StartAfter))
 	}
 
-	if opts.MaxKeys > 0 {
-		span.SetAttributes(attribute.Int("storage.options.max_keys", opts.MaxKeys))
+	if opts.MaxResults > 0 {
+		span.SetAttributes(attribute.Int("storage.options.max_results", opts.MaxResults))
 	}
 
 	return minio.ListObjectsOptions{
-		WithVersions: opts.WithVersions,
-		WithMetadata: opts.WithMetadata,
+		WithVersions: opts.Include.Versions,
+		WithMetadata: opts.Include.Metadata,
 		Prefix:       opts.Prefix,
 		Recursive:    opts.Recursive,
-		MaxKeys:      opts.MaxKeys,
+		MaxKeys:      opts.MaxResults,
 		StartAfter:   opts.StartAfter,
 	}
 }
@@ -189,10 +242,16 @@ func serializeUploadObjectInfo(obj minio.UploadInfo) common.StorageUploadInfo {
 
 	object := common.StorageUploadInfo{
 		Bucket:                obj.Bucket,
-		ETag:                  obj.ETag,
 		Name:                  obj.Key,
-		Size:                  obj.Size,
 		StorageObjectChecksum: checksum,
+	}
+
+	if !isStringNull(obj.ETag) {
+		object.ETag = &obj.ETag
+	}
+
+	if obj.Size > 0 {
+		object.Size = &obj.Size
 	}
 
 	if !obj.LastModified.IsZero() {
@@ -219,7 +278,12 @@ func serializeUploadObjectInfo(obj minio.UploadInfo) common.StorageUploadInfo {
 }
 
 func serializeGetObjectOptions(span trace.Span, opts common.GetStorageObjectOptions) minio.GetObjectOptions {
-	options := minio.GetObjectOptions{}
+	options := minio.GetObjectOptions{
+		Checksum: opts.Include.Checksum,
+	}
+
+	span.SetAttributes(attribute.Bool("storage.request_object_checksum", options.Checksum))
+
 	if opts.VersionID != nil && !isStringNull(*opts.VersionID) {
 		options.VersionID = *opts.VersionID
 		span.SetAttributes(attribute.String("storage.request_object_version", options.VersionID))
@@ -228,11 +292,6 @@ func serializeGetObjectOptions(span trace.Span, opts common.GetStorageObjectOpti
 	if opts.PartNumber != nil {
 		options.PartNumber = *opts.PartNumber
 		span.SetAttributes(attribute.Int("storage.part_number", options.PartNumber))
-	}
-
-	if opts.Checksum != nil {
-		options.Checksum = *opts.Checksum
-		span.SetAttributes(attribute.Bool("storage.request_object_checksum", options.Checksum))
 	}
 
 	for key, value := range opts.Headers {
@@ -304,15 +363,28 @@ func convertCopyDestOptions(dst common.StorageCopyDestOptions) (*minio.CopyDestO
 	}
 
 	if dst.LegalHold != nil {
-		legalHold := minio.LegalHoldStatus(*dst.LegalHold)
-		if !legalHold.IsValid() {
-			return nil, fmt.Errorf("invalid LegalHoldStatus: %s", *dst.LegalHold)
+		legalHold := minio.LegalHoldDisabled
+
+		if *dst.LegalHold {
+			legalHold = minio.LegalHoldEnabled
 		}
 
 		destOptions.LegalHold = legalHold
 	}
 
 	return &destOptions, nil
+}
+
+func validateLegalHoldStatus(input *bool) minio.LegalHoldStatus {
+	if input == nil {
+		return ""
+	}
+
+	if *input {
+		return minio.LegalHoldEnabled
+	}
+
+	return minio.LegalHoldDisabled
 }
 
 func serializeBucketNotificationCommonConfig(item notification.Config) common.NotificationCommonConfig {

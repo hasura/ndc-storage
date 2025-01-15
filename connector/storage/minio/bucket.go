@@ -2,6 +2,8 @@ package minio
 
 import (
 	"context"
+	"errors"
+	"net/http"
 
 	"github.com/hasura/ndc-sdk-go/schema"
 	"github.com/hasura/ndc-storage/connector/storage/common"
@@ -28,11 +30,20 @@ func (mc *Client) MakeBucket(ctx context.Context, args *common.MakeStorageBucket
 		return serializeErrorResponse(err)
 	}
 
+	if len(args.Tags) > 0 {
+		if err := mc.SetBucketTagging(ctx, args.Name, args.Tags); err != nil {
+			span.SetStatus(codes.Error, err.Error())
+			span.RecordError(err)
+
+			return err
+		}
+	}
+
 	return nil
 }
 
 // ListBuckets lists all buckets.
-func (mc *Client) ListBuckets(ctx context.Context) ([]common.StorageBucketInfo, error) {
+func (mc *Client) ListBuckets(ctx context.Context, options common.BucketOptions) ([]common.StorageBucketInfo, error) {
 	ctx, span := mc.startOtelSpan(ctx, "ListBuckets", "")
 	defer span.End()
 
@@ -45,16 +56,54 @@ func (mc *Client) ListBuckets(ctx context.Context) ([]common.StorageBucketInfo, 
 	}
 
 	results := make([]common.StorageBucketInfo, len(bucketInfos))
+
 	for i, item := range bucketInfos {
-		results[i] = common.StorageBucketInfo{
-			Name:         item.Name,
-			CreationDate: item.CreationDate,
+		bucket, err := mc.populateBucket(ctx, item, options)
+		if err != nil {
+			span.SetStatus(codes.Error, err.Error())
+			span.RecordError(err)
+
+			return nil, err
 		}
+
+		results[i] = bucket
 	}
 
 	span.SetAttributes(attribute.Int("storage.bucket_count", len(results)))
 
 	return results, nil
+}
+
+// GetBucket gets a bucket by name.
+func (mc *Client) GetBucket(ctx context.Context, name string, options common.BucketOptions) (*common.StorageBucketInfo, error) {
+	ctx, span := mc.startOtelSpan(ctx, "GetBucket", "")
+	defer span.End()
+
+	bucketInfos, err := mc.client.ListBuckets(ctx)
+	if err != nil {
+		span.SetStatus(codes.Error, err.Error())
+		span.RecordError(err)
+
+		return nil, serializeErrorResponse(err)
+	}
+
+	for _, item := range bucketInfos {
+		if item.Name != name {
+			continue
+		}
+
+		bucket, err := mc.populateBucket(ctx, item, options)
+		if err != nil {
+			span.SetStatus(codes.Error, err.Error())
+			span.RecordError(err)
+
+			return nil, err
+		}
+
+		return &bucket, nil
+	}
+
+	return nil, nil
 }
 
 // BucketExists checks if a bucket exists.
@@ -98,6 +147,18 @@ func (mc *Client) GetBucketTagging(ctx context.Context, bucketName string) (map[
 
 	bucketTags, err := mc.client.GetBucketTagging(ctx, bucketName)
 	if err != nil {
+		var errResponse minio.ErrorResponse
+		if errors.As(err, &errResponse) {
+			if errResponse.StatusCode == http.StatusNotFound {
+				return nil, nil
+			}
+
+			span.SetStatus(codes.Error, err.Error())
+			span.RecordError(err)
+
+			return nil, evalMinioErrorResponse(errResponse)
+		}
+
 		span.SetStatus(codes.Error, err.Error())
 		span.RecordError(err)
 
@@ -129,15 +190,19 @@ func (mc *Client) RemoveBucketTagging(ctx context.Context, bucketName string) er
 }
 
 // SetBucketTagging sets tags to a bucket.
-func (mc *Client) SetBucketTagging(ctx context.Context, args *common.SetStorageBucketTaggingArguments) error {
-	ctx, span := mc.startOtelSpan(ctx, "SetBucketTagging", args.Bucket)
+func (mc *Client) SetBucketTagging(ctx context.Context, bucketName string, bucketTags map[string]string) error {
+	if len(bucketTags) == 0 {
+		return mc.RemoveBucketTagging(ctx, bucketName)
+	}
+
+	ctx, span := mc.startOtelSpan(ctx, "SetBucketTagging", bucketName)
 	defer span.End()
 
-	for key, value := range args.Tags {
+	for key, value := range bucketTags {
 		span.SetAttributes(attribute.String("storage.bucket_tag"+key, value))
 	}
 
-	inputTags, err := tags.NewTags(args.Tags, false)
+	inputTags, err := tags.NewTags(bucketTags, false)
 	if err != nil {
 		span.SetStatus(codes.Error, "failed to convert minio tags")
 		span.RecordError(err)
@@ -145,7 +210,7 @@ func (mc *Client) SetBucketTagging(ctx context.Context, args *common.SetStorageB
 		return schema.UnprocessableContentError(err.Error(), nil)
 	}
 
-	err = mc.client.SetBucketTagging(ctx, args.Bucket, inputTags)
+	err = mc.client.SetBucketTagging(ctx, bucketName, inputTags)
 	if err != nil {
 		span.SetStatus(codes.Error, err.Error())
 		span.RecordError(err)
@@ -258,6 +323,38 @@ func (mc *Client) GetBucketVersioning(ctx context.Context, bucketName string) (*
 	}
 
 	return result, nil
+}
+
+// EnableVersioning enables bucket versioning support.
+func (mc *Client) EnableVersioning(ctx context.Context, bucketName string) error {
+	ctx, span := mc.startOtelSpan(ctx, "EnableVersioning", bucketName)
+	defer span.End()
+
+	err := mc.client.EnableVersioning(ctx, bucketName)
+	if err != nil {
+		span.SetStatus(codes.Error, err.Error())
+		span.RecordError(err)
+
+		return serializeErrorResponse(err)
+	}
+
+	return nil
+}
+
+// SuspendVersioning disables bucket versioning support.
+func (mc *Client) SuspendVersioning(ctx context.Context, bucketName string) error {
+	ctx, span := mc.startOtelSpan(ctx, "SuspendVersioning", bucketName)
+	defer span.End()
+
+	err := mc.client.SuspendVersioning(ctx, bucketName)
+	if err != nil {
+		span.SetStatus(codes.Error, err.Error())
+		span.RecordError(err)
+
+		return serializeErrorResponse(err)
+	}
+
+	return nil
 }
 
 // SetBucketReplication sets replication configuration on a bucket. Role can be obtained by first defining the replication target
@@ -501,4 +598,22 @@ func serializeBucketReplicationRule(item replication.Rule) common.StorageReplica
 	}
 
 	return rule
+}
+
+func (mc *Client) populateBucket(ctx context.Context, item minio.BucketInfo, options common.BucketOptions) (common.StorageBucketInfo, error) {
+	bucket := common.StorageBucketInfo{
+		Name:         item.Name,
+		CreationDate: item.CreationDate,
+	}
+
+	if options.IncludeTags {
+		tags, err := mc.GetBucketTagging(ctx, item.Name)
+		if err != nil {
+			return bucket, err
+		}
+
+		bucket.Tags = tags
+	}
+
+	return bucket, nil
 }

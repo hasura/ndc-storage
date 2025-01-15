@@ -1,7 +1,7 @@
 # yaml-language-server: $schema=https://raw.githubusercontent.com/hasura/ndc-storage/main/jsonschema/configuration.schema.json
 clients:
-  - type:
-      env: STORAGE_PROVIDER_TYPE
+  - id: default
+    type: s3
     endpoint:
       env: STORAGE_ENDPOINT
     defaultBucket:
@@ -19,4 +19,4 @@ clients:
     allowedBuckets: []
 concurrency:
   query: 5
-  mutation: 1
+  mutation: 3

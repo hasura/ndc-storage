@@ -30,6 +30,26 @@ func jsonSchemaConfiguration() error {
 	}
 
 	reflectSchema := r.Reflect(types.Configuration{})
+	envString := &jsonschema.Schema{
+		Type:       "object",
+		Properties: jsonschema.NewProperties(),
+		AnyOf: []*jsonschema.Schema{
+			{
+				Required: []string{"value"},
+			},
+			{
+				Required: []string{"env"},
+			},
+		},
+	}
+	envString.Properties.Set("env", &jsonschema.Schema{
+		Type: "string",
+	})
+	envString.Properties.Set("value", &jsonschema.Schema{
+		Type: "string",
+	})
+
+	reflectSchema.Definitions["EnvString"] = envString
 
 	schemaBytes, err := json.MarshalIndent(reflectSchema, "", "  ")
 	if err != nil {

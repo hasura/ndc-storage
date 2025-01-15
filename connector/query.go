@@ -6,7 +6,6 @@ import (
 
 	"github.com/hasura/ndc-sdk-go/schema"
 	"github.com/hasura/ndc-sdk-go/utils"
-	"github.com/hasura/ndc-storage/connector/collection"
 	"github.com/hasura/ndc-storage/connector/types"
 	"go.opentelemetry.io/otel/codes"
 	"golang.org/x/sync/errgroup"
@@ -86,16 +85,6 @@ func (c *Connector) execQuery(ctx context.Context, state *types.State, request *
 		return nil, schema.UnprocessableContentError("failed to resolve argument variables", map[string]any{
 			"cause": err.Error(),
 		})
-	}
-
-	if request.Collection == collection.CollectionStorageObjects {
-		executor := collection.CollectionObjectExecutor{
-			Storage:   state.Storage,
-			Request:   request,
-			Arguments: rawArgs,
-		}
-
-		return executor.Execute(ctx)
 	}
 
 	result, err := c.apiHandler.Query(context.WithValue(ctx, types.QueryVariablesContextKey, variables), state, request, rawArgs)

@@ -9,6 +9,8 @@ definition:
       type: TimestampTz!
     - name: name
       type: String!
+    - name: tags
+      type: Json
   graphql:
     typeName: StorageBucketInfo
     inputTypeName: StorageBucketInfoInput
@@ -27,6 +29,7 @@ definition:
         allowedFields:
           - creationDate
           - name
+          - tags
 
 ---
 kind: Command
