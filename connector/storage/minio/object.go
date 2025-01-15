@@ -48,6 +48,14 @@ func (mc *Client) ListObjects(ctx context.Context, bucketName string, opts *comm
 		if maxResults > 0 && count < maxResults {
 			object := serializeObjectInfo(obj, true)
 			object.Bucket = bucketName
+
+			if opts.Include.LegalHold {
+				lhStatus, err := mc.GetObjectLegalHold(ctx, bucketName, object.Name, object.VersionID)
+				if err == nil {
+					object.LegalHold = &lhStatus
+				}
+			}
+
 			objects = append(objects, object)
 			count++
 		}
@@ -61,8 +69,8 @@ func (mc *Client) ListObjects(ctx context.Context, bucketName string, opts *comm
 }
 
 // ListIncompleteUploads list partially uploaded objects in a bucket.
-func (mc *Client) ListIncompleteUploads(ctx context.Context, args *common.ListIncompleteUploadsArguments) ([]common.StorageObjectMultipartInfo, error) {
-	ctx, span := mc.startOtelSpan(ctx, "ListIncompleteUploads", args.Bucket)
+func (mc *Client) ListIncompleteUploads(ctx context.Context, bucketName string, args common.ListIncompleteUploadsOptions) ([]common.StorageObjectMultipartInfo, error) {
+	ctx, span := mc.startOtelSpan(ctx, "ListIncompleteUploads", bucketName)
 	defer span.End()
 
 	span.SetAttributes(
@@ -70,7 +78,7 @@ func (mc *Client) ListIncompleteUploads(ctx context.Context, args *common.ListIn
 		attribute.Bool("storage.options.recursive", args.Recursive),
 	)
 
-	objChan := mc.client.ListIncompleteUploads(ctx, args.Bucket, args.Prefix, args.Recursive)
+	objChan := mc.client.ListIncompleteUploads(ctx, bucketName, args.Prefix, args.Recursive)
 	objects := make([]common.StorageObjectMultipartInfo, 0)
 
 	for obj := range objChan {
@@ -82,11 +90,23 @@ func (mc *Client) ListIncompleteUploads(ctx context.Context, args *common.ListIn
 		}
 
 		object := common.StorageObjectMultipartInfo{
-			Key:          obj.Key,
-			Initiated:    &obj.Initiated,
-			StorageClass: obj.StorageClass,
-			Size:         obj.Size,
-			UploadID:     obj.UploadID,
+			Initiated: &obj.Initiated,
+		}
+
+		if !isStringNull(obj.Key) {
+			object.Name = &obj.Key
+		}
+
+		if !isStringNull(obj.StorageClass) {
+			object.StorageClass = &obj.StorageClass
+		}
+
+		if !isStringNull(obj.UploadID) {
+			object.UploadID = &obj.UploadID
+		}
+
+		if obj.Size > 0 {
+			object.Size = &obj.Size
 		}
 
 		objects = append(objects, object)
@@ -161,6 +181,7 @@ func (mc *Client) PutObject(ctx context.Context, bucketName string, objectName s
 		DisableMultipart:        opts.DisableMultipart,
 		WebsiteRedirectLocation: opts.WebsiteRedirectLocation,
 		ConcurrentStreamParts:   opts.ConcurrentStreamParts,
+		LegalHold:               validateLegalHoldStatus(opts.LegalHold),
 	}
 
 	if opts.Expires != nil {
@@ -182,18 +203,6 @@ func (mc *Client) PutObject(ctx context.Context, bucketName string, objectName s
 		}
 
 		options.Mode = mode
-	}
-
-	if opts.LegalHold != nil {
-		legalHold := minio.LegalHoldStatus(*opts.LegalHold)
-		if !legalHold.IsValid() {
-			errorMsg := fmt.Sprintf("invalid LegalHoldStatus: %s", *opts.LegalHold)
-			span.SetStatus(codes.Error, errorMsg)
-
-			return nil, schema.UnprocessableContentError(errorMsg, nil)
-		}
-
-		options.LegalHold = legalHold
 	}
 
 	if opts.Checksum != nil {
@@ -320,6 +329,18 @@ func (mc *Client) StatObject(ctx context.Context, bucketName, objectName string,
 		}
 
 		result.UserTags = userTags
+	}
+
+	if opts.Include.LegalHold {
+		var versionID *string
+		if object.VersionID != "" {
+			versionID = &object.VersionID
+		}
+
+		lhStatus, err := mc.GetObjectLegalHold(ctx, bucketName, object.Key, versionID)
+		if err == nil {
+			result.LegalHold = &lhStatus
+		}
 	}
 
 	common.SetObjectInfoSpanAttributes(span, &result)
@@ -453,12 +474,12 @@ func (mc *Client) PutObjectRetention(ctx context.Context, opts *common.PutStorag
 	return nil
 }
 
-// PutObjectLegalHold applies legal-hold onto an object.
-func (mc *Client) PutObjectLegalHold(ctx context.Context, opts *common.PutStorageObjectLegalHoldOptions) error {
-	ctx, span := mc.startOtelSpan(ctx, "PutObjectLegalHold", opts.Bucket)
+// SetObjectLegalHold applies legal-hold onto an object.
+func (mc *Client) SetObjectLegalHold(ctx context.Context, bucketName string, objectName string, opts common.SetStorageObjectLegalHoldOptions) error {
+	ctx, span := mc.startOtelSpan(ctx, "SetObjectLegalHold", bucketName)
 	defer span.End()
 
-	span.SetAttributes(attribute.String("storage.key", opts.Object))
+	span.SetAttributes(attribute.String("storage.key", objectName))
 
 	options := minio.PutObjectLegalHoldOptions{
 		VersionID: opts.VersionID,
@@ -469,20 +490,12 @@ func (mc *Client) PutObjectLegalHold(ctx context.Context, opts *common.PutStorag
 	}
 
 	if opts.Status != nil {
-		span.SetAttributes(attribute.String("storage.options.status", string(*opts.Status)))
-
-		legalHold := minio.LegalHoldStatus(*opts.Status)
-		if !legalHold.IsValid() {
-			errorMsg := "invalid LegalHoldStatus: " + string(*opts.Status)
-			span.SetStatus(codes.Error, errorMsg)
-
-			return schema.UnprocessableContentError(errorMsg, nil)
-		}
-
+		span.SetAttributes(attribute.Bool("storage.options.status", *opts.Status))
+		legalHold := validateLegalHoldStatus(opts.Status)
 		options.Status = &legalHold
 	}
 
-	err := mc.client.PutObjectLegalHold(ctx, opts.Bucket, opts.Object, options)
+	err := mc.client.PutObjectLegalHold(ctx, bucketName, objectName, options)
 	if err != nil {
 		span.SetStatus(codes.Error, err.Error())
 		span.RecordError(err)
@@ -494,35 +507,28 @@ func (mc *Client) PutObjectLegalHold(ctx context.Context, opts *common.PutStorag
 }
 
 // GetObjectLegalHold returns legal-hold status on a given object.
-func (mc *Client) GetObjectLegalHold(ctx context.Context, opts *common.GetStorageObjectLegalHoldOptions) (common.StorageLegalHoldStatus, error) {
-	ctx, span := mc.startOtelSpan(ctx, "GetObjectLegalHold", opts.Bucket)
+func (mc *Client) GetObjectLegalHold(ctx context.Context, bucketName string, objectName string, versionID *string) (bool, error) {
+	ctx, span := mc.startOtelSpan(ctx, "GetObjectLegalHold", bucketName)
 	defer span.End()
 
-	span.SetAttributes(attribute.String("storage.key", opts.Object))
+	span.SetAttributes(attribute.String("storage.key", objectName))
 
-	options := minio.GetObjectLegalHoldOptions{
-		VersionID: opts.VersionID,
+	options := minio.GetObjectLegalHoldOptions{}
+
+	if versionID != nil && *versionID != "" {
+		options.VersionID = *versionID
+		span.SetAttributes(attribute.String("storage.options.version", *versionID))
 	}
 
-	if opts.VersionID != "" {
-		span.SetAttributes(attribute.String("storage.options.version", opts.VersionID))
-	}
-
-	status, err := mc.client.GetObjectLegalHold(ctx, opts.Bucket, opts.Object, options)
+	status, err := mc.client.GetObjectLegalHold(ctx, bucketName, objectName, options)
 	if err != nil {
 		span.SetStatus(codes.Error, err.Error())
 		span.RecordError(err)
 
-		return "", serializeErrorResponse(err)
+		return false, serializeErrorResponse(err)
 	}
 
-	if status == nil {
-		return "", nil
-	}
-
-	result := common.StorageLegalHoldStatus(string(*status))
-
-	return result, nil
+	return status != nil && *status == minio.LegalHoldEnabled, nil
 }
 
 // PutObjectTagging sets new object Tags to the given object, replaces/overwrites any existing tags.

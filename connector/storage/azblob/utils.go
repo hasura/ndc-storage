@@ -97,7 +97,7 @@ func serializeObjectInfo(item *container.BlobItem) common.StorageObject { //noli
 	}
 
 	object.ACL = item.Properties.ACL
-	object.AccessTier = (*string)(item.Properties.AccessTier)
+	object.StorageClass = (*string)(item.Properties.AccessTier)
 	object.AccessTierChangeTime = item.Properties.AccessTierChangeTime
 	object.AccessTierInferred = item.Properties.AccessTierInferred
 	object.ArchiveStatus = (*string)(item.Properties.ArchiveStatus)
@@ -150,7 +150,7 @@ func serializeUploadObjectInfo(resp azblob.UploadStreamResponse) common.StorageU
 
 	if resp.ETag != nil {
 		etag, _ := strconv.Unquote(string(*resp.ETag))
-		object.ETag = etag
+		object.ETag = &etag
 	}
 
 	return object

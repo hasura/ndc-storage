@@ -5,8 +5,7 @@
         "__value": {
           "objects": [
             {
-              "accessTier": "Hot",
-              "accessTierInferred": true,
+              "accessTierInferred": null,
               "acl": null,
               "archiveStatus": null,
               "blobSequenceNumber": null,
@@ -62,7 +61,7 @@
               "sealed": null,
               "serverEncrypted": true,
               "size": 10,
-              "storageClass": null,
+              "storageClass": "Cool",
               "userMetadata": {},
               "userTagCount": 2,
               "userTags": {

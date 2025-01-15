@@ -3,11 +3,11 @@
   "operations": [
     {
       "type": "procedure",
-      "name": "putStorageObjectLegalHold",
+      "name": "setStorageObjectLegalHold",
       "arguments": {
         "bucket": "minio-bucket-lock",
         "object": "SiKBc6ifDC",
-        "status": "ON"
+        "status": true
       }
     }
   ]

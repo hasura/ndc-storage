@@ -41,10 +41,6 @@
         "column": "__value",
         "fields": {
           "fields": {
-            "accessTier": {
-              "column": "accessTier",
-              "type": "column"
-            },
             "accessTierInferred": {
               "column": "accessTierInferred",
               "type": "column"

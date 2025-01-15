@@ -27,7 +27,7 @@ type StorageClient interface { //nolint:interfacebloat
 	// ListObjects lists objects in a bucket.
 	ListObjects(ctx context.Context, bucketName string, opts *ListStorageObjectsOptions, predicate func(string) bool) (*StorageObjectListResults, error)
 	// ListIncompleteUploads list partially uploaded objects in a bucket.
-	ListIncompleteUploads(ctx context.Context, args *ListIncompleteUploadsArguments) ([]StorageObjectMultipartInfo, error)
+	ListIncompleteUploads(ctx context.Context, bucketName string, args ListIncompleteUploadsOptions) ([]StorageObjectMultipartInfo, error)
 	// GetObject returns a stream of the object data. Most of the common errors occur when reading the stream.
 	GetObject(ctx context.Context, bucketName string, objectName string, opts GetStorageObjectOptions) (io.ReadCloser, error)
 	// PutObject uploads objects that are less than 128MiB in a single PUT operation. For objects that are greater than 128MiB in size,
@@ -49,9 +49,7 @@ type StorageClient interface { //nolint:interfacebloat
 	// The errors observed are sent over the error channel.
 	RemoveObjects(ctx context.Context, bucketName string, opts *RemoveStorageObjectsOptions, predicate func(string) bool) []RemoveStorageObjectError
 	// PutObjectLegalHold applies legal-hold onto an object.
-	PutObjectLegalHold(ctx context.Context, opts *PutStorageObjectLegalHoldOptions) error
-	// GetObjectLegalHold returns legal-hold status on a given object.
-	GetObjectLegalHold(ctx context.Context, options *GetStorageObjectLegalHoldOptions) (StorageLegalHoldStatus, error)
+	SetObjectLegalHold(ctx context.Context, bucketName string, objectName string, opts SetStorageObjectLegalHoldOptions) error
 	// SetObjectTags sets new object Tags to the given object, replaces/overwrites any existing tags.
 	SetObjectTags(ctx context.Context, bucketName string, objectName string, options SetStorageObjectTagsOptions) error
 	// RemoveIncompleteUpload removes a partially uploaded object.
@@ -182,7 +180,7 @@ type StorageObject struct {
 	// ACL grant.
 	Grant []StorageGrant `json:"grant,omitempty"`
 
-	// The class of storage used to store the object.
+	// The class of storage used to store the object or the access tier on Azure blob storage.
 	StorageClass *string `json:"storageClass,omitempty"`
 
 	// Versioning related information
@@ -206,7 +204,6 @@ type StorageObject struct {
 
 	// Azure Blob Store properties
 	ACL                       *string    `json:"acl"`
-	AccessTier                *string    `json:"accessTier"`
 	AccessTierChangeTime      *time.Time `json:"accessTierChangeTime"`
 	AccessTierInferred        *bool      `json:"accessTierInferred"`
 	ArchiveStatus             *string    `json:"archiveStatus"`
@@ -277,13 +274,13 @@ type StorageUploadInfo struct {
 	// An ETag is optionally set to md5sum of an object.  In case of multipart objects,
 	// ETag is of the form MD5SUM-N where MD5SUM is md5sum of all individual md5sums of
 	// each parts concatenated into one string.
-	ETag string `json:"etag"`
+	ETag *string `json:"etag"`
 
 	ClientID     string     `json:"clientId"`     // Client ID
 	Bucket       string     `json:"bucket"`       // Name of the bucket
 	Name         string     `json:"name"`         // Name of the object
 	LastModified *time.Time `json:"lastModified"` // Date and time the object was last modified.
-	Size         int64      `json:"size"`         // Size in bytes of the object.
+	Size         *int64     `json:"size"`         // Size in bytes of the object.
 	Location     *string    `json:"location"`
 	VersionID    *string    `json:"versionId"`
 	ContentMD5   *string    `json:"contentMd5"`
@@ -303,16 +300,16 @@ type StorageObjectMultipartInfo struct {
 	Initiated *time.Time `json:"initiated"`
 
 	// The type of storage to use for the object. Defaults to 'STANDARD'.
-	StorageClass string `json:"storageClass,omitempty"`
+	StorageClass *string `json:"storageClass"`
 
 	// Key of the object for which the multipart upload was initiated.
-	Key string `json:"key,omitempty"`
+	Name *string `json:"name"`
 
 	// Size in bytes of the object.
-	Size int64 `json:"size,omitempty"`
+	Size *int64 `json:"size"`
 
 	// Upload ID that identifies the multipart upload.
-	UploadID string `json:"uploadId,omitempty"`
+	UploadID *string `json:"uploadId"`
 }
 
 // EncryptionMethod represents a server-side-encryption method enum.
@@ -322,10 +319,6 @@ type StorageObjectMultipartInfo struct {
 // StorageRetentionMode the object retention mode.
 // @enum GOVERNANCE,COMPLIANCE
 type StorageRetentionMode string
-
-// StorageLegalHoldStatus the object legal hold status.
-// @enum ON,OFF
-type StorageLegalHoldStatus string
 
 // RemoveStorageObjectError the container of Multi Delete S3 API error.
 type RemoveStorageObjectError struct {

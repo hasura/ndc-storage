@@ -3,13 +3,14 @@ package functions
 import (
 	"context"
 
+	"github.com/hasura/ndc-storage/connector/functions/internal"
 	"github.com/hasura/ndc-storage/connector/storage/common"
 	"github.com/hasura/ndc-storage/connector/types"
 )
 
 // FunctionStorageIncompleteUploads list partially uploaded objects in a bucket.
 func FunctionStorageIncompleteUploads(ctx context.Context, state *types.State, args *common.ListIncompleteUploadsArguments) ([]common.StorageObjectMultipartInfo, error) {
-	return state.Storage.ListIncompleteUploads(ctx, args)
+	return state.Storage.ListIncompleteUploads(ctx, args.StorageBucketArguments, args.ListIncompleteUploadsOptions)
 }
 
 // ProcedurePutStorageObjectRetention applies object retention lock onto an object.
@@ -21,18 +22,22 @@ func ProcedurePutStorageObjectRetention(ctx context.Context, state *types.State,
 	return true, nil
 }
 
-// ProcedurePutStorageObjectLegalHold applies legal-hold onto an object.
-func ProcedurePutStorageObjectLegalHold(ctx context.Context, state *types.State, args *common.PutStorageObjectLegalHoldOptions) (bool, error) {
-	if err := state.Storage.PutObjectLegalHold(ctx, args); err != nil {
+// ProcedureSetStorageObjectLegalHold applies legal-hold onto an object.
+func ProcedureSetStorageObjectLegalHold(ctx context.Context, state *types.State, args *common.SetStorageObjectLegalHoldArguments) (bool, error) {
+	request, err := internal.EvalObjectPredicate(args.StorageBucketArguments, args.Object, args.Where, types.QueryVariablesFromContext(ctx))
+	if err != nil {
+		return false, err
+	}
+
+	if !request.IsValid {
+		return false, errPermissionDenied
+	}
+
+	if err := state.Storage.SetObjectLegalHold(ctx, request.StorageBucketArguments, request.Prefix, args.SetStorageObjectLegalHoldOptions); err != nil {
 		return false, err
 	}
 
 	return true, nil
-}
-
-// FunctionStorageObjectLegalHold returns legal-hold status on a given object.
-func FunctionStorageObjectLegalHold(ctx context.Context, state *types.State, args *common.GetStorageObjectLegalHoldOptions) (common.StorageLegalHoldStatus, error) {
-	return state.Storage.GetObjectLegalHold(ctx, args)
 }
 
 // ProcedureRemoveIncompleteStorageUpload removes a partially uploaded object.

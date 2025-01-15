@@ -109,6 +109,10 @@ func (cor *ObjectPredicate) EvalSelection(selection schema.NestedField) error {
 		if _, versionExists := expr.Fields["versionId"]; versionExists {
 			cor.Include.Versions = true
 		}
+
+		if _, legalHoldExists := expr.Fields["legalHold"]; legalHoldExists {
+			cor.Include.LegalHold = true
+		}
 	}
 
 	return nil

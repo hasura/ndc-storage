@@ -22,8 +22,6 @@ type BaseClientConfig struct {
 	DefaultBucket utils.EnvString `json:"defaultBucket" mapstructure:"defaultBucket" yaml:"defaultBucket"`
 	// Endpoint of the storage server. Required for other S3 compatible services such as MinIO, Cloudflare R2, DigitalOcean Spaces, etc...
 	Endpoint *utils.EnvString `json:"endpoint,omitempty" mapstructure:"endpoint" yaml:"endpoint,omitempty"`
-	// The public host to be used for presigned URL generation.
-	PublicHost *utils.EnvString `json:"publicHost,omitempty" mapstructure:"publicHost" yaml:"publicHost,omitempty"`
 	// Maximum number of retry times.
 	MaxRetries *int `json:"maxRetries,omitempty" mapstructure:"maxRetries" yaml:"maxRetries,omitempty"`
 	// The default expiry for presigned URL generation. The maximum expiry is 604800 seconds (i.e. 7 days) and minimum is 1 second.
@@ -45,36 +43,7 @@ func (bcc BaseClientConfig) Validate() error {
 		return err
 	}
 
-	if _, err := bcc.ValidatePublicHost(); err != nil {
-		return err
-	}
-
 	return nil
-}
-
-// ValidatePublicHost validates the public host setting.
-func (bcc BaseClientConfig) ValidatePublicHost() (*url.URL, error) {
-	if bcc.PublicHost == nil {
-		return nil, nil
-	}
-
-	publicHost, err := bcc.PublicHost.GetOrDefault("")
-	if err != nil {
-		return nil, fmt.Errorf("publicHost: %w", err)
-	}
-
-	if strings.HasPrefix(publicHost, "http") {
-		result, err := url.Parse(publicHost)
-		if err != nil {
-			return nil, fmt.Errorf("publicHost: %w", err)
-		}
-
-		return result, nil
-	}
-
-	return &url.URL{
-		Host: publicHost,
-	}, nil
 }
 
 // ValidateEndpoint gets and validates endpoint settings

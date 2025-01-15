@@ -424,24 +424,6 @@ func (dch DataConnectorHandler) execQuery(ctx context.Context, state *types.Stat
 		}
 		return result, nil
 
-	case "storageObjectLegalHold":
-
-		if len(queryFields) > 0 {
-			return nil, schema.UnprocessableContentError("cannot evaluate selection fields for scalar", nil)
-		}
-		var args common.GetStorageObjectLegalHoldOptions
-		parseErr := args.FromValue(rawArgs)
-		if parseErr != nil {
-			return nil, schema.UnprocessableContentError("failed to resolve arguments", map[string]any{
-				"cause": parseErr.Error(),
-			})
-		}
-
-		connector_addSpanEvent(span, logger, "execute_function", map[string]any{
-			"arguments": args,
-		})
-		return FunctionStorageObjectLegalHold(ctx, state, &args)
-
 	case "storageObjectLockConfig":
 
 		selection, err := queryFields.AsObject()
@@ -592,7 +574,7 @@ func (dch DataConnectorHandler) execQuery(ctx context.Context, state *types.Stat
 	}
 }
 
-var enumValues_FunctionName = []string{"downloadStorageObject", "downloadStorageObjectText", "storageBucketEncryption", "storageBucketExists", "storageBucketLifecycle", "storageBucketNotification", "storageBucketPolicy", "storageBucketReplication", "storageBucketVersioning", "storageBuckets", "storageIncompleteUploads", "storageObject", "storageObjectLegalHold", "storageObjectLockConfig", "storageObjects", "storagePresignedDownloadUrl", "storagePresignedUploadUrl"}
+var enumValues_FunctionName = []string{"downloadStorageObject", "downloadStorageObjectText", "storageBucketEncryption", "storageBucketExists", "storageBucketLifecycle", "storageBucketNotification", "storageBucketPolicy", "storageBucketReplication", "storageBucketVersioning", "storageBuckets", "storageIncompleteUploads", "storageObject", "storageObjectLockConfig", "storageObjects", "storagePresignedDownloadUrl", "storagePresignedUploadUrl"}
 
 // MutationExists check if the mutation name exists
 func (dch DataConnectorHandler) MutationExists(name string) bool {
@@ -701,25 +683,6 @@ func (dch DataConnectorHandler) Mutation(ctx context.Context, state *types.State
 		}
 		span.AddEvent("execute_procedure")
 		result, err := ProcedureEnableStorageBucketVersioning(ctx, state, &args)
-
-		if err != nil {
-			return nil, err
-		}
-		return schema.NewProcedureResult(result).Encode(), nil
-
-	case "putStorageObjectLegalHold":
-
-		if len(operation.Fields) > 0 {
-			return nil, schema.UnprocessableContentError("cannot evaluate selection fields for scalar", nil)
-		}
-		var args common.PutStorageObjectLegalHoldOptions
-		if err := json.Unmarshal(operation.Arguments, &args); err != nil {
-			return nil, schema.UnprocessableContentError("failed to decode arguments", map[string]any{
-				"cause": err.Error(),
-			})
-		}
-		span.AddEvent("execute_procedure")
-		result, err := ProcedurePutStorageObjectLegalHold(ctx, state, &args)
 
 		if err != nil {
 			return nil, err
@@ -947,6 +910,25 @@ func (dch DataConnectorHandler) Mutation(ctx context.Context, state *types.State
 		}
 		return schema.NewProcedureResult(result).Encode(), nil
 
+	case "setStorageObjectLegalHold":
+
+		if len(operation.Fields) > 0 {
+			return nil, schema.UnprocessableContentError("cannot evaluate selection fields for scalar", nil)
+		}
+		var args common.SetStorageObjectLegalHoldArguments
+		if err := json.Unmarshal(operation.Arguments, &args); err != nil {
+			return nil, schema.UnprocessableContentError("failed to decode arguments", map[string]any{
+				"cause": err.Error(),
+			})
+		}
+		span.AddEvent("execute_procedure")
+		result, err := ProcedureSetStorageObjectLegalHold(ctx, state, &args)
+
+		if err != nil {
+			return nil, err
+		}
+		return schema.NewProcedureResult(result).Encode(), nil
+
 	case "setStorageObjectLockConfig":
 
 		if len(operation.Fields) > 0 {
@@ -1071,7 +1053,7 @@ func (dch DataConnectorHandler) Mutation(ctx context.Context, state *types.State
 	}
 }
 
-var enumValues_ProcedureName = []string{"composeStorageObject", "copyStorageObject", "createStorageBucket", "enableStorageBucketVersioning", "putStorageObjectLegalHold", "putStorageObjectRetention", "removeIncompleteStorageUpload", "removeStorageBucket", "removeStorageBucketReplication", "removeStorageObject", "removeStorageObjects", "setStorageBucketEncryption", "setStorageBucketLifecycle", "setStorageBucketNotification", "setStorageBucketReplication", "setStorageBucketTags", "setStorageObjectLockConfig", "setStorageObjectTags", "suspendStorageBucketVersioning", "uploadStorageObject", "uploadStorageObjectText"}
+var enumValues_ProcedureName = []string{"composeStorageObject", "copyStorageObject", "createStorageBucket", "enableStorageBucketVersioning", "putStorageObjectRetention", "removeIncompleteStorageUpload", "removeStorageBucket", "removeStorageBucketReplication", "removeStorageObject", "removeStorageObjects", "setStorageBucketEncryption", "setStorageBucketLifecycle", "setStorageBucketNotification", "setStorageBucketReplication", "setStorageBucketTags", "setStorageObjectLegalHold", "setStorageObjectLockConfig", "setStorageObjectTags", "suspendStorageBucketVersioning", "uploadStorageObject", "uploadStorageObjectText"}
 
 func connector_addSpanEvent(span trace.Span, logger *slog.Logger, name string, data map[string]any, options ...trace.EventOption) {
 	logger.Debug(name, slog.Any("data", data))

@@ -5,7 +5,6 @@
         "__value": {
           "objects": [
             {
-              "accessTier": null,
               "accessTierChangeTime": null,
               "accessTierInferred": null,
               "acl": null,

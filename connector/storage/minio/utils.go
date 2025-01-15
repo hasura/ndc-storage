@@ -242,10 +242,16 @@ func serializeUploadObjectInfo(obj minio.UploadInfo) common.StorageUploadInfo {
 
 	object := common.StorageUploadInfo{
 		Bucket:                obj.Bucket,
-		ETag:                  obj.ETag,
 		Name:                  obj.Key,
-		Size:                  obj.Size,
 		StorageObjectChecksum: checksum,
+	}
+
+	if !isStringNull(obj.ETag) {
+		object.ETag = &obj.ETag
+	}
+
+	if obj.Size > 0 {
+		object.Size = &obj.Size
 	}
 
 	if !obj.LastModified.IsZero() {
@@ -357,15 +363,28 @@ func convertCopyDestOptions(dst common.StorageCopyDestOptions) (*minio.CopyDestO
 	}
 
 	if dst.LegalHold != nil {
-		legalHold := minio.LegalHoldStatus(*dst.LegalHold)
-		if !legalHold.IsValid() {
-			return nil, fmt.Errorf("invalid LegalHoldStatus: %s", *dst.LegalHold)
+		legalHold := minio.LegalHoldDisabled
+
+		if *dst.LegalHold {
+			legalHold = minio.LegalHoldEnabled
 		}
 
 		destOptions.LegalHold = legalHold
 	}
 
 	return &destOptions, nil
+}
+
+func validateLegalHoldStatus(input *bool) minio.LegalHoldStatus {
+	if input == nil {
+		return ""
+	}
+
+	if *input {
+		return minio.LegalHoldEnabled
+	}
+
+	return minio.LegalHoldDisabled
 }
 
 func serializeBucketNotificationCommonConfig(item notification.Config) common.NotificationCommonConfig {

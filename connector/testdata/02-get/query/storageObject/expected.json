@@ -3,7 +3,6 @@
     "rows": [
       {
         "__value": {
-          "accessTier": null,
           "accessTierChangeTime": null,
           "accessTierInferred": null,
           "acl": null,

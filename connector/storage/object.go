@@ -33,15 +33,13 @@ func (m *Manager) ListObjects(ctx context.Context, bucketInfo common.StorageBuck
 }
 
 // ListIncompleteUploads list partially uploaded objects in a bucket.
-func (m *Manager) ListIncompleteUploads(ctx context.Context, args *common.ListIncompleteUploadsArguments) ([]common.StorageObjectMultipartInfo, error) {
-	client, bucketName, err := m.GetClientAndBucket(args.ClientID, args.Bucket)
+func (m *Manager) ListIncompleteUploads(ctx context.Context, bucketInfo common.StorageBucketArguments, opts common.ListIncompleteUploadsOptions) ([]common.StorageObjectMultipartInfo, error) {
+	client, bucketName, err := m.GetClientAndBucket(bucketInfo.ClientID, bucketInfo.Bucket)
 	if err != nil {
 		return nil, err
 	}
 
-	args.Bucket = bucketName
-
-	return client.ListIncompleteUploads(ctx, args)
+	return client.ListIncompleteUploads(ctx, bucketName, opts)
 }
 
 // GetObject returns a stream of the object data. Most of the common errors occur when reading the stream.
@@ -177,28 +175,14 @@ func (m *Manager) RemoveObjects(ctx context.Context, bucketInfo common.StorageBu
 	return client.RemoveObjects(ctx, bucketName, opts, predicate), nil
 }
 
-// PutObjectLegalHold applies legal-hold onto an object.
-func (m *Manager) PutObjectLegalHold(ctx context.Context, args *common.PutStorageObjectLegalHoldOptions) error {
-	client, bucketName, err := m.GetClientAndBucket(args.ClientID, args.Bucket)
+// SetObjectLegalHold applies legal-hold onto an object.
+func (m *Manager) SetObjectLegalHold(ctx context.Context, bucketInfo common.StorageBucketArguments, objectName string, opts common.SetStorageObjectLegalHoldOptions) error {
+	client, bucketName, err := m.GetClientAndBucket(bucketInfo.ClientID, bucketInfo.Bucket)
 	if err != nil {
 		return err
 	}
 
-	args.Bucket = bucketName
-
-	return client.PutObjectLegalHold(ctx, args)
-}
-
-// GetObjectLegalHold returns legal-hold status on a given object.
-func (m *Manager) GetObjectLegalHold(ctx context.Context, args *common.GetStorageObjectLegalHoldOptions) (common.StorageLegalHoldStatus, error) {
-	client, bucketName, err := m.GetClientAndBucket(args.ClientID, args.Bucket)
-	if err != nil {
-		return "", err
-	}
-
-	args.Bucket = bucketName
-
-	return client.GetObjectLegalHold(ctx, args)
+	return client.SetObjectLegalHold(ctx, bucketName, objectName, opts)
 }
 
 // PutObjectTagging sets new object Tags to the given object, replaces/overwrites any existing tags.

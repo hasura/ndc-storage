@@ -82,11 +82,14 @@ func SetObjectInfoSpanAttributes(span trace.Span, object *StorageObject) {
 
 // SetUploadInfoAttributes sets span attributes from the upload info.
 func SetUploadInfoAttributes(span trace.Span, object *StorageUploadInfo) {
-	span.SetAttributes(attribute.Int64("storage.object.size", object.Size))
 	SetObjectChecksumSpanAttributes(span, &object.StorageObjectChecksum)
 
-	if object.ETag != "" {
-		span.SetAttributes(attribute.String("storage.object.etag", object.ETag))
+	if object.ETag != nil {
+		span.SetAttributes(attribute.String("storage.object.etag", *object.ETag))
+	}
+
+	if object.Size != nil {
+		span.SetAttributes(attribute.Int64("storage.object.size", *object.Size))
 	}
 
 	if object.VersionID != nil {

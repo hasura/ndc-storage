@@ -11,10 +11,6 @@
               "fields": {
                 "fields": {
                   "fields": {
-                    "accessTier": {
-                      "column": "accessTier",
-                      "type": "column"
-                    },
                     "accessTierChangeTime": {
                       "column": "accessTierChangeTime",
                       "type": "column"

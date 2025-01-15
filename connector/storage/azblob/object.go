@@ -2,9 +2,11 @@ package azblob
 
 import (
 	"context"
+	"encoding/base64"
 	"errors"
 	"fmt"
 	"io"
+	"slices"
 	"time"
 
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore"
@@ -101,8 +103,56 @@ func (c *Client) ListObjects(ctx context.Context, bucketName string, opts *commo
 }
 
 // ListIncompleteUploads list partially uploaded objects in a bucket.
-func (c *Client) ListIncompleteUploads(ctx context.Context, args *common.ListIncompleteUploadsArguments) ([]common.StorageObjectMultipartInfo, error) {
-	return nil, errNotSupported
+func (c *Client) ListIncompleteUploads(ctx context.Context, bucketName string, args common.ListIncompleteUploadsOptions) ([]common.StorageObjectMultipartInfo, error) {
+	ctx, span := c.startOtelSpan(ctx, "ListIncompleteUploads", bucketName)
+	defer span.End()
+
+	options := &container.ListBlobsFlatOptions{
+		Include: container.ListBlobsInclude{
+			UncommittedBlobs: true,
+		},
+	}
+
+	objects := make([]common.StorageObjectMultipartInfo, 0)
+	pager := c.client.NewListBlobsFlatPager(bucketName, options)
+
+	for pager.More() {
+		resp, err := pager.NextPage(ctx)
+		if err != nil {
+			span.SetStatus(codes.Error, err.Error())
+			span.RecordError(err)
+
+			return nil, serializeErrorResponse(err)
+		}
+
+		for _, item := range resp.Segment.BlobItems {
+			if item.Properties == nil || item.Properties.ETag == nil || *item.Properties.ETag == "" {
+				continue
+			}
+
+			obj := common.StorageObjectMultipartInfo{
+				Name: item.Name,
+			}
+
+			if item.Properties != nil {
+				if item.Properties.CreationTime != nil {
+					obj.Initiated = item.Properties.CreationTime
+				} else if item.Properties.LastModified != nil {
+					obj.Initiated = item.Properties.CreationTime
+				}
+
+				if item.Properties.ContentLength != nil && *item.Properties.ContentLength > 0 {
+					obj.Size = item.Properties.ContentLength
+				}
+			}
+
+			objects = append(objects, obj)
+		}
+	}
+
+	span.SetAttributes(attribute.Int("storage.object_count", len(objects)))
+
+	return objects, nil
 }
 
 // RemoveIncompleteUpload removes a partially uploaded object.
@@ -145,6 +195,15 @@ func (c *Client) PutObject(ctx context.Context, bucketName string, objectName st
 		Metadata:    map[string]*string{},
 		Concurrency: int(opts.NumThreads),
 		BlockSize:   int64(opts.PartSize),
+	}
+
+	if opts.StorageClass != "" {
+		accessTier := blob.AccessTier(opts.StorageClass)
+		if !slices.Contains(blob.PossibleAccessTierValues(), accessTier) {
+			return nil, schema.UnprocessableContentError("invalid Azure Blob access tier: "+opts.StorageClass, nil)
+		}
+
+		uploadOptions.AccessTier = &accessTier
 	}
 
 	for key, value := range opts.UserMetadata {
@@ -204,7 +263,68 @@ func (c *Client) PutObject(ctx context.Context, bucketName string, objectName st
 // It supports conditional copying, copying a part of an object and server-side encryption of destination and decryption of source.
 // To copy multiple source objects into a single destination object see the ComposeObject API.
 func (c *Client) CopyObject(ctx context.Context, dest common.StorageCopyDestOptions, src common.StorageCopySrcOptions) (*common.StorageUploadInfo, error) {
-	return nil, errNotSupported
+	ctx, span := c.startOtelSpan(ctx, "CopyObject", dest.Bucket)
+	defer span.End()
+
+	span.SetAttributes(
+		attribute.String("storage.key", dest.Object),
+		attribute.String("storage.copy_source", src.Object),
+	)
+
+	srcURL := c.client.ServiceClient().NewContainerClient(src.Bucket).NewBlobClient(src.Object).URL()
+	blobClient := c.client.ServiceClient().NewContainerClient(dest.Bucket).NewBlobClient(dest.Object)
+
+	options := &blob.CopyFromURLOptions{
+		BlobTags:  dest.UserTags,
+		Metadata:  make(map[string]*string),
+		LegalHold: dest.LegalHold,
+	}
+
+	for key, value := range dest.UserMetadata {
+		if value != "" {
+			options.Metadata[key] = &value
+		}
+	}
+
+	resp, err := blobClient.CopyFromURL(ctx, srcURL, options)
+	if err != nil {
+		span.SetStatus(codes.Error, err.Error())
+		span.RecordError(err)
+
+		return nil, serializeErrorResponse(err)
+	}
+
+	result := &common.StorageUploadInfo{
+		Bucket: dest.Bucket,
+		Name:   dest.Object,
+	}
+
+	if resp.ETag != nil && *resp.ETag != "" {
+		etag := string(*resp.ETag)
+		result.ETag = &etag
+	}
+
+	if len(resp.ContentMD5) > 0 {
+		contentMD5 := base64.StdEncoding.EncodeToString(resp.ContentMD5)
+		result.ContentMD5 = &contentMD5
+	}
+
+	if len(resp.ContentCRC64) > 0 {
+		crc64 := base64.StdEncoding.EncodeToString(resp.ContentCRC64)
+		result.ChecksumCRC64NVME = &crc64
+	}
+
+	if resp.LastModified != nil {
+		result.LastModified = resp.LastModified
+	}
+
+	if resp.VersionID != nil {
+		result.VersionID = resp.VersionID
+	}
+
+	common.SetUploadInfoAttributes(span, result)
+
+	return result, nil
 }
 
 // ComposeObject creates an object by concatenating a list of source objects using server-side copying.
@@ -321,14 +441,28 @@ func (c *Client) PutObjectRetention(ctx context.Context, opts *common.PutStorage
 	return errNotSupported
 }
 
-// PutObjectLegalHold applies legal-hold onto an object.
-func (c *Client) PutObjectLegalHold(ctx context.Context, opts *common.PutStorageObjectLegalHoldOptions) error {
-	return errNotSupported
-}
+// SetObjectLegalHold applies legal-hold onto an object.
+func (c *Client) SetObjectLegalHold(ctx context.Context, bucketName string, objectName string, options common.SetStorageObjectLegalHoldOptions) error {
+	ctx, span := c.startOtelSpan(ctx, "SetObjectTags", bucketName)
+	defer span.End()
 
-// GetObjectLegalHold returns legal-hold status on a given object.
-func (c *Client) GetObjectLegalHold(ctx context.Context, opts *common.GetStorageObjectLegalHoldOptions) (common.StorageLegalHoldStatus, error) {
-	return "", errNotSupported
+	status := options.Status != nil && *options.Status
+	span.SetAttributes(
+		attribute.String("storage.key", objectName),
+		attribute.Bool("storage.options.status", status),
+	)
+
+	client := c.client.ServiceClient().NewContainerClient(bucketName).NewBlobClient(objectName)
+
+	_, err := client.SetLegalHold(ctx, status, &blob.SetLegalHoldOptions{})
+	if err != nil {
+		span.SetStatus(codes.Error, err.Error())
+		span.RecordError(err)
+
+		return serializeErrorResponse(err)
+	}
+
+	return nil
 }
 
 // PutObjectTagging sets new object Tags to the given object, replaces/overwrites any existing tags.

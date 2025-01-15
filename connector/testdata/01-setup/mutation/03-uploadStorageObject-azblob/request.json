@@ -24,7 +24,7 @@
           "numThreads": 1,
           "partSize": 1024000000,
           "sendContentMd5": true,
-          "storageClass": "STANDARD",
+          "storageClass": "Cool",
           "userMetadata": {
             "Foo": "Bar"
           },

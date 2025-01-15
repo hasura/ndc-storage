@@ -33,24 +33,6 @@ func (j *GetStorageObjectArguments) FromValue(input map[string]any) error {
 }
 
 // FromValue decodes values from map
-func (j *GetStorageObjectLegalHoldOptions) FromValue(input map[string]any) error {
-	var err error
-	j.StorageBucketArguments, err = utils.DecodeObject[StorageBucketArguments](input)
-	if err != nil {
-		return err
-	}
-	j.Object, err = utils.GetString(input, "object")
-	if err != nil {
-		return err
-	}
-	j.VersionID, err = utils.GetStringDefault(input, "versionId")
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
-// FromValue decodes values from map
 func (j *GetStorageObjectOptions) FromValue(input map[string]any) error {
 	var err error
 	j.Headers, err = utils.DecodeObjectValueDefault[map[string]string](input, "headers")
@@ -75,10 +57,20 @@ func (j *GetStorageObjectOptions) FromValue(input map[string]any) error {
 // FromValue decodes values from map
 func (j *ListIncompleteUploadsArguments) FromValue(input map[string]any) error {
 	var err error
+	j.ListIncompleteUploadsOptions, err = utils.DecodeObject[ListIncompleteUploadsOptions](input)
+	if err != nil {
+		return err
+	}
 	j.StorageBucketArguments, err = utils.DecodeObject[StorageBucketArguments](input)
 	if err != nil {
 		return err
 	}
+	return nil
+}
+
+// FromValue decodes values from map
+func (j *ListIncompleteUploadsOptions) FromValue(input map[string]any) error {
+	var err error
 	j.Prefix, err = utils.GetString(input, "prefix")
 	if err != nil {
 		return err
@@ -376,6 +368,15 @@ func (j LifecycleTransition) ToMap() map[string]any {
 }
 
 // ToMap encodes the struct to a value map
+func (j ListIncompleteUploadsOptions) ToMap() map[string]any {
+	r := make(map[string]any)
+	r["prefix"] = j.Prefix
+	r["recursive"] = j.Recursive
+
+	return r
+}
+
+// ToMap encodes the struct to a value map
 func (j ListStorageObjectsOptions) ToMap() map[string]any {
 	r := make(map[string]any)
 	r["maxResults"] = j.MaxResults
@@ -594,6 +595,15 @@ func (j ServerSideEncryptionRule) ToMap() map[string]any {
 }
 
 // ToMap encodes the struct to a value map
+func (j SetStorageObjectLegalHoldOptions) ToMap() map[string]any {
+	r := make(map[string]any)
+	r["status"] = j.Status
+	r["versionId"] = j.VersionID
+
+	return r
+}
+
+// ToMap encodes the struct to a value map
 func (j SetStorageObjectLockConfig) ToMap() map[string]any {
 	r := make(map[string]any)
 	r["mode"] = j.Mode
@@ -720,7 +730,6 @@ func (j StorageGrantee) ToMap() map[string]any {
 func (j StorageObject) ToMap() map[string]any {
 	r := make(map[string]any)
 	r = utils.MergeMap(r, j.StorageObjectChecksum.ToMap())
-	r["accessTier"] = j.AccessTier
 	r["accessTierChangeTime"] = j.AccessTierChangeTime
 	r["accessTierInferred"] = j.AccessTierInferred
 	r["acl"] = j.ACL
@@ -831,7 +840,7 @@ func (j StorageObjectLockConfig) ToMap() map[string]any {
 func (j StorageObjectMultipartInfo) ToMap() map[string]any {
 	r := make(map[string]any)
 	r["initiated"] = j.Initiated
-	r["key"] = j.Key
+	r["name"] = j.Name
 	r["size"] = j.Size
 	r["storageClass"] = j.StorageClass
 	r["uploadId"] = j.UploadID
@@ -1040,67 +1049,6 @@ func (s *ChecksumType) FromValue(value any) error {
 // ScalarName get the schema name of the scalar
 func (j StorageClientID) ScalarName() string {
 	return "StorageClientID"
-}
-
-// ScalarName get the schema name of the scalar
-func (j StorageLegalHoldStatus) ScalarName() string {
-	return "StorageLegalHoldStatus"
-}
-
-const (
-	StorageLegalHoldStatusOn  StorageLegalHoldStatus = "ON"
-	StorageLegalHoldStatusOff StorageLegalHoldStatus = "OFF"
-)
-
-var enumValues_StorageLegalHoldStatus = []StorageLegalHoldStatus{StorageLegalHoldStatusOn, StorageLegalHoldStatusOff}
-
-// ParseStorageLegalHoldStatus parses a StorageLegalHoldStatus enum from string
-func ParseStorageLegalHoldStatus(input string) (StorageLegalHoldStatus, error) {
-	result := StorageLegalHoldStatus(input)
-	if !slices.Contains(enumValues_StorageLegalHoldStatus, result) {
-		return StorageLegalHoldStatus(""), errors.New("failed to parse StorageLegalHoldStatus, expect one of [ON, OFF]")
-	}
-
-	return result, nil
-}
-
-// IsValid checks if the value is invalid
-func (j StorageLegalHoldStatus) IsValid() bool {
-	return slices.Contains(enumValues_StorageLegalHoldStatus, j)
-}
-
-// UnmarshalJSON implements json.Unmarshaler.
-func (j *StorageLegalHoldStatus) UnmarshalJSON(b []byte) error {
-	var rawValue string
-	if err := json.Unmarshal(b, &rawValue); err != nil {
-		return err
-	}
-
-	value, err := ParseStorageLegalHoldStatus(rawValue)
-	if err != nil {
-		return err
-	}
-
-	*j = value
-	return nil
-}
-
-// FromValue decodes the scalar from an unknown value
-func (s *StorageLegalHoldStatus) FromValue(value any) error {
-	valueStr, err := utils.DecodeNullableString(value)
-	if err != nil {
-		return err
-	}
-	if valueStr == nil {
-		return nil
-	}
-	result, err := ParseStorageLegalHoldStatus(*valueStr)
-	if err != nil {
-		return err
-	}
-
-	*s = result
-	return nil
 }
 
 // ScalarName get the schema name of the scalar

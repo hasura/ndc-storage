@@ -13,7 +13,7 @@
         "expirationRuleId": null,
         "location": null,
         "name": "public/hello.txt",
-        "size": 0
+        "size": null
       },
       "type": "procedure"
     }

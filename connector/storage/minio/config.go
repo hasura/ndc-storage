@@ -52,6 +52,8 @@ func (cc ClientConfig) JSONSchema() *jsonschema.Schema {
 
 // OtherConfig holds MinIO-specific configurations
 type OtherConfig struct {
+	// The public host to be used for presigned URL generation.
+	PublicHost *utils.EnvString `json:"publicHost,omitempty" mapstructure:"publicHost" yaml:"publicHost,omitempty"`
 	// Optional region.
 	Region *utils.EnvString `json:"region,omitempty" mapstructure:"region" yaml:"region,omitempty"`
 	// Authentication credentials.
@@ -115,6 +117,31 @@ func (cc ClientConfig) toMinioOptions(providerType common.StorageProviderType, l
 	}
 
 	return opts, endpoint, nil
+}
+
+// ValidatePublicHost validates the public host setting.
+func (cc ClientConfig) ValidatePublicHost() (*url.URL, error) {
+	if cc.PublicHost == nil {
+		return nil, nil
+	}
+
+	publicHost, err := cc.PublicHost.GetOrDefault("")
+	if err != nil {
+		return nil, fmt.Errorf("publicHost: %w", err)
+	}
+
+	if strings.HasPrefix(publicHost, "http") {
+		result, err := url.Parse(publicHost)
+		if err != nil {
+			return nil, fmt.Errorf("publicHost: %w", err)
+		}
+
+		return result, nil
+	}
+
+	return &url.URL{
+		Host: publicHost,
+	}, nil
 }
 
 // AuthType represents the authentication type enum.

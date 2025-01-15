@@ -66,7 +66,11 @@ type SetStorageBucketTaggingArguments struct {
 // ListIncompleteUploadsArguments the input arguments of the ListIncompleteUploads method.
 type ListIncompleteUploadsArguments struct {
 	StorageBucketArguments
+	ListIncompleteUploadsOptions
+}
 
+// ListIncompleteUploadsOptions the input arguments of the ListIncompleteUploads method.
+type ListIncompleteUploadsOptions struct {
 	Prefix    string `json:"prefix"`
 	Recursive bool   `json:"recursive,omitempty"`
 }
@@ -210,7 +214,7 @@ type StorageCopyDestOptions struct {
 	ReplaceTags bool              `json:"replaceTags,omitempty"`
 
 	// Specifies whether you want to apply a Legal Hold to the copied object.
-	LegalHold *StorageLegalHoldStatus `json:"legalHold"`
+	LegalHold *bool `json:"legalHold"`
 
 	// Object Retention related fields
 	Mode            *StorageRetentionMode `json:"mode"`
@@ -280,21 +284,19 @@ type RemoveStorageObjectsOptions struct {
 	GovernanceBypass bool `json:"governanceBypass,omitempty"`
 }
 
-// PutStorageObjectLegalHoldOptions represents options specified by user for PutObjectLegalHold call.
-type PutStorageObjectLegalHoldOptions struct {
+// SetStorageObjectLegalHoldArguments represents options specified by user for PutObjectLegalHold call.
+type SetStorageObjectLegalHoldArguments struct {
 	StorageBucketArguments
+	SetStorageObjectLegalHoldOptions
 
-	Object    string                  `json:"object"`
-	VersionID string                  `json:"versionId,omitempty"`
-	Status    *StorageLegalHoldStatus `json:"status"`
+	Object string            `json:"object"`
+	Where  schema.Expression `json:"where"  ndc:"predicate=StorageObjectSimple"`
 }
 
-// GetStorageObjectLegalHoldOptions represents options specified by user for GetObjectLegalHold call.
-type GetStorageObjectLegalHoldOptions struct {
-	StorageBucketArguments
-
-	Object    string `json:"object"`
+// SetStorageObjectLegalHoldOptions represents options specified by user for PutObjectLegalHold call.
+type SetStorageObjectLegalHoldOptions struct {
 	VersionID string `json:"versionId,omitempty"`
+	Status    *bool  `json:"status"`
 }
 
 // PutStorageObjectOptions represents options specified by user for PutObject call.
@@ -310,14 +312,14 @@ type PutStorageObjectOptions struct {
 	Mode               *StorageRetentionMode `json:"mode,omitempty"`
 	RetainUntilDate    *time.Time            `json:"retainUntilDate,omitempty"`
 	// ServerSideEncryption    *ServerSideEncryptionMethod `json:"serverSideEncryption,omitempty"`
-	NumThreads              uint                    `json:"numThreads,omitempty"`
-	StorageClass            string                  `json:"storageClass,omitempty"`
-	WebsiteRedirectLocation string                  `json:"websiteRedirectLocation,omitempty"`
-	PartSize                uint64                  `json:"partSize,omitempty"`
-	LegalHold               *StorageLegalHoldStatus `json:"legalHold"`
-	SendContentMd5          bool                    `json:"sendContentMd5,omitempty"`
-	DisableContentSha256    bool                    `json:"disableContentSha256,omitempty"`
-	DisableMultipart        bool                    `json:"disableMultipart,omitempty"`
+	NumThreads              uint   `json:"numThreads,omitempty"`
+	StorageClass            string `json:"storageClass,omitempty"`
+	WebsiteRedirectLocation string `json:"websiteRedirectLocation,omitempty"`
+	PartSize                uint64 `json:"partSize,omitempty"`
+	LegalHold               *bool  `json:"legalHold"`
+	SendContentMd5          bool   `json:"sendContentMd5,omitempty"`
+	DisableContentSha256    bool   `json:"disableContentSha256,omitempty"`
+	DisableMultipart        bool   `json:"disableMultipart,omitempty"`
 
 	// AutoChecksum is the type of checksum that will be added if no other checksum is added,
 	// like MD5 or SHA256 streaming checksum, and it is feasible for the upload type.
