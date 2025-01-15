@@ -23,11 +23,9 @@
               "contentLanguage": null,
               "contentMd5": "KZ0tkTzqqDd9IiRNs5cjyg==",
               "contentType": "application/octet-stream",
-              "copyCompletionTime": null,
-              "copyId": null,
-              "copyProgress": null,
-              "copySource": null,
-              "copyStatus": null,
+              "copyProgress": "10/10",
+              "copySource": "http://local.hasura.dev:10000/azblob-bucket-test/public%2Fhello.txt",
+              "copyStatus": "success",
               "copyStatusDescription": null,
               "customerProvidedKeySha256": null,
               "deleted": null,
@@ -41,15 +39,15 @@
               "group": null,
               "immutabilityPolicyMode": null,
               "immutabilityPolicyUntilDate": null,
-              "incrementalCopy": null,
+              "incrementalCopy": false,
               "leaseDuration": null,
               "leaseState": "available",
               "leaseStatus": "unlocked",
               "legalHold": null,
               "metadata": {
-                "foo": "Bar"
+                "userid": "2"
               },
-              "name": "public/hello.txt",
+              "name": "public/hello2.txt",
               "owner": null,
               "permissions": null,
               "rehydratePriority": null,
@@ -63,17 +61,16 @@
               "size": 10,
               "storageClass": "Cool",
               "userMetadata": {},
-              "userTagCount": 2,
+              "userTagCount": 1,
               "userTags": {
-                "Foo": "baz",
-                "UserID": "3"
+                "Copy": "true"
               }
             }
           ],
           "pageInfo": {
-            "cursor": null,
-            "hasNextPage": true,
-            "nextCursor": "public/hello.txt"
+            "cursor": "public/hello.txt",
+            "hasNextPage": false,
+            "nextCursor": null
           }
         }
       }

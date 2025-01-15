@@ -45,7 +45,7 @@ func (mc *Client) ListObjects(ctx context.Context, bucketName string, opts *comm
 			continue
 		}
 
-		if maxResults > 0 && count < maxResults {
+		if predicate == nil || (maxResults > 0 && count < maxResults) {
 			object := serializeObjectInfo(obj, true)
 			object.Bucket = bucketName
 
@@ -194,15 +194,7 @@ func (mc *Client) PutObject(ctx context.Context, bucketName string, objectName s
 	}
 
 	if opts.Mode != nil {
-		mode := minio.RetentionMode(string(*opts.Mode))
-		if !mode.IsValid() {
-			errorMsg := fmt.Sprintf("invalid RetentionMode: %s", *opts.Mode)
-			span.SetStatus(codes.Error, errorMsg)
-
-			return nil, schema.UnprocessableContentError(errorMsg, nil)
-		}
-
-		options.Mode = mode
+		options.Mode = validateObjectRetentionMode(*opts.Mode)
 	}
 
 	if opts.Checksum != nil {
@@ -427,13 +419,13 @@ func (mc *Client) RemoveObjects(ctx context.Context, bucketName string, opts *co
 	return errs
 }
 
-// PutObjectRetention applies object retention lock onto an object.
-func (mc *Client) PutObjectRetention(ctx context.Context, opts *common.PutStorageObjectRetentionOptions) error {
-	ctx, span := mc.startOtelSpan(ctx, "PutObjectRetention", opts.Bucket)
+// SetObjectRetention applies object retention lock onto an object.
+func (mc *Client) SetObjectRetention(ctx context.Context, bucketName string, objectName string, opts common.SetStorageObjectRetentionOptions) error {
+	ctx, span := mc.startOtelSpan(ctx, "SetObjectRetention", bucketName)
 	defer span.End()
 
 	span.SetAttributes(
-		attribute.String("storage.key", opts.Object),
+		attribute.String("storage.key", objectName),
 		attribute.Bool("storage.options.governance_bypass", opts.GovernanceBypass),
 	)
 
@@ -452,18 +444,12 @@ func (mc *Client) PutObjectRetention(ctx context.Context, opts *common.PutStorag
 	}
 
 	if opts.Mode != nil {
-		mode := minio.RetentionMode(string(*opts.Mode))
-		if !mode.IsValid() {
-			errorMsg := fmt.Sprintf("invalid RetentionMode: %s", *opts.Mode)
-			span.SetStatus(codes.Error, errorMsg)
-
-			return schema.UnprocessableContentError(errorMsg, nil)
-		}
+		mode := validateObjectRetentionMode(*opts.Mode)
 
 		options.Mode = &mode
 	}
 
-	err := mc.client.PutObjectRetention(ctx, opts.Bucket, opts.Object, options)
+	err := mc.client.PutObjectRetention(ctx, bucketName, objectName, options)
 	if err != nil {
 		span.SetStatus(codes.Error, err.Error())
 		span.RecordError(err)
@@ -721,8 +707,12 @@ func (mc *Client) SetObjectLockConfig(ctx context.Context, bucketname string, op
 	ctx, span := mc.startOtelSpan(ctx, "SetObjectLockConfig", bucketname)
 	defer span.End()
 
+	var retentionMode *minio.RetentionMode
+
 	if opts.Mode != nil {
 		span.SetAttributes(attribute.String("storage.lock_mode", string(*opts.Mode)))
+		mode := validateObjectRetentionMode(*opts.Mode)
+		retentionMode = &mode
 	}
 
 	if opts.Unit != nil {
@@ -733,7 +723,7 @@ func (mc *Client) SetObjectLockConfig(ctx context.Context, bucketname string, op
 		span.SetAttributes(attribute.Int("storage.lock_validity", int(*opts.Validity)))
 	}
 
-	err := mc.client.SetObjectLockConfig(ctx, bucketname, (*minio.RetentionMode)(opts.Mode), opts.Validity, (*minio.ValidityUnit)(opts.Unit))
+	err := mc.client.SetObjectLockConfig(ctx, bucketname, retentionMode, opts.Validity, (*minio.ValidityUnit)(opts.Unit))
 	if err != nil {
 		span.SetStatus(codes.Error, err.Error())
 		span.RecordError(err)
@@ -760,7 +750,7 @@ func (mc *Client) GetObjectLockConfig(ctx context.Context, bucketName string) (*
 	result := &common.StorageObjectLockConfig{
 		ObjectLock: objectLock,
 		SetStorageObjectLockConfig: common.SetStorageObjectLockConfig{
-			Mode:     (*common.StorageRetentionMode)(mode),
+			Mode:     serializeObjectRetentionMode(mode),
 			Validity: validity,
 			Unit:     (*common.StorageRetentionValidityUnit)(unit),
 		},

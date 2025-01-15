@@ -2,49 +2,170 @@ package functions
 
 import (
 	"context"
+	"io"
 
+	"github.com/hasura/ndc-sdk-go/scalar"
+	"github.com/hasura/ndc-sdk-go/schema"
+	"github.com/hasura/ndc-sdk-go/utils"
 	"github.com/hasura/ndc-storage/connector/functions/internal"
 	"github.com/hasura/ndc-storage/connector/storage/common"
 	"github.com/hasura/ndc-storage/connector/types"
 )
 
-// FunctionStorageIncompleteUploads list partially uploaded objects in a bucket.
-func FunctionStorageIncompleteUploads(ctx context.Context, state *types.State, args *common.ListIncompleteUploadsArguments) ([]common.StorageObjectMultipartInfo, error) {
-	return state.Storage.ListIncompleteUploads(ctx, args.StorageBucketArguments, args.ListIncompleteUploadsOptions)
-}
-
-// ProcedurePutStorageObjectRetention applies object retention lock onto an object.
-func ProcedurePutStorageObjectRetention(ctx context.Context, state *types.State, args *common.PutStorageObjectRetentionOptions) (bool, error) {
-	if err := state.Storage.PutObjectRetention(ctx, args); err != nil {
-		return false, err
+// FunctionStorageObjects lists objects in a bucket.
+func FunctionStorageObjects(ctx context.Context, state *types.State, args *common.ListStorageObjectsArguments) (common.StorageObjectListResults, error) {
+	if args.MaxResults != nil && *args.MaxResults <= 0 {
+		return common.StorageObjectListResults{}, schema.UnprocessableContentError("maxResults must be larger than 0", nil)
 	}
 
-	return true, nil
-}
-
-// ProcedureSetStorageObjectLegalHold applies legal-hold onto an object.
-func ProcedureSetStorageObjectLegalHold(ctx context.Context, state *types.State, args *common.SetStorageObjectLegalHoldArguments) (bool, error) {
-	request, err := internal.EvalObjectPredicate(args.StorageBucketArguments, args.Object, args.Where, types.QueryVariablesFromContext(ctx))
+	request, err := internal.EvalObjectPredicate(args.StorageBucketArguments, "", args.Where, types.QueryVariablesFromContext(ctx))
 	if err != nil {
-		return false, err
+		return common.StorageObjectListResults{}, err
 	}
 
 	if !request.IsValid {
-		return false, errPermissionDenied
+		return common.StorageObjectListResults{
+			Objects: []common.StorageObject{},
+		}, nil
 	}
 
-	if err := state.Storage.SetObjectLegalHold(ctx, request.StorageBucketArguments, request.Prefix, args.SetStorageObjectLegalHoldOptions); err != nil {
-		return false, err
+	if err := request.EvalSelection(utils.CommandSelectionFieldFromContext(ctx)); err != nil {
+		return common.StorageObjectListResults{}, err
 	}
 
-	return true, nil
+	options := &common.ListStorageObjectsOptions{
+		Prefix:    request.Prefix,
+		Recursive: args.Recursive,
+		Include:   request.Include,
+	}
+
+	if args.MaxResults != nil {
+		options.MaxResults = *args.MaxResults
+	}
+
+	if args.StartAfter != nil {
+		options.StartAfter = *args.StartAfter
+	}
+
+	predicate := request.CheckPostObjectNamePredicate
+
+	if !request.HasPostPredicate() {
+		predicate = nil
+	}
+
+	objects, err := state.Storage.ListObjects(ctx, request.StorageBucketArguments, options, predicate)
+	if err != nil {
+		return common.StorageObjectListResults{}, err
+	}
+
+	return *objects, nil
 }
 
-// ProcedureRemoveIncompleteStorageUpload removes a partially uploaded object.
-func ProcedureRemoveIncompleteStorageUpload(ctx context.Context, state *types.State, args *common.RemoveIncompleteUploadArguments) (bool, error) {
-	if err := state.Storage.RemoveIncompleteUpload(ctx, args); err != nil {
-		return false, err
+// FunctionStorageObject fetches metadata of an object.
+func FunctionStorageObject(ctx context.Context, state *types.State, args *common.GetStorageObjectArguments) (*common.StorageObject, error) {
+	request, err := internal.EvalObjectPredicate(args.StorageBucketArguments, args.Object, args.Where, types.QueryVariablesFromContext(ctx))
+	if err != nil {
+		return nil, err
 	}
 
-	return true, nil
+	if !request.IsValid {
+		return nil, nil
+	}
+
+	if err := request.EvalSelection(utils.CommandSelectionFieldFromContext(ctx)); err != nil {
+		return nil, err
+	}
+
+	opts := args.GetStorageObjectOptions
+	opts.Include = request.Include
+
+	return state.Storage.StatObject(ctx, request.StorageBucketArguments, request.Prefix, opts)
+}
+
+// FunctionDownloadStorageObject returns a stream of the object data. Most of the common errors occur when reading the stream.
+func FunctionDownloadStorageObject(ctx context.Context, state *types.State, args *common.GetStorageObjectArguments) (*scalar.Bytes, error) {
+	reader, err := downloadStorageObject(ctx, state, args)
+	if err != nil {
+		return nil, err
+	}
+
+	defer reader.Close()
+
+	data, err := io.ReadAll(reader)
+	if err != nil {
+		return nil, schema.InternalServerError(err.Error(), nil)
+	}
+
+	return scalar.NewBytes(data), nil
+}
+
+// FunctionDownloadStorageObjectText returns the object content in plain text. Use this function only if you know exactly the file as an text file.
+func FunctionDownloadStorageObjectText(ctx context.Context, state *types.State, args *common.GetStorageObjectArguments) (*string, error) {
+	reader, err := downloadStorageObject(ctx, state, args)
+	if err != nil {
+		return nil, err
+	}
+
+	defer reader.Close()
+
+	data, err := io.ReadAll(reader)
+	if err != nil {
+		return nil, schema.InternalServerError(err.Error(), nil)
+	}
+
+	dataStr := string(data)
+
+	return &dataStr, nil
+}
+
+func downloadStorageObject(ctx context.Context, state *types.State, args *common.GetStorageObjectArguments) (io.ReadCloser, error) {
+	request, err := internal.EvalObjectPredicate(args.StorageBucketArguments, args.Object, args.Where, types.QueryVariablesFromContext(ctx))
+	if err != nil {
+		return nil, err
+	}
+
+	if !request.IsValid {
+		return nil, nil
+	}
+
+	return state.Storage.GetObject(ctx, request.StorageBucketArguments, request.Prefix, args.GetStorageObjectOptions)
+}
+
+// FunctionStoragePresignedDownloadUrl generates a presigned URL for HTTP GET operations.
+// Browsers/Mobile clients may point to this URL to directly download objects even if the bucket is private.
+// This presigned URL can have an associated expiration time in seconds after which it is no longer operational.
+// The maximum expiry is 604800 seconds (i.e. 7 days) and minimum is 1 second.
+func FunctionStoragePresignedDownloadUrl(ctx context.Context, state *types.State, args *common.PresignedGetStorageObjectArguments) (*common.PresignedURLResponse, error) {
+	request, err := internal.EvalObjectPredicate(args.StorageBucketArguments, args.Object, args.Where, types.QueryVariablesFromContext(ctx))
+	if err != nil {
+		return nil, err
+	}
+
+	if !request.IsValid {
+		return nil, nil
+	}
+
+	return state.Storage.PresignedGetObject(ctx, request.StorageBucketArguments, request.Prefix, args.PresignedGetStorageObjectOptions)
+}
+
+// FunctionStoragePresignedUploadUrl generates a presigned URL for HTTP PUT operations.
+// Browsers/Mobile clients may point to this URL to upload objects directly to a bucket even if it is private.
+// This presigned URL can have an associated expiration time in seconds after which it is no longer operational.
+// The default expiry is set to 7 days.
+func FunctionStoragePresignedUploadUrl(ctx context.Context, state *types.State, args *common.PresignedPutStorageObjectArguments) (*common.PresignedURLResponse, error) {
+	request, err := internal.EvalObjectPredicate(args.StorageBucketArguments, args.Object, args.Where, types.QueryVariablesFromContext(ctx))
+	if err != nil {
+		return nil, err
+	}
+
+	if !request.IsValid {
+		return nil, nil
+	}
+
+	return state.Storage.PresignedPutObject(ctx, request.StorageBucketArguments, request.Prefix, args.Expiry)
+}
+
+// FunctionStorageIncompleteUploads list partially uploaded objects in a bucket.
+func FunctionStorageIncompleteUploads(ctx context.Context, state *types.State, args *common.ListIncompleteUploadsArguments) ([]common.StorageObjectMultipartInfo, error) {
+	return state.Storage.ListIncompleteUploads(ctx, args.StorageBucketArguments, args.ListIncompleteUploadsOptions)
 }

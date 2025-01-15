@@ -43,8 +43,8 @@ type StorageClient interface { //nolint:interfacebloat
 	StatObject(ctx context.Context, bucketName string, objectName string, opts GetStorageObjectOptions) (*StorageObject, error)
 	// RemoveObject removes an object with some specified options
 	RemoveObject(ctx context.Context, bucketName string, objectName string, opts RemoveStorageObjectOptions) error
-	// PutObjectRetention applies object retention lock onto an object.
-	PutObjectRetention(ctx context.Context, opts *PutStorageObjectRetentionOptions) error
+	// SetObjectRetention applies object retention lock onto an object.
+	SetObjectRetention(ctx context.Context, bucketName string, objectName string, opts SetStorageObjectRetentionOptions) error
 	// RemoveObjects remove a list of objects obtained from an input channel. The call sends a delete request to the server up to 1000 objects at a time.
 	// The errors observed are sent over the error channel.
 	RemoveObjects(ctx context.Context, bucketName string, opts *RemoveStorageObjectsOptions, predicate func(string) bool) []RemoveStorageObjectError
@@ -317,7 +317,7 @@ type StorageObjectMultipartInfo struct {
 // type ServerSideEncryptionMethod string
 
 // StorageRetentionMode the object retention mode.
-// @enum GOVERNANCE,COMPLIANCE
+// @enum Locked,Unlocked
 type StorageRetentionMode string
 
 // RemoveStorageObjectError the container of Multi Delete S3 API error.

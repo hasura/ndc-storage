@@ -347,6 +347,7 @@ func convertCopyDestOptions(dst common.StorageCopyDestOptions) (*minio.CopyDestO
 		UserTags:        dst.UserTags,
 		ReplaceTags:     dst.ReplaceTags,
 		Size:            dst.Size,
+		LegalHold:       validateLegalHoldStatus(dst.LegalHold),
 	}
 
 	if dst.RetainUntilDate != nil {
@@ -354,22 +355,7 @@ func convertCopyDestOptions(dst common.StorageCopyDestOptions) (*minio.CopyDestO
 	}
 
 	if dst.Mode != nil {
-		mode := minio.RetentionMode(string(*dst.Mode))
-		if !mode.IsValid() {
-			return nil, fmt.Errorf("invalid RetentionMode: %s", *dst.Mode)
-		}
-
-		destOptions.Mode = mode
-	}
-
-	if dst.LegalHold != nil {
-		legalHold := minio.LegalHoldDisabled
-
-		if *dst.LegalHold {
-			legalHold = minio.LegalHoldEnabled
-		}
-
-		destOptions.LegalHold = legalHold
+		destOptions.Mode = validateObjectRetentionMode(*dst.Mode)
 	}
 
 	return &destOptions, nil
@@ -385,6 +371,27 @@ func validateLegalHoldStatus(input *bool) minio.LegalHoldStatus {
 	}
 
 	return minio.LegalHoldDisabled
+}
+
+func validateObjectRetentionMode(input common.StorageRetentionMode) minio.RetentionMode {
+	if input == common.StorageRetentionModeLocked {
+		return minio.Compliance
+	}
+
+	return minio.Governance
+}
+
+func serializeObjectRetentionMode(input *minio.RetentionMode) *common.StorageRetentionMode {
+	if input == nil {
+		return nil
+	}
+
+	result := common.StorageRetentionModeUnlocked
+	if *input == minio.Compliance {
+		result = common.StorageRetentionModeLocked
+	}
+
+	return &result
 }
 
 func serializeBucketNotificationCommonConfig(item notification.Config) common.NotificationCommonConfig {

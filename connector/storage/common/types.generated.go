@@ -614,6 +614,17 @@ func (j SetStorageObjectLockConfig) ToMap() map[string]any {
 }
 
 // ToMap encodes the struct to a value map
+func (j SetStorageObjectRetentionOptions) ToMap() map[string]any {
+	r := make(map[string]any)
+	r["governanceBypass"] = j.GovernanceBypass
+	r["mode"] = j.Mode
+	r["retainUntilDate"] = j.RetainUntilDate
+	r["versionId"] = j.VersionID
+
+	return r
+}
+
+// ToMap encodes the struct to a value map
 func (j SetStorageObjectTagsOptions) ToMap() map[string]any {
 	r := make(map[string]any)
 	r["tags"] = j.Tags
@@ -1181,17 +1192,17 @@ func (j StorageRetentionMode) ScalarName() string {
 }
 
 const (
-	StorageRetentionModeGovernance StorageRetentionMode = "GOVERNANCE"
-	StorageRetentionModeCompliance StorageRetentionMode = "COMPLIANCE"
+	StorageRetentionModeLocked   StorageRetentionMode = "Locked"
+	StorageRetentionModeUnlocked StorageRetentionMode = "Unlocked"
 )
 
-var enumValues_StorageRetentionMode = []StorageRetentionMode{StorageRetentionModeGovernance, StorageRetentionModeCompliance}
+var enumValues_StorageRetentionMode = []StorageRetentionMode{StorageRetentionModeLocked, StorageRetentionModeUnlocked}
 
 // ParseStorageRetentionMode parses a StorageRetentionMode enum from string
 func ParseStorageRetentionMode(input string) (StorageRetentionMode, error) {
 	result := StorageRetentionMode(input)
 	if !slices.Contains(enumValues_StorageRetentionMode, result) {
-		return StorageRetentionMode(""), errors.New("failed to parse StorageRetentionMode, expect one of [GOVERNANCE, COMPLIANCE]")
+		return StorageRetentionMode(""), errors.New("failed to parse StorageRetentionMode, expect one of [Locked, Unlocked]")
 	}
 
 	return result, nil

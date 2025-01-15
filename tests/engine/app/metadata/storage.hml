@@ -101,14 +101,6 @@ definition:
           comparison_operators:
             _eq:
               type: equal
-        StorageLegalHoldStatus:
-          representation:
-            type: enum
-            one_of:
-              - "ON"
-              - "OFF"
-          aggregate_functions: {}
-          comparison_operators: {}
         StorageObjectReplicationStatus:
           representation:
             type: enum
@@ -131,8 +123,8 @@ definition:
           representation:
             type: enum
             one_of:
-              - GOVERNANCE
-              - COMPLIANCE
+              - Locked
+              - Unlocked
           aggregate_functions: {}
           comparison_operators: {}
         StorageRetentionValidityUnit:
@@ -263,12 +255,6 @@ definition:
         GetStorageObjectOptions:
           description: are used to specify additional headers or options during GET requests.
           fields:
-            checksum:
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: Boolean
             headers:
               type:
                 type: nullable
@@ -293,12 +279,6 @@ definition:
                 underlying_type:
                   type: named
                   name: String
-            withTags:
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: Boolean
         LifecycleAllVersionsExpiration:
           description: represents AllVersionsExpiration actions element in an ILM policy
           fields:
@@ -469,6 +449,19 @@ definition:
                 underlying_type:
                   type: named
                   name: String
+        ListIncompleteUploadsOptions:
+          description: the input arguments of the ListIncompleteUploads method.
+          fields:
+            prefix:
+              type:
+                type: named
+                name: String
+            recursive:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
         ListStorageObjectsOptions:
           description: holds all options of a list object request.
           fields:
@@ -488,18 +481,6 @@ definition:
               type:
                 type: named
                 name: String
-            withMetadata:
-              type:
-                type: named
-                name: Boolean
-            withTags:
-              type:
-                type: named
-                name: Boolean
-            withVersions:
-              type:
-                type: named
-                name: Boolean
         MakeStorageBucketOptions:
           description: holds all options to tweak bucket creation.
           fields:
@@ -828,7 +809,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: StorageLegalHoldStatus
+                  name: Boolean
             mode:
               type:
                 type: nullable
@@ -946,18 +927,6 @@ definition:
               type:
                 type: named
                 name: String
-            withMetadata:
-              type:
-                type: named
-                name: Boolean
-            withTags:
-              type:
-                type: named
-                name: Boolean
-            withVersions:
-              type:
-                type: named
-                name: Boolean
         ReplicaModifications:
           description: specifies if replica modification sync is enabled
           fields:
@@ -981,6 +950,21 @@ definition:
               type:
                 type: named
                 name: StorageApplySSEByDefault
+        SetStorageObjectLegalHoldOptions:
+          description: represents options specified by user for PutObjectLegalHold call.
+          fields:
+            status:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            versionId:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
         SetStorageObjectLockConfig:
           description: represents the object lock configuration options in given bucket
           fields:
@@ -1002,6 +986,33 @@ definition:
                 underlying_type:
                   type: named
                   name: Int32
+        SetStorageObjectRetentionOptions:
+          description: represents options specified by user for PutObject call.
+          fields:
+            governanceBypass:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            mode:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: StorageRetentionMode
+            retainUntilDate:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: TimestampTZ
+            versionId:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
         SetStorageObjectTagsOptions:
           description: holds an object version id to update tag(s) of a specific object version.
           fields:
@@ -1112,7 +1123,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: StorageLegalHoldStatus
+                  name: Boolean
             mode:
               type:
                 type: nullable
@@ -1259,12 +1270,6 @@ definition:
         StorageObject:
           description: container for object metadata.
           fields:
-            accessTier:
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: String
             accessTierChangeTime:
               type:
                 type: nullable
@@ -1728,7 +1733,7 @@ definition:
                 underlying_type:
                   type: named
                   name: TimestampTZ
-            key:
+            name:
               type:
                 type: nullable
                 underlying_type:
@@ -1993,8 +1998,10 @@ definition:
                   name: String
             etag:
               type:
-                type: named
-                name: String
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
             expiration:
               type:
                 type: nullable
@@ -2025,8 +2032,10 @@ definition:
                 name: String
             size:
               type:
-                type: named
-                name: Int64
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Int64
             versionId:
               type:
                 type: nullable
@@ -2044,12 +2053,6 @@ definition:
                 underlying_type:
                   type: named
                   name: String
-            checksum:
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: Boolean
             clientId:
               type:
                 type: nullable
@@ -2090,12 +2093,6 @@ definition:
                 underlying_type:
                   type: predicate
                   object_type_name: StorageObjectSimple
-            withTags:
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: Boolean
           result_type:
             type: nullable
             underlying_type:
@@ -2110,12 +2107,6 @@ definition:
                 underlying_type:
                   type: named
                   name: String
-            checksum:
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: Boolean
             clientId:
               type:
                 type: nullable
@@ -2156,12 +2147,6 @@ definition:
                 underlying_type:
                   type: predicate
                   object_type_name: StorageObjectSimple
-            withTags:
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: Boolean
           result_type:
             type: nullable
             underlying_type:
@@ -2355,12 +2340,6 @@ definition:
                 underlying_type:
                   type: named
                   name: String
-            checksum:
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: Boolean
             clientId:
               type:
                 type: nullable
@@ -2401,45 +2380,11 @@ definition:
                 underlying_type:
                   type: predicate
                   object_type_name: StorageObjectSimple
-            withTags:
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: Boolean
           result_type:
             type: nullable
             underlying_type:
               type: named
               name: StorageObject
-        - name: storageObjectLegalHold
-          description: returns legal-hold status on a given object.
-          arguments:
-            bucket:
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: String
-            clientId:
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: StorageClientID
-            object:
-              type:
-                type: named
-                name: String
-            versionId:
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: String
-          result_type:
-            type: named
-            name: StorageLegalHoldStatus
         - name: storageObjectLockConfig
           description: gets object lock configuration of given bucket.
           arguments:
@@ -2675,86 +2620,6 @@ definition:
           result_type:
             type: named
             name: Boolean
-        - name: putStorageObjectLegalHold
-          description: applies legal-hold onto an object.
-          arguments:
-            bucket:
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: String
-            clientId:
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: StorageClientID
-            object:
-              type:
-                type: named
-                name: String
-            status:
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: StorageLegalHoldStatus
-            versionId:
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: String
-          result_type:
-            type: named
-            name: Boolean
-        - name: putStorageObjectRetention
-          description: applies object retention lock onto an object.
-          arguments:
-            bucket:
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: String
-            clientId:
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: StorageClientID
-            governanceBypass:
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: Boolean
-            mode:
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: StorageRetentionMode
-            object:
-              type:
-                type: named
-                name: String
-            retainUntilDate:
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: TimestampTZ
-            versionId:
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: String
-          result_type:
-            type: named
-            name: Boolean
         - name: removeIncompleteStorageUpload
           description: removes a partially uploaded object.
           arguments:
@@ -2901,18 +2766,6 @@ definition:
                 underlying_type:
                   type: predicate
                   object_type_name: StorageObjectSimple
-            withMetadata:
-              type:
-                type: named
-                name: Boolean
-            withTags:
-              type:
-                type: named
-                name: Boolean
-            withVersions:
-              type:
-                type: named
-                name: Boolean
           result_type:
             type: array
             element_type:
@@ -3054,6 +2907,46 @@ definition:
           result_type:
             type: named
             name: Boolean
+        - name: setStorageObjectLegalHold
+          description: applies legal-hold onto an object.
+          arguments:
+            bucket:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
+            clientId:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: StorageClientID
+            object:
+              type:
+                type: named
+                name: String
+            status:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            versionId:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
+            where:
+              type:
+                type: nullable
+                underlying_type:
+                  type: predicate
+                  object_type_name: StorageObjectSimple
+          result_type:
+            type: named
+            name: Boolean
         - name: setStorageObjectLockConfig
           arguments:
             bucket:
@@ -3086,6 +2979,58 @@ definition:
                 underlying_type:
                   type: named
                   name: Int32
+          result_type:
+            type: named
+            name: Boolean
+        - name: setStorageObjectRetention
+          description: applies object retention lock onto an object.
+          arguments:
+            bucket:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
+            clientId:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: StorageClientID
+            governanceBypass:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            mode:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: StorageRetentionMode
+            object:
+              type:
+                type: named
+                name: String
+            retainUntilDate:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: TimestampTZ
+            versionId:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
+            where:
+              type:
+                type: nullable
+                underlying_type:
+                  type: predicate
+                  object_type_name: StorageObjectSimple
           result_type:
             type: named
             name: Boolean

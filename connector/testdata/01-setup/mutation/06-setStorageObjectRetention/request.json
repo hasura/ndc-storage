@@ -3,11 +3,11 @@
   "operations": [
     {
       "type": "procedure",
-      "name": "putStorageObjectRetention",
+      "name": "setStorageObjectRetention",
       "arguments": {
         "bucket": "minio-bucket-lock",
         "governanceBypass": true,
-        "mode": "COMPLIANCE",
+        "mode": "Locked",
         "object": "SiKBc6ifDC",
         "retainUntilDate": "2099-01-01T00:00:00Z"
       }

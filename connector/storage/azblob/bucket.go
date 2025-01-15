@@ -315,3 +315,18 @@ func (c *Client) SetBucketLifecycle(ctx context.Context, bucketName string, conf
 func (c *Client) GetBucketLifecycle(ctx context.Context, bucketName string) (*common.BucketLifecycleConfiguration, error) {
 	return nil, errNotSupported
 }
+
+// SetBucketEncryption sets default encryption configuration on a bucket.
+func (c *Client) SetBucketEncryption(ctx context.Context, bucketName string, input common.ServerSideEncryptionConfiguration) error {
+	return errNotSupported
+}
+
+// GetBucketEncryption gets default encryption configuration set on a bucket.
+func (c *Client) GetBucketEncryption(ctx context.Context, bucketName string) (*common.ServerSideEncryptionConfiguration, error) {
+	return nil, errNotSupported
+}
+
+// RemoveBucketEncryption remove default encryption configuration set on a bucket.
+func (c *Client) RemoveBucketEncryption(ctx context.Context, bucketName string) error {
+	return errNotSupported
+}

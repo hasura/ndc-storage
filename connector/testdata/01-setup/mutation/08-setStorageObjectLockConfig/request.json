@@ -6,7 +6,7 @@
       "name": "setStorageObjectLockConfig",
       "arguments": {
         "bucket": "minio-bucket-lock",
-        "mode": "GOVERNANCE",
+        "mode": "Locked",
         "unit": "DAYS",
         "validity": 1
       }

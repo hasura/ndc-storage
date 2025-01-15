@@ -146,3 +146,48 @@ func ProcedureRemoveStorageObjects(ctx context.Context, state *types.State, args
 		GovernanceBypass: args.GovernanceBypass,
 	}, predicate)
 }
+
+// ProcedureSetStorageObjectRetention applies object retention lock onto an object.
+func ProcedureSetStorageObjectRetention(ctx context.Context, state *types.State, args *common.SetStorageObjectRetentionArguments) (bool, error) {
+	request, err := internal.EvalObjectPredicate(args.StorageBucketArguments, args.Object, args.Where, types.QueryVariablesFromContext(ctx))
+	if err != nil {
+		return false, err
+	}
+
+	if !request.IsValid {
+		return false, errPermissionDenied
+	}
+
+	if err := state.Storage.SetObjectRetention(ctx, request.StorageBucketArguments, request.Prefix, args.SetStorageObjectRetentionOptions); err != nil {
+		return false, err
+	}
+
+	return true, nil
+}
+
+// ProcedureSetStorageObjectLegalHold applies legal-hold onto an object.
+func ProcedureSetStorageObjectLegalHold(ctx context.Context, state *types.State, args *common.SetStorageObjectLegalHoldArguments) (bool, error) {
+	request, err := internal.EvalObjectPredicate(args.StorageBucketArguments, args.Object, args.Where, types.QueryVariablesFromContext(ctx))
+	if err != nil {
+		return false, err
+	}
+
+	if !request.IsValid {
+		return false, errPermissionDenied
+	}
+
+	if err := state.Storage.SetObjectLegalHold(ctx, request.StorageBucketArguments, request.Prefix, args.SetStorageObjectLegalHoldOptions); err != nil {
+		return false, err
+	}
+
+	return true, nil
+}
+
+// ProcedureRemoveIncompleteStorageUpload removes a partially uploaded object.
+func ProcedureRemoveIncompleteStorageUpload(ctx context.Context, state *types.State, args *common.RemoveIncompleteUploadArguments) (bool, error) {
+	if err := state.Storage.RemoveIncompleteUpload(ctx, args); err != nil {
+		return false, err
+	}
+
+	return true, nil
+}

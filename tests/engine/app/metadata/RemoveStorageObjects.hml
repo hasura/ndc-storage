@@ -54,12 +54,6 @@ definition:
       type: String!
     - name: where
       type: StorageObjectSimpleBoolExp
-    - name: withMetadata
-      type: Boolean!
-    - name: withTags
-      type: Boolean!
-    - name: withVersions
-      type: Boolean!
   source:
     dataConnectorName: storage
     dataConnectorCommand:

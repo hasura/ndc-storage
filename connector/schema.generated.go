@@ -570,7 +570,7 @@ func GetConnectorSchema() *schema.SchemaResponse {
 				Description: toPtr("represents options specified by user for PutObjectLegalHold call."),
 				Fields: schema.ObjectTypeFields{
 					"status": schema.ObjectField{
-						Type: schema.NewNamedType("Boolean").Encode(),
+						Type: schema.NewNullableType(schema.NewNamedType("Boolean")).Encode(),
 					},
 					"versionId": schema.ObjectField{
 						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
@@ -588,6 +588,23 @@ func GetConnectorSchema() *schema.SchemaResponse {
 					},
 					"validity": schema.ObjectField{
 						Type: schema.NewNullableType(schema.NewNamedType("Int32")).Encode(),
+					},
+				},
+			},
+			"SetStorageObjectRetentionOptions": schema.ObjectType{
+				Description: toPtr("represents options specified by user for PutObject call."),
+				Fields: schema.ObjectTypeFields{
+					"governanceBypass": schema.ObjectField{
+						Type: schema.NewNullableType(schema.NewNamedType("Boolean")).Encode(),
+					},
+					"mode": schema.ObjectField{
+						Type: schema.NewNullableType(schema.NewNamedType("StorageRetentionMode")).Encode(),
+					},
+					"retainUntilDate": schema.ObjectField{
+						Type: schema.NewNullableType(schema.NewNamedType("TimestampTZ")).Encode(),
+					},
+					"versionId": schema.ObjectField{
+						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
 					},
 				},
 			},
@@ -1572,34 +1589,6 @@ func GetConnectorSchema() *schema.SchemaResponse {
 				},
 			},
 			{
-				Name:        "putStorageObjectRetention",
-				Description: toPtr("applies object retention lock onto an object."),
-				ResultType:  schema.NewNamedType("Boolean").Encode(),
-				Arguments: map[string]schema.ArgumentInfo{
-					"bucket": {
-						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
-					},
-					"clientId": {
-						Type: schema.NewNullableType(schema.NewNamedType("StorageClientID")).Encode(),
-					},
-					"governanceBypass": {
-						Type: schema.NewNullableType(schema.NewNamedType("Boolean")).Encode(),
-					},
-					"mode": {
-						Type: schema.NewNullableType(schema.NewNamedType("StorageRetentionMode")).Encode(),
-					},
-					"object": {
-						Type: schema.NewNamedType("String").Encode(),
-					},
-					"retainUntilDate": {
-						Type: schema.NewNullableType(schema.NewNamedType("TimestampTZ")).Encode(),
-					},
-					"versionId": {
-						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
-					},
-				},
-			},
-			{
 				Name:        "removeIncompleteStorageUpload",
 				Description: toPtr("removes a partially uploaded object."),
 				ResultType:  schema.NewNamedType("Boolean").Encode(),
@@ -1803,7 +1792,7 @@ func GetConnectorSchema() *schema.SchemaResponse {
 						Type: schema.NewNamedType("String").Encode(),
 					},
 					"status": {
-						Type: schema.NewNamedType("Boolean").Encode(),
+						Type: schema.NewNullableType(schema.NewNamedType("Boolean")).Encode(),
 					},
 					"versionId": {
 						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
@@ -1831,6 +1820,37 @@ func GetConnectorSchema() *schema.SchemaResponse {
 					},
 					"validity": {
 						Type: schema.NewNullableType(schema.NewNamedType("Int32")).Encode(),
+					},
+				},
+			},
+			{
+				Name:        "setStorageObjectRetention",
+				Description: toPtr("applies object retention lock onto an object."),
+				ResultType:  schema.NewNamedType("Boolean").Encode(),
+				Arguments: map[string]schema.ArgumentInfo{
+					"bucket": {
+						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
+					},
+					"clientId": {
+						Type: schema.NewNullableType(schema.NewNamedType("StorageClientID")).Encode(),
+					},
+					"governanceBypass": {
+						Type: schema.NewNullableType(schema.NewNamedType("Boolean")).Encode(),
+					},
+					"mode": {
+						Type: schema.NewNullableType(schema.NewNamedType("StorageRetentionMode")).Encode(),
+					},
+					"object": {
+						Type: schema.NewNamedType("String").Encode(),
+					},
+					"retainUntilDate": {
+						Type: schema.NewNullableType(schema.NewNamedType("TimestampTZ")).Encode(),
+					},
+					"versionId": {
+						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
+					},
+					"where": {
+						Type: schema.NewNullableType(schema.NewPredicateType("StorageObjectSimple")).Encode(),
 					},
 				},
 			},
@@ -1982,7 +2002,7 @@ func GetConnectorSchema() *schema.SchemaResponse {
 			"StorageRetentionMode": schema.ScalarType{
 				AggregateFunctions:  schema.ScalarTypeAggregateFunctions{},
 				ComparisonOperators: map[string]schema.ComparisonOperatorDefinition{},
-				Representation:      schema.NewTypeRepresentationEnum([]string{"GOVERNANCE", "COMPLIANCE"}).Encode(),
+				Representation:      schema.NewTypeRepresentationEnum([]string{"Locked", "Unlocked"}).Encode(),
 			},
 			"StorageRetentionValidityUnit": schema.ScalarType{
 				AggregateFunctions:  schema.ScalarTypeAggregateFunctions{},

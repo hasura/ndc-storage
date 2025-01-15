@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"io"
 	"slices"
+	"strconv"
 	"time"
 
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore"
@@ -157,7 +158,7 @@ func (c *Client) ListIncompleteUploads(ctx context.Context, bucketName string, a
 
 // RemoveIncompleteUpload removes a partially uploaded object.
 func (c *Client) RemoveIncompleteUpload(ctx context.Context, bucketName string, objectName string) error {
-	return c.removeObject(ctx, "RemoveIncompleteUpload", bucketName, objectName)
+	return c.removeObject(ctx, "RemoveIncompleteUpload", bucketName, objectName, common.RemoveStorageObjectOptions{})
 }
 
 // GetObject returns a stream of the object data. Most of the common errors occur when reading the stream.
@@ -300,7 +301,7 @@ func (c *Client) CopyObject(ctx context.Context, dest common.StorageCopyDestOpti
 	}
 
 	if resp.ETag != nil && *resp.ETag != "" {
-		etag := string(*resp.ETag)
+		etag, _ := strconv.Unquote(string(*resp.ETag))
 		result.ETag = &etag
 	}
 
@@ -362,21 +363,23 @@ func (c *Client) StatObject(ctx context.Context, bucketName, objectName string, 
 
 // RemoveObject removes an object with some specified options.
 func (c *Client) RemoveObject(ctx context.Context, bucketName string, objectName string, opts common.RemoveStorageObjectOptions) error {
-	return c.removeObject(ctx, "RemoveObject", bucketName, objectName)
+	return c.removeObject(ctx, "RemoveObject", bucketName, objectName, opts)
 }
 
 // RemoveObject removes an object with some specified options.
-func (c *Client) removeObject(ctx context.Context, spanName string, bucketName string, objectName string) error {
+func (c *Client) removeObject(ctx context.Context, spanName string, bucketName string, objectName string, opts common.RemoveStorageObjectOptions) error {
 	ctx, span := c.startOtelSpan(ctx, spanName, bucketName)
 	defer span.End()
 
 	span.SetAttributes(attribute.String("storage.key", objectName))
 
-	deleteType := blob.DeleteTypePermanent
-	deleteSnapshots := blob.DeleteSnapshotsOptionTypeInclude
-	options := &azblob.DeleteBlobOptions{
-		BlobDeleteType:  &deleteType,
-		DeleteSnapshots: &deleteSnapshots,
+	options := &azblob.DeleteBlobOptions{}
+
+	if opts.ForceDelete {
+		deleteType := blob.DeleteTypePermanent
+		deleteSnapshots := blob.DeleteSnapshotsOptionTypeInclude
+		options.DeleteSnapshots = &deleteSnapshots
+		options.BlobDeleteType = &deleteType
 	}
 
 	_, err := c.client.DeleteBlob(ctx, bucketName, objectName, options)
@@ -421,14 +424,31 @@ func (c *Client) RemoveObjects(ctx context.Context, bucketName string, opts *com
 	}
 
 	errs := make([]common.RemoveStorageObjectError, 0)
+	containerClient := c.client.ServiceClient().NewContainerClient(bucketName)
 
-	for _, obj := range results.Objects {
-		if err := c.RemoveObject(ctx, bucketName, obj.Name, common.RemoveStorageObjectOptions{
-			ForceDelete: true,
-		}); err != nil {
+	for chunk := range slices.Chunk(results.Objects, 256) {
+		batchBuilder, err := containerClient.NewBatchBuilder()
+		if err != nil {
+			return []common.RemoveStorageObjectError{
+				{
+					Error: err,
+				},
+			}
+		}
+
+		for _, obj := range chunk {
+			if err := batchBuilder.Delete(obj.Name, &container.BatchDeleteOptions{}); err != nil {
+				return []common.RemoveStorageObjectError{
+					{
+						Error: err,
+					},
+				}
+			}
+		}
+
+		if _, err := containerClient.SubmitBatch(ctx, batchBuilder, nil); err != nil {
 			errs = append(errs, common.RemoveStorageObjectError{
-				ObjectName: obj.Name,
-				Error:      err,
+				Error: err,
 			})
 		}
 	}
@@ -436,9 +456,45 @@ func (c *Client) RemoveObjects(ctx context.Context, bucketName string, opts *com
 	return errs
 }
 
-// PutObjectRetention applies object retention lock onto an object.
-func (c *Client) PutObjectRetention(ctx context.Context, opts *common.PutStorageObjectRetentionOptions) error {
-	return errNotSupported
+// SetObjectRetention applies object retention lock onto an object.
+func (c *Client) SetObjectRetention(ctx context.Context, bucketName string, objectName string, opts common.SetStorageObjectRetentionOptions) error {
+	ctx, span := c.startOtelSpan(ctx, "SetObjectRetention", bucketName)
+	defer span.End()
+
+	span.SetAttributes(
+		attribute.String("storage.key", objectName),
+	)
+
+	if opts.VersionID != "" {
+		span.SetAttributes(attribute.String("storage.options.version", opts.VersionID))
+	}
+
+	client := c.client.ServiceClient().NewContainerClient(bucketName).NewBlobClient(objectName)
+	if opts.RetainUntilDate == nil {
+		_, err := client.DeleteImmutabilityPolicy(ctx, nil)
+		if err != nil {
+			span.SetStatus(codes.Error, err.Error())
+			span.RecordError(err)
+
+			return serializeErrorResponse(err)
+		}
+
+		return nil
+	}
+
+	span.SetAttributes(attribute.String("storage.options.retain_util_date", opts.RetainUntilDate.Format(time.RFC3339)))
+
+	_, err := client.SetImmutabilityPolicy(ctx, *opts.RetainUntilDate, &blob.SetImmutabilityPolicyOptions{
+		Mode: (*blob.ImmutabilityPolicySetting)(opts.Mode),
+	})
+	if err != nil {
+		span.SetStatus(codes.Error, err.Error())
+		span.RecordError(err)
+
+		return serializeErrorResponse(err)
+	}
+
+	return nil
 }
 
 // SetObjectLegalHold applies legal-hold onto an object.

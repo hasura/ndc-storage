@@ -28,7 +28,7 @@ definition:
     - name: expires
       type: TimestampTz
     - name: legalHold
-      type: StorageLegalHoldStatus
+      type: Boolean
     - name: mode
       type: StorageRetentionMode
     - name: numThreads

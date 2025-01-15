@@ -3,38 +3,30 @@
   "operations": [
     {
       "type": "procedure",
-      "name": "uploadStorageObjectText",
+      "name": "copyStorageObject",
       "arguments": {
-        "bucket": "minio-bucket-lock",
-        "data": "SGVsbG8gd29ybGQK",
-        "object": "SiKBc6ifDC",
-        "options": {
-          "autoChecksum": "CRC32",
-          "cacheControl": "max-age=100",
-          "checksum": "CRC32",
-          "clientId": "s3",
-          "concurrentStreamParts": false,
-          "contentDisposition": "attachment",
-          "contentEncoding": "gzip",
-          "contentLanguage": "en-US",
-          "contentType": "text/plain",
-          "disableContentSha256": false,
-          "disableMultipart": false,
-          "expires": "2099-01-01T00:00:00Z",
-          "legalHold": true,
-          "mode": "Unlocked",
-          "retainUntilDate": "2099-01-01T00:00:02Z",
-          "numThreads": 2,
-          "partSize": 35739157156577,
-          "sendContentMd5": false,
-          "storageClass": "STANDARD",
+        "dest": {
+          "bucket": "azblob-bucket-test",
+          "object": "public/hello2.txt",
+          "replaceMetadata": false,
+          "replaceTags": true,
+          "size": 8502136105187820186,
           "userMetadata": {
-            "Foo": "Baz"
-          },
-          "userTags": {
             "UserID": "2"
           },
-          "websiteRedirectLocation": "http://localhost:9001"
+          "userTags": {
+            "Copy": "true"
+          }
+        },
+        "source": {
+          "bucket": "azblob-bucket-test",
+          "end": 1730102302880743319,
+          "matchModifiedSince": "1970-01-01T00:00:01Z",
+          "matchRange": true,
+          "matchUnmodifiedSince": "2099-01-01T00:00:01Z",
+          "noMatchETag": "ic0R0GYP3Z",
+          "object": "public/hello.txt",
+          "start": 1
         }
       },
       "fields": {
@@ -63,10 +55,6 @@
             "column": "checksumSha256",
             "type": "column"
           },
-          "etag": {
-            "column": "etag",
-            "type": "column"
-          },
           "expiration": {
             "column": "expiration",
             "type": "column"
@@ -75,8 +63,8 @@
             "column": "expirationRuleId",
             "type": "column"
           },
-          "lastModified": {
-            "column": "lastModified",
+          "expires": {
+            "column": "expires",
             "type": "column"
           },
           "location": {

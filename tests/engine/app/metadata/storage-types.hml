@@ -9,16 +9,6 @@ definition:
     comparisonExpressionTypeName: StringComparisonExp
 
 ---
-kind: DataConnectorScalarRepresentation
-version: v1
-definition:
-  dataConnectorName: storage
-  dataConnectorScalarType: Boolean
-  representation: Boolean
-  graphql:
-    comparisonExpressionTypeName: BooleanComparisonExp
-
----
 kind: ScalarType
 version: v1
 definition:
@@ -259,6 +249,16 @@ definition:
     comparisonExpressionTypeName: BytesComparisonExp
 
 ---
+kind: DataConnectorScalarRepresentation
+version: v1
+definition:
+  dataConnectorName: storage
+  dataConnectorScalarType: Boolean
+  representation: Boolean
+  graphql:
+    comparisonExpressionTypeName: BooleanComparisonExp
+
+---
 kind: ScalarType
 version: v1
 definition:
@@ -447,44 +447,6 @@ definition:
   representation: StorageObjectReplicationStatus
   graphql:
     comparisonExpressionTypeName: StorageObjectReplicationStatusComparisonExp
-
----
-kind: ScalarType
-version: v1
-definition:
-  name: StorageLegalHoldStatus
-  graphql:
-    typeName: StorageLegalHoldStatus
-
----
-kind: BooleanExpressionType
-version: v1
-definition:
-  name: StorageLegalHoldStatusBoolExp
-  operand:
-    scalar:
-      type: StorageLegalHoldStatus
-      comparisonOperators: []
-      dataConnectorOperatorMapping:
-        - dataConnectorName: storage
-          dataConnectorScalarType: StorageLegalHoldStatus
-          operatorMapping: {}
-  logicalOperators:
-    enable: true
-  isNull:
-    enable: true
-  graphql:
-    typeName: StorageLegalHoldStatusBoolExp
-
----
-kind: DataConnectorScalarRepresentation
-version: v1
-definition:
-  dataConnectorName: storage
-  dataConnectorScalarType: StorageLegalHoldStatus
-  representation: StorageLegalHoldStatus
-  graphql:
-    comparisonExpressionTypeName: StorageLegalHoldStatusComparisonExp
 
 ---
 kind: ScalarType

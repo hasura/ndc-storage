@@ -3,7 +3,7 @@
     "rows": [
       {
         "__value": {
-          "mode": "GOVERNANCE",
+          "mode": "Locked",
           "objectLock": "Enabled",
           "unit": "DAYS",
           "validity": 1

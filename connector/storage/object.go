@@ -152,16 +152,14 @@ func (m *Manager) RemoveObject(ctx context.Context, bucketInfo common.StorageBuc
 	return client.RemoveObject(ctx, bucketName, objectName, opts)
 }
 
-// PutObjectRetention applies object retention lock onto an object.
-func (m *Manager) PutObjectRetention(ctx context.Context, args *common.PutStorageObjectRetentionOptions) error {
-	client, bucketName, err := m.GetClientAndBucket(args.ClientID, args.Bucket)
+// SetObjectRetention applies object retention lock onto an object.
+func (m *Manager) SetObjectRetention(ctx context.Context, bucketInfo common.StorageBucketArguments, objectName string, opts common.SetStorageObjectRetentionOptions) error {
+	client, bucketName, err := m.GetClientAndBucket(bucketInfo.ClientID, bucketInfo.Bucket)
 	if err != nil {
 		return err
 	}
 
-	args.Bucket = bucketName
-
-	return client.PutObjectRetention(ctx, args)
+	return client.SetObjectRetention(ctx, bucketName, objectName, opts)
 }
 
 // RemoveObjects remove a list of objects obtained from an input channel. The call sends a delete request to the server up to 1000 objects at a time.

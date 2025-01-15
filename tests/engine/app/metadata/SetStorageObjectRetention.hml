@@ -2,33 +2,39 @@
 kind: Command
 version: v1
 definition:
-  name: PutStorageObjectLegalHold
+  name: SetStorageObjectRetention
   outputType: Boolean!
   arguments:
     - name: bucket
       type: String
     - name: clientId
       type: StorageClientId
+    - name: governanceBypass
+      type: Boolean
+    - name: mode
+      type: StorageRetentionMode
     - name: object
       type: String!
-    - name: status
-      type: StorageLegalHoldStatus
+    - name: retainUntilDate
+      type: TimestampTz
     - name: versionId
       type: String
+    - name: where
+      type: StorageObjectSimpleBoolExp
   source:
     dataConnectorName: storage
     dataConnectorCommand:
-      procedure: putStorageObjectLegalHold
+      procedure: setStorageObjectRetention
   graphql:
-    rootFieldName: putStorageObjectLegalHold
+    rootFieldName: setStorageObjectRetention
     rootFieldKind: Mutation
-  description: applies legal-hold onto an object.
+  description: applies object retention lock onto an object.
 
 ---
 kind: CommandPermissions
 version: v1
 definition:
-  commandName: PutStorageObjectLegalHold
+  commandName: SetStorageObjectRetention
   permissions:
     - role: admin
       allowExecution: true

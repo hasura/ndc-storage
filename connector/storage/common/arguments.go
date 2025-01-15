@@ -258,11 +258,17 @@ type RemoveStorageObjectOptions struct {
 	VersionID        string `json:"versionId,omitempty"`
 }
 
-// PutStorageObjectRetentionOptions represents options specified by user for PutObject call.
-type PutStorageObjectRetentionOptions struct {
+// SetStorageObjectRetentionArguments represents options specified by user for PutObject call.
+type SetStorageObjectRetentionArguments struct {
 	StorageBucketArguments
+	SetStorageObjectRetentionOptions
 
-	Object           string                `json:"object"`
+	Object string            `json:"object"`
+	Where  schema.Expression `json:"where" ndc:"predicate=StorageObjectSimple"`
+}
+
+// SetStorageObjectRetentionOptions represents options specified by user for PutObject call.
+type SetStorageObjectRetentionOptions struct {
 	GovernanceBypass bool                  `json:"governanceBypass,omitempty"`
 	Mode             *StorageRetentionMode `json:"mode"`
 	RetainUntilDate  *time.Time            `json:"retainUntilDate,omitempty"`

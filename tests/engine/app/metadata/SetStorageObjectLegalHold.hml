@@ -2,8 +2,8 @@
 kind: Command
 version: v1
 definition:
-  name: StorageObjectLegalHold
-  outputType: StorageLegalHoldStatus!
+  name: SetStorageObjectLegalHold
+  outputType: Boolean!
   arguments:
     - name: bucket
       type: String
@@ -11,22 +11,26 @@ definition:
       type: StorageClientId
     - name: object
       type: String!
+    - name: status
+      type: Boolean
     - name: versionId
       type: String
+    - name: where
+      type: StorageObjectSimpleBoolExp
   source:
     dataConnectorName: storage
     dataConnectorCommand:
-      function: storageObjectLegalHold
+      procedure: setStorageObjectLegalHold
   graphql:
-    rootFieldName: storageObjectLegalHold
-    rootFieldKind: Query
-  description: returns legal-hold status on a given object.
+    rootFieldName: setStorageObjectLegalHold
+    rootFieldKind: Mutation
+  description: applies legal-hold onto an object.
 
 ---
 kind: CommandPermissions
 version: v1
 definition:
-  commandName: StorageObjectLegalHold
+  commandName: SetStorageObjectLegalHold
   permissions:
     - role: admin
       allowExecution: true
