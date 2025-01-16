@@ -92,6 +92,7 @@ func (c *Connector) TryInitState(ctx context.Context, configuration *types.Confi
 	return &types.State{
 		Storage:        manager,
 		TelemetryState: metrics,
+		Concurrency:    c.config.Concurrency,
 	}, nil
 }
 

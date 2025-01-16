@@ -9,12 +9,15 @@ import (
 	"path/filepath"
 	"time"
 
+	"github.com/hasura/ndc-sdk-go/connector"
 	"github.com/hasura/ndc-sdk-go/schema"
 	"github.com/hasura/ndc-storage/connector/storage/common"
 	"github.com/minio/minio-go/v7"
 	"github.com/minio/minio-go/v7/pkg/tags"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/codes"
+	"go.opentelemetry.io/otel/trace"
+	"golang.org/x/sync/errgroup"
 )
 
 // ListObjects list objects in a bucket.
@@ -22,6 +25,7 @@ func (mc *Client) ListObjects(ctx context.Context, bucketName string, opts *comm
 	ctx, span := mc.startOtelSpan(ctx, "ListObjects", bucketName)
 	defer span.End()
 
+	logger := connector.GetLogger(ctx)
 	maxResults := opts.MaxResults
 	// Do not set the limit if the post-predicate function exists.
 	// Results will be filtered and paginated by the client.
@@ -49,19 +53,59 @@ func (mc *Client) ListObjects(ctx context.Context, bucketName string, opts *comm
 			object := serializeObjectInfo(obj, true)
 			object.Bucket = bucketName
 
-			if opts.Include.LegalHold {
-				lhStatus, err := mc.GetObjectLegalHold(ctx, bucketName, object.Name, object.VersionID)
-				if err == nil {
-					object.LegalHold = &lhStatus
-				}
-			}
-
 			objects = append(objects, object)
 			count++
 		}
 	}
 
 	span.SetAttributes(attribute.Int("storage.object_count", count))
+
+	if len(objects) == 0 || !opts.Include.LegalHold {
+		return &common.StorageObjectListResults{
+			Objects: objects,
+		}, nil
+	}
+
+	if opts.NumThreads <= 1 {
+		for i, object := range objects {
+			lhStatus, err := mc.GetObjectLegalHold(ctx, bucketName, object.Name, object.VersionID)
+			if err == nil {
+				object.LegalHold = &lhStatus
+				objects[i] = object
+			}
+		}
+
+		return &common.StorageObjectListResults{
+			Objects: objects,
+		}, nil
+	}
+
+	eg := errgroup.Group{}
+	eg.SetLimit(opts.NumThreads)
+
+	results := make([]common.StorageObject, len(objects))
+
+	lhFunc := func(obj common.StorageObject, index int) {
+		eg.Go(func() error {
+			lhStatus, err := mc.GetObjectLegalHold(ctx, bucketName, obj.Name, obj.VersionID)
+			if err == nil {
+				obj.LegalHold = &lhStatus
+			}
+
+			results[index] = obj
+
+			return nil
+		})
+	}
+
+	for i, object := range objects {
+		lhFunc(object, i)
+	}
+
+	if err := eg.Wait(); err != nil {
+		logger.Error("failed to fetch legal holds for objects: " + err.Error())
+		span.AddEvent("fetch_legal_holds_error", trace.WithAttributes(attribute.String("error", err.Error())))
+	}
 
 	return &common.StorageObjectListResults{
 		Objects: objects,

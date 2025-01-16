@@ -34,9 +34,10 @@ func FunctionStorageObjects(ctx context.Context, state *types.State, args *commo
 	}
 
 	options := &common.ListStorageObjectsOptions{
-		Prefix:    request.Prefix,
-		Recursive: args.Recursive,
-		Include:   request.Include,
+		Prefix:     request.Prefix,
+		Recursive:  args.Recursive,
+		Include:    request.Include,
+		NumThreads: state.Concurrency.Query,
 	}
 
 	if args.MaxResults != nil {

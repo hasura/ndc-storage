@@ -101,6 +101,7 @@ type StorageClient interface { //nolint:interfacebloat
 // BucketOptions hold options to get bucket information.
 type BucketOptions struct {
 	IncludeTags bool `json:"includeTags,omitempty"`
+	NumThreads  int  `json:"-"`
 }
 
 // StorageBucketInfo container for bucket metadata.

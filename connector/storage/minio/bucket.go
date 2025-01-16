@@ -12,6 +12,7 @@ import (
 	"github.com/minio/minio-go/v7/pkg/tags"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/codes"
+	"golang.org/x/sync/errgroup"
 )
 
 // MakeBucket creates a new bucket.
@@ -55,21 +56,51 @@ func (mc *Client) ListBuckets(ctx context.Context, options common.BucketOptions)
 		return nil, serializeErrorResponse(err)
 	}
 
+	span.SetAttributes(attribute.Int("storage.bucket_count", len(bucketInfos)))
 	results := make([]common.StorageBucketInfo, len(bucketInfos))
 
-	for i, item := range bucketInfos {
-		bucket, err := mc.populateBucket(ctx, item, options)
-		if err != nil {
-			span.SetStatus(codes.Error, err.Error())
-			span.RecordError(err)
+	if options.NumThreads <= 1 {
+		for i, item := range bucketInfos {
+			bucket, err := mc.populateBucket(ctx, item, options)
+			if err != nil {
+				span.SetStatus(codes.Error, err.Error())
+				span.RecordError(err)
 
-			return nil, err
+				return nil, err
+			}
+
+			results[i] = bucket
 		}
 
-		results[i] = bucket
+		return results, nil
 	}
 
-	span.SetAttributes(attribute.Int("storage.bucket_count", len(results)))
+	eg := errgroup.Group{}
+	eg.SetLimit(options.NumThreads)
+
+	populateFunc := func(item minio.BucketInfo, index int) {
+		eg.Go(func() error {
+			bucket, err := mc.populateBucket(ctx, item, options)
+			if err != nil {
+				return err
+			}
+
+			results[index] = bucket
+
+			return nil
+		})
+	}
+
+	for i, item := range bucketInfos {
+		populateFunc(item, i)
+	}
+
+	if err := eg.Wait(); err != nil {
+		span.SetStatus(codes.Error, err.Error())
+		span.RecordError(err)
+
+		return nil, err
+	}
 
 	return results, nil
 }

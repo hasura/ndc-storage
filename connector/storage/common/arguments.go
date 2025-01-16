@@ -157,7 +157,8 @@ type ListStorageObjectsOptions struct {
 	// StartAfter start listing lexically at this object onwards.
 	StartAfter string `json:"startAfter"`
 	// Options to be included for the object information.
-	Include StorageObjectIncludeOptions `json:"-"`
+	Include    StorageObjectIncludeOptions `json:"-"`
+	NumThreads int                         `json:"-"`
 }
 
 // GetStorageObjectArguments are used to specify additional headers or options during GET requests.
