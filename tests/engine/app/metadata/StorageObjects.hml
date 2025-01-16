@@ -68,10 +68,6 @@ definition:
   name: StorageObjects
   outputType: StorageObjectListResults!
   arguments:
-    - name: bucket
-      type: String
-    - name: clientId
-      type: StorageClientId
     - name: maxResults
       type: Int32
     - name: recursive
@@ -97,4 +93,3 @@ definition:
   permissions:
     - role: admin
       allowExecution: true
-

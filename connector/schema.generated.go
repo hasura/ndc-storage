@@ -1452,12 +1452,6 @@ func GetConnectorSchema() *schema.SchemaResponse {
 				Description: toPtr("lists objects in a bucket."),
 				ResultType:  schema.NewNamedType("StorageObjectListResults").Encode(),
 				Arguments: map[string]schema.ArgumentInfo{
-					"bucket": {
-						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
-					},
-					"clientId": {
-						Type: schema.NewNullableType(schema.NewNamedType("StorageClientID")).Encode(),
-					},
 					"maxResults": {
 						Type: schema.NewNullableType(schema.NewNamedType("Int32")).Encode(),
 					},

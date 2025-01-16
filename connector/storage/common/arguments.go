@@ -108,8 +108,6 @@ type PresignedPutStorageObjectArguments struct {
 
 // ListStorageObjectsArguments holds all arguments of a list object request.
 type ListStorageObjectsArguments struct {
-	StorageBucketArguments
-
 	// Ignore '/' delimiter
 	Recursive bool `json:"recursive,omitempty"`
 	// The maximum number of objects requested per

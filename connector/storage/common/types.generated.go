@@ -95,10 +95,6 @@ func (j *ListStorageBucketArguments) FromValue(input map[string]any) error {
 // FromValue decodes values from map
 func (j *ListStorageObjectsArguments) FromValue(input map[string]any) error {
 	var err error
-	j.StorageBucketArguments, err = utils.DecodeObject[StorageBucketArguments](input)
-	if err != nil {
-		return err
-	}
 	j.MaxResults, err = utils.GetNullableInt[int](input, "maxResults")
 	if err != nil {
 		return err

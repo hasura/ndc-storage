@@ -97,6 +97,7 @@ definition:
               - minio
               - s3
               - azblob
+              - azblob-connstr
           aggregate_functions: {}
           comparison_operators:
             _eq:
@@ -2408,18 +2409,6 @@ definition:
         - name: storageObjects
           description: lists objects in a bucket.
           arguments:
-            bucket:
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: String
-            clientId:
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: StorageClientID
             maxResults:
               type:
                 type: nullable

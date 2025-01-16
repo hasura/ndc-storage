@@ -1,4 +1,4 @@
-# Upload / Download Objects
+# Manage Objects
 
 ## Upload Objects
 
@@ -80,9 +80,9 @@ query DownloadObject {
 # }
 ```
 
-### Upload Text Objects
+### Download Text Objects
 
-Use the `uploadStorageObjectText` mutation if you are confident that object content is plain text.
+Use the `downloadStorageObjectText` query if you are confident that object content is plain text.
 
 ```gql
 query DownloadObjectText {
@@ -94,6 +94,63 @@ query DownloadObjectText {
 #     "downloadStorageObjectText": "Hello world\n"
 #   }
 # }
+```
+
+### List Objects
+
+> [!NOTE]
+> The pagination information is optional. It depends if the API of storage provider supports this feature. The pagination method is cursor-based.
+
+| Service              | Pagination |
+| -------------------- | ---------- |
+| AWS S3               | :x:        |
+| MinIO                | :x:        |
+| Google Cloud Storage | :x:        |
+| Cloudflare R2        | :x:        |
+| DigitalOcean Spaces  | :x:        |
+| Azure Blob Storage   | ✅         |
+
+```graphql
+query ListObjects {
+  storageObjects(where: { object: { _starts_with: "hello" } }) {
+    pageInfo {
+      cursor
+      hasNextPage
+      nextCursor
+    }
+    objects {
+      clientId
+      bucket
+      name
+      blobType
+      serverEncrypted
+      size
+      storageClass
+      userMetadata
+      userTagCount
+      userTags
+      cacheControl
+      checksumCrc32
+      checksumCrc64Nvme
+      checksumCrc32C
+      checksumSha256
+      checksumSha1
+      contentEncoding
+      contentDisposition
+      contentLanguage
+      contentMd5
+      contentType
+      etag
+      expires
+      isLatest
+      metadata
+      owner {
+        id
+        name
+      }
+    }
+  }
+}
 ```
 
 ## Multiple clients and buckets
