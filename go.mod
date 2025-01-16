@@ -9,7 +9,7 @@ require (
 	github.com/Azure/azure-sdk-for-go/sdk/tracing/azotel v0.4.0
 	github.com/alecthomas/kong v1.6.1
 	github.com/go-viper/mapstructure/v2 v2.2.1
-	github.com/hasura/ndc-sdk-go v1.7.1-0.20250114022611-5cf791dac3b5
+	github.com/hasura/ndc-sdk-go v1.7.1-0.20250116172618-e81c1199f349
 	github.com/invopop/jsonschema v0.13.0
 	github.com/lmittmann/tint v1.0.6
 	github.com/minio/md5-simd v1.1.2
