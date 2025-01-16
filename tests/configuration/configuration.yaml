@@ -47,6 +47,16 @@ clients:
     defaultPresignedExpiry: "1h"
     allowedBuckets:
       - azblob-bucket-test
+  - id: azblob-connstr
+    type: azblob
+    defaultBucket:
+      env: AZURE_STORAGE_DEFAULT_BUCKET
+    authentication:
+      type: connectionString
+      connectionString:
+        env: AZURE_STORAGE_CONNECTION_STRING
+    defaultPresignedExpiry: "1h"
+
 concurrency:
   query: 10
   mutation: 10

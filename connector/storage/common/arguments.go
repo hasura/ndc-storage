@@ -264,7 +264,7 @@ type SetStorageObjectRetentionArguments struct {
 	SetStorageObjectRetentionOptions
 
 	Object string            `json:"object"`
-	Where  schema.Expression `json:"where" ndc:"predicate=StorageObjectSimple"`
+	Where  schema.Expression `json:"where"  ndc:"predicate=StorageObjectSimple"`
 }
 
 // SetStorageObjectRetentionOptions represents options specified by user for PutObject call.

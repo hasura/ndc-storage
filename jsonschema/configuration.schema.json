@@ -171,13 +171,16 @@
                       "type": "string",
                       "enum": [
                         "sharedKey"
-                      ]
+                      ],
+                      "description": "Authorize with an immutable SharedKeyCredential containing the storage account's name and either its primary or secondary key"
                     },
                     "accountName": {
-                      "$ref": "#/$defs/EnvString"
+                      "$ref": "#/$defs/EnvString",
+                      "description": "Account Name"
                     },
                     "accountKey": {
-                      "$ref": "#/$defs/EnvString"
+                      "$ref": "#/$defs/EnvString",
+                      "description": "Account Key"
                     }
                   },
                   "type": "object",
@@ -192,12 +195,28 @@
                     "type": {
                       "type": "string",
                       "enum": [
-                        "azureAD",
-                        "none"
-                      ]
+                        "connectionString"
+                      ],
+                      "description": "Authorize with a connection string for the desired storage account"
                     },
-                    "accountName": {
-                      "$ref": "#/$defs/EnvString"
+                    "connectionString": {
+                      "$ref": "#/$defs/EnvString",
+                      "description": "The connection string"
+                    }
+                  },
+                  "type": "object",
+                  "required": [
+                    "type",
+                    "connectionString"
+                  ]
+                },
+                {
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "enum": [
+                        "anonymous"
+                      ]
                     }
                   },
                   "type": "object",
@@ -210,14 +229,75 @@
                     "type": {
                       "type": "string",
                       "enum": [
-                        "connectionString"
+                        "entra"
                       ]
+                    },
+                    "tenantId": {
+                      "$ref": "#/$defs/EnvString",
+                      "description": "ID of the service principal's tenant. Also called its `directory` ID"
+                    },
+                    "clientId": {
+                      "$ref": "#/$defs/EnvString",
+                      "description": "The service principal's client ID"
+                    },
+                    "clientSecret": {
+                      "$ref": "#/$defs/EnvString",
+                      "description": "One of the service principal's client secrets"
+                    },
+                    "username": {
+                      "$ref": "#/$defs/EnvString",
+                      "description": "The username (usually an email address)"
+                    },
+                    "password": {
+                      "$ref": "#/$defs/EnvString",
+                      "description": "The user's password"
+                    },
+                    "clientCertificate": {
+                      "$ref": "#/$defs/EnvString",
+                      "description": "Inline PEM or PKCS12 certificate of the private key in base64 format"
+                    },
+                    "clientCertificatePath": {
+                      "$ref": "#/$defs/EnvString",
+                      "description": "Path to a PEM or PKCS12 certificate file including the private key"
+                    },
+                    "clientCertificatePassword": {
+                      "$ref": "#/$defs/EnvString",
+                      "description": "Optional password for the certificate"
+                    },
+                    "sendCertificateChain": {
+                      "type": "boolean",
+                      "description": "Controls whether the credential sends the public certificate chain in the x5c header of each token request's JWT"
+                    },
+                    "tokenFilePath": {
+                      "$ref": "#/$defs/EnvString",
+                      "description": "the path of a file containing a Kubernetes service account token"
+                    },
+                    "disableInstanceDiscovery": {
+                      "type": "boolean"
+                    },
+                    "additionallyAllowedTenants": {
+                      "items": {
+                        "type": "string"
+                      },
+                      "type": "array"
                     }
                   },
                   "type": "object",
                   "required": [
-                    "type"
-                  ]
+                    "type",
+                    "tenantId"
+                  ],
+                  "dependentRequired": {
+                    "clientSecret": [
+                      "clientId"
+                    ],
+                    "password": [
+                      "username"
+                    ],
+                    "username": [
+                      "password"
+                    ]
+                  }
                 }
               ]
             }

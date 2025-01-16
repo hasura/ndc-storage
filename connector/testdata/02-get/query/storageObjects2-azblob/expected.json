@@ -17,7 +17,7 @@
               "checksumCrc64Nvme": null,
               "checksumSha1": null,
               "checksumSha256": null,
-              "clientId": "azblob",
+              "clientId": "azblob-connstr",
               "contentDisposition": "attachment",
               "contentEncoding": null,
               "contentLanguage": null,

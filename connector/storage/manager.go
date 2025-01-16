@@ -34,9 +34,14 @@ func NewManager(ctx context.Context, configs []ClientConfig, logger *slog.Logger
 			return nil, fmt.Errorf("failed to initialize storage client %d: %w", i, err)
 		}
 
+		configID := baseConfig.ID
+		if configID == "" {
+			configID = strconv.Itoa(i)
+		}
+
 		defaultBucket, err := baseConfig.DefaultBucket.GetOrDefault("")
 		if err != nil {
-			return nil, fmt.Errorf("failed to initialize storage client %d; defaultBucket: %w", i, err)
+			return nil, fmt.Errorf("failed to initialize storage client %s; defaultBucket: %w", configID, err)
 		}
 
 		c := Client{
@@ -49,7 +54,7 @@ func NewManager(ctx context.Context, configs []ClientConfig, logger *slog.Logger
 		if baseConfig.DefaultPresignedExpiry != nil {
 			presignedExpiry, err := time.ParseDuration(*baseConfig.DefaultPresignedExpiry)
 			if err != nil {
-				return nil, fmt.Errorf("defaultPresignedExpiry: %w", err)
+				return nil, fmt.Errorf("failied to parse defaultPresignedExpiry in client %s: %w", configID, err)
 			}
 
 			c.defaultPresignedExpiry = &presignedExpiry

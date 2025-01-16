@@ -231,14 +231,7 @@ func (mc *Client) CopyObject(ctx context.Context, dest common.StorageCopyDestOpt
 		attribute.String("storage.copy_source", src.Object),
 	)
 
-	destOptions, err := convertCopyDestOptions(dest)
-	if err != nil {
-		span.SetStatus(codes.Error, err.Error())
-		span.RecordError(err)
-
-		return nil, schema.UnprocessableContentError(err.Error(), nil)
-	}
-
+	destOptions := convertCopyDestOptions(dest)
 	srcOptions := serializeCopySourceOptions(src)
 
 	object, err := mc.client.CopyObject(ctx, *destOptions, srcOptions)
@@ -273,13 +266,7 @@ func (mc *Client) ComposeObject(ctx context.Context, dest common.StorageCopyDest
 
 	span.SetAttributes(attribute.StringSlice("storage.copy_sources", srcKeys))
 
-	destOptions, err := convertCopyDestOptions(dest)
-	if err != nil {
-		span.SetStatus(codes.Error, err.Error())
-		span.RecordError(err)
-
-		return nil, schema.UnprocessableContentError(err.Error(), nil)
-	}
+	destOptions := convertCopyDestOptions(dest)
 
 	object, err := mc.client.ComposeObject(ctx, *destOptions, srcOptions...)
 	if err != nil {

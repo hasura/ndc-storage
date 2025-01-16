@@ -338,7 +338,7 @@ func serializeCopySourceOptions(src common.StorageCopySrcOptions) minio.CopySrcO
 	return srcOptions
 }
 
-func convertCopyDestOptions(dst common.StorageCopyDestOptions) (*minio.CopyDestOptions, error) {
+func convertCopyDestOptions(dst common.StorageCopyDestOptions) *minio.CopyDestOptions {
 	destOptions := minio.CopyDestOptions{
 		Bucket:          dst.Bucket,
 		Object:          dst.Object,
@@ -358,7 +358,7 @@ func convertCopyDestOptions(dst common.StorageCopyDestOptions) (*minio.CopyDestO
 		destOptions.Mode = validateObjectRetentionMode(*dst.Mode)
 	}
 
-	return &destOptions, nil
+	return &destOptions
 }
 
 func validateLegalHoldStatus(input *bool) minio.LegalHoldStatus {
