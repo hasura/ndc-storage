@@ -2,11 +2,11 @@
 
 ## Upload Objects
 
-You can upload object files directly by encoding the file content to base64-encoded string or generate a presigned URL and let the client uploads the file to that URL. Presigned URLs are recommended especially with large files because GraphQL doesn't support file streaming. You have to encode the entire file to string that comsumes a lot of memory.
+You can upload object files directly by encoding the file content to base64-encoded string or generate a pre-signed URL and let the client upload the file to that URL. Presigned URLs are recommended especially with large files because GraphQL doesn't support file streaming. You have to encode the entire file to a string that consumes a lot of memory.
 
-### Generate presigned URL (recommended)
+### Generate pre-signed URL (recommended)
 
-Input the object path and the optional expiry of the presigned URL (if the `defaultPresignedExpiry` setting is configured).
+Input the object path and the optional expiry of the pre-signed URL (if the `defaultPresignedExpiry` setting is configured).
 
 ```gql
 query PresignedUploadUrl {
@@ -19,7 +19,7 @@ query PresignedUploadUrl {
 
 ### Direct Upload
 
-The object data must be encoded as base64 string.
+The object data must be encoded as a base64 string.
 
 ```gql
 mutation UploadObject {
@@ -34,7 +34,7 @@ mutation UploadObject {
 
 ### Upload Text Objects
 
-Use the `uploadStorageObjectText` mutation if you are confident that object content is plain text. The request size is least than base64-encoded string 30%.
+Use the `uploadStorageObjectText` mutation if you are confident that the object content is plain text. The request size is less than the base64-encoded string by 30%.
 
 ```gql
 mutation UploadObjectText {
@@ -49,11 +49,11 @@ mutation UploadObjectText {
 
 ## Download Objects
 
-Similar to upload. You can download object files directly by encoding the file content to base64-encoded string or generate a presigned URL. Presigned URLs are also recommended to avoid memory leaks.
+Similar to upload. You can download object files directly by encoding the file content to base64-encoded string or generating a pre-signed URL. Presigned URLs are also recommended to avoid memory leaks.
 
-### Generate presigned URL (recommended)
+### Generate pre-signed URL (recommended)
 
-Input the object path and the optional expiry of the presigned URL (if the `defaultPresignedExpiry` setting is configured).
+Input the object path and the optional expiry of the pre-signed URL (if the `defaultPresignedExpiry` setting is configured).
 
 ```gql
 query GetSignedDownloadURL {
@@ -82,7 +82,7 @@ query DownloadObject {
 
 ### Download Text Objects
 
-Use the `downloadStorageObjectText` query if you are confident that object content is plain text.
+Use the `downloadStorageObjectText` query if you are confident that the object content is plain text.
 
 ```gql
 query DownloadObjectText {
@@ -99,15 +99,15 @@ query DownloadObjectText {
 ### List Objects
 
 > [!NOTE]
-> The pagination information is optional. It depends if the API of storage provider supports this feature. The pagination method is cursor-based.
+> The pagination information is optional. It depends on whether the storage provider's API supports this feature. The pagination method is cursor-based.
 
 | Service              | Pagination |
 | -------------------- | ---------- |
-| AWS S3               | :x:        |
-| MinIO                | :x:        |
-| Google Cloud Storage | :x:        |
-| Cloudflare R2        | :x:        |
-| DigitalOcean Spaces  | :x:        |
+| AWS S3               | ❌        |
+| MinIO                | ❌        |
+| Google Cloud Storage | ❌        |
+| Cloudflare R2        | ❌        |
+| DigitalOcean Spaces  | ❌        |
 | Azure Blob Storage   | ✅         |
 
 ```graphql
