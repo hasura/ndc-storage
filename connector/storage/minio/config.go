@@ -41,6 +41,10 @@ func (cc ClientConfig) JSONSchema() *jsonschema.Schema {
 			{Ref: envStringRef},
 		},
 	})
+	result.Properties.Set("publicHost", &jsonschema.Schema{
+		Description: "The public host to be used for presigned URL generation",
+		Ref:         envStringRef,
+	})
 	result.Properties.Set("authentication", cc.Authentication.JSONSchema())
 	result.Properties.Set("trailingHeaders", &jsonschema.Schema{
 		Description: "TrailingHeaders indicates server support of trailing headers. Only supported for v4 signatures",
@@ -173,7 +177,7 @@ func (at AuthType) Validate() error {
 	return err
 }
 
-// AuthCredentials represent the authentication credentials infomartion.
+// AuthCredentials represent the authentication credentials information.
 type AuthCredentials struct {
 	// The authentication type
 	Type AuthType `json:"type" mapstructure:"type" yaml:"type"`

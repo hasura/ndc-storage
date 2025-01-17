@@ -20,6 +20,7 @@ import (
 	"github.com/hasura/ndc-storage/connector/storage/common"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/codes"
+	"go.opentelemetry.io/otel/trace"
 )
 
 // ListObjects list objects in a bucket.
@@ -36,7 +37,7 @@ func (c *Client) ListObjects(ctx context.Context, bucketName string, opts *commo
 			Snapshots:           opts.Include.Snapshots,
 			Deleted:             opts.Include.Deleted,
 			LegalHold:           opts.Include.LegalHold,
-			ImmutabilityPolicy:  opts.Include.ImmutabilityPolicy,
+			ImmutabilityPolicy:  opts.Include.Retention,
 			DeletedWithVersions: opts.Include.DeletedWithVersions,
 			Permissions:         opts.Include.Permissions,
 			UncommittedBlobs:    false,
@@ -456,8 +457,40 @@ func (c *Client) RemoveObjects(ctx context.Context, bucketName string, opts *com
 	return errs
 }
 
+// UpdateObject updates object configurations.
+func (c *Client) UpdateObject(ctx context.Context, bucketName string, objectName string, opts common.UpdateStorageObjectOptions) error {
+	ctx, span := c.startOtelSpanWithKind(ctx, trace.SpanKindInternal, "UpdateObject", bucketName)
+	defer span.End()
+
+	span.SetAttributes(attribute.String("storage.key", objectName))
+
+	if opts.VersionID != "" {
+		span.SetAttributes(attribute.String("storage.options.version", opts.VersionID))
+	}
+
+	if opts.LegalHold != nil {
+		if err := c.SetObjectLegalHold(ctx, bucketName, objectName, opts.VersionID, *opts.LegalHold); err != nil {
+			return err
+		}
+	}
+
+	if opts.Tags != nil {
+		if err := c.SetObjectTags(ctx, bucketName, objectName, opts.VersionID, opts.Tags); err != nil {
+			return err
+		}
+	}
+
+	if opts.Retention != nil {
+		if err := c.SetObjectRetention(ctx, bucketName, objectName, opts.VersionID, *opts.Retention); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
 // SetObjectRetention applies object retention lock onto an object.
-func (c *Client) SetObjectRetention(ctx context.Context, bucketName string, objectName string, opts common.SetStorageObjectRetentionOptions) error {
+func (c *Client) SetObjectRetention(ctx context.Context, bucketName string, objectName, versionID string, opts common.SetStorageObjectRetentionOptions) error {
 	ctx, span := c.startOtelSpan(ctx, "SetObjectRetention", bucketName)
 	defer span.End()
 
@@ -465,8 +498,8 @@ func (c *Client) SetObjectRetention(ctx context.Context, bucketName string, obje
 		attribute.String("storage.key", objectName),
 	)
 
-	if opts.VersionID != "" {
-		span.SetAttributes(attribute.String("storage.options.version", opts.VersionID))
+	if versionID != "" {
+		span.SetAttributes(attribute.String("storage.options.version", versionID))
 	}
 
 	client := c.client.ServiceClient().NewContainerClient(bucketName).NewBlobClient(objectName)
@@ -498,11 +531,10 @@ func (c *Client) SetObjectRetention(ctx context.Context, bucketName string, obje
 }
 
 // SetObjectLegalHold applies legal-hold onto an object.
-func (c *Client) SetObjectLegalHold(ctx context.Context, bucketName string, objectName string, options common.SetStorageObjectLegalHoldOptions) error {
+func (c *Client) SetObjectLegalHold(ctx context.Context, bucketName string, objectName, versionID string, status bool) error {
 	ctx, span := c.startOtelSpan(ctx, "SetObjectTags", bucketName)
 	defer span.End()
 
-	status := options.Status != nil && *options.Status
 	span.SetAttributes(
 		attribute.String("storage.key", objectName),
 		attribute.Bool("storage.options.status", status),
@@ -522,22 +554,22 @@ func (c *Client) SetObjectLegalHold(ctx context.Context, bucketName string, obje
 }
 
 // PutObjectTagging sets new object Tags to the given object, replaces/overwrites any existing tags.
-func (c *Client) SetObjectTags(ctx context.Context, bucketName string, objectName string, options common.SetStorageObjectTagsOptions) error {
+func (c *Client) SetObjectTags(ctx context.Context, bucketName string, objectName, versionID string, tags map[string]string) error {
 	ctx, span := c.startOtelSpan(ctx, "SetObjectTags", bucketName)
 	defer span.End()
 
 	opts := &blob.SetTagsOptions{
-		VersionID: &options.VersionID,
+		VersionID: &versionID,
 	}
 
-	if options.VersionID != "" {
-		span.SetAttributes(attribute.String("storage.options.version", options.VersionID))
-		opts.VersionID = &options.VersionID
+	if versionID != "" {
+		span.SetAttributes(attribute.String("storage.options.version", versionID))
+		opts.VersionID = &versionID
 	}
 
 	client := c.client.ServiceClient().NewContainerClient(bucketName).NewBlobClient(objectName)
 
-	_, err := client.SetTags(ctx, options.Tags, opts)
+	_, err := client.SetTags(ctx, tags, opts)
 	if err != nil {
 		span.SetStatus(codes.Error, err.Error())
 		span.RecordError(err)
@@ -592,14 +624,4 @@ func (c *Client) presignedObject(ctx context.Context, method, bucketName, object
 	}
 
 	return result, nil
-}
-
-// Set object lock configuration in given bucket. mode, validity and unit are either all set or all nil.
-func (c *Client) SetObjectLockConfig(ctx context.Context, bucketname string, opts common.SetStorageObjectLockConfig) error {
-	return errNotSupported
-}
-
-// Get object lock configuration of given bucket.
-func (c *Client) GetObjectLockConfig(ctx context.Context, bucketName string) (*common.StorageObjectLockConfig, error) {
-	return nil, errNotSupported
 }

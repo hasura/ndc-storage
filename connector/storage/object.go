@@ -152,14 +152,18 @@ func (m *Manager) RemoveObject(ctx context.Context, bucketInfo common.StorageBuc
 	return client.RemoveObject(ctx, bucketName, objectName, opts)
 }
 
-// SetObjectRetention applies object retention lock onto an object.
-func (m *Manager) SetObjectRetention(ctx context.Context, bucketInfo common.StorageBucketArguments, objectName string, opts common.SetStorageObjectRetentionOptions) error {
+// UpdateObject updates object configuration.
+func (m *Manager) UpdateObject(ctx context.Context, bucketInfo common.StorageBucketArguments, objectName string, opts common.UpdateStorageObjectOptions) error {
+	if opts.IsEmpty() {
+		return nil
+	}
+
 	client, bucketName, err := m.GetClientAndBucket(bucketInfo.ClientID, bucketInfo.Bucket)
 	if err != nil {
 		return err
 	}
 
-	return client.SetObjectRetention(ctx, bucketName, objectName, opts)
+	return client.UpdateObject(ctx, bucketName, objectName, opts)
 }
 
 // RemoveObjects remove a list of objects obtained from an input channel. The call sends a delete request to the server up to 1000 objects at a time.
@@ -171,26 +175,6 @@ func (m *Manager) RemoveObjects(ctx context.Context, bucketInfo common.StorageBu
 	}
 
 	return client.RemoveObjects(ctx, bucketName, opts, predicate), nil
-}
-
-// SetObjectLegalHold applies legal-hold onto an object.
-func (m *Manager) SetObjectLegalHold(ctx context.Context, bucketInfo common.StorageBucketArguments, objectName string, opts common.SetStorageObjectLegalHoldOptions) error {
-	client, bucketName, err := m.GetClientAndBucket(bucketInfo.ClientID, bucketInfo.Bucket)
-	if err != nil {
-		return err
-	}
-
-	return client.SetObjectLegalHold(ctx, bucketName, objectName, opts)
-}
-
-// PutObjectTagging sets new object Tags to the given object, replaces/overwrites any existing tags.
-func (m *Manager) SetObjectTags(ctx context.Context, bucketInfo common.StorageBucketArguments, objectName string, opts common.SetStorageObjectTagsOptions) error {
-	client, bucketName, err := m.GetClientAndBucket(bucketInfo.ClientID, bucketInfo.Bucket)
-	if err != nil {
-		return err
-	}
-
-	return client.SetObjectTags(ctx, bucketName, objectName, opts)
 }
 
 // RemoveIncompleteUpload removes a partially uploaded object.

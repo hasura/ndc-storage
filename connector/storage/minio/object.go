@@ -237,8 +237,8 @@ func (mc *Client) PutObject(ctx context.Context, bucketName string, objectName s
 		span.SetAttributes(attribute.String("storage.options.retain_util_date", opts.RetainUntilDate.Format(time.RFC3339)))
 	}
 
-	if opts.Mode != nil {
-		options.Mode = validateObjectRetentionMode(*opts.Mode)
+	if opts.RetentionMode != nil {
+		options.Mode = validateObjectRetentionMode(*opts.RetentionMode)
 	}
 
 	if opts.Checksum != nil {
@@ -450,8 +450,40 @@ func (mc *Client) RemoveObjects(ctx context.Context, bucketName string, opts *co
 	return errs
 }
 
+// UpdateObject updates object configurations.
+func (mc *Client) UpdateObject(ctx context.Context, bucketName string, objectName string, opts common.UpdateStorageObjectOptions) error {
+	ctx, span := mc.startOtelSpanWithKind(ctx, trace.SpanKindInternal, "UpdateObject", bucketName)
+	defer span.End()
+
+	span.SetAttributes(attribute.String("storage.key", objectName))
+
+	if opts.VersionID != "" {
+		span.SetAttributes(attribute.String("storage.options.version", opts.VersionID))
+	}
+
+	if opts.LegalHold != nil {
+		if err := mc.SetObjectLegalHold(ctx, bucketName, objectName, opts.VersionID, opts.LegalHold); err != nil {
+			return err
+		}
+	}
+
+	if opts.Tags != nil {
+		if err := mc.SetObjectTags(ctx, bucketName, objectName, opts.VersionID, opts.Tags); err != nil {
+			return err
+		}
+	}
+
+	if opts.Retention != nil {
+		if err := mc.SetObjectRetention(ctx, bucketName, objectName, opts.VersionID, *opts.Retention); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
 // SetObjectRetention applies object retention lock onto an object.
-func (mc *Client) SetObjectRetention(ctx context.Context, bucketName string, objectName string, opts common.SetStorageObjectRetentionOptions) error {
+func (mc *Client) SetObjectRetention(ctx context.Context, bucketName string, objectName, versionID string, opts common.SetStorageObjectRetentionOptions) error {
 	ctx, span := mc.startOtelSpan(ctx, "SetObjectRetention", bucketName)
 	defer span.End()
 
@@ -460,8 +492,8 @@ func (mc *Client) SetObjectRetention(ctx context.Context, bucketName string, obj
 		attribute.Bool("storage.options.governance_bypass", opts.GovernanceBypass),
 	)
 
-	if opts.VersionID != "" {
-		span.SetAttributes(attribute.String("storage.options.version", opts.VersionID))
+	if versionID != "" {
+		span.SetAttributes(attribute.String("storage.options.version", versionID))
 	}
 
 	if opts.RetainUntilDate != nil {
@@ -470,7 +502,7 @@ func (mc *Client) SetObjectRetention(ctx context.Context, bucketName string, obj
 
 	options := minio.PutObjectRetentionOptions{
 		GovernanceBypass: opts.GovernanceBypass,
-		VersionID:        opts.VersionID,
+		VersionID:        versionID,
 		RetainUntilDate:  opts.RetainUntilDate,
 	}
 
@@ -492,23 +524,23 @@ func (mc *Client) SetObjectRetention(ctx context.Context, bucketName string, obj
 }
 
 // SetObjectLegalHold applies legal-hold onto an object.
-func (mc *Client) SetObjectLegalHold(ctx context.Context, bucketName string, objectName string, opts common.SetStorageObjectLegalHoldOptions) error {
+func (mc *Client) SetObjectLegalHold(ctx context.Context, bucketName, objectName, versionID string, status *bool) error {
 	ctx, span := mc.startOtelSpan(ctx, "SetObjectLegalHold", bucketName)
 	defer span.End()
 
 	span.SetAttributes(attribute.String("storage.key", objectName))
 
 	options := minio.PutObjectLegalHoldOptions{
-		VersionID: opts.VersionID,
+		VersionID: versionID,
 	}
 
-	if opts.VersionID != "" {
-		span.SetAttributes(attribute.String("storage.options.version", opts.VersionID))
+	if versionID != "" {
+		span.SetAttributes(attribute.String("storage.options.version", versionID))
 	}
 
-	if opts.Status != nil {
-		span.SetAttributes(attribute.Bool("storage.options.status", *opts.Status))
-		legalHold := validateLegalHoldStatus(opts.Status)
+	if status != nil {
+		span.SetAttributes(attribute.Bool("storage.options.status", *status))
+		legalHold := validateLegalHoldStatus(status)
 		options.Status = &legalHold
 	}
 
@@ -549,9 +581,9 @@ func (mc *Client) GetObjectLegalHold(ctx context.Context, bucketName string, obj
 }
 
 // PutObjectTagging sets new object Tags to the given object, replaces/overwrites any existing tags.
-func (mc *Client) SetObjectTags(ctx context.Context, bucketName string, objectName string, opts common.SetStorageObjectTagsOptions) error {
-	if len(opts.Tags) == 0 {
-		return mc.RemoveObjectTagging(ctx, bucketName, objectName, opts.VersionID)
+func (mc *Client) SetObjectTags(ctx context.Context, bucketName string, objectName, versionID string, objectTags map[string]string) error {
+	if len(objectTags) == 0 {
+		return mc.RemoveObjectTagging(ctx, bucketName, objectName, versionID)
 	}
 
 	ctx, span := mc.startOtelSpan(ctx, "SetStorageObjectTags", bucketName)
@@ -561,11 +593,11 @@ func (mc *Client) SetObjectTags(ctx context.Context, bucketName string, objectNa
 
 	options := minio.PutObjectTaggingOptions{}
 
-	if opts.VersionID != "" {
-		span.SetAttributes(attribute.String("storage.options.version", opts.VersionID))
+	if versionID != "" {
+		span.SetAttributes(attribute.String("storage.options.version", versionID))
 	}
 
-	inputTags, err := tags.NewTags(opts.Tags, false)
+	inputTags, err := tags.NewTags(objectTags, false)
 	if err != nil {
 		span.SetStatus(codes.Error, "failed to convert minio tags")
 		span.RecordError(err)

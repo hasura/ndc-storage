@@ -98,43 +98,6 @@ func (dch DataConnectorHandler) execQuery(ctx context.Context, state *types.Stat
 		})
 		return FunctionDownloadStorageObjectText(ctx, state, &args)
 
-	case "storageBucketEncryption":
-
-		selection, err := queryFields.AsObject()
-		if err != nil {
-			return nil, schema.UnprocessableContentError("the selection field type must be object", map[string]any{
-				"cause": err.Error(),
-			})
-		}
-		var args common.StorageBucketArguments
-		parseErr := args.FromValue(rawArgs)
-		if parseErr != nil {
-			return nil, schema.UnprocessableContentError("failed to resolve arguments", map[string]any{
-				"cause": parseErr.Error(),
-			})
-		}
-
-		connector_addSpanEvent(span, logger, "execute_function", map[string]any{
-			"arguments": args,
-		})
-		rawResult, err := FunctionStorageBucketEncryption(ctx, state, &args)
-
-		if err != nil {
-			return nil, err
-		}
-
-		if rawResult == nil {
-			return nil, nil
-		}
-		connector_addSpanEvent(span, logger, "evaluate_response_selection", map[string]any{
-			"raw_result": rawResult,
-		})
-		result, err := utils.EvalNestedColumnObject(selection, rawResult)
-		if err != nil {
-			return nil, err
-		}
-		return result, nil
-
 	case "storageBucketExists":
 
 		if len(queryFields) > 0 {
@@ -152,43 +115,6 @@ func (dch DataConnectorHandler) execQuery(ctx context.Context, state *types.Stat
 			"arguments": args,
 		})
 		return FunctionStorageBucketExists(ctx, state, &args)
-
-	case "storageBucketLifecycle":
-
-		selection, err := queryFields.AsObject()
-		if err != nil {
-			return nil, schema.UnprocessableContentError("the selection field type must be object", map[string]any{
-				"cause": err.Error(),
-			})
-		}
-		var args common.StorageBucketArguments
-		parseErr := args.FromValue(rawArgs)
-		if parseErr != nil {
-			return nil, schema.UnprocessableContentError("failed to resolve arguments", map[string]any{
-				"cause": parseErr.Error(),
-			})
-		}
-
-		connector_addSpanEvent(span, logger, "execute_function", map[string]any{
-			"arguments": args,
-		})
-		rawResult, err := FunctionStorageBucketLifecycle(ctx, state, &args)
-
-		if err != nil {
-			return nil, err
-		}
-
-		if rawResult == nil {
-			return nil, nil
-		}
-		connector_addSpanEvent(span, logger, "evaluate_response_selection", map[string]any{
-			"raw_result": rawResult,
-		})
-		result, err := utils.EvalNestedColumnObject(selection, rawResult)
-		if err != nil {
-			return nil, err
-		}
-		return result, nil
 
 	case "storageBucketNotification":
 
@@ -265,43 +191,6 @@ func (dch DataConnectorHandler) execQuery(ctx context.Context, state *types.Stat
 			"arguments": args,
 		})
 		rawResult, err := FunctionStorageBucketReplication(ctx, state, &args)
-
-		if err != nil {
-			return nil, err
-		}
-
-		if rawResult == nil {
-			return nil, nil
-		}
-		connector_addSpanEvent(span, logger, "evaluate_response_selection", map[string]any{
-			"raw_result": rawResult,
-		})
-		result, err := utils.EvalNestedColumnObject(selection, rawResult)
-		if err != nil {
-			return nil, err
-		}
-		return result, nil
-
-	case "storageBucketVersioning":
-
-		selection, err := queryFields.AsObject()
-		if err != nil {
-			return nil, schema.UnprocessableContentError("the selection field type must be object", map[string]any{
-				"cause": err.Error(),
-			})
-		}
-		var args common.StorageBucketArguments
-		parseErr := args.FromValue(rawArgs)
-		if parseErr != nil {
-			return nil, schema.UnprocessableContentError("failed to resolve arguments", map[string]any{
-				"cause": parseErr.Error(),
-			})
-		}
-
-		connector_addSpanEvent(span, logger, "execute_function", map[string]any{
-			"arguments": args,
-		})
-		rawResult, err := FunctionStorageBucketVersioning(ctx, state, &args)
 
 		if err != nil {
 			return nil, err
@@ -407,43 +296,6 @@ func (dch DataConnectorHandler) execQuery(ctx context.Context, state *types.Stat
 			"arguments": args,
 		})
 		rawResult, err := FunctionStorageObject(ctx, state, &args)
-
-		if err != nil {
-			return nil, err
-		}
-
-		if rawResult == nil {
-			return nil, nil
-		}
-		connector_addSpanEvent(span, logger, "evaluate_response_selection", map[string]any{
-			"raw_result": rawResult,
-		})
-		result, err := utils.EvalNestedColumnObject(selection, rawResult)
-		if err != nil {
-			return nil, err
-		}
-		return result, nil
-
-	case "storageObjectLockConfig":
-
-		selection, err := queryFields.AsObject()
-		if err != nil {
-			return nil, schema.UnprocessableContentError("the selection field type must be object", map[string]any{
-				"cause": err.Error(),
-			})
-		}
-		var args common.StorageBucketArguments
-		parseErr := args.FromValue(rawArgs)
-		if parseErr != nil {
-			return nil, schema.UnprocessableContentError("failed to resolve arguments", map[string]any{
-				"cause": parseErr.Error(),
-			})
-		}
-
-		connector_addSpanEvent(span, logger, "execute_function", map[string]any{
-			"arguments": args,
-		})
-		rawResult, err := FunctionStorageObjectLockConfig(ctx, state, &args)
 
 		if err != nil {
 			return nil, err
@@ -574,7 +426,7 @@ func (dch DataConnectorHandler) execQuery(ctx context.Context, state *types.Stat
 	}
 }
 
-var enumValues_FunctionName = []string{"downloadStorageObject", "downloadStorageObjectText", "storageBucketEncryption", "storageBucketExists", "storageBucketLifecycle", "storageBucketNotification", "storageBucketPolicy", "storageBucketReplication", "storageBucketVersioning", "storageBuckets", "storageIncompleteUploads", "storageObject", "storageObjectLockConfig", "storageObjects", "storagePresignedDownloadUrl", "storagePresignedUploadUrl"}
+var enumValues_FunctionName = []string{"downloadStorageObject", "downloadStorageObjectText", "storageBucketExists", "storageBucketNotification", "storageBucketPolicy", "storageBucketReplication", "storageBuckets", "storageIncompleteUploads", "storageObject", "storageObjects", "storagePresignedDownloadUrl", "storagePresignedUploadUrl"}
 
 // MutationExists check if the mutation name exists
 func (dch DataConnectorHandler) MutationExists(name string) bool {
@@ -664,25 +516,6 @@ func (dch DataConnectorHandler) Mutation(ctx context.Context, state *types.State
 		}
 		span.AddEvent("execute_procedure")
 		result, err := ProcedureCreateStorageBucket(ctx, state, &args)
-
-		if err != nil {
-			return nil, err
-		}
-		return schema.NewProcedureResult(result).Encode(), nil
-
-	case "enableStorageBucketVersioning":
-
-		if len(operation.Fields) > 0 {
-			return nil, schema.UnprocessableContentError("cannot evaluate selection fields for scalar", nil)
-		}
-		var args common.StorageBucketArguments
-		if err := json.Unmarshal(operation.Arguments, &args); err != nil {
-			return nil, schema.UnprocessableContentError("failed to decode arguments", map[string]any{
-				"cause": err.Error(),
-			})
-		}
-		span.AddEvent("execute_procedure")
-		result, err := ProcedureEnableStorageBucketVersioning(ctx, state, &args)
 
 		if err != nil {
 			return nil, err
@@ -796,44 +629,6 @@ func (dch DataConnectorHandler) Mutation(ctx context.Context, state *types.State
 		}
 		return schema.NewProcedureResult(result).Encode(), nil
 
-	case "setStorageBucketEncryption":
-
-		if len(operation.Fields) > 0 {
-			return nil, schema.UnprocessableContentError("cannot evaluate selection fields for scalar", nil)
-		}
-		var args common.SetStorageBucketEncryptionArguments
-		if err := json.Unmarshal(operation.Arguments, &args); err != nil {
-			return nil, schema.UnprocessableContentError("failed to decode arguments", map[string]any{
-				"cause": err.Error(),
-			})
-		}
-		span.AddEvent("execute_procedure")
-		result, err := ProcedureSetStorageBucketEncryption(ctx, state, &args)
-
-		if err != nil {
-			return nil, err
-		}
-		return schema.NewProcedureResult(result).Encode(), nil
-
-	case "setStorageBucketLifecycle":
-
-		if len(operation.Fields) > 0 {
-			return nil, schema.UnprocessableContentError("cannot evaluate selection fields for scalar", nil)
-		}
-		var args common.SetStorageBucketLifecycleArguments
-		if err := json.Unmarshal(operation.Arguments, &args); err != nil {
-			return nil, schema.UnprocessableContentError("failed to decode arguments", map[string]any{
-				"cause": err.Error(),
-			})
-		}
-		span.AddEvent("execute_procedure")
-		result, err := ProcedureSetStorageBucketLifecycle(ctx, state, &args)
-
-		if err != nil {
-			return nil, err
-		}
-		return schema.NewProcedureResult(result).Encode(), nil
-
 	case "setStorageBucketNotification":
 
 		if len(operation.Fields) > 0 {
@@ -872,114 +667,38 @@ func (dch DataConnectorHandler) Mutation(ctx context.Context, state *types.State
 		}
 		return schema.NewProcedureResult(result).Encode(), nil
 
-	case "setStorageBucketTags":
+	case "updateStorageBucket":
 
 		if len(operation.Fields) > 0 {
 			return nil, schema.UnprocessableContentError("cannot evaluate selection fields for scalar", nil)
 		}
-		var args common.SetStorageBucketTaggingArguments
+		var args common.UpdateBucketArguments
 		if err := json.Unmarshal(operation.Arguments, &args); err != nil {
 			return nil, schema.UnprocessableContentError("failed to decode arguments", map[string]any{
 				"cause": err.Error(),
 			})
 		}
 		span.AddEvent("execute_procedure")
-		result, err := ProcedureSetStorageBucketTags(ctx, state, &args)
+		result, err := ProcedureUpdateStorageBucket(ctx, state, &args)
 
 		if err != nil {
 			return nil, err
 		}
 		return schema.NewProcedureResult(result).Encode(), nil
 
-	case "setStorageObjectLegalHold":
+	case "updateStorageObject":
 
 		if len(operation.Fields) > 0 {
 			return nil, schema.UnprocessableContentError("cannot evaluate selection fields for scalar", nil)
 		}
-		var args common.SetStorageObjectLegalHoldArguments
+		var args common.UpdateStorageObjectArguments
 		if err := json.Unmarshal(operation.Arguments, &args); err != nil {
 			return nil, schema.UnprocessableContentError("failed to decode arguments", map[string]any{
 				"cause": err.Error(),
 			})
 		}
 		span.AddEvent("execute_procedure")
-		result, err := ProcedureSetStorageObjectLegalHold(ctx, state, &args)
-
-		if err != nil {
-			return nil, err
-		}
-		return schema.NewProcedureResult(result).Encode(), nil
-
-	case "setStorageObjectLockConfig":
-
-		if len(operation.Fields) > 0 {
-			return nil, schema.UnprocessableContentError("cannot evaluate selection fields for scalar", nil)
-		}
-		var args common.SetStorageObjectLockArguments
-		if err := json.Unmarshal(operation.Arguments, &args); err != nil {
-			return nil, schema.UnprocessableContentError("failed to decode arguments", map[string]any{
-				"cause": err.Error(),
-			})
-		}
-		span.AddEvent("execute_procedure")
-		result, err := ProcedureSetStorageObjectLockConfig(ctx, state, &args)
-
-		if err != nil {
-			return nil, err
-		}
-		return schema.NewProcedureResult(result).Encode(), nil
-
-	case "setStorageObjectRetention":
-
-		if len(operation.Fields) > 0 {
-			return nil, schema.UnprocessableContentError("cannot evaluate selection fields for scalar", nil)
-		}
-		var args common.SetStorageObjectRetentionArguments
-		if err := json.Unmarshal(operation.Arguments, &args); err != nil {
-			return nil, schema.UnprocessableContentError("failed to decode arguments", map[string]any{
-				"cause": err.Error(),
-			})
-		}
-		span.AddEvent("execute_procedure")
-		result, err := ProcedureSetStorageObjectRetention(ctx, state, &args)
-
-		if err != nil {
-			return nil, err
-		}
-		return schema.NewProcedureResult(result).Encode(), nil
-
-	case "setStorageObjectTags":
-
-		if len(operation.Fields) > 0 {
-			return nil, schema.UnprocessableContentError("cannot evaluate selection fields for scalar", nil)
-		}
-		var args common.SetStorageObjectTagsArguments
-		if err := json.Unmarshal(operation.Arguments, &args); err != nil {
-			return nil, schema.UnprocessableContentError("failed to decode arguments", map[string]any{
-				"cause": err.Error(),
-			})
-		}
-		span.AddEvent("execute_procedure")
-		result, err := ProcedureSetStorageObjectTags(ctx, state, &args)
-
-		if err != nil {
-			return nil, err
-		}
-		return schema.NewProcedureResult(result).Encode(), nil
-
-	case "suspendStorageBucketVersioning":
-
-		if len(operation.Fields) > 0 {
-			return nil, schema.UnprocessableContentError("cannot evaluate selection fields for scalar", nil)
-		}
-		var args common.StorageBucketArguments
-		if err := json.Unmarshal(operation.Arguments, &args); err != nil {
-			return nil, schema.UnprocessableContentError("failed to decode arguments", map[string]any{
-				"cause": err.Error(),
-			})
-		}
-		span.AddEvent("execute_procedure")
-		result, err := ProcedureSuspendStorageBucketVersioning(ctx, state, &args)
+		result, err := ProcedureUpdateStorageObject(ctx, state, &args)
 
 		if err != nil {
 			return nil, err
@@ -1053,7 +772,7 @@ func (dch DataConnectorHandler) Mutation(ctx context.Context, state *types.State
 	}
 }
 
-var enumValues_ProcedureName = []string{"composeStorageObject", "copyStorageObject", "createStorageBucket", "enableStorageBucketVersioning", "removeIncompleteStorageUpload", "removeStorageBucket", "removeStorageBucketReplication", "removeStorageObject", "removeStorageObjects", "setStorageBucketEncryption", "setStorageBucketLifecycle", "setStorageBucketNotification", "setStorageBucketReplication", "setStorageBucketTags", "setStorageObjectLegalHold", "setStorageObjectLockConfig", "setStorageObjectRetention", "setStorageObjectTags", "suspendStorageBucketVersioning", "uploadStorageObject", "uploadStorageObjectText"}
+var enumValues_ProcedureName = []string{"composeStorageObject", "copyStorageObject", "createStorageBucket", "removeIncompleteStorageUpload", "removeStorageBucket", "removeStorageBucketReplication", "removeStorageObject", "removeStorageObjects", "setStorageBucketNotification", "setStorageBucketReplication", "updateStorageBucket", "updateStorageObject", "uploadStorageObject", "uploadStorageObjectText"}
 
 func connector_addSpanEvent(span trace.Span, logger *slog.Logger, name string, data map[string]any, options ...trace.EventOption) {
 	logger.Debug(name, slog.Any("data", data))

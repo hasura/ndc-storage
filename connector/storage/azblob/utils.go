@@ -114,10 +114,10 @@ func serializeObjectInfo(item *container.BlobItem) common.StorageObject { //noli
 	object.CustomerProvidedKeySHA256 = item.Properties.CustomerProvidedKeySHA256
 	object.DestinationSnapshot = item.Properties.DestinationSnapshot
 	object.ServerEncrypted = item.Properties.ServerEncrypted
-	object.EncryptionScope = item.Properties.EncryptionScope
+	object.KMSKeyName = item.Properties.EncryptionScope
 	object.Group = item.Properties.Group
-	object.ImmutabilityPolicyUntilDate = item.Properties.ImmutabilityPolicyExpiresOn
-	object.ImmutabilityPolicyMode = (*string)(item.Properties.ImmutabilityPolicyMode)
+	object.RetentionUntilDate = item.Properties.ImmutabilityPolicyExpiresOn
+	object.RetentionMode = (*string)(item.Properties.ImmutabilityPolicyMode)
 	object.IncrementalCopy = item.Properties.IncrementalCopy
 	object.IsSealed = item.Properties.IsSealed
 	object.LastAccessTime = item.Properties.LastAccessedOn

@@ -121,7 +121,7 @@ func (at AuthType) Validate() error {
 	return err
 }
 
-// AuthCredentials represent the authentication credentials infomartion.
+// AuthCredentials represent the authentication credentials information.
 type AuthCredentials struct {
 	// The authentication type
 	Type AuthType `json:"type" mapstructure:"type" yaml:"type"`

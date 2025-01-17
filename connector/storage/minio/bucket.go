@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"net/http"
+	"strings"
 
 	"github.com/hasura/ndc-sdk-go/schema"
 	"github.com/hasura/ndc-storage/connector/storage/common"
@@ -12,6 +13,7 @@ import (
 	"github.com/minio/minio-go/v7/pkg/tags"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/codes"
+	"go.opentelemetry.io/otel/trace"
 	"golang.org/x/sync/errgroup"
 )
 
@@ -56,11 +58,23 @@ func (mc *Client) ListBuckets(ctx context.Context, options common.BucketOptions)
 		return nil, serializeErrorResponse(err)
 	}
 
+	var filteredBuckets []minio.BucketInfo
+
+	if options.Prefix == "" {
+		filteredBuckets = bucketInfos
+	} else {
+		for _, info := range bucketInfos {
+			if strings.HasPrefix(info.Name, options.Prefix) {
+				filteredBuckets = append(filteredBuckets, info)
+			}
+		}
+	}
+
 	span.SetAttributes(attribute.Int("storage.bucket_count", len(bucketInfos)))
-	results := make([]common.StorageBucketInfo, len(bucketInfos))
+	results := make([]common.StorageBucketInfo, len(filteredBuckets))
 
 	if options.NumThreads <= 1 {
-		for i, item := range bucketInfos {
+		for i, item := range filteredBuckets {
 			bucket, err := mc.populateBucket(ctx, item, options)
 			if err != nil {
 				span.SetStatus(codes.Error, err.Error())
@@ -91,7 +105,7 @@ func (mc *Client) ListBuckets(ctx context.Context, options common.BucketOptions)
 		})
 	}
 
-	for i, item := range bucketInfos {
+	for i, item := range filteredBuckets {
 		populateFunc(item, i)
 	}
 
@@ -169,6 +183,50 @@ func (mc *Client) RemoveBucket(ctx context.Context, bucketName string) error {
 	}
 
 	return nil
+}
+
+// UpdateBucket updates configurations for the bucket.
+func (mc *Client) UpdateBucket(ctx context.Context, bucketName string, opts common.UpdateStorageBucketOptions) error {
+	ctx, span := mc.startOtelSpanWithKind(ctx, trace.SpanKindInternal, "UpdateBucket", bucketName)
+	defer span.End()
+
+	if opts.Tags != nil {
+		if err := mc.SetBucketTagging(ctx, bucketName, opts.Tags); err != nil {
+			return err
+		}
+	}
+
+	if opts.VersioningEnabled != nil {
+		if *opts.VersioningEnabled {
+			if err := mc.EnableVersioning(ctx, bucketName); err != nil {
+				return err
+			}
+		} else if err := mc.SuspendVersioning(ctx, bucketName); err != nil {
+			return err
+		}
+	}
+
+	if opts.Lifecycle != nil {
+		if err := mc.SetBucketLifecycle(ctx, bucketName, *opts.Lifecycle); err != nil {
+			return err
+		}
+	}
+
+	if opts.ObjectLock != nil {
+		if err := mc.SetObjectLockConfig(ctx, bucketName, *opts.ObjectLock); err != nil {
+			return err
+		}
+	}
+
+	if opts.Encryption == nil {
+		return nil
+	}
+
+	if opts.Encryption.IsEmpty() {
+		return mc.RemoveBucketEncryption(ctx, bucketName)
+	}
+
+	return mc.SetBucketEncryption(ctx, bucketName, *opts.Encryption)
 }
 
 // GetBucketTagging gets tags of a bucket.
@@ -337,12 +395,9 @@ func (mc *Client) GetBucketVersioning(ctx context.Context, bucketName string) (*
 	}
 
 	result := &common.StorageBucketVersioningConfiguration{
+		Enabled:          rawResult.Enabled(),
 		ExcludedPrefixes: make([]string, len(rawResult.ExcludedPrefixes)),
 		ExcludeFolders:   &rawResult.ExcludeFolders,
-	}
-
-	if rawResult.Status != "" {
-		result.Status = &rawResult.Status
 	}
 
 	if rawResult.MFADelete != "" {
@@ -429,6 +484,54 @@ func (mc *Client) RemoveBucketReplication(ctx context.Context, bucketName string
 	defer span.End()
 
 	err := mc.client.RemoveBucketReplication(ctx, bucketName)
+	if err != nil {
+		span.SetStatus(codes.Error, err.Error())
+		span.RecordError(err)
+
+		return serializeErrorResponse(err)
+	}
+
+	return nil
+}
+
+// SetBucketEncryption sets default encryption configuration on a bucket.
+func (mc *Client) SetBucketEncryption(ctx context.Context, bucketName string, input common.ServerSideEncryptionConfiguration) error {
+	ctx, span := mc.startOtelSpan(ctx, "SetBucketEncryption", bucketName)
+	defer span.End()
+
+	err := mc.client.SetBucketEncryption(ctx, bucketName, validateBucketEncryptionConfiguration(input))
+	if err != nil {
+		span.SetStatus(codes.Error, err.Error())
+		span.RecordError(err)
+
+		return serializeErrorResponse(err)
+	}
+
+	return nil
+}
+
+// GetBucketEncryption gets default encryption configuration set on a bucket.
+func (mc *Client) GetBucketEncryption(ctx context.Context, bucketName string) (*common.ServerSideEncryptionConfiguration, error) {
+	ctx, span := mc.startOtelSpan(ctx, "GetBucketEncryption", bucketName)
+	defer span.End()
+
+	rawResult, err := mc.client.GetBucketEncryption(ctx, bucketName)
+	if err != nil {
+		span.SetStatus(codes.Error, err.Error())
+		span.RecordError(err)
+
+		return nil, serializeErrorResponse(err)
+	}
+
+	return serializeBucketEncryptionConfiguration(rawResult), nil
+}
+
+// RemoveBucketEncryption remove default encryption configuration set on a bucket.
+func (mc *Client) RemoveBucketEncryption(ctx context.Context, bucketName string) error {
+	ctx, span := mc.startOtelSpan(ctx, "RemoveBucketEncryption", bucketName)
+	defer span.End()
+
+	err := mc.client.RemoveBucketEncryption(ctx, bucketName)
 	if err != nil {
 		span.SetStatus(codes.Error, err.Error())
 		span.RecordError(err)
@@ -644,6 +747,42 @@ func (mc *Client) populateBucket(ctx context.Context, item minio.BucketInfo, opt
 		}
 
 		bucket.Tags = tags
+	}
+
+	if options.IncludeVersioning {
+		versioning, err := mc.GetBucketVersioning(ctx, bucket.Name)
+		if err != nil {
+			return bucket, err
+		}
+
+		bucket.Versioning = versioning
+	}
+
+	if options.IncludeLifecycle {
+		lc, err := mc.GetBucketLifecycle(ctx, bucket.Name)
+		if err != nil {
+			return bucket, err
+		}
+
+		bucket.Lifecycle = lc
+	}
+
+	if options.IncludeEncryption {
+		encryption, err := mc.GetBucketEncryption(ctx, bucket.Name)
+		if err != nil {
+			return bucket, err
+		}
+
+		bucket.Encryption = encryption
+	}
+
+	if options.IncludeObjectLock {
+		lock, err := mc.GetObjectLockConfig(ctx, bucket.Name)
+		if err != nil {
+			return bucket, err
+		}
+
+		bucket.ObjectLock = lock
 	}
 
 	return bucket, nil

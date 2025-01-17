@@ -20,8 +20,8 @@ type StorageClient interface { //nolint:interfacebloat
 	BucketExists(ctx context.Context, bucketName string) (bool, error)
 	// RemoveBucket removes a bucket, bucket should be empty to be successfully removed.
 	RemoveBucket(ctx context.Context, bucketName string) error
-	// SetBucketTagging sets tags to a bucket.
-	SetBucketTagging(ctx context.Context, bucketName string, bucketTags map[string]string) error
+	// UpdateBucket updates configurations for the bucket.
+	UpdateBucket(ctx context.Context, bucketName string, opts UpdateStorageBucketOptions) error
 	// GetBucketPolicy gets access permissions on a bucket or a prefix.
 	GetBucketPolicy(ctx context.Context, bucketName string) (string, error)
 	// ListObjects lists objects in a bucket.
@@ -43,15 +43,11 @@ type StorageClient interface { //nolint:interfacebloat
 	StatObject(ctx context.Context, bucketName string, objectName string, opts GetStorageObjectOptions) (*StorageObject, error)
 	// RemoveObject removes an object with some specified options
 	RemoveObject(ctx context.Context, bucketName string, objectName string, opts RemoveStorageObjectOptions) error
-	// SetObjectRetention applies object retention lock onto an object.
-	SetObjectRetention(ctx context.Context, bucketName string, objectName string, opts SetStorageObjectRetentionOptions) error
 	// RemoveObjects remove a list of objects obtained from an input channel. The call sends a delete request to the server up to 1000 objects at a time.
 	// The errors observed are sent over the error channel.
 	RemoveObjects(ctx context.Context, bucketName string, opts *RemoveStorageObjectsOptions, predicate func(string) bool) []RemoveStorageObjectError
-	// PutObjectLegalHold applies legal-hold onto an object.
-	SetObjectLegalHold(ctx context.Context, bucketName string, objectName string, opts SetStorageObjectLegalHoldOptions) error
-	// SetObjectTags sets new object Tags to the given object, replaces/overwrites any existing tags.
-	SetObjectTags(ctx context.Context, bucketName string, objectName string, options SetStorageObjectTagsOptions) error
+	// UpdateObject updates object configurations.
+	UpdateObject(ctx context.Context, bucketName string, objectName string, opts UpdateStorageObjectOptions) error
 	// RemoveIncompleteUpload removes a partially uploaded object.
 	RemoveIncompleteUpload(ctx context.Context, bucketName string, objectName string) error
 	// PresignedGetObject generates a presigned URL for HTTP GET operations. Browsers/Mobile clients may point to this URL to directly download objects even if the bucket is private.
@@ -69,26 +65,6 @@ type StorageClient interface { //nolint:interfacebloat
 	SetBucketNotification(ctx context.Context, bucketName string, config NotificationConfig) error
 	// Remove all configured bucket notifications on a bucket.
 	RemoveAllBucketNotification(ctx context.Context, bucketName string) error
-	// SetBucketLifecycle sets lifecycle on bucket or an object prefix.
-	SetBucketLifecycle(ctx context.Context, bucketname string, config BucketLifecycleConfiguration) error
-	// GetBucketLifecycle gets lifecycle on a bucket or a prefix.
-	GetBucketLifecycle(ctx context.Context, bucketName string) (*BucketLifecycleConfiguration, error)
-	// SetBucketEncryption sets default encryption configuration on a bucket.
-	SetBucketEncryption(ctx context.Context, bucketname string, config ServerSideEncryptionConfiguration) error
-	// GetBucketEncryption gets default encryption configuration set on a bucket.
-	GetBucketEncryption(ctx context.Context, bucketName string) (*ServerSideEncryptionConfiguration, error)
-	// RemoveBucketEncryption removes default encryption configuration set on a bucket.
-	RemoveBucketEncryption(ctx context.Context, bucketName string) error
-	// SetObjectLockConfig sets object lock configuration in given bucket. mode, validity and unit are either all set or all nil.
-	SetObjectLockConfig(ctx context.Context, bucketName string, config SetStorageObjectLockConfig) error
-	// GetObjectLockConfig gets object lock configuration of given bucket.
-	GetObjectLockConfig(ctx context.Context, bucketName string) (*StorageObjectLockConfig, error)
-	// EnableVersioning enables bucket versioning support.
-	EnableVersioning(ctx context.Context, bucketName string) error
-	// SuspendVersioning disables bucket versioning support.
-	SuspendVersioning(ctx context.Context, bucketName string) error
-	// GetBucketVersioning gets versioning configuration set on a bucket.
-	GetBucketVersioning(ctx context.Context, bucketName string) (*StorageBucketVersioningConfiguration, error)
 	// SetBucketReplication sets replication configuration on a bucket. Role can be obtained by first defining the replication target on MinIO
 	// to associate the source and destination buckets for replication with the replication endpoint.
 	SetBucketReplication(ctx context.Context, bucketname string, cfg StorageReplicationConfig) error
@@ -100,8 +76,13 @@ type StorageClient interface { //nolint:interfacebloat
 
 // BucketOptions hold options to get bucket information.
 type BucketOptions struct {
-	IncludeTags bool `json:"includeTags,omitempty"`
-	NumThreads  int  `json:"-"`
+	Prefix            string
+	IncludeTags       bool
+	IncludeVersioning bool
+	IncludeLifecycle  bool
+	IncludeEncryption bool
+	IncludeObjectLock bool
+	NumThreads        int
 }
 
 // StorageBucketInfo container for bucket metadata.
@@ -112,6 +93,13 @@ type StorageBucketInfo struct {
 	CreationDate time.Time `json:"creationDate"`
 	// Bucket tags or metadata.
 	Tags map[string]string `json:"tags,omitempty"`
+	// The versioning configuration
+	Versioning *StorageBucketVersioningConfiguration `json:"versioning"`
+	// The versioning configuration
+	Lifecycle *BucketLifecycleConfiguration `json:"lifecycle"`
+	// The server-side encryption configuration.
+	Encryption *ServerSideEncryptionConfiguration `json:"encryption"`
+	ObjectLock *StorageObjectLockConfig           `json:"objectLock"`
 }
 
 // StorageOwner name.
@@ -223,25 +211,25 @@ type StorageObject struct {
 	DestinationSnapshot       *string    `json:"destinationSnapshot"`
 
 	// The name of the encryption scope under which the blob is encrypted.
-	EncryptionScope             *string    `json:"encryptionScope"`
-	Group                       *string    `json:"group"`
-	ImmutabilityPolicyUntilDate *time.Time `json:"immutabilityPolicyUntilDate"`
-	ImmutabilityPolicyMode      *string    `json:"immutabilityPolicyMode"`
-	IncrementalCopy             *bool      `json:"incrementalCopy"`
-	IsSealed                    *bool      `json:"sealed"`
-	LastAccessTime              *time.Time `json:"lastAccessTime"`
-	LeaseDuration               *string    `json:"leaseDuration"`
-	LeaseState                  *string    `json:"leaseState"`
-	LeaseStatus                 *string    `json:"leaseStatus"`
-	LegalHold                   *bool      `json:"legalHold"`
-	Permissions                 *string    `json:"permissions"`
+	KMSKeyName         *string    `json:"kmsKeyName"`
+	ServerEncrypted    *bool      `json:"serverEncrypted"`
+	Group              *string    `json:"group"`
+	RetentionUntilDate *time.Time `json:"retentionUntilDate"`
+	RetentionMode      *string    `json:"retentionMode"`
+	IncrementalCopy    *bool      `json:"incrementalCopy"`
+	IsSealed           *bool      `json:"sealed"`
+	LastAccessTime     *time.Time `json:"lastAccessTime"`
+	LeaseDuration      *string    `json:"leaseDuration"`
+	LeaseState         *string    `json:"leaseState"`
+	LeaseStatus        *string    `json:"leaseStatus"`
+	LegalHold          *bool      `json:"legalHold"`
+	Permissions        *string    `json:"permissions"`
 
 	// If an object is in rehydrate pending state then this header is returned with priority of rehydrate. Valid values are High
 	// and Standard.
 	RehydratePriority      *string `json:"rehydratePriority"`
 	RemainingRetentionDays *int32  `json:"remainingRetentionDays"`
 	ResourceType           *string `json:"resourceType"`
-	ServerEncrypted        *bool   `json:"serverEncrypted"`
 }
 
 // StorageObjectPaginationInfo holds the pagination information.
@@ -318,7 +306,7 @@ type StorageObjectMultipartInfo struct {
 // type ServerSideEncryptionMethod string
 
 // StorageRetentionMode the object retention mode.
-// @enum Locked,Unlocked
+// @enum Locked,Unlocked,Mutable
 type StorageRetentionMode string
 
 // RemoveStorageObjectError the container of Multi Delete S3 API error.
@@ -487,22 +475,15 @@ type LifecycleNoncurrentVersionTransition struct {
 	NewerNoncurrentVersions *int    `json:"newerNoncurrentVersions,omitempty"`
 }
 
-// StorageApplySSEByDefault defines default encryption configuration, KMS or SSE. To activate
-// KMS, SSEAlgoritm needs to be set to `aws:kms“.
-// Minio currently does not support Kms.
-type StorageApplySSEByDefault struct {
-	KmsMasterKeyID *string `json:"kmsMasterKeyId,omitempty"`
-	SSEAlgorithm   string  `json:"sseAlgorithm"`
-}
-
-// ServerSideEncryptionRule rule layer encapsulates default encryption configuration
-type ServerSideEncryptionRule struct {
-	Apply StorageApplySSEByDefault `json:"apply"`
-}
-
 // ServerSideEncryptionConfiguration is the default encryption configuration structure.
 type ServerSideEncryptionConfiguration struct {
-	Rules []ServerSideEncryptionRule `json:"rules"`
+	KmsMasterKeyID string `json:"kmsMasterKeyId,omitempty"`
+	SSEAlgorithm   string `json:"sseAlgorithm,omitempty"`
+}
+
+// IsEmpty checks if the configuration is empty.
+func (ssec ServerSideEncryptionConfiguration) IsEmpty() bool {
+	return ssec.KmsMasterKeyID == "" && ssec.SSEAlgorithm == ""
 }
 
 // SetStorageObjectLockConfig represents the object lock configuration options in given bucket
@@ -512,7 +493,7 @@ type SetStorageObjectLockConfig struct {
 	Unit     *StorageRetentionValidityUnit `json:"unit"`
 }
 
-// SetStorageObjectLockConfig represents the object lock configuration in given bucket
+// StorageObjectLockConfig represents the object lock configuration in given bucket
 type StorageObjectLockConfig struct {
 	SetStorageObjectLockConfig
 
@@ -525,7 +506,7 @@ type StorageRetentionValidityUnit string
 
 // StorageBucketVersioningConfiguration is the versioning configuration structure
 type StorageBucketVersioningConfiguration struct {
-	Status    *string `json:"status"`
+	Enabled   bool    `json:"status"`
 	MFADelete *string `json:"mfaDelete"`
 	// MinIO extension - allows selective, prefix-level versioning exclusion.
 	// Requires versioning to be enabled

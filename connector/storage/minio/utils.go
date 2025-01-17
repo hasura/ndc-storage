@@ -10,6 +10,7 @@ import (
 	"github.com/hasura/ndc-storage/connector/storage/common"
 	"github.com/minio/minio-go/v7"
 	"github.com/minio/minio-go/v7/pkg/notification"
+	"github.com/minio/minio-go/v7/pkg/sse"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/trace"
 )
@@ -626,4 +627,23 @@ func serializeErrorResponse(err error) *schema.ConnectorError {
 
 func isStringNull(input string) bool {
 	return input == "" || input == "null"
+}
+
+func validateBucketEncryptionConfiguration(input common.ServerSideEncryptionConfiguration) *sse.Configuration {
+	if input.SSEAlgorithm == "AES256" {
+		return sse.NewConfigurationSSES3()
+	}
+
+	return sse.NewConfigurationSSEKMS(input.KmsMasterKeyID)
+}
+
+func serializeBucketEncryptionConfiguration(input *sse.Configuration) *common.ServerSideEncryptionConfiguration {
+	if input == nil || len(input.Rules) == 0 {
+		return nil
+	}
+
+	return &common.ServerSideEncryptionConfiguration{
+		KmsMasterKeyID: input.Rules[0].Apply.KmsMasterKeyID,
+		SSEAlgorithm:   input.Rules[0].Apply.SSEAlgorithm,
+	}
 }
