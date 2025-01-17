@@ -1,0 +1,12 @@
+{
+  "collection_relationships": {},
+  "operations": [
+    {
+      "type": "procedure",
+      "name": "removeStorageBucket",
+      "arguments": {
+        "bucket": "azblob-bucket-test"
+      }
+    }
+  ]
+}

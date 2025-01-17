@@ -17,6 +17,7 @@ At this moment, the connector supports S3 Compatible Storage services.
 | Google Cloud Storage | ✅        |
 | Cloudflare R2        | ✅        |
 | DigitalOcean Spaces  | ✅        |
+| Azure Blob Storage   | ✅        |
 
 ## Get Started
 
@@ -27,7 +28,7 @@ The connector is built upon the MinIO Go Client SDK so it supports most of metho
 ## Documentation
 
 - [Configuration](./docs/configuration.md)
-- [Upload/Download Objects](./docs/upload-download.md)
+- [Manage Objects](./docs/objects.md)
 
 ## License
 

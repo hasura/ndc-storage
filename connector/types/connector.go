@@ -17,7 +17,8 @@ const (
 // State is the global state which is shared for every connector request.
 type State struct {
 	*connector.TelemetryState
-	Storage *storage.Manager
+	Storage     *storage.Manager
+	Concurrency ConcurrencySettings
 }
 
 // QueryVariablesFromContext gets the query variables from context.

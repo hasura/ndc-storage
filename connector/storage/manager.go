@@ -29,27 +29,32 @@ func NewManager(ctx context.Context, configs []ClientConfig, logger *slog.Logger
 	}
 
 	for i, config := range configs {
-		defaultBucket, err := config.DefaultBucket.GetOrDefault("")
-		if err != nil {
-			return nil, fmt.Errorf("failed to initialize storage client %d; defaultBucket: %w", i, err)
-		}
-
-		client, err := config.ToStorageClient(ctx, logger)
+		baseConfig, client, err := config.toStorageClient(ctx, logger)
 		if err != nil {
 			return nil, fmt.Errorf("failed to initialize storage client %d: %w", i, err)
 		}
 
+		configID := baseConfig.ID
+		if configID == "" {
+			configID = strconv.Itoa(i)
+		}
+
+		defaultBucket, err := baseConfig.DefaultBucket.GetOrDefault("")
+		if err != nil {
+			return nil, fmt.Errorf("failed to initialize storage client %s; defaultBucket: %w", configID, err)
+		}
+
 		c := Client{
-			id:             common.StorageClientID(config.ID),
+			id:             common.StorageClientID(baseConfig.ID),
 			defaultBucket:  defaultBucket,
-			allowedBuckets: config.AllowedBuckets,
+			allowedBuckets: baseConfig.AllowedBuckets,
 			StorageClient:  client,
 		}
 
-		if config.DefaultPresignedExpiry != nil {
-			presignedExpiry, err := time.ParseDuration(*config.DefaultPresignedExpiry)
+		if baseConfig.DefaultPresignedExpiry != nil {
+			presignedExpiry, err := time.ParseDuration(*baseConfig.DefaultPresignedExpiry)
 			if err != nil {
-				return nil, fmt.Errorf("defaultPresignedExpiry: %w", err)
+				return nil, fmt.Errorf("failied to parse defaultPresignedExpiry in client %s: %w", configID, err)
 			}
 
 			c.defaultPresignedExpiry = &presignedExpiry

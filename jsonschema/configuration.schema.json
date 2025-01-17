@@ -3,31 +3,120 @@
   "$id": "https://github.com/hasura/ndc-storage/connector/types/configuration",
   "$ref": "#/$defs/Configuration",
   "$defs": {
-    "AuthCredentials": {
+    "ClientConfig": {
       "oneOf": [
         {
           "properties": {
             "type": {
               "type": "string",
               "enum": [
-                "static"
+                "s3",
+                "gs"
+              ],
+              "description": "Cloud provider type of the storage client"
+            },
+            "id": {
+              "type": "string",
+              "description": "The unique identity of a client. Use this setting if there are many configured clients"
+            },
+            "defaultBucket": {
+              "$ref": "#/$defs/EnvString",
+              "description": "Default bucket name to be set if the user doesn't specify any bucket"
+            },
+            "endpoint": {
+              "$ref": "#/$defs/EnvString",
+              "description": "Endpoint of the storage server. Required for other S3 compatible services such as MinIO, Cloudflare R2, DigitalOcean Spaces, etc..."
+            },
+            "publicHost": {
+              "$ref": "#/$defs/EnvString",
+              "description": "The public host to be used for presigned URL generation"
+            },
+            "maxRetries": {
+              "type": "integer",
+              "minimum": 1,
+              "description": "Maximum number of retry times",
+              "default": 10
+            },
+            "defaultPresignedExpiry": {
+              "type": "string",
+              "pattern": "[0-9]+(s|m|h)",
+              "description": "Default bucket name to be set if the user doesn't specify any bucket",
+              "default": "24h"
+            },
+            "allowedBuckets": {
+              "items": {
+                "type": "string"
+              },
+              "type": "array",
+              "description": "Allowed buckets. This setting prevents users to get buckets and objects outside the list. However, it's recommended to restrict the permissions for the IAM credentials"
+            },
+            "region": {
+              "oneOf": [
+                {
+                  "type": "null"
+                },
+                {
+                  "$ref": "#/$defs/EnvString"
+                }
+              ],
+              "description": "Optional region"
+            },
+            "authentication": {
+              "oneOf": [
+                {
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "enum": [
+                        "static"
+                      ]
+                    },
+                    "accessKeyId": {
+                      "$ref": "#/$defs/EnvString"
+                    },
+                    "secretAccessKey": {
+                      "$ref": "#/$defs/EnvString"
+                    },
+                    "sessionToken": {
+                      "$ref": "#/$defs/EnvString"
+                    }
+                  },
+                  "type": "object",
+                  "required": [
+                    "type",
+                    "accessKeyId",
+                    "secretAccessKey"
+                  ]
+                },
+                {
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "enum": [
+                        "iam"
+                      ]
+                    },
+                    "iamAuthEndpoint": {
+                      "$ref": "#/$defs/EnvString"
+                    }
+                  },
+                  "type": "object",
+                  "required": [
+                    "type"
+                  ]
+                }
               ]
             },
-            "accessKeyId": {
-              "$ref": "#/$defs/EnvString"
-            },
-            "secretAccessKey": {
-              "$ref": "#/$defs/EnvString"
-            },
-            "sessionToken": {
-              "$ref": "#/$defs/EnvString"
+            "trailingHeaders": {
+              "type": "boolean",
+              "description": "TrailingHeaders indicates server support of trailing headers. Only supported for v4 signatures"
             }
           },
           "type": "object",
           "required": [
             "type",
-            "accessKeyId",
-            "secretAccessKey"
+            "defaultBucket",
+            "authentication"
           ]
         },
         {
@@ -35,75 +124,191 @@
             "type": {
               "type": "string",
               "enum": [
-                "iam"
-              ]
+                "azblob"
+              ],
+              "description": "Cloud provider type of the storage client"
             },
-            "iamAuthEndpoint": {
-              "$ref": "#/$defs/EnvString"
+            "id": {
+              "type": "string",
+              "description": "The unique identity of a client. Use this setting if there are many configured clients"
+            },
+            "defaultBucket": {
+              "$ref": "#/$defs/EnvString",
+              "description": "Default bucket name to be set if the user doesn't specify any bucket"
+            },
+            "endpoint": {
+              "$ref": "#/$defs/EnvString",
+              "description": "Endpoint of the storage server. Required for other S3 compatible services such as MinIO, Cloudflare R2, DigitalOcean Spaces, etc..."
+            },
+            "publicHost": {
+              "$ref": "#/$defs/EnvString",
+              "description": "The public host to be used for presigned URL generation"
+            },
+            "maxRetries": {
+              "type": "integer",
+              "minimum": 1,
+              "description": "Maximum number of retry times",
+              "default": 10
+            },
+            "defaultPresignedExpiry": {
+              "type": "string",
+              "pattern": "[0-9]+(s|m|h)",
+              "description": "Default bucket name to be set if the user doesn't specify any bucket",
+              "default": "24h"
+            },
+            "allowedBuckets": {
+              "items": {
+                "type": "string"
+              },
+              "type": "array",
+              "description": "Allowed buckets. This setting prevents users to get buckets and objects outside the list. However, it's recommended to restrict the permissions for the IAM credentials"
+            },
+            "authentication": {
+              "oneOf": [
+                {
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "enum": [
+                        "sharedKey"
+                      ],
+                      "description": "Authorize with an immutable SharedKeyCredential containing the storage account's name and either its primary or secondary key"
+                    },
+                    "accountName": {
+                      "$ref": "#/$defs/EnvString",
+                      "description": "Account Name"
+                    },
+                    "accountKey": {
+                      "$ref": "#/$defs/EnvString",
+                      "description": "Account Key"
+                    }
+                  },
+                  "type": "object",
+                  "required": [
+                    "type",
+                    "accountName",
+                    "accountKey"
+                  ]
+                },
+                {
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "enum": [
+                        "connectionString"
+                      ],
+                      "description": "Authorize with a connection string for the desired storage account"
+                    },
+                    "connectionString": {
+                      "$ref": "#/$defs/EnvString",
+                      "description": "The connection string"
+                    }
+                  },
+                  "type": "object",
+                  "required": [
+                    "type",
+                    "connectionString"
+                  ]
+                },
+                {
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "enum": [
+                        "anonymous"
+                      ]
+                    }
+                  },
+                  "type": "object",
+                  "required": [
+                    "type"
+                  ]
+                },
+                {
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "enum": [
+                        "entra"
+                      ]
+                    },
+                    "tenantId": {
+                      "$ref": "#/$defs/EnvString",
+                      "description": "ID of the service principal's tenant. Also called its `directory` ID"
+                    },
+                    "clientId": {
+                      "$ref": "#/$defs/EnvString",
+                      "description": "The service principal's client ID"
+                    },
+                    "clientSecret": {
+                      "$ref": "#/$defs/EnvString",
+                      "description": "One of the service principal's client secrets"
+                    },
+                    "username": {
+                      "$ref": "#/$defs/EnvString",
+                      "description": "The username (usually an email address)"
+                    },
+                    "password": {
+                      "$ref": "#/$defs/EnvString",
+                      "description": "The user's password"
+                    },
+                    "clientCertificate": {
+                      "$ref": "#/$defs/EnvString",
+                      "description": "Inline PEM or PKCS12 certificate of the private key in base64 format"
+                    },
+                    "clientCertificatePath": {
+                      "$ref": "#/$defs/EnvString",
+                      "description": "Path to a PEM or PKCS12 certificate file including the private key"
+                    },
+                    "clientCertificatePassword": {
+                      "$ref": "#/$defs/EnvString",
+                      "description": "Optional password for the certificate"
+                    },
+                    "sendCertificateChain": {
+                      "type": "boolean",
+                      "description": "Controls whether the credential sends the public certificate chain in the x5c header of each token request's JWT"
+                    },
+                    "tokenFilePath": {
+                      "$ref": "#/$defs/EnvString",
+                      "description": "the path of a file containing a Kubernetes service account token"
+                    },
+                    "disableInstanceDiscovery": {
+                      "type": "boolean"
+                    },
+                    "additionallyAllowedTenants": {
+                      "items": {
+                        "type": "string"
+                      },
+                      "type": "array"
+                    }
+                  },
+                  "type": "object",
+                  "required": [
+                    "type",
+                    "tenantId"
+                  ],
+                  "dependentRequired": {
+                    "clientSecret": [
+                      "clientId"
+                    ],
+                    "password": [
+                      "username"
+                    ],
+                    "username": [
+                      "password"
+                    ]
+                  }
+                }
+              ]
             }
           },
           "type": "object",
           "required": [
-            "type"
+            "type",
+            "defaultBucket",
+            "authentication"
           ]
         }
-      ]
-    },
-    "ClientConfig": {
-      "properties": {
-        "id": {
-          "type": "string"
-        },
-        "type": {
-          "$ref": "#/$defs/EnvStorageProviderType"
-        },
-        "defaultBucket": {
-          "$ref": "#/$defs/EnvString"
-        },
-        "endpoint": {
-          "$ref": "#/$defs/EnvString"
-        },
-        "publicHost": {
-          "$ref": "#/$defs/EnvString"
-        },
-        "region": {
-          "oneOf": [
-            {
-              "$ref": "#/$defs/EnvString"
-            },
-            {
-              "type": "null"
-            }
-          ]
-        },
-        "maxRetries": {
-          "type": "integer",
-          "default": 10
-        },
-        "defaultPresignedExpiry": {
-          "type": "string",
-          "pattern": "[0-9]+(s|m|h)",
-          "default": "24h"
-        },
-        "authentication": {
-          "$ref": "#/$defs/AuthCredentials"
-        },
-        "trailingHeaders": {
-          "type": "boolean"
-        },
-        "allowedBuckets": {
-          "items": {
-            "type": "string"
-          },
-          "type": "array"
-        }
-      },
-      "additionalProperties": false,
-      "type": "object",
-      "required": [
-        "type",
-        "defaultBucket",
-        "authentication"
       ]
     },
     "ConcurrencySettings": {
@@ -142,57 +347,27 @@
         "clients"
       ]
     },
-    "EnvStorageProviderType": {
-      "anyOf": [
-        {
-          "required": [
-            "value"
-          ]
-        },
-        {
-          "required": [
-            "env"
-          ]
-        }
-      ],
-      "properties": {
-        "env": {
-          "type": "string"
-        },
-        "value": {
-          "type": "string",
-          "enum": [
-            "s3",
-            "gs"
-          ]
-        }
-      },
-      "type": "object"
-    },
     "EnvString": {
       "anyOf": [
         {
           "required": [
             "value"
-          ],
-          "title": "value"
+          ]
         },
         {
           "required": [
             "env"
-          ],
-          "title": "env"
+          ]
         }
       ],
       "properties": {
-        "value": {
+        "env": {
           "type": "string"
         },
-        "env": {
+        "value": {
           "type": "string"
         }
       },
-      "additionalProperties": false,
       "type": "object"
     }
   }

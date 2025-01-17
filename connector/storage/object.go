@@ -13,34 +13,33 @@ import (
 )
 
 // ListObjects lists objects in a bucket.
-func (m *Manager) ListObjects(ctx context.Context, bucketInfo common.StorageBucketArguments, opts *common.ListStorageObjectsOptions) ([]common.StorageObject, error) {
+func (m *Manager) ListObjects(ctx context.Context, bucketInfo common.StorageBucketArguments, opts *common.ListStorageObjectsOptions, predicate func(string) bool) (*common.StorageObjectListResults, error) {
 	client, bucketName, err := m.GetClientAndBucket(bucketInfo.ClientID, bucketInfo.Bucket)
 	if err != nil {
 		return nil, err
 	}
 
-	results, err := client.ListObjects(ctx, bucketName, opts)
+	results, err := client.ListObjects(ctx, bucketName, opts, predicate)
 	if err != nil {
 		return nil, err
 	}
 
-	for i := range results {
-		results[i].ClientID = string(client.id)
+	for i := range results.Objects {
+		results.Objects[i].ClientID = string(client.id)
+		results.Objects[i].Bucket = bucketName
 	}
 
 	return results, nil
 }
 
 // ListIncompleteUploads list partially uploaded objects in a bucket.
-func (m *Manager) ListIncompleteUploads(ctx context.Context, args *common.ListIncompleteUploadsArguments) ([]common.StorageObjectMultipartInfo, error) {
-	client, bucketName, err := m.GetClientAndBucket(args.ClientID, args.Bucket)
+func (m *Manager) ListIncompleteUploads(ctx context.Context, bucketInfo common.StorageBucketArguments, opts common.ListIncompleteUploadsOptions) ([]common.StorageObjectMultipartInfo, error) {
+	client, bucketName, err := m.GetClientAndBucket(bucketInfo.ClientID, bucketInfo.Bucket)
 	if err != nil {
 		return nil, err
 	}
 
-	args.Bucket = bucketName
-
-	return client.ListIncompleteUploads(ctx, args)
+	return client.ListIncompleteUploads(ctx, bucketName, opts)
 }
 
 // GetObject returns a stream of the object data. Most of the common errors occur when reading the stream.
@@ -66,6 +65,7 @@ func (m *Manager) PutObject(ctx context.Context, bucketInfo common.StorageBucket
 		return nil, err
 	}
 
+	result.Bucket = bucketName
 	result.ClientID = string(client.id)
 
 	return result, nil
@@ -137,6 +137,7 @@ func (m *Manager) StatObject(ctx context.Context, bucketInfo common.StorageBucke
 	}
 
 	result.ClientID = string(client.id)
+	result.Bucket = bucketName
 
 	return result, nil
 }
@@ -151,16 +152,14 @@ func (m *Manager) RemoveObject(ctx context.Context, bucketInfo common.StorageBuc
 	return client.RemoveObject(ctx, bucketName, objectName, opts)
 }
 
-// PutObjectRetention applies object retention lock onto an object.
-func (m *Manager) PutObjectRetention(ctx context.Context, args *common.PutStorageObjectRetentionOptions) error {
-	client, bucketName, err := m.GetClientAndBucket(args.ClientID, args.Bucket)
+// SetObjectRetention applies object retention lock onto an object.
+func (m *Manager) SetObjectRetention(ctx context.Context, bucketInfo common.StorageBucketArguments, objectName string, opts common.SetStorageObjectRetentionOptions) error {
+	client, bucketName, err := m.GetClientAndBucket(bucketInfo.ClientID, bucketInfo.Bucket)
 	if err != nil {
 		return err
 	}
 
-	args.Bucket = bucketName
-
-	return client.PutObjectRetention(ctx, args)
+	return client.SetObjectRetention(ctx, bucketName, objectName, opts)
 }
 
 // RemoveObjects remove a list of objects obtained from an input channel. The call sends a delete request to the server up to 1000 objects at a time.
@@ -174,76 +173,24 @@ func (m *Manager) RemoveObjects(ctx context.Context, bucketInfo common.StorageBu
 	return client.RemoveObjects(ctx, bucketName, opts, predicate), nil
 }
 
-// PutObjectLegalHold applies legal-hold onto an object.
-func (m *Manager) PutObjectLegalHold(ctx context.Context, args *common.PutStorageObjectLegalHoldOptions) error {
-	client, bucketName, err := m.GetClientAndBucket(args.ClientID, args.Bucket)
+// SetObjectLegalHold applies legal-hold onto an object.
+func (m *Manager) SetObjectLegalHold(ctx context.Context, bucketInfo common.StorageBucketArguments, objectName string, opts common.SetStorageObjectLegalHoldOptions) error {
+	client, bucketName, err := m.GetClientAndBucket(bucketInfo.ClientID, bucketInfo.Bucket)
 	if err != nil {
 		return err
 	}
 
-	args.Bucket = bucketName
-
-	return client.PutObjectLegalHold(ctx, args)
-}
-
-// GetObjectLegalHold returns legal-hold status on a given object.
-func (m *Manager) GetObjectLegalHold(ctx context.Context, args *common.GetStorageObjectLegalHoldOptions) (common.StorageLegalHoldStatus, error) {
-	client, bucketName, err := m.GetClientAndBucket(args.ClientID, args.Bucket)
-	if err != nil {
-		return "", err
-	}
-
-	args.Bucket = bucketName
-
-	return client.GetObjectLegalHold(ctx, args)
+	return client.SetObjectLegalHold(ctx, bucketName, objectName, opts)
 }
 
 // PutObjectTagging sets new object Tags to the given object, replaces/overwrites any existing tags.
-func (m *Manager) PutObjectTagging(ctx context.Context, args *common.PutStorageObjectTaggingOptions) error {
-	client, bucketName, err := m.GetClientAndBucket(args.ClientID, args.Bucket)
+func (m *Manager) SetObjectTags(ctx context.Context, bucketInfo common.StorageBucketArguments, objectName string, opts common.SetStorageObjectTagsOptions) error {
+	client, bucketName, err := m.GetClientAndBucket(bucketInfo.ClientID, bucketInfo.Bucket)
 	if err != nil {
 		return err
 	}
 
-	args.Bucket = bucketName
-
-	return client.PutObjectTagging(ctx, args)
-}
-
-// GetObjectTagging fetches Object Tags from the given object.
-func (m *Manager) GetObjectTagging(ctx context.Context, args *common.StorageObjectTaggingOptions) (map[string]string, error) {
-	client, bucketName, err := m.GetClientAndBucket(args.ClientID, args.Bucket)
-	if err != nil {
-		return nil, err
-	}
-
-	args.Bucket = bucketName
-
-	return client.GetObjectTagging(ctx, args)
-}
-
-// RemoveObjectTagging removes Object Tags from the given object.
-func (m *Manager) RemoveObjectTagging(ctx context.Context, args *common.StorageObjectTaggingOptions) error {
-	client, bucketName, err := m.GetClientAndBucket(args.ClientID, args.Bucket)
-	if err != nil {
-		return err
-	}
-
-	args.Bucket = bucketName
-
-	return client.RemoveObjectTagging(ctx, args)
-}
-
-// GetObjectAttributes returns a stream of the object data. Most of the common errors occur when reading the stream.
-func (m *Manager) GetObjectAttributes(ctx context.Context, args *common.StorageObjectAttributesOptions) (*common.StorageObjectAttributes, error) {
-	client, bucketName, err := m.GetClientAndBucket(args.ClientID, args.Bucket)
-	if err != nil {
-		return nil, err
-	}
-
-	args.Bucket = bucketName
-
-	return client.GetObjectAttributes(ctx, args)
+	return client.SetObjectTags(ctx, bucketName, objectName, opts)
 }
 
 // RemoveIncompleteUpload removes a partially uploaded object.
@@ -253,9 +200,7 @@ func (m *Manager) RemoveIncompleteUpload(ctx context.Context, args *common.Remov
 		return err
 	}
 
-	args.Bucket = bucketName
-
-	return client.RemoveIncompleteUpload(ctx, args)
+	return client.RemoveIncompleteUpload(ctx, bucketName, args.Object)
 }
 
 // PresignedGetObject generates a presigned URL for HTTP GET operations. Browsers/Mobile clients may point to this URL to directly download objects even if the bucket is private.
@@ -289,7 +234,7 @@ func (m *Manager) PresignedGetObject(ctx context.Context, bucketInfo common.Stor
 	}
 
 	return &common.PresignedURLResponse{
-		URL:       rawURL.String(),
+		URL:       rawURL,
 		ExpiredAt: FormatTimestamp(time.Now().Add(opts.Expiry.Duration)),
 	}, nil
 }
@@ -326,7 +271,7 @@ func (m *Manager) PresignedPutObject(ctx context.Context, bucketInfo common.Stor
 	}
 
 	return &common.PresignedURLResponse{
-		URL:       rawURL.String(),
+		URL:       rawURL,
 		ExpiredAt: FormatTimestamp(time.Now().Add(exp)),
 	}, nil
 }

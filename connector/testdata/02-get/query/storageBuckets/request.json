@@ -12,6 +12,10 @@
               "name": {
                 "column": "name",
                 "type": "column"
+              },
+              "tags": {
+                "column": "tags",
+                "type": "column"
               }
             },
             "type": "object"

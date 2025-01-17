@@ -21,6 +21,11 @@ services:
       S3_DEFAULT_BUCKET: $S3_DEFAULT_BUCKET
       S3_ACCESS_KEY_ID: $S3_ACCESS_KEY_ID
       S3_SECRET_ACCESS_KEY: $S3_SECRET_ACCESS_KEY
+      AZURE_STORAGE_ENDPOINT: $AZURE_STORAGE_ENDPOINT
+      AZURE_STORAGE_CONNECTION_STRING: DefaultEndpointsProtocol=http;AccountName=${AZURE_STORAGE_ACCOUNT_NAME};AccountKey=${AZURE_STORAGE_ACCOUNT_KEY};BlobEndpoint=${AZURE_STORAGE_ENDPOINT}
+      AZURE_STORAGE_DEFAULT_BUCKET: $AZURE_STORAGE_DEFAULT_BUCKET
+      AZURE_STORAGE_ACCOUNT_NAME: $AZURE_STORAGE_ACCOUNT_NAME
+      AZURE_STORAGE_ACCOUNT_KEY: $AZURE_STORAGE_ACCOUNT_KEY
       HASURA_LOG_LEVEL: debug
       OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4317
       OTEL_METRICS_EXPORTER: prometheus
@@ -50,6 +55,18 @@ services:
       - 9111:9191
     volumes:
       - s3_data:/containers3root
+
+  # https://github.com/Azure/Azurite
+  azurite:
+    image: mcr.microsoft.com/azure-storage/azurite
+    restart: always
+    command: ["azurite-blob", "--blobHost", "0.0.0.0", "-d", "/debug.log"]
+    extra_hosts:
+      - local.hasura.dev=host-gateway
+    ports:
+      - "10000:10000"
+    environment:
+      AZURITE_ACCOUNTS: "${AZURE_STORAGE_ACCOUNT_NAME}:${AZURE_STORAGE_ACCOUNT_KEY}"
 
 volumes:
   minio_data:

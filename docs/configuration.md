@@ -6,10 +6,10 @@
 
 The configuration file `configuration.yaml` contains a list of storage clients. Every client has common settings:
 
-- `id`: the unque identity name of the client. This setting is optional unless there are many configured clients.
-- `type`: type of the storage provider. Accept one of `s3`, `gs`.
+- `id`: the unique identity name of the client. This setting is optional unless there are many configured clients.
+- `type`: type of the storage provider. Accept one of `s3`, `gs` and `azblob`.
 - `defaultBucket`: the default bucket name.
-- `authenticaiton`: the authentication setting.
+- `authentication`: the authentication setting.
 - `endpoint`: the base endpoint of the storage server. Required for other S3 compatible services such as MinIO, Cloudflare R2, DigitalOcean Spaces, etc...
 - `publicHost`: is used to configure the public host for presigned URL generation if the connector communicates privately with the storage server through an internal DNS. If this setting isn't set the host of the generated URL will be a private DNS that isn't accessible from the internet.
 - `region`: (optional) region of the bucket going to be created.
@@ -20,7 +20,7 @@ The configuration file `configuration.yaml` contains a list of storage clients. 
 
 ### Authentication
 
-#### Static Credentials
+#### Static Credentials (S3)
 
 Configure the authentication type `static` with `accessKeyId` and `secretAccessKey`. `sessionToken` is also supported for [temporary access](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_temp_use-resources.html) but for testing only.
 
@@ -35,7 +35,7 @@ clients:
         env: SECRET_ACCESS_KEY
 ```
 
-#### IAM
+#### IAM (S3)
 
 The IAM authentication retrieves credentials from the AWS EC2, ECS or EKS service, and keeps track if those credentials are expired. This authentication method can be used only if the connector is hosted in the AWS ecosystem.
 
@@ -43,7 +43,81 @@ The following settings are supported:
 
 - `iamAuthEndpoint` : the optional custom endpoint to fetch IAM role credentials. The client can automatically identify the endpoint if not set.
 
+#### SharedKey (Azure Blob Storage)
+
+Authorize with an immutable SharedKeyCredential containing the storage account's name and either its primary or secondary key. See [Manage storage account access keys](https://learn.microsoft.com/en-us/azure/storage/common/storage-account-keys-manage?tabs=azure-portal) in Azure Storage docs.
+
+```yaml
+clients:
+  - type: azblob
+    authentication:
+      type: sharedKey
+      accountName:
+        env: AZURE_STORAGE_ACCOUNT_NAME
+      accountKey:
+        env: AZURE_STORAGE_ACCOUNT_KEY
+```
+
+#### Connection String (Azure Blob Storage)
+
+The connector uses the `endpoint` to authorize for your Azure storage account. See [Azure Storage docs](https://learn.microsoft.com/en-us/azure/storage/common/storage-configure-connection-string?toc=%2Fazure%2Fstorage%2Fblobs%2Ftoc.json&bc=%2Fazure%2Fstorage%2Fblobs%2Fbreadcrumb%2Ftoc.json#configure-a-connection-string-for-an-azure-storage-account) for more context.
+
+```yaml
+clients:
+  - type: azblob
+    endpoint: DefaultEndpointsProtocol=https;AccountName=storagesample;AccountKey=<account-key>
+    authentication:
+      type: connectionString
+```
+
+#### Microsoft Entra (or Azure Active Directory)
+
+The `entra` type supports Microsoft Entra (or Azure Active Directory) that authenticates a service principal with a secret, certificate, user-password or Azure workload identity. You can configure multiple credentials. They can be chained together.
+
+```yaml
+clients:
+  - type: azblob
+    defaultBucket:
+      env: AZURE_STORAGE_DEFAULT_BUCKET
+    authentication:
+      type: entra
+      tenantId:
+        env: AZURE_TENANT_ID
+      clientId:
+        env: AZURE_CLIENT_ID
+      clientSecret:
+        env: AZURE_CLIENT_SECRET
+      username:
+        env: AZURE_USERNAME
+      password:
+        env: AZURE_PASSWORD
+      clientCertificate:
+        env: AZURE_CLIENT_CERTIFICATE
+      clientCertificatePath:
+        env: AZURE_CLIENT_CERTIFICATE_PATH
+      clientCertificatePassword:
+        env: AZURE_CLIENT_CERTIFICATE_PASSWORD
+      tokenFilePath:
+        env: AZURE_FEDERATED_TOKEN_FILE
+      sendCertificateChain: false
+      disableInstanceDiscovery: false
+      additionallyAllowedTenants:
+        - <tenant-id>
+```
+
+#### Anonymous Access (Azure Blob Storage)
+
+```yaml
+clients:
+  - type: azblob
+    endpoint: https://azurestoragesamples.blob.core.windows.net/samples/cloud.jpg
+    authentication:
+      type: anonymous
+```
+
 ### Examples
+
+> See full configuration examples at [tests/configuration/configuration.yaml](../tests/configuration/configuration.yaml).
 
 #### AWS S3
 
@@ -83,7 +157,7 @@ clients:
 
 #### Other S3 compatible services
 
-You must configure the endpoint URL alongs with Access Key ID and Secret Access Key.
+You must configure the endpoint URL along with Access Key ID and Secret Access Key.
 
 ```yaml
 clients:
@@ -103,7 +177,7 @@ clients:
 
 #### Cloudflare R2
 
-You must configure the endpoint URL alongs with [Access Key ID and Secret Access Key](https://developers.cloudflare.com/r2/api/s3/tokens/#get-s3-api-credentials-from-an-api-token). See [Cloudflare docs](https://developers.cloudflare.com/r2/api/s3/api/) for more context.
+You must configure the endpoint URL along with [Access Key ID and Secret Access Key](https://developers.cloudflare.com/r2/api/s3/tokens/#get-s3-api-credentials-from-an-api-token). See [Cloudflare docs](https://developers.cloudflare.com/r2/api/s3/api/) for more context.
 
 #### DigitalOcean Spaces
 

@@ -3,13 +3,15 @@ package functions
 import (
 	"context"
 
+	"github.com/hasura/ndc-sdk-go/utils"
+	"github.com/hasura/ndc-storage/connector/functions/internal"
 	"github.com/hasura/ndc-storage/connector/storage/common"
 	"github.com/hasura/ndc-storage/connector/types"
 )
 
 // ProcedureCreateStorageBucket creates a new bucket.
-func ProcedureCreateStorageBucket(ctx context.Context, state *types.State, options *common.MakeStorageBucketOptions) (bool, error) {
-	if err := state.Storage.MakeBucket(ctx, options); err != nil {
+func ProcedureCreateStorageBucket(ctx context.Context, state *types.State, args *common.MakeStorageBucketArguments) (bool, error) {
+	if err := state.Storage.MakeBucket(ctx, args.ClientID, &args.MakeStorageBucketOptions); err != nil {
 		return false, err
 	}
 
@@ -18,7 +20,16 @@ func ProcedureCreateStorageBucket(ctx context.Context, state *types.State, optio
 
 // FunctionStorageBuckets list all buckets.
 func FunctionStorageBuckets(ctx context.Context, state *types.State, args *common.ListStorageBucketArguments) ([]common.StorageBucketInfo, error) {
-	return state.Storage.ListBuckets(ctx, args)
+	request := internal.ObjectPredicate{}
+
+	if err := request.EvalSelection(utils.CommandSelectionFieldFromContext(ctx)); err != nil {
+		return nil, err
+	}
+
+	return state.Storage.ListBuckets(ctx, args.ClientID, common.BucketOptions{
+		IncludeTags: request.Include.Tags,
+		NumThreads:  state.Concurrency.Query,
+	})
 }
 
 // FunctionStorageBucketExists checks if a bucket exists.
@@ -38,20 +49,6 @@ func ProcedureRemoveStorageBucket(ctx context.Context, state *types.State, args 
 // ProcedureSetStorageBucketTags sets tags to a bucket.
 func ProcedureSetStorageBucketTags(ctx context.Context, state *types.State, args *common.SetStorageBucketTaggingArguments) (bool, error) {
 	if err := state.Storage.SetBucketTagging(ctx, args); err != nil {
-		return false, err
-	}
-
-	return true, nil
-}
-
-// FunctionStorageBucketTags gets tags of a bucket.
-func FunctionStorageBucketTags(ctx context.Context, state *types.State, args *common.StorageBucketArguments) (map[string]string, error) {
-	return state.Storage.GetBucketTagging(ctx, args)
-}
-
-// ProcedureRemoveStorageBucketTags removes all tags on a bucket.
-func ProcedureRemoveStorageBucketTags(ctx context.Context, state *types.State, args *common.StorageBucketArguments) (bool, error) {
-	if err := state.Storage.RemoveBucketTagging(ctx, args); err != nil {
 		return false, err
 	}
 

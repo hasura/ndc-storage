@@ -11,7 +11,6 @@ import (
 	"github.com/hasura/ndc-sdk-go/connector"
 	"github.com/hasura/ndc-sdk-go/schema"
 	"github.com/hasura/ndc-sdk-go/utils"
-	"github.com/hasura/ndc-storage/connector/collection"
 	"github.com/hasura/ndc-storage/connector/functions"
 	"github.com/hasura/ndc-storage/connector/storage"
 	"github.com/hasura/ndc-storage/connector/types"
@@ -78,7 +77,7 @@ func (c *Connector) TryInitState(ctx context.Context, configuration *types.Confi
 		return nil, err
 	}
 
-	connectorSchema, errs := utils.MergeSchemas(GetConnectorSchema(), collection.GetConnectorSchema(manager.GetClientIDs()))
+	connectorSchema, errs := utils.MergeSchemas(GetConnectorSchema(), functions.GetBaseConnectorSchema(manager.GetClientIDs()))
 	for _, err := range errs {
 		slog.Debug(err.Error())
 	}
@@ -93,6 +92,7 @@ func (c *Connector) TryInitState(ctx context.Context, configuration *types.Confi
 	return &types.State{
 		Storage:        manager,
 		TelemetryState: metrics,
+		Concurrency:    c.config.Concurrency,
 	}, nil
 }
 

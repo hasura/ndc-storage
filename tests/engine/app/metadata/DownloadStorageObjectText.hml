@@ -7,8 +7,6 @@ definition:
   arguments:
     - name: bucket
       type: String
-    - name: checksum
-      type: Boolean
     - name: clientId
       type: StorageClientId
     - name: headers

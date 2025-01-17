@@ -1,0 +1,14 @@
+{
+  "collection_relationships": {},
+  "operations": [
+    {
+      "type": "procedure",
+      "name": "setStorageObjectLegalHold",
+      "arguments": {
+        "bucket": "minio-bucket-lock",
+        "object": "SiKBc6ifDC",
+        "status": true
+      }
+    }
+  ]
+}

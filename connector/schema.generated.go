@@ -95,9 +95,6 @@ func GetConnectorSchema() *schema.SchemaResponse {
 			"GetStorageObjectOptions": schema.ObjectType{
 				Description: toPtr("are used to specify additional headers or options during GET requests."),
 				Fields: schema.ObjectTypeFields{
-					"checksum": schema.ObjectField{
-						Type: schema.NewNullableType(schema.NewNamedType("Boolean")).Encode(),
-					},
 					"headers": schema.ObjectField{
 						Type: schema.NewNullableType(schema.NewNamedType("JSON")).Encode(),
 					},
@@ -224,10 +221,21 @@ func GetConnectorSchema() *schema.SchemaResponse {
 					},
 				},
 			},
+			"ListIncompleteUploadsOptions": schema.ObjectType{
+				Description: toPtr("the input arguments of the ListIncompleteUploads method."),
+				Fields: schema.ObjectTypeFields{
+					"prefix": schema.ObjectField{
+						Type: schema.NewNamedType("String").Encode(),
+					},
+					"recursive": schema.ObjectField{
+						Type: schema.NewNullableType(schema.NewNamedType("Boolean")).Encode(),
+					},
+				},
+			},
 			"ListStorageObjectsOptions": schema.ObjectType{
 				Description: toPtr("holds all options of a list object request."),
 				Fields: schema.ObjectTypeFields{
-					"maxKeys": schema.ObjectField{
+					"maxResults": schema.ObjectField{
 						Type: schema.NewNamedType("Int32").Encode(),
 					},
 					"prefix": schema.ObjectField{
@@ -239,11 +247,22 @@ func GetConnectorSchema() *schema.SchemaResponse {
 					"startAfter": schema.ObjectField{
 						Type: schema.NewNamedType("String").Encode(),
 					},
-					"withMetadata": schema.ObjectField{
-						Type: schema.NewNamedType("Boolean").Encode(),
+				},
+			},
+			"MakeStorageBucketOptions": schema.ObjectType{
+				Description: toPtr("holds all options to tweak bucket creation."),
+				Fields: schema.ObjectTypeFields{
+					"name": schema.ObjectField{
+						Type: schema.NewNamedType("String").Encode(),
 					},
-					"withVersions": schema.ObjectField{
-						Type: schema.NewNamedType("Boolean").Encode(),
+					"objectLocking": schema.ObjectField{
+						Type: schema.NewNullableType(schema.NewNamedType("Boolean")).Encode(),
+					},
+					"region": schema.ObjectField{
+						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
+					},
+					"tags": schema.ObjectField{
+						Type: schema.NewNullableType(schema.NewNamedType("JSON")).Encode(),
 					},
 				},
 			},
@@ -444,7 +463,7 @@ func GetConnectorSchema() *schema.SchemaResponse {
 						Type: schema.NewNullableType(schema.NewNamedType("TimestampTZ")).Encode(),
 					},
 					"legalHold": schema.ObjectField{
-						Type: schema.NewNullableType(schema.NewNamedType("StorageLegalHoldStatus")).Encode(),
+						Type: schema.NewNullableType(schema.NewNamedType("Boolean")).Encode(),
 					},
 					"mode": schema.ObjectField{
 						Type: schema.NewNullableType(schema.NewNamedType("StorageRetentionMode")).Encode(),
@@ -509,7 +528,7 @@ func GetConnectorSchema() *schema.SchemaResponse {
 					"governanceBypass": schema.ObjectField{
 						Type: schema.NewNullableType(schema.NewNamedType("Boolean")).Encode(),
 					},
-					"maxKeys": schema.ObjectField{
+					"maxResults": schema.ObjectField{
 						Type: schema.NewNamedType("Int32").Encode(),
 					},
 					"prefix": schema.ObjectField{
@@ -520,12 +539,6 @@ func GetConnectorSchema() *schema.SchemaResponse {
 					},
 					"startAfter": schema.ObjectField{
 						Type: schema.NewNamedType("String").Encode(),
-					},
-					"withMetadata": schema.ObjectField{
-						Type: schema.NewNamedType("Boolean").Encode(),
-					},
-					"withVersions": schema.ObjectField{
-						Type: schema.NewNamedType("Boolean").Encode(),
 					},
 				},
 			},
@@ -553,6 +566,17 @@ func GetConnectorSchema() *schema.SchemaResponse {
 					},
 				},
 			},
+			"SetStorageObjectLegalHoldOptions": schema.ObjectType{
+				Description: toPtr("represents options specified by user for PutObjectLegalHold call."),
+				Fields: schema.ObjectTypeFields{
+					"status": schema.ObjectField{
+						Type: schema.NewNullableType(schema.NewNamedType("Boolean")).Encode(),
+					},
+					"versionId": schema.ObjectField{
+						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
+					},
+				},
+			},
 			"SetStorageObjectLockConfig": schema.ObjectType{
 				Description: toPtr("represents the object lock configuration options in given bucket"),
 				Fields: schema.ObjectTypeFields{
@@ -564,6 +588,34 @@ func GetConnectorSchema() *schema.SchemaResponse {
 					},
 					"validity": schema.ObjectField{
 						Type: schema.NewNullableType(schema.NewNamedType("Int32")).Encode(),
+					},
+				},
+			},
+			"SetStorageObjectRetentionOptions": schema.ObjectType{
+				Description: toPtr("represents options specified by user for PutObject call."),
+				Fields: schema.ObjectTypeFields{
+					"governanceBypass": schema.ObjectField{
+						Type: schema.NewNullableType(schema.NewNamedType("Boolean")).Encode(),
+					},
+					"mode": schema.ObjectField{
+						Type: schema.NewNullableType(schema.NewNamedType("StorageRetentionMode")).Encode(),
+					},
+					"retainUntilDate": schema.ObjectField{
+						Type: schema.NewNullableType(schema.NewNamedType("TimestampTZ")).Encode(),
+					},
+					"versionId": schema.ObjectField{
+						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
+					},
+				},
+			},
+			"SetStorageObjectTagsOptions": schema.ObjectType{
+				Description: toPtr("holds an object version id to update tag(s) of a specific object version."),
+				Fields: schema.ObjectTypeFields{
+					"tags": schema.ObjectField{
+						Type: schema.NewNamedType("JSON").Encode(),
+					},
+					"versionId": schema.ObjectField{
+						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
 					},
 				},
 			},
@@ -606,6 +658,9 @@ func GetConnectorSchema() *schema.SchemaResponse {
 					"name": schema.ObjectField{
 						Type: schema.NewNamedType("String").Encode(),
 					},
+					"tags": schema.ObjectField{
+						Type: schema.NewNullableType(schema.NewNamedType("JSON")).Encode(),
+					},
 				},
 			},
 			"StorageBucketVersioningConfiguration": schema.ObjectType{
@@ -632,7 +687,7 @@ func GetConnectorSchema() *schema.SchemaResponse {
 						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
 					},
 					"legalHold": schema.ObjectField{
-						Type: schema.NewNullableType(schema.NewNamedType("StorageLegalHoldStatus")).Encode(),
+						Type: schema.NewNullableType(schema.NewNamedType("Boolean")).Encode(),
 					},
 					"mode": schema.ObjectField{
 						Type: schema.NewNullableType(schema.NewNamedType("StorageRetentionMode")).Encode(),
@@ -723,8 +778,29 @@ func GetConnectorSchema() *schema.SchemaResponse {
 			"StorageObject": schema.ObjectType{
 				Description: toPtr("container for object metadata."),
 				Fields: schema.ObjectTypeFields{
+					"accessTierChangeTime": schema.ObjectField{
+						Type: schema.NewNullableType(schema.NewNamedType("TimestampTZ")).Encode(),
+					},
+					"accessTierInferred": schema.ObjectField{
+						Type: schema.NewNullableType(schema.NewNamedType("Boolean")).Encode(),
+					},
+					"acl": schema.ObjectField{
+						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
+					},
+					"archiveStatus": schema.ObjectField{
+						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
+					},
+					"blobSequenceNumber": schema.ObjectField{
+						Type: schema.NewNullableType(schema.NewNamedType("Int64")).Encode(),
+					},
+					"blobType": schema.ObjectField{
+						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
+					},
 					"bucket": schema.ObjectField{
 						Type: schema.NewNamedType("String").Encode(),
+					},
+					"cacheControl": schema.ObjectField{
+						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
 					},
 					"checksumCrc32": schema.ObjectField{
 						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
@@ -744,7 +820,55 @@ func GetConnectorSchema() *schema.SchemaResponse {
 					"clientId": schema.ObjectField{
 						Type: schema.NewNamedType("String").Encode(),
 					},
+					"contentDisposition": schema.ObjectField{
+						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
+					},
+					"contentEncoding": schema.ObjectField{
+						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
+					},
+					"contentLanguage": schema.ObjectField{
+						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
+					},
+					"contentMd5": schema.ObjectField{
+						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
+					},
 					"contentType": schema.ObjectField{
+						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
+					},
+					"copyCompletionTime": schema.ObjectField{
+						Type: schema.NewNullableType(schema.NewNamedType("TimestampTZ")).Encode(),
+					},
+					"copyId": schema.ObjectField{
+						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
+					},
+					"copyProgress": schema.ObjectField{
+						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
+					},
+					"copySource": schema.ObjectField{
+						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
+					},
+					"copyStatus": schema.ObjectField{
+						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
+					},
+					"copyStatusDescription": schema.ObjectField{
+						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
+					},
+					"creationTime": schema.ObjectField{
+						Type: schema.NewNullableType(schema.NewNamedType("TimestampTZ")).Encode(),
+					},
+					"customerProvidedKeySha256": schema.ObjectField{
+						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
+					},
+					"deleted": schema.ObjectField{
+						Type: schema.NewNullableType(schema.NewNamedType("Boolean")).Encode(),
+					},
+					"deletedTime": schema.ObjectField{
+						Type: schema.NewNullableType(schema.NewNamedType("TimestampTZ")).Encode(),
+					},
+					"destinationSnapshot": schema.ObjectField{
+						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
+					},
+					"encryptionScope": schema.ObjectField{
 						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
 					},
 					"etag": schema.ObjectField{
@@ -762,14 +886,38 @@ func GetConnectorSchema() *schema.SchemaResponse {
 					"grant": schema.ObjectField{
 						Type: schema.NewNullableType(schema.NewArrayType(schema.NewNamedType("StorageGrant"))).Encode(),
 					},
-					"isDeleteMarker": schema.ObjectField{
+					"group": schema.ObjectField{
+						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
+					},
+					"immutabilityPolicyMode": schema.ObjectField{
+						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
+					},
+					"immutabilityPolicyUntilDate": schema.ObjectField{
+						Type: schema.NewNullableType(schema.NewNamedType("TimestampTZ")).Encode(),
+					},
+					"incrementalCopy": schema.ObjectField{
 						Type: schema.NewNullableType(schema.NewNamedType("Boolean")).Encode(),
 					},
 					"isLatest": schema.ObjectField{
 						Type: schema.NewNullableType(schema.NewNamedType("Boolean")).Encode(),
 					},
+					"lastAccessTime": schema.ObjectField{
+						Type: schema.NewNullableType(schema.NewNamedType("TimestampTZ")).Encode(),
+					},
 					"lastModified": schema.ObjectField{
 						Type: schema.NewNamedType("TimestampTZ").Encode(),
+					},
+					"leaseDuration": schema.ObjectField{
+						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
+					},
+					"leaseState": schema.ObjectField{
+						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
+					},
+					"leaseStatus": schema.ObjectField{
+						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
+					},
+					"legalHold": schema.ObjectField{
+						Type: schema.NewNullableType(schema.NewNamedType("Boolean")).Encode(),
 					},
 					"metadata": schema.ObjectField{
 						Type: schema.NewNullableType(schema.NewNamedType("JSON")).Encode(),
@@ -780,17 +928,35 @@ func GetConnectorSchema() *schema.SchemaResponse {
 					"owner": schema.ObjectField{
 						Type: schema.NewNullableType(schema.NewNamedType("StorageOwner")).Encode(),
 					},
+					"permissions": schema.ObjectField{
+						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
+					},
+					"rehydratePriority": schema.ObjectField{
+						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
+					},
+					"remainingRetentionDays": schema.ObjectField{
+						Type: schema.NewNullableType(schema.NewNamedType("Int32")).Encode(),
+					},
 					"replicationReady": schema.ObjectField{
 						Type: schema.NewNullableType(schema.NewNamedType("Boolean")).Encode(),
 					},
 					"replicationStatus": schema.ObjectField{
 						Type: schema.NewNullableType(schema.NewNamedType("StorageObjectReplicationStatus")).Encode(),
 					},
+					"resourceType": schema.ObjectField{
+						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
+					},
 					"restore": schema.ObjectField{
 						Type: schema.NewNullableType(schema.NewNamedType("StorageRestoreInfo")).Encode(),
 					},
+					"sealed": schema.ObjectField{
+						Type: schema.NewNullableType(schema.NewNamedType("Boolean")).Encode(),
+					},
+					"serverEncrypted": schema.ObjectField{
+						Type: schema.NewNullableType(schema.NewNamedType("Boolean")).Encode(),
+					},
 					"size": schema.ObjectField{
-						Type: schema.NewNamedType("Int64").Encode(),
+						Type: schema.NewNullableType(schema.NewNamedType("Int64")).Encode(),
 					},
 					"storageClass": schema.ObjectField{
 						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
@@ -806,77 +972,6 @@ func GetConnectorSchema() *schema.SchemaResponse {
 					},
 					"versionId": schema.ObjectField{
 						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
-					},
-				},
-			},
-			"StorageObjectAttributePart": schema.ObjectType{
-				Fields: schema.ObjectTypeFields{
-					"checksumCrc32": schema.ObjectField{
-						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
-					},
-					"checksumCrc32C": schema.ObjectField{
-						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
-					},
-					"checksumCrc64Nvme": schema.ObjectField{
-						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
-					},
-					"checksumSha1": schema.ObjectField{
-						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
-					},
-					"checksumSha256": schema.ObjectField{
-						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
-					},
-					"partNumber": schema.ObjectField{
-						Type: schema.NewNamedType("Int32").Encode(),
-					},
-					"size": schema.ObjectField{
-						Type: schema.NewNamedType("Int32").Encode(),
-					},
-				},
-			},
-			"StorageObjectAttributes": schema.ObjectType{
-				Description: toPtr("is the response object returned by the GetObjectAttributes API."),
-				Fields: schema.ObjectTypeFields{
-					"checksum": schema.ObjectField{
-						Type: schema.NewNamedType("StorageObjectChecksum").Encode(),
-					},
-					"etag": schema.ObjectField{
-						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
-					},
-					"lastModified": schema.ObjectField{
-						Type: schema.NewNamedType("TimestampTZ").Encode(),
-					},
-					"objectParts": schema.ObjectField{
-						Type: schema.NewNamedType("StorageObjectParts").Encode(),
-					},
-					"objectSize": schema.ObjectField{
-						Type: schema.NewNamedType("Int32").Encode(),
-					},
-					"storageClass": schema.ObjectField{
-						Type: schema.NewNamedType("String").Encode(),
-					},
-					"versionId": schema.ObjectField{
-						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
-					},
-				},
-			},
-			"StorageObjectAttributesResponse": schema.ObjectType{
-				Description: toPtr("contains details returned by the GetObjectAttributes API."),
-				Fields: schema.ObjectTypeFields{
-					"checksum": schema.ObjectField{
-						Type: schema.NewNamedType("StorageObjectChecksum").Encode(),
-					},
-					"etag": schema.ObjectField{
-						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
-					},
-					"objectParts": schema.ObjectField{
-						Type: schema.NewNamedType("StorageObjectParts").Encode(),
-					},
-					"objectSize": schema.ObjectField{
-						Type: schema.NewNamedType("Int32").Encode(),
-					},
-					"storageClass": schema.ObjectField{
-						Type: schema.NewNamedType("String").Encode(),
 					},
 				},
 			},
@@ -897,6 +992,17 @@ func GetConnectorSchema() *schema.SchemaResponse {
 					},
 					"checksumSha256": schema.ObjectField{
 						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
+					},
+				},
+			},
+			"StorageObjectListResults": schema.ObjectType{
+				Description: toPtr("hold the paginated results of the storage object list."),
+				Fields: schema.ObjectTypeFields{
+					"objects": schema.ObjectField{
+						Type: schema.NewArrayType(schema.NewNamedType("StorageObject")).Encode(),
+					},
+					"pageInfo": schema.ObjectField{
+						Type: schema.NewNamedType("StorageObjectPaginationInfo").Encode(),
 					},
 				},
 			},
@@ -922,7 +1028,7 @@ func GetConnectorSchema() *schema.SchemaResponse {
 					"initiated": schema.ObjectField{
 						Type: schema.NewNullableType(schema.NewNamedType("TimestampTZ")).Encode(),
 					},
-					"key": schema.ObjectField{
+					"name": schema.ObjectField{
 						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
 					},
 					"size": schema.ObjectField{
@@ -936,25 +1042,17 @@ func GetConnectorSchema() *schema.SchemaResponse {
 					},
 				},
 			},
-			"StorageObjectParts": schema.ObjectType{
+			"StorageObjectPaginationInfo": schema.ObjectType{
+				Description: toPtr("holds the pagination information."),
 				Fields: schema.ObjectTypeFields{
-					"isTruncated": schema.ObjectField{
+					"cursor": schema.ObjectField{
+						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
+					},
+					"hasNextPage": schema.ObjectField{
 						Type: schema.NewNamedType("Boolean").Encode(),
 					},
-					"maxParts": schema.ObjectField{
-						Type: schema.NewNamedType("Int32").Encode(),
-					},
-					"nextPartNumberMarker": schema.ObjectField{
-						Type: schema.NewNamedType("Int32").Encode(),
-					},
-					"partNumberMarker": schema.ObjectField{
-						Type: schema.NewNamedType("Int32").Encode(),
-					},
-					"parts": schema.ObjectField{
-						Type: schema.NewArrayType(schema.NewNullableType(schema.NewNamedType("StorageObjectAttributePart"))).Encode(),
-					},
-					"partsCount": schema.ObjectField{
-						Type: schema.NewNamedType("Int32").Encode(),
+					"nextCursor": schema.ObjectField{
+						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
 					},
 				},
 			},
@@ -1093,8 +1191,11 @@ func GetConnectorSchema() *schema.SchemaResponse {
 					"clientId": schema.ObjectField{
 						Type: schema.NewNamedType("String").Encode(),
 					},
+					"contentMd5": schema.ObjectField{
+						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
+					},
 					"etag": schema.ObjectField{
-						Type: schema.NewNamedType("String").Encode(),
+						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
 					},
 					"expiration": schema.ObjectField{
 						Type: schema.NewNullableType(schema.NewNamedType("TimestampTZ")).Encode(),
@@ -1112,7 +1213,7 @@ func GetConnectorSchema() *schema.SchemaResponse {
 						Type: schema.NewNamedType("String").Encode(),
 					},
 					"size": schema.ObjectField{
-						Type: schema.NewNamedType("Int64").Encode(),
+						Type: schema.NewNullableType(schema.NewNamedType("Int64")).Encode(),
 					},
 					"versionId": schema.ObjectField{
 						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
@@ -1128,9 +1229,6 @@ func GetConnectorSchema() *schema.SchemaResponse {
 				Arguments: map[string]schema.ArgumentInfo{
 					"bucket": {
 						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
-					},
-					"checksum": {
-						Type: schema.NewNullableType(schema.NewNamedType("Boolean")).Encode(),
 					},
 					"clientId": {
 						Type: schema.NewNullableType(schema.NewNamedType("StorageClientID")).Encode(),
@@ -1162,9 +1260,6 @@ func GetConnectorSchema() *schema.SchemaResponse {
 				Arguments: map[string]schema.ArgumentInfo{
 					"bucket": {
 						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
-					},
-					"checksum": {
-						Type: schema.NewNullableType(schema.NewNamedType("Boolean")).Encode(),
 					},
 					"clientId": {
 						Type: schema.NewNullableType(schema.NewNamedType("StorageClientID")).Encode(),
@@ -1267,19 +1362,6 @@ func GetConnectorSchema() *schema.SchemaResponse {
 				},
 			},
 			{
-				Name:        "storageBucketTags",
-				Description: toPtr("gets tags of a bucket."),
-				ResultType:  schema.NewNamedType("JSON").Encode(),
-				Arguments: map[string]schema.ArgumentInfo{
-					"bucket": {
-						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
-					},
-					"clientId": {
-						Type: schema.NewNullableType(schema.NewNamedType("StorageClientID")).Encode(),
-					},
-				},
-			},
-			{
 				Name:        "storageBucketVersioning",
 				Description: toPtr("gets versioning configuration set on a bucket."),
 				ResultType:  schema.NewNullableType(schema.NewNamedType("StorageBucketVersioningConfiguration")).Encode(),
@@ -1329,9 +1411,6 @@ func GetConnectorSchema() *schema.SchemaResponse {
 					"bucket": {
 						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
 					},
-					"checksum": {
-						Type: schema.NewNullableType(schema.NewNamedType("Boolean")).Encode(),
-					},
 					"clientId": {
 						Type: schema.NewNullableType(schema.NewNamedType("StorageClientID")).Encode(),
 					},
@@ -1356,50 +1435,6 @@ func GetConnectorSchema() *schema.SchemaResponse {
 				},
 			},
 			{
-				Name:        "storageObjectAttributes",
-				Description: toPtr("returns a stream of the object data. Most of the common errors occur when reading the stream."),
-				ResultType:  schema.NewNullableType(schema.NewNamedType("StorageObjectAttributes")).Encode(),
-				Arguments: map[string]schema.ArgumentInfo{
-					"bucket": {
-						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
-					},
-					"clientId": {
-						Type: schema.NewNullableType(schema.NewNamedType("StorageClientID")).Encode(),
-					},
-					"maxParts": {
-						Type: schema.NewNullableType(schema.NewNamedType("Int32")).Encode(),
-					},
-					"object": {
-						Type: schema.NewNamedType("String").Encode(),
-					},
-					"partNumberMarker": {
-						Type: schema.NewNullableType(schema.NewNamedType("Int32")).Encode(),
-					},
-					"versionId": {
-						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
-					},
-				},
-			},
-			{
-				Name:        "storageObjectLegalHold",
-				Description: toPtr("returns legal-hold status on a given object."),
-				ResultType:  schema.NewNamedType("StorageLegalHoldStatus").Encode(),
-				Arguments: map[string]schema.ArgumentInfo{
-					"bucket": {
-						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
-					},
-					"clientId": {
-						Type: schema.NewNullableType(schema.NewNamedType("StorageClientID")).Encode(),
-					},
-					"object": {
-						Type: schema.NewNamedType("String").Encode(),
-					},
-					"versionId": {
-						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
-					},
-				},
-			},
-			{
 				Name:        "storageObjectLockConfig",
 				Description: toPtr("gets object lock configuration of given bucket."),
 				ResultType:  schema.NewNullableType(schema.NewNamedType("StorageObjectLockConfig")).Encode(),
@@ -1413,21 +1448,21 @@ func GetConnectorSchema() *schema.SchemaResponse {
 				},
 			},
 			{
-				Name:        "storageObjectTags",
-				Description: toPtr("fetches Object Tags from the given object."),
-				ResultType:  schema.NewNamedType("JSON").Encode(),
+				Name:        "storageObjects",
+				Description: toPtr("lists objects in a bucket."),
+				ResultType:  schema.NewNamedType("StorageObjectListResults").Encode(),
 				Arguments: map[string]schema.ArgumentInfo{
-					"bucket": {
+					"maxResults": {
+						Type: schema.NewNullableType(schema.NewNamedType("Int32")).Encode(),
+					},
+					"recursive": {
+						Type: schema.NewNullableType(schema.NewNamedType("Boolean")).Encode(),
+					},
+					"startAfter": {
 						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
 					},
-					"clientId": {
-						Type: schema.NewNullableType(schema.NewNamedType("StorageClientID")).Encode(),
-					},
-					"object": {
-						Type: schema.NewNamedType("String").Encode(),
-					},
-					"versionId": {
-						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
+					"where": {
+						Type: schema.NewNullableType(schema.NewPredicateType("StorageObjectSimple")).Encode(),
 					},
 				},
 			},
@@ -1529,6 +1564,9 @@ func GetConnectorSchema() *schema.SchemaResponse {
 					"region": {
 						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
 					},
+					"tags": {
+						Type: schema.NewNullableType(schema.NewNamedType("JSON")).Encode(),
+					},
 				},
 			},
 			{
@@ -1541,78 +1579,6 @@ func GetConnectorSchema() *schema.SchemaResponse {
 					},
 					"clientId": {
 						Type: schema.NewNullableType(schema.NewNamedType("StorageClientID")).Encode(),
-					},
-				},
-			},
-			{
-				Name:        "putStorageObjectLegalHold",
-				Description: toPtr("applies legal-hold onto an object."),
-				ResultType:  schema.NewNamedType("Boolean").Encode(),
-				Arguments: map[string]schema.ArgumentInfo{
-					"bucket": {
-						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
-					},
-					"clientId": {
-						Type: schema.NewNullableType(schema.NewNamedType("StorageClientID")).Encode(),
-					},
-					"object": {
-						Type: schema.NewNamedType("String").Encode(),
-					},
-					"status": {
-						Type: schema.NewNullableType(schema.NewNamedType("StorageLegalHoldStatus")).Encode(),
-					},
-					"versionId": {
-						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
-					},
-				},
-			},
-			{
-				Name:        "putStorageObjectRetention",
-				Description: toPtr("applies object retention lock onto an object."),
-				ResultType:  schema.NewNamedType("Boolean").Encode(),
-				Arguments: map[string]schema.ArgumentInfo{
-					"bucket": {
-						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
-					},
-					"clientId": {
-						Type: schema.NewNullableType(schema.NewNamedType("StorageClientID")).Encode(),
-					},
-					"governanceBypass": {
-						Type: schema.NewNullableType(schema.NewNamedType("Boolean")).Encode(),
-					},
-					"mode": {
-						Type: schema.NewNullableType(schema.NewNamedType("StorageRetentionMode")).Encode(),
-					},
-					"object": {
-						Type: schema.NewNamedType("String").Encode(),
-					},
-					"retainUntilDate": {
-						Type: schema.NewNullableType(schema.NewNamedType("TimestampTZ")).Encode(),
-					},
-					"versionId": {
-						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
-					},
-				},
-			},
-			{
-				Name:        "putStorageObjectTags",
-				Description: toPtr("sets new object Tags to the given object, replaces/overwrites any existing tags."),
-				ResultType:  schema.NewNamedType("Boolean").Encode(),
-				Arguments: map[string]schema.ArgumentInfo{
-					"bucket": {
-						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
-					},
-					"clientId": {
-						Type: schema.NewNullableType(schema.NewNamedType("StorageClientID")).Encode(),
-					},
-					"object": {
-						Type: schema.NewNamedType("String").Encode(),
-					},
-					"tags": {
-						Type: schema.NewNamedType("JSON").Encode(),
-					},
-					"versionId": {
-						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
 					},
 				},
 			},
@@ -1658,19 +1624,6 @@ func GetConnectorSchema() *schema.SchemaResponse {
 				},
 			},
 			{
-				Name:        "removeStorageBucketTags",
-				Description: toPtr("removes all tags on a bucket."),
-				ResultType:  schema.NewNamedType("Boolean").Encode(),
-				Arguments: map[string]schema.ArgumentInfo{
-					"bucket": {
-						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
-					},
-					"clientId": {
-						Type: schema.NewNullableType(schema.NewNamedType("StorageClientID")).Encode(),
-					},
-				},
-			},
-			{
 				Name:        "removeStorageObject",
 				Description: toPtr("removes an object with some specified options."),
 				ResultType:  schema.NewNamedType("Boolean").Encode(),
@@ -1699,25 +1652,6 @@ func GetConnectorSchema() *schema.SchemaResponse {
 				},
 			},
 			{
-				Name:        "removeStorageObjectTags",
-				Description: toPtr("removes Object Tags from the given object."),
-				ResultType:  schema.NewNamedType("Boolean").Encode(),
-				Arguments: map[string]schema.ArgumentInfo{
-					"bucket": {
-						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
-					},
-					"clientId": {
-						Type: schema.NewNullableType(schema.NewNamedType("StorageClientID")).Encode(),
-					},
-					"object": {
-						Type: schema.NewNamedType("String").Encode(),
-					},
-					"versionId": {
-						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
-					},
-				},
-			},
-			{
 				Name:        "removeStorageObjects",
 				Description: toPtr("remove a list of objects obtained from an input channel. The call sends a delete request to the server up to 1000 objects at a time. The errors observed are sent over the error channel."),
 				ResultType:  schema.NewArrayType(schema.NewNamedType("RemoveStorageObjectError")).Encode(),
@@ -1731,7 +1665,7 @@ func GetConnectorSchema() *schema.SchemaResponse {
 					"governanceBypass": {
 						Type: schema.NewNullableType(schema.NewNamedType("Boolean")).Encode(),
 					},
-					"maxKeys": {
+					"maxResults": {
 						Type: schema.NewNamedType("Int32").Encode(),
 					},
 					"prefix": {
@@ -1745,12 +1679,6 @@ func GetConnectorSchema() *schema.SchemaResponse {
 					},
 					"where": {
 						Type: schema.NewNullableType(schema.NewPredicateType("StorageObjectSimple")).Encode(),
-					},
-					"withMetadata": {
-						Type: schema.NewNamedType("Boolean").Encode(),
-					},
-					"withVersions": {
-						Type: schema.NewNamedType("Boolean").Encode(),
 					},
 				},
 			},
@@ -1844,6 +1772,31 @@ func GetConnectorSchema() *schema.SchemaResponse {
 				},
 			},
 			{
+				Name:        "setStorageObjectLegalHold",
+				Description: toPtr("applies legal-hold onto an object."),
+				ResultType:  schema.NewNamedType("Boolean").Encode(),
+				Arguments: map[string]schema.ArgumentInfo{
+					"bucket": {
+						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
+					},
+					"clientId": {
+						Type: schema.NewNullableType(schema.NewNamedType("StorageClientID")).Encode(),
+					},
+					"object": {
+						Type: schema.NewNamedType("String").Encode(),
+					},
+					"status": {
+						Type: schema.NewNullableType(schema.NewNamedType("Boolean")).Encode(),
+					},
+					"versionId": {
+						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
+					},
+					"where": {
+						Type: schema.NewNullableType(schema.NewPredicateType("StorageObjectSimple")).Encode(),
+					},
+				},
+			},
+			{
 				Name:       "setStorageObjectLockConfig",
 				ResultType: schema.NewNamedType("Boolean").Encode(),
 				Arguments: map[string]schema.ArgumentInfo{
@@ -1861,6 +1814,62 @@ func GetConnectorSchema() *schema.SchemaResponse {
 					},
 					"validity": {
 						Type: schema.NewNullableType(schema.NewNamedType("Int32")).Encode(),
+					},
+				},
+			},
+			{
+				Name:        "setStorageObjectRetention",
+				Description: toPtr("applies object retention lock onto an object."),
+				ResultType:  schema.NewNamedType("Boolean").Encode(),
+				Arguments: map[string]schema.ArgumentInfo{
+					"bucket": {
+						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
+					},
+					"clientId": {
+						Type: schema.NewNullableType(schema.NewNamedType("StorageClientID")).Encode(),
+					},
+					"governanceBypass": {
+						Type: schema.NewNullableType(schema.NewNamedType("Boolean")).Encode(),
+					},
+					"mode": {
+						Type: schema.NewNullableType(schema.NewNamedType("StorageRetentionMode")).Encode(),
+					},
+					"object": {
+						Type: schema.NewNamedType("String").Encode(),
+					},
+					"retainUntilDate": {
+						Type: schema.NewNullableType(schema.NewNamedType("TimestampTZ")).Encode(),
+					},
+					"versionId": {
+						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
+					},
+					"where": {
+						Type: schema.NewNullableType(schema.NewPredicateType("StorageObjectSimple")).Encode(),
+					},
+				},
+			},
+			{
+				Name:        "setStorageObjectTags",
+				Description: toPtr("sets new object Tags to the given object, replaces/overwrites any existing tags."),
+				ResultType:  schema.NewNamedType("Boolean").Encode(),
+				Arguments: map[string]schema.ArgumentInfo{
+					"bucket": {
+						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
+					},
+					"clientId": {
+						Type: schema.NewNullableType(schema.NewNamedType("StorageClientID")).Encode(),
+					},
+					"object": {
+						Type: schema.NewNamedType("String").Encode(),
+					},
+					"tags": {
+						Type: schema.NewNamedType("JSON").Encode(),
+					},
+					"versionId": {
+						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
+					},
+					"where": {
+						Type: schema.NewNullableType(schema.NewPredicateType("StorageObjectSimple")).Encode(),
 					},
 				},
 			},
@@ -1974,11 +1983,6 @@ func GetConnectorSchema() *schema.SchemaResponse {
 				ComparisonOperators: map[string]schema.ComparisonOperatorDefinition{},
 				Representation:      schema.NewTypeRepresentationString().Encode(),
 			},
-			"StorageLegalHoldStatus": schema.ScalarType{
-				AggregateFunctions:  schema.ScalarTypeAggregateFunctions{},
-				ComparisonOperators: map[string]schema.ComparisonOperatorDefinition{},
-				Representation:      schema.NewTypeRepresentationEnum([]string{"ON", "OFF"}).Encode(),
-			},
 			"StorageObjectReplicationStatus": schema.ScalarType{
 				AggregateFunctions:  schema.ScalarTypeAggregateFunctions{},
 				ComparisonOperators: map[string]schema.ComparisonOperatorDefinition{},
@@ -1992,7 +1996,7 @@ func GetConnectorSchema() *schema.SchemaResponse {
 			"StorageRetentionMode": schema.ScalarType{
 				AggregateFunctions:  schema.ScalarTypeAggregateFunctions{},
 				ComparisonOperators: map[string]schema.ComparisonOperatorDefinition{},
-				Representation:      schema.NewTypeRepresentationEnum([]string{"GOVERNANCE", "COMPLIANCE"}).Encode(),
+				Representation:      schema.NewTypeRepresentationEnum([]string{"Locked", "Unlocked"}).Encode(),
 			},
 			"StorageRetentionValidityUnit": schema.ScalarType{
 				AggregateFunctions:  schema.ScalarTypeAggregateFunctions{},

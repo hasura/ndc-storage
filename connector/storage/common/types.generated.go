@@ -33,30 +33,8 @@ func (j *GetStorageObjectArguments) FromValue(input map[string]any) error {
 }
 
 // FromValue decodes values from map
-func (j *GetStorageObjectLegalHoldOptions) FromValue(input map[string]any) error {
-	var err error
-	j.StorageBucketArguments, err = utils.DecodeObject[StorageBucketArguments](input)
-	if err != nil {
-		return err
-	}
-	j.Object, err = utils.GetString(input, "object")
-	if err != nil {
-		return err
-	}
-	j.VersionID, err = utils.GetStringDefault(input, "versionId")
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
-// FromValue decodes values from map
 func (j *GetStorageObjectOptions) FromValue(input map[string]any) error {
 	var err error
-	j.Checksum, err = utils.GetNullableBoolean(input, "checksum")
-	if err != nil {
-		return err
-	}
 	j.Headers, err = utils.DecodeObjectValueDefault[map[string]string](input, "headers")
 	if err != nil {
 		return err
@@ -79,10 +57,20 @@ func (j *GetStorageObjectOptions) FromValue(input map[string]any) error {
 // FromValue decodes values from map
 func (j *ListIncompleteUploadsArguments) FromValue(input map[string]any) error {
 	var err error
+	j.ListIncompleteUploadsOptions, err = utils.DecodeObject[ListIncompleteUploadsOptions](input)
+	if err != nil {
+		return err
+	}
 	j.StorageBucketArguments, err = utils.DecodeObject[StorageBucketArguments](input)
 	if err != nil {
 		return err
 	}
+	return nil
+}
+
+// FromValue decodes values from map
+func (j *ListIncompleteUploadsOptions) FromValue(input map[string]any) error {
+	var err error
 	j.Prefix, err = utils.GetString(input, "prefix")
 	if err != nil {
 		return err
@@ -97,7 +85,29 @@ func (j *ListIncompleteUploadsArguments) FromValue(input map[string]any) error {
 // FromValue decodes values from map
 func (j *ListStorageBucketArguments) FromValue(input map[string]any) error {
 	var err error
-	j.ClientID, err = utils.DecodeObjectValueDefault[StorageClientID](input, "clientId")
+	j.ClientID, err = utils.DecodeNullableObjectValue[StorageClientID](input, "clientId")
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// FromValue decodes values from map
+func (j *ListStorageObjectsArguments) FromValue(input map[string]any) error {
+	var err error
+	j.MaxResults, err = utils.GetNullableInt[int](input, "maxResults")
+	if err != nil {
+		return err
+	}
+	j.Recursive, err = utils.GetBooleanDefault(input, "recursive")
+	if err != nil {
+		return err
+	}
+	j.StartAfter, err = utils.GetNullableString(input, "startAfter")
+	if err != nil {
+		return err
+	}
+	j.Where, err = utils.DecodeObjectValueDefault[schema.Expression](input, "where")
 	if err != nil {
 		return err
 	}
@@ -170,50 +180,6 @@ func (j *StorageBucketArguments) FromValue(input map[string]any) error {
 		return err
 	}
 	j.ClientID, err = utils.DecodeNullableObjectValue[StorageClientID](input, "clientId")
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
-// FromValue decodes values from map
-func (j *StorageObjectAttributesOptions) FromValue(input map[string]any) error {
-	var err error
-	j.StorageBucketArguments, err = utils.DecodeObject[StorageBucketArguments](input)
-	if err != nil {
-		return err
-	}
-	j.MaxParts, err = utils.GetIntDefault[int](input, "maxParts")
-	if err != nil {
-		return err
-	}
-	j.Object, err = utils.GetString(input, "object")
-	if err != nil {
-		return err
-	}
-	j.PartNumberMarker, err = utils.GetIntDefault[int](input, "partNumberMarker")
-	if err != nil {
-		return err
-	}
-	j.VersionID, err = utils.GetStringDefault(input, "versionId")
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
-// FromValue decodes values from map
-func (j *StorageObjectTaggingOptions) FromValue(input map[string]any) error {
-	var err error
-	j.StorageBucketArguments, err = utils.DecodeObject[StorageBucketArguments](input)
-	if err != nil {
-		return err
-	}
-	j.Object, err = utils.GetString(input, "object")
-	if err != nil {
-		return err
-	}
-	j.VersionID, err = utils.GetStringDefault(input, "versionId")
 	if err != nil {
 		return err
 	}
@@ -301,7 +267,6 @@ func (j ExistingObjectReplication) ToMap() map[string]any {
 // ToMap encodes the struct to a value map
 func (j GetStorageObjectOptions) ToMap() map[string]any {
 	r := make(map[string]any)
-	r["checksum"] = j.Checksum
 	r["headers"] = j.Headers
 	r["partNumber"] = j.PartNumber
 	r["requestParams"] = j.RequestParams
@@ -399,14 +364,32 @@ func (j LifecycleTransition) ToMap() map[string]any {
 }
 
 // ToMap encodes the struct to a value map
+func (j ListIncompleteUploadsOptions) ToMap() map[string]any {
+	r := make(map[string]any)
+	r["prefix"] = j.Prefix
+	r["recursive"] = j.Recursive
+
+	return r
+}
+
+// ToMap encodes the struct to a value map
 func (j ListStorageObjectsOptions) ToMap() map[string]any {
 	r := make(map[string]any)
-	r["maxKeys"] = j.MaxKeys
+	r["maxResults"] = j.MaxResults
 	r["prefix"] = j.Prefix
 	r["recursive"] = j.Recursive
 	r["startAfter"] = j.StartAfter
-	r["withMetadata"] = j.WithMetadata
-	r["withVersions"] = j.WithVersions
+
+	return r
+}
+
+// ToMap encodes the struct to a value map
+func (j MakeStorageBucketOptions) ToMap() map[string]any {
+	r := make(map[string]any)
+	r["name"] = j.Name
+	r["objectLocking"] = j.ObjectLocking
+	r["region"] = j.Region
+	r["tags"] = j.Tags
 
 	return r
 }
@@ -608,11 +591,40 @@ func (j ServerSideEncryptionRule) ToMap() map[string]any {
 }
 
 // ToMap encodes the struct to a value map
+func (j SetStorageObjectLegalHoldOptions) ToMap() map[string]any {
+	r := make(map[string]any)
+	r["status"] = j.Status
+	r["versionId"] = j.VersionID
+
+	return r
+}
+
+// ToMap encodes the struct to a value map
 func (j SetStorageObjectLockConfig) ToMap() map[string]any {
 	r := make(map[string]any)
 	r["mode"] = j.Mode
 	r["unit"] = j.Unit
 	r["validity"] = j.Validity
+
+	return r
+}
+
+// ToMap encodes the struct to a value map
+func (j SetStorageObjectRetentionOptions) ToMap() map[string]any {
+	r := make(map[string]any)
+	r["governanceBypass"] = j.GovernanceBypass
+	r["mode"] = j.Mode
+	r["retainUntilDate"] = j.RetainUntilDate
+	r["versionId"] = j.VersionID
+
+	return r
+}
+
+// ToMap encodes the struct to a value map
+func (j SetStorageObjectTagsOptions) ToMap() map[string]any {
+	r := make(map[string]any)
+	r["tags"] = j.Tags
+	r["versionId"] = j.VersionID
 
 	return r
 }
@@ -650,6 +662,7 @@ func (j StorageBucketInfo) ToMap() map[string]any {
 	r := make(map[string]any)
 	r["creationDate"] = j.CreationDate
 	r["name"] = j.Name
+	r["tags"] = j.Tags
 
 	return r
 }
@@ -724,9 +737,32 @@ func (j StorageGrantee) ToMap() map[string]any {
 func (j StorageObject) ToMap() map[string]any {
 	r := make(map[string]any)
 	r = utils.MergeMap(r, j.StorageObjectChecksum.ToMap())
+	r["accessTierChangeTime"] = j.AccessTierChangeTime
+	r["accessTierInferred"] = j.AccessTierInferred
+	r["acl"] = j.ACL
+	r["archiveStatus"] = j.ArchiveStatus
+	r["blobSequenceNumber"] = j.BlobSequenceNumber
+	r["blobType"] = j.BlobType
 	r["bucket"] = j.Bucket
+	r["cacheControl"] = j.CacheControl
 	r["clientId"] = j.ClientID
+	r["contentDisposition"] = j.ContentDisposition
+	r["contentEncoding"] = j.ContentEncoding
+	r["contentLanguage"] = j.ContentLanguage
+	r["contentMd5"] = j.ContentMD5
 	r["contentType"] = j.ContentType
+	r["copyCompletionTime"] = j.CopyCompletionTime
+	r["copyId"] = j.CopyID
+	r["copyProgress"] = j.CopyProgress
+	r["copySource"] = j.CopySource
+	r["copyStatus"] = j.CopyStatus
+	r["copyStatusDescription"] = j.CopyStatusDescription
+	r["creationTime"] = j.CreationTime
+	r["customerProvidedKeySha256"] = j.CustomerProvidedKeySHA256
+	r["deleted"] = j.Deleted
+	r["deletedTime"] = j.DeletedTime
+	r["destinationSnapshot"] = j.DestinationSnapshot
+	r["encryptionScope"] = j.EncryptionScope
 	r["etag"] = j.ETag
 	r["expiration"] = j.Expiration
 	r["expirationRuleId"] = j.ExpirationRuleID
@@ -736,57 +772,39 @@ func (j StorageObject) ToMap() map[string]any {
 		j_Grant[i] = j_Grant_v
 	}
 	r["grant"] = j_Grant
-	r["isDeleteMarker"] = j.IsDeleteMarker
+	r["group"] = j.Group
+	r["immutabilityPolicyMode"] = j.ImmutabilityPolicyMode
+	r["immutabilityPolicyUntilDate"] = j.ImmutabilityPolicyUntilDate
+	r["incrementalCopy"] = j.IncrementalCopy
 	r["isLatest"] = j.IsLatest
+	r["lastAccessTime"] = j.LastAccessTime
 	r["lastModified"] = j.LastModified
+	r["leaseDuration"] = j.LeaseDuration
+	r["leaseState"] = j.LeaseState
+	r["leaseStatus"] = j.LeaseStatus
+	r["legalHold"] = j.LegalHold
 	r["metadata"] = j.Metadata
 	r["name"] = j.Name
 	if j.Owner != nil {
 		r["owner"] = (*j.Owner)
 	}
+	r["permissions"] = j.Permissions
+	r["rehydratePriority"] = j.RehydratePriority
+	r["remainingRetentionDays"] = j.RemainingRetentionDays
 	r["replicationReady"] = j.ReplicationReady
 	r["replicationStatus"] = j.ReplicationStatus
+	r["resourceType"] = j.ResourceType
 	if j.Restore != nil {
 		r["restore"] = (*j.Restore)
 	}
+	r["sealed"] = j.IsSealed
+	r["serverEncrypted"] = j.ServerEncrypted
 	r["size"] = j.Size
 	r["storageClass"] = j.StorageClass
 	r["userMetadata"] = j.UserMetadata
 	r["userTagCount"] = j.UserTagCount
 	r["userTags"] = j.UserTags
 	r["versionId"] = j.VersionID
-
-	return r
-}
-
-// ToMap encodes the struct to a value map
-func (j StorageObjectAttributePart) ToMap() map[string]any {
-	r := make(map[string]any)
-	r = utils.MergeMap(r, j.StorageObjectChecksum.ToMap())
-	r["partNumber"] = j.PartNumber
-	r["size"] = j.Size
-
-	return r
-}
-
-// ToMap encodes the struct to a value map
-func (j StorageObjectAttributes) ToMap() map[string]any {
-	r := make(map[string]any)
-	r = utils.MergeMap(r, j.StorageObjectAttributesResponse.ToMap())
-	r["lastModified"] = j.LastModified
-	r["versionId"] = j.VersionID
-
-	return r
-}
-
-// ToMap encodes the struct to a value map
-func (j StorageObjectAttributesResponse) ToMap() map[string]any {
-	r := make(map[string]any)
-	r["checksum"] = j.Checksum
-	r["etag"] = j.ETag
-	r["objectParts"] = j.ObjectParts
-	r["objectSize"] = j.ObjectSize
-	r["storageClass"] = j.StorageClass
 
 	return r
 }
@@ -804,6 +822,19 @@ func (j StorageObjectChecksum) ToMap() map[string]any {
 }
 
 // ToMap encodes the struct to a value map
+func (j StorageObjectListResults) ToMap() map[string]any {
+	r := make(map[string]any)
+	j_Objects := make([]any, len(j.Objects))
+	for i, j_Objects_v := range j.Objects {
+		j_Objects[i] = j_Objects_v
+	}
+	r["objects"] = j_Objects
+	r["pageInfo"] = j.PageInfo
+
+	return r
+}
+
+// ToMap encodes the struct to a value map
 func (j StorageObjectLockConfig) ToMap() map[string]any {
 	r := make(map[string]any)
 	r = utils.MergeMap(r, j.SetStorageObjectLockConfig.ToMap())
@@ -816,7 +847,7 @@ func (j StorageObjectLockConfig) ToMap() map[string]any {
 func (j StorageObjectMultipartInfo) ToMap() map[string]any {
 	r := make(map[string]any)
 	r["initiated"] = j.Initiated
-	r["key"] = j.Key
+	r["name"] = j.Name
 	r["size"] = j.Size
 	r["storageClass"] = j.StorageClass
 	r["uploadId"] = j.UploadID
@@ -825,20 +856,11 @@ func (j StorageObjectMultipartInfo) ToMap() map[string]any {
 }
 
 // ToMap encodes the struct to a value map
-func (j StorageObjectParts) ToMap() map[string]any {
+func (j StorageObjectPaginationInfo) ToMap() map[string]any {
 	r := make(map[string]any)
-	r["isTruncated"] = j.IsTruncated
-	r["maxParts"] = j.MaxParts
-	r["nextPartNumberMarker"] = j.NextPartNumberMarker
-	r["partNumberMarker"] = j.PartNumberMarker
-	j_Parts := make([]any, len(j.Parts))
-	for i, j_Parts_v := range j.Parts {
-		if j_Parts_v != nil {
-			j_Parts[i] = (*j_Parts_v)
-		}
-	}
-	r["parts"] = j_Parts
-	r["partsCount"] = j.PartsCount
+	r["cursor"] = j.Cursor
+	r["hasNextPage"] = j.HasNextPage
+	r["nextCursor"] = j.NextCursor
 
 	return r
 }
@@ -951,6 +973,7 @@ func (j StorageUploadInfo) ToMap() map[string]any {
 	r = utils.MergeMap(r, j.StorageObjectChecksum.ToMap())
 	r["bucket"] = j.Bucket
 	r["clientId"] = j.ClientID
+	r["contentMd5"] = j.ContentMD5
 	r["etag"] = j.ETag
 	r["expiration"] = j.Expiration
 	r["expirationRuleId"] = j.ExpirationRuleID
@@ -1033,67 +1056,6 @@ func (s *ChecksumType) FromValue(value any) error {
 // ScalarName get the schema name of the scalar
 func (j StorageClientID) ScalarName() string {
 	return "StorageClientID"
-}
-
-// ScalarName get the schema name of the scalar
-func (j StorageLegalHoldStatus) ScalarName() string {
-	return "StorageLegalHoldStatus"
-}
-
-const (
-	StorageLegalHoldStatusOn  StorageLegalHoldStatus = "ON"
-	StorageLegalHoldStatusOff StorageLegalHoldStatus = "OFF"
-)
-
-var enumValues_StorageLegalHoldStatus = []StorageLegalHoldStatus{StorageLegalHoldStatusOn, StorageLegalHoldStatusOff}
-
-// ParseStorageLegalHoldStatus parses a StorageLegalHoldStatus enum from string
-func ParseStorageLegalHoldStatus(input string) (StorageLegalHoldStatus, error) {
-	result := StorageLegalHoldStatus(input)
-	if !slices.Contains(enumValues_StorageLegalHoldStatus, result) {
-		return StorageLegalHoldStatus(""), errors.New("failed to parse StorageLegalHoldStatus, expect one of [ON, OFF]")
-	}
-
-	return result, nil
-}
-
-// IsValid checks if the value is invalid
-func (j StorageLegalHoldStatus) IsValid() bool {
-	return slices.Contains(enumValues_StorageLegalHoldStatus, j)
-}
-
-// UnmarshalJSON implements json.Unmarshaler.
-func (j *StorageLegalHoldStatus) UnmarshalJSON(b []byte) error {
-	var rawValue string
-	if err := json.Unmarshal(b, &rawValue); err != nil {
-		return err
-	}
-
-	value, err := ParseStorageLegalHoldStatus(rawValue)
-	if err != nil {
-		return err
-	}
-
-	*j = value
-	return nil
-}
-
-// FromValue decodes the scalar from an unknown value
-func (s *StorageLegalHoldStatus) FromValue(value any) error {
-	valueStr, err := utils.DecodeNullableString(value)
-	if err != nil {
-		return err
-	}
-	if valueStr == nil {
-		return nil
-	}
-	result, err := ParseStorageLegalHoldStatus(*valueStr)
-	if err != nil {
-		return err
-	}
-
-	*s = result
-	return nil
 }
 
 // ScalarName get the schema name of the scalar
@@ -1226,17 +1188,17 @@ func (j StorageRetentionMode) ScalarName() string {
 }
 
 const (
-	StorageRetentionModeGovernance StorageRetentionMode = "GOVERNANCE"
-	StorageRetentionModeCompliance StorageRetentionMode = "COMPLIANCE"
+	StorageRetentionModeLocked   StorageRetentionMode = "Locked"
+	StorageRetentionModeUnlocked StorageRetentionMode = "Unlocked"
 )
 
-var enumValues_StorageRetentionMode = []StorageRetentionMode{StorageRetentionModeGovernance, StorageRetentionModeCompliance}
+var enumValues_StorageRetentionMode = []StorageRetentionMode{StorageRetentionModeLocked, StorageRetentionModeUnlocked}
 
 // ParseStorageRetentionMode parses a StorageRetentionMode enum from string
 func ParseStorageRetentionMode(input string) (StorageRetentionMode, error) {
 	result := StorageRetentionMode(input)
 	if !slices.Contains(enumValues_StorageRetentionMode, result) {
-		return StorageRetentionMode(""), errors.New("failed to parse StorageRetentionMode, expect one of [GOVERNANCE, COMPLIANCE]")
+		return StorageRetentionMode(""), errors.New("failed to parse StorageRetentionMode, expect one of [Locked, Unlocked]")
 	}
 
 	return result, nil

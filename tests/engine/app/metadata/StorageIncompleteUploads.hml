@@ -7,7 +7,7 @@ definition:
   fields:
     - name: initiated
       type: TimestampTz
-    - name: key
+    - name: name
       type: String
     - name: size
       type: Int64
@@ -32,7 +32,7 @@ definition:
       output:
         allowedFields:
           - initiated
-          - key
+          - name
           - size
           - storageClass
           - uploadId

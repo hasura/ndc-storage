@@ -1,0 +1,16 @@
+{
+  "collection_relationships": {},
+  "operations": [
+    {
+      "type": "procedure",
+      "name": "createStorageBucket",
+      "arguments": {
+        "clientId": "azblob",
+        "name": "azblob-bucket-test",
+        "tags": {
+          "provider": "azure"
+        }
+      }
+    }
+  ]
+}
