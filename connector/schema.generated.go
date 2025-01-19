@@ -14,60 +14,6 @@ func GetConnectorSchema() *schema.SchemaResponse {
 	return &schema.SchemaResponse{
 		Collections: []schema.CollectionInfo{},
 		ObjectTypes: schema.SchemaResponseObjectTypes{
-			"AbortIncompleteMultipartUpload": schema.ObjectType{
-				Description: toPtr("structure, not supported yet on MinIO"),
-				Fields: schema.ObjectTypeFields{
-					"daysAfterInitiation": schema.ObjectField{
-						Type: schema.NewNullableType(schema.NewNamedType("Int32")).Encode(),
-					},
-				},
-			},
-			"BucketLifecycleConfiguration": schema.ObjectType{
-				Description: toPtr("is a collection of lifecycle Rule objects."),
-				Fields: schema.ObjectTypeFields{
-					"rules": schema.ObjectField{
-						Type: schema.NewArrayType(schema.NewNamedType("BucketLifecycleRule")).Encode(),
-					},
-				},
-			},
-			"BucketLifecycleRule": schema.ObjectType{
-				Description: toPtr("represents a single rule in lifecycle configuration"),
-				Fields: schema.ObjectTypeFields{
-					"abortIncompleteMultipartUpload": schema.ObjectField{
-						Type: schema.NewNullableType(schema.NewNamedType("AbortIncompleteMultipartUpload")).Encode(),
-					},
-					"allVersionsExpiration": schema.ObjectField{
-						Type: schema.NewNullableType(schema.NewNamedType("LifecycleAllVersionsExpiration")).Encode(),
-					},
-					"delMarkerExpiration": schema.ObjectField{
-						Type: schema.NewNullableType(schema.NewNamedType("LifecycleDelMarkerExpiration")).Encode(),
-					},
-					"expiration": schema.ObjectField{
-						Type: schema.NewNullableType(schema.NewNamedType("LifecycleExpiration")).Encode(),
-					},
-					"filter": schema.ObjectField{
-						Type: schema.NewNullableType(schema.NewNamedType("LifecycleFilter")).Encode(),
-					},
-					"id": schema.ObjectField{
-						Type: schema.NewNamedType("String").Encode(),
-					},
-					"noncurrentVersionExpiration": schema.ObjectField{
-						Type: schema.NewNullableType(schema.NewNamedType("LifecycleNoncurrentVersionExpiration")).Encode(),
-					},
-					"noncurrentVersionTransition": schema.ObjectField{
-						Type: schema.NewNullableType(schema.NewNamedType("LifecycleNoncurrentVersionTransition")).Encode(),
-					},
-					"prefix": schema.ObjectField{
-						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
-					},
-					"status": schema.ObjectField{
-						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
-					},
-					"transition": schema.ObjectField{
-						Type: schema.NewNullableType(schema.NewNamedType("LifecycleTransition")).Encode(),
-					},
-				},
-			},
 			"DeleteMarkerReplication": schema.ObjectType{
 				Description: toPtr("whether delete markers are replicated - https://docs.aws.amazon.com/AmazonS3/latest/dev/replication-add-config.html"),
 				Fields: schema.ObjectTypeFields{
@@ -105,118 +51,6 @@ func GetConnectorSchema() *schema.SchemaResponse {
 						Type: schema.NewNullableType(schema.NewNamedType("JSON")).Encode(),
 					},
 					"versionId": schema.ObjectField{
-						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
-					},
-				},
-			},
-			"LifecycleAllVersionsExpiration": schema.ObjectType{
-				Description: toPtr("represents AllVersionsExpiration actions element in an ILM policy"),
-				Fields: schema.ObjectTypeFields{
-					"days": schema.ObjectField{
-						Type: schema.NewNullableType(schema.NewNamedType("Int32")).Encode(),
-					},
-					"deleteMarker": schema.ObjectField{
-						Type: schema.NewNullableType(schema.NewNamedType("Boolean")).Encode(),
-					},
-				},
-			},
-			"LifecycleDelMarkerExpiration": schema.ObjectType{
-				Description: toPtr("represents DelMarkerExpiration actions element in an ILM policy"),
-				Fields: schema.ObjectTypeFields{
-					"days": schema.ObjectField{
-						Type: schema.NewNullableType(schema.NewNamedType("Int32")).Encode(),
-					},
-				},
-			},
-			"LifecycleExpiration": schema.ObjectType{
-				Description: toPtr("expiration details of lifecycle configuration"),
-				Fields: schema.ObjectTypeFields{
-					"date": schema.ObjectField{
-						Type: schema.NewNullableType(schema.NewNamedType("Date")).Encode(),
-					},
-					"days": schema.ObjectField{
-						Type: schema.NewNullableType(schema.NewNamedType("Int32")).Encode(),
-					},
-					"expiredObjectAllVersions": schema.ObjectField{
-						Type: schema.NewNullableType(schema.NewNamedType("Boolean")).Encode(),
-					},
-					"expiredObjectDeleteMarker": schema.ObjectField{
-						Type: schema.NewNullableType(schema.NewNamedType("Boolean")).Encode(),
-					},
-				},
-			},
-			"LifecycleFilter": schema.ObjectType{
-				Description: toPtr("will be used in selecting rule(s) for lifecycle configuration"),
-				Fields: schema.ObjectTypeFields{
-					"and": schema.ObjectField{
-						Type: schema.NewNullableType(schema.NewNamedType("LifecycleFilterAnd")).Encode(),
-					},
-					"objectSizeGreaterThan": schema.ObjectField{
-						Type: schema.NewNullableType(schema.NewNamedType("Int64")).Encode(),
-					},
-					"objectSizeLessThan": schema.ObjectField{
-						Type: schema.NewNullableType(schema.NewNamedType("Int64")).Encode(),
-					},
-					"prefix": schema.ObjectField{
-						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
-					},
-					"tag": schema.ObjectField{
-						Type: schema.NewNullableType(schema.NewNamedType("StorageTag")).Encode(),
-					},
-				},
-			},
-			"LifecycleFilterAnd": schema.ObjectType{
-				Description: toPtr("the And Rule for LifecycleTag, to be used in LifecycleRuleFilter"),
-				Fields: schema.ObjectTypeFields{
-					"objectSizeGreaterThan": schema.ObjectField{
-						Type: schema.NewNullableType(schema.NewNamedType("Int64")).Encode(),
-					},
-					"objectSizeLessThan": schema.ObjectField{
-						Type: schema.NewNullableType(schema.NewNamedType("Int64")).Encode(),
-					},
-					"prefix": schema.ObjectField{
-						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
-					},
-					"tags": schema.ObjectField{
-						Type: schema.NewNullableType(schema.NewArrayType(schema.NewNamedType("StorageTag"))).Encode(),
-					},
-				},
-			},
-			"LifecycleNoncurrentVersionExpiration": schema.ObjectType{
-				Description: toPtr("- Specifies when noncurrent object versions expire. Upon expiration, server permanently deletes the noncurrent object versions. Set this lifecycle configuration action on a bucket that has versioning enabled (or suspended) to request server delete noncurrent object versions at a specific period in the object's lifetime."),
-				Fields: schema.ObjectTypeFields{
-					"newerNoncurrentVersions": schema.ObjectField{
-						Type: schema.NewNullableType(schema.NewNamedType("Int32")).Encode(),
-					},
-					"noncurrentDays": schema.ObjectField{
-						Type: schema.NewNullableType(schema.NewNamedType("Int32")).Encode(),
-					},
-				},
-			},
-			"LifecycleNoncurrentVersionTransition": schema.ObjectType{
-				Description: toPtr("sets this action to request server to transition noncurrent object versions to different set storage classes at a specific period in the object's lifetime."),
-				Fields: schema.ObjectTypeFields{
-					"newerNoncurrentVersions": schema.ObjectField{
-						Type: schema.NewNullableType(schema.NewNamedType("Int32")).Encode(),
-					},
-					"noncurrentDays": schema.ObjectField{
-						Type: schema.NewNullableType(schema.NewNamedType("Int32")).Encode(),
-					},
-					"storageClass": schema.ObjectField{
-						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
-					},
-				},
-			},
-			"LifecycleTransition": schema.ObjectType{
-				Description: toPtr("transition details of lifecycle configuration"),
-				Fields: schema.ObjectTypeFields{
-					"date": schema.ObjectField{
-						Type: schema.NewNullableType(schema.NewNamedType("Date")).Encode(),
-					},
-					"days": schema.ObjectField{
-						Type: schema.NewNullableType(schema.NewNamedType("Int32")).Encode(),
-					},
-					"storageClass": schema.ObjectField{
 						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
 					},
 				},
@@ -381,6 +215,156 @@ func GetConnectorSchema() *schema.SchemaResponse {
 					},
 					"topic": schema.ObjectField{
 						Type: schema.NewNamedType("String").Encode(),
+					},
+				},
+			},
+			"ObjectAbortIncompleteMultipartUpload": schema.ObjectType{
+				Fields: schema.ObjectTypeFields{
+					"daysAfterInitiation": schema.ObjectField{
+						Type: schema.NewNullableType(schema.NewNamedType("Int32")).Encode(),
+					},
+				},
+			},
+			"ObjectLifecycleAllVersionsExpiration": schema.ObjectType{
+				Description: toPtr("represents AllVersionsExpiration actions element in an ILM policy"),
+				Fields: schema.ObjectTypeFields{
+					"days": schema.ObjectField{
+						Type: schema.NewNullableType(schema.NewNamedType("Int32")).Encode(),
+					},
+					"deleteMarker": schema.ObjectField{
+						Type: schema.NewNullableType(schema.NewNamedType("Boolean")).Encode(),
+					},
+				},
+			},
+			"ObjectLifecycleConfiguration": schema.ObjectType{
+				Description: toPtr("is a collection of lifecycle Rule objects."),
+				Fields: schema.ObjectTypeFields{
+					"rules": schema.ObjectField{
+						Type: schema.NewArrayType(schema.NewNamedType("ObjectLifecycleRule")).Encode(),
+					},
+				},
+			},
+			"ObjectLifecycleDelMarkerExpiration": schema.ObjectType{
+				Fields: schema.ObjectTypeFields{
+					"days": schema.ObjectField{
+						Type: schema.NewNullableType(schema.NewNamedType("Int32")).Encode(),
+					},
+				},
+			},
+			"ObjectLifecycleExpiration": schema.ObjectType{
+				Description: toPtr("expiration details of lifecycle configuration"),
+				Fields: schema.ObjectTypeFields{
+					"date": schema.ObjectField{
+						Type: schema.NewNullableType(schema.NewNamedType("Date")).Encode(),
+					},
+					"days": schema.ObjectField{
+						Type: schema.NewNullableType(schema.NewNamedType("Int32")).Encode(),
+					},
+					"expiredObjectAllVersions": schema.ObjectField{
+						Type: schema.NewNullableType(schema.NewNamedType("Boolean")).Encode(),
+					},
+					"expiredObjectDeleteMarker": schema.ObjectField{
+						Type: schema.NewNullableType(schema.NewNamedType("Boolean")).Encode(),
+					},
+				},
+			},
+			"ObjectLifecycleFilter": schema.ObjectType{
+				Description: toPtr("will be used in selecting rule(s) for lifecycle configuration"),
+				Fields: schema.ObjectTypeFields{
+					"matchesPrefix": schema.ObjectField{
+						Type: schema.NewNullableType(schema.NewArrayType(schema.NewNamedType("String"))).Encode(),
+					},
+					"matchesStorageClasses": schema.ObjectField{
+						Type: schema.NewNullableType(schema.NewArrayType(schema.NewNamedType("String"))).Encode(),
+					},
+					"matchesSuffix": schema.ObjectField{
+						Type: schema.NewNullableType(schema.NewArrayType(schema.NewNamedType("String"))).Encode(),
+					},
+					"objectSizeGreaterThan": schema.ObjectField{
+						Type: schema.NewNullableType(schema.NewNamedType("Int64")).Encode(),
+					},
+					"objectSizeLessThan": schema.ObjectField{
+						Type: schema.NewNullableType(schema.NewNamedType("Int64")).Encode(),
+					},
+					"tags": schema.ObjectField{
+						Type: schema.NewNullableType(schema.NewNamedType("JSON")).Encode(),
+					},
+				},
+			},
+			"ObjectLifecycleNoncurrentVersionExpiration": schema.ObjectType{
+				Description: toPtr("- Specifies when noncurrent object versions expire. Upon expiration, server permanently deletes the noncurrent object versions. Set this lifecycle configuration action on a bucket that has versioning enabled (or suspended) to request server delete noncurrent object versions at a specific period in the object's lifetime."),
+				Fields: schema.ObjectTypeFields{
+					"newerNoncurrentVersions": schema.ObjectField{
+						Type: schema.NewNullableType(schema.NewNamedType("Int32")).Encode(),
+					},
+					"noncurrentDays": schema.ObjectField{
+						Type: schema.NewNullableType(schema.NewNamedType("Int32")).Encode(),
+					},
+				},
+			},
+			"ObjectLifecycleNoncurrentVersionTransition": schema.ObjectType{
+				Description: toPtr("sets this action to request server to transition noncurrent object versions to different set storage classes at a specific period in the object's lifetime."),
+				Fields: schema.ObjectTypeFields{
+					"newerNoncurrentVersions": schema.ObjectField{
+						Type: schema.NewNullableType(schema.NewNamedType("Int32")).Encode(),
+					},
+					"noncurrentDays": schema.ObjectField{
+						Type: schema.NewNullableType(schema.NewNamedType("Int32")).Encode(),
+					},
+					"storageClass": schema.ObjectField{
+						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
+					},
+				},
+			},
+			"ObjectLifecycleRule": schema.ObjectType{
+				Description: toPtr("represents a single rule in lifecycle configuration"),
+				Fields: schema.ObjectTypeFields{
+					"abortIncompleteMultipartUpload": schema.ObjectField{
+						Type: schema.NewNullableType(schema.NewNamedType("ObjectAbortIncompleteMultipartUpload")).Encode(),
+					},
+					"allVersionsExpiration": schema.ObjectField{
+						Type: schema.NewNullableType(schema.NewNamedType("ObjectLifecycleAllVersionsExpiration")).Encode(),
+					},
+					"delMarkerExpiration": schema.ObjectField{
+						Type: schema.NewNullableType(schema.NewNamedType("ObjectLifecycleDelMarkerExpiration")).Encode(),
+					},
+					"enabled": schema.ObjectField{
+						Type: schema.NewNullableType(schema.NewNamedType("Boolean")).Encode(),
+					},
+					"expiration": schema.ObjectField{
+						Type: schema.NewNullableType(schema.NewNamedType("ObjectLifecycleExpiration")).Encode(),
+					},
+					"filter": schema.ObjectField{
+						Type: schema.NewNullableType(schema.NewArrayType(schema.NewNamedType("ObjectLifecycleFilter"))).Encode(),
+					},
+					"id": schema.ObjectField{
+						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
+					},
+					"noncurrentVersionExpiration": schema.ObjectField{
+						Type: schema.NewNullableType(schema.NewNamedType("ObjectLifecycleNoncurrentVersionExpiration")).Encode(),
+					},
+					"noncurrentVersionTransition": schema.ObjectField{
+						Type: schema.NewNullableType(schema.NewNamedType("ObjectLifecycleNoncurrentVersionTransition")).Encode(),
+					},
+					"prefix": schema.ObjectField{
+						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
+					},
+					"transition": schema.ObjectField{
+						Type: schema.NewNullableType(schema.NewNamedType("ObjectLifecycleTransition")).Encode(),
+					},
+				},
+			},
+			"ObjectLifecycleTransition": schema.ObjectType{
+				Description: toPtr("transition details of lifecycle configuration"),
+				Fields: schema.ObjectTypeFields{
+					"date": schema.ObjectField{
+						Type: schema.NewNullableType(schema.NewNamedType("Date")).Encode(),
+					},
+					"days": schema.ObjectField{
+						Type: schema.NewNullableType(schema.NewNamedType("Int32")).Encode(),
+					},
+					"storageClass": schema.ObjectField{
+						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
 					},
 				},
 			},
@@ -629,7 +613,7 @@ func GetConnectorSchema() *schema.SchemaResponse {
 						Type: schema.NewNullableType(schema.NewNamedType("ServerSideEncryptionConfiguration")).Encode(),
 					},
 					"lifecycle": schema.ObjectField{
-						Type: schema.NewNullableType(schema.NewNamedType("BucketLifecycleConfiguration")).Encode(),
+						Type: schema.NewNullableType(schema.NewNamedType("ObjectLifecycleConfiguration")).Encode(),
 					},
 					"name": schema.ObjectField{
 						Type: schema.NewNamedType("String").Encode(),
@@ -1210,7 +1194,7 @@ func GetConnectorSchema() *schema.SchemaResponse {
 						Type: schema.NewNullableType(schema.NewNamedType("ServerSideEncryptionConfiguration")).Encode(),
 					},
 					"lifecycle": schema.ObjectField{
-						Type: schema.NewNullableType(schema.NewNamedType("BucketLifecycleConfiguration")).Encode(),
+						Type: schema.NewNullableType(schema.NewNamedType("ObjectLifecycleConfiguration")).Encode(),
 					},
 					"objectLock": schema.ObjectField{
 						Type: schema.NewNullableType(schema.NewNamedType("SetStorageObjectLockConfig")).Encode(),
@@ -1696,7 +1680,7 @@ func GetConnectorSchema() *schema.SchemaResponse {
 						Type: schema.NewNullableType(schema.NewNamedType("ServerSideEncryptionConfiguration")).Encode(),
 					},
 					"lifecycle": {
-						Type: schema.NewNullableType(schema.NewNamedType("BucketLifecycleConfiguration")).Encode(),
+						Type: schema.NewNullableType(schema.NewNamedType("ObjectLifecycleConfiguration")).Encode(),
 					},
 					"objectLock": {
 						Type: schema.NewNullableType(schema.NewNamedType("SetStorageObjectLockConfig")).Encode(),

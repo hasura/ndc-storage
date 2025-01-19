@@ -4,6 +4,7 @@ import (
 	"encoding/base64"
 	"errors"
 	"strconv"
+	"time"
 
 	"cloud.google.com/go/storage"
 	"github.com/hasura/ndc-sdk-go/schema"
@@ -181,6 +182,149 @@ func serializeUploadObjectInfo(obj *storage.Writer) common.StorageUploadInfo {
 	}
 
 	return object
+}
+
+func validateLifecycleRule(rule common.ObjectLifecycleRule) storage.LifecycleRule {
+	r := storage.LifecycleRule{}
+
+	for _, filter := range rule.RuleFilter {
+		r.Condition.MatchesPrefix = append(r.Condition.MatchesPrefix, filter.MatchesPrefix...)
+		r.Condition.MatchesSuffix = append(r.Condition.MatchesSuffix, filter.MatchesSuffix...)
+		r.Condition.MatchesStorageClasses = append(r.Condition.MatchesStorageClasses, filter.MatchesStorageClasses...)
+	}
+
+	if rule.NoncurrentVersionExpiration != nil {
+		if rule.NoncurrentVersionExpiration.NewerNoncurrentVersions != nil {
+			r.Condition.NumNewerVersions = int64(*rule.NoncurrentVersionExpiration.NewerNoncurrentVersions)
+		}
+
+		if rule.NoncurrentVersionExpiration.NoncurrentDays != nil {
+			r.Condition.DaysSinceNoncurrentTime = int64(*rule.NoncurrentVersionExpiration.NoncurrentDays)
+		}
+
+		r.Action.Type = storage.DeleteAction
+	}
+
+	if rule.NoncurrentVersionTransition != nil {
+		if rule.NoncurrentVersionTransition.NewerNoncurrentVersions != nil {
+			r.Condition.NumNewerVersions = int64(*rule.NoncurrentVersionTransition.NewerNoncurrentVersions)
+		}
+
+		if rule.NoncurrentVersionTransition.NoncurrentDays != nil {
+			r.Condition.DaysSinceNoncurrentTime = int64(*rule.NoncurrentVersionTransition.NoncurrentDays)
+		}
+
+		if rule.NoncurrentVersionTransition.StorageClass != nil {
+			r.Action.StorageClass = *rule.NoncurrentVersionTransition.StorageClass
+		}
+
+		r.Action.Type = storage.SetStorageClassAction
+	}
+
+	if rule.Expiration != nil && rule.Expiration.Days != nil {
+		r.Condition.AgeInDays = int64(*rule.Expiration.Days)
+		r.Condition.AllObjects = *rule.Expiration.Days == 0
+
+		r.Action.Type = storage.DeleteAction
+
+		return r
+	}
+
+	if rule.Transition != nil || rule.Transition.StorageClass != nil {
+		if rule.Transition.Days != nil {
+			r.Condition.AgeInDays = int64(*rule.Transition.Days)
+		} else if rule.Transition.Date != nil {
+			r.Condition.AgeInDays = int64(time.Since(rule.Expiration.Date.Time).Hours() / 24)
+		}
+
+		r.Condition.AllObjects = r.Condition.AgeInDays == 0
+		r.Action.StorageClass = *rule.Transition.StorageClass
+		r.Action.Type = storage.SetStorageClassAction
+
+		return r
+	}
+
+	if rule.AbortIncompleteMultipartUpload != nil && rule.AbortIncompleteMultipartUpload.DaysAfterInitiation != nil {
+		r.Action.Type = storage.AbortIncompleteMPUAction
+		r.Condition.AgeInDays = int64(*rule.AbortIncompleteMultipartUpload.DaysAfterInitiation)
+		r.Condition.AllObjects = r.Condition.AgeInDays == 0
+
+		return r
+	}
+
+	if rule.AllVersionsExpiration != nil && rule.AllVersionsExpiration.Days != nil {
+		r.Condition.AgeInDays = int64(*rule.AllVersionsExpiration.Days)
+		r.Condition.AllObjects = r.Condition.AgeInDays == 0
+		r.Action.Type = storage.DeleteAction
+
+		return r
+	}
+
+	return r
+}
+
+func validateLifecycleConfiguration(input common.ObjectLifecycleConfiguration) *storage.Lifecycle {
+	result := &storage.Lifecycle{
+		Rules: make([]storage.LifecycleRule, len(input.Rules)),
+	}
+
+	for i, rule := range input.Rules {
+		if !rule.Enabled {
+			continue
+		}
+
+		r := validateLifecycleRule(rule)
+		result.Rules[i] = r
+	}
+
+	return result
+}
+
+func serializeLifecycleConfiguration(input storage.Lifecycle) *common.ObjectLifecycleConfiguration {
+	result := &common.ObjectLifecycleConfiguration{
+		Rules: make([]common.ObjectLifecycleRule, len(input.Rules)),
+	}
+
+	for i, rule := range input.Rules {
+		r := serializeLifecycleRule(rule)
+		result.Rules[i] = r
+	}
+
+	return result
+}
+
+func serializeLifecycleRule(rule storage.LifecycleRule) common.ObjectLifecycleRule {
+	r := common.ObjectLifecycleRule{}
+
+	if len(rule.Condition.MatchesPrefix) > 0 || len(rule.Condition.MatchesSuffix) > 0 || len(rule.Condition.MatchesStorageClasses) > 0 {
+		r.RuleFilter = []common.ObjectLifecycleFilter{
+			{
+				MatchesPrefix:         rule.Condition.MatchesPrefix,
+				MatchesSuffix:         rule.Condition.MatchesSuffix,
+				MatchesStorageClasses: rule.Condition.MatchesStorageClasses,
+			},
+		}
+	}
+
+	ageInDays := int(rule.Condition.AgeInDays)
+
+	switch rule.Action.Type {
+	case storage.SetStorageClassAction:
+		r.Transition = &common.ObjectLifecycleTransition{
+			Days:         &ageInDays,
+			StorageClass: &rule.Action.StorageClass,
+		}
+	case storage.DeleteAction:
+		r.Expiration = &common.ObjectLifecycleExpiration{
+			Days: &ageInDays,
+		}
+	case storage.AbortIncompleteMPUAction:
+		r.AbortIncompleteMultipartUpload = &common.ObjectAbortIncompleteMultipartUpload{
+			DaysAfterInitiation: &ageInDays,
+		}
+	}
+
+	return r
 }
 
 func evalGoogleErrorResponse(err *googleapi.Error) *schema.ConnectorError {

@@ -96,7 +96,7 @@ type StorageBucketInfo struct {
 	// The versioning configuration
 	Versioning *StorageBucketVersioningConfiguration `json:"versioning"`
 	// The versioning configuration
-	Lifecycle *BucketLifecycleConfiguration `json:"lifecycle"`
+	Lifecycle *ObjectLifecycleConfiguration `json:"lifecycle"`
 	// The server-side encryption configuration.
 	Encryption *ServerSideEncryptionConfiguration `json:"encryption"`
 	ObjectLock *StorageObjectLockConfig           `json:"objectLock"`
@@ -372,33 +372,33 @@ type NotificationS3Key struct {
 	FilterRules []NotificationFilterRule `json:"filterRule,omitempty"`
 }
 
-// BucketLifecycleRule represents a single rule in lifecycle configuration
-type BucketLifecycleRule struct {
-	AbortIncompleteMultipartUpload *AbortIncompleteMultipartUpload       `json:"abortIncompleteMultipartUpload"`
-	Expiration                     *LifecycleExpiration                  `json:"expiration,omitempty"`
-	DelMarkerExpiration            *LifecycleDelMarkerExpiration         `json:"delMarkerExpiration,omitempty"`
-	AllVersionsExpiration          *LifecycleAllVersionsExpiration       `json:"allVersionsExpiration,omitempty"`
-	ID                             string                                `json:"id"`
-	RuleFilter                     *LifecycleFilter                      `json:"filter,omitempty"`
-	NoncurrentVersionExpiration    *LifecycleNoncurrentVersionExpiration `json:"noncurrentVersionExpiration,omitempty"`
-	NoncurrentVersionTransition    *LifecycleNoncurrentVersionTransition `json:"noncurrentVersionTransition,omitempty"`
-	Prefix                         *string                               `json:"prefix,omitempty"`
-	Status                         *string                               `json:"status"`
-	Transition                     *LifecycleTransition                  `json:"transition,omitempty"`
+// ObjectLifecycleRule represents a single rule in lifecycle configuration
+type ObjectLifecycleRule struct {
+	ID                             string                                      `json:"id,omitempty"`
+	Enabled                        bool                                        `json:"enabled,omitempty"`
+	AbortIncompleteMultipartUpload *ObjectAbortIncompleteMultipartUpload       `json:"abortIncompleteMultipartUpload"`
+	Expiration                     *ObjectLifecycleExpiration                  `json:"expiration,omitempty"`
+	DelMarkerExpiration            *ObjectLifecycleDelMarkerExpiration         `json:"delMarkerExpiration,omitempty"`
+	AllVersionsExpiration          *ObjectLifecycleAllVersionsExpiration       `json:"allVersionsExpiration,omitempty"`
+	RuleFilter                     []ObjectLifecycleFilter                     `json:"filter,omitempty"`
+	NoncurrentVersionExpiration    *ObjectLifecycleNoncurrentVersionExpiration `json:"noncurrentVersionExpiration,omitempty"`
+	NoncurrentVersionTransition    *ObjectLifecycleNoncurrentVersionTransition `json:"noncurrentVersionTransition,omitempty"`
+	Prefix                         *string                                     `json:"prefix,omitempty"`
+	Transition                     *ObjectLifecycleTransition                  `json:"transition,omitempty"`
 }
 
-// BucketLifecycleConfiguration is a collection of lifecycle Rule objects.
-type BucketLifecycleConfiguration struct {
-	Rules []BucketLifecycleRule `json:"rules"`
+// ObjectLifecycleConfiguration is a collection of lifecycle Rule objects.
+type ObjectLifecycleConfiguration struct {
+	Rules []ObjectLifecycleRule `json:"rules"`
 }
 
 // AbortIncompleteMultipartUpload structure, not supported yet on MinIO
-type AbortIncompleteMultipartUpload struct {
+type ObjectAbortIncompleteMultipartUpload struct {
 	DaysAfterInitiation *int `json:"daysAfterInitiation"`
 }
 
-// LifecycleExpiration expiration details of lifecycle configuration
-type LifecycleExpiration struct {
+// ObjectLifecycleExpiration expiration details of lifecycle configuration
+type ObjectLifecycleExpiration struct {
 	Date         *scalar.Date `json:"date,omitempty"`
 	Days         *int         `json:"days,omitempty"`
 	DeleteMarker *bool        `json:"expiredObjectDeleteMarker,omitempty"`
@@ -406,48 +406,53 @@ type LifecycleExpiration struct {
 }
 
 // IsEmpty checks if all properties of the object are empty.
-func (fe LifecycleExpiration) IsEmpty() bool {
+func (fe ObjectLifecycleExpiration) IsEmpty() bool {
 	return fe.DeleteAll == nil && fe.Date == nil && fe.Days == nil && fe.DeleteMarker == nil
 }
 
-// LifecycleTransition transition details of lifecycle configuration
-type LifecycleTransition struct {
+// ObjectLifecycleTransition transition details of lifecycle configuration
+type ObjectLifecycleTransition struct {
 	Date         *scalar.Date `json:"date"`
 	StorageClass *string      `json:"storageClass"`
 	Days         *int         `json:"days"`
 }
 
 // IsEmpty checks if all properties of the object are empty.
-func (fe LifecycleTransition) IsEmpty() bool {
+func (fe ObjectLifecycleTransition) IsEmpty() bool {
 	return fe.StorageClass == nil && fe.Date == nil && fe.Days == nil
 }
 
 // LifecycleDelMarkerExpiration represents DelMarkerExpiration actions element in an ILM policy
-type LifecycleDelMarkerExpiration struct {
+type ObjectLifecycleDelMarkerExpiration struct {
 	Days *int `json:"days"`
 }
 
-// LifecycleAllVersionsExpiration represents AllVersionsExpiration actions element in an ILM policy
-type LifecycleAllVersionsExpiration struct {
+// ObjectLifecycleAllVersionsExpiration represents AllVersionsExpiration actions element in an ILM policy
+type ObjectLifecycleAllVersionsExpiration struct {
 	Days         *int  `json:"days"`
 	DeleteMarker *bool `json:"deleteMarker"`
 }
 
-// LifecycleFilter will be used in selecting rule(s) for lifecycle configuration
-type LifecycleFilter struct {
-	And                   *LifecycleFilterAnd `json:"and,omitempty"`
-	Prefix                *string             `json:"prefix,omitempty"`
-	Tag                   *StorageTag         `json:"tag,omitempty"`
-	ObjectSizeLessThan    *int64              `json:"objectSizeLessThan,omitempty"`
-	ObjectSizeGreaterThan *int64              `json:"objectSizeGreaterThan,omitempty"`
-}
+// ObjectLifecycleFilter will be used in selecting rule(s) for lifecycle configuration
+type ObjectLifecycleFilter struct {
+	// MatchesPrefix is the condition matching an object if any of the
+	// matches_prefix strings are an exact prefix of the object's name.
+	MatchesPrefix []string `json:"matchesPrefix,omitempty"`
 
-// LifecycleFilterAnd the And Rule for LifecycleTag, to be used in LifecycleRuleFilter
-type LifecycleFilterAnd struct {
-	Prefix                *string      `json:"prefix,omitempty"`
-	Tags                  []StorageTag `json:"tags,omitempty"`
-	ObjectSizeLessThan    *int64       `json:"objectSizeLessThan,omitempty"`
-	ObjectSizeGreaterThan *int64       `json:"objectSizeGreaterThan,omitempty"`
+	// MatchesStorageClasses is the condition matching the object's storage
+	// class.
+	//
+	// Values include "STANDARD", "NEARLINE", "COLDLINE" and "ARCHIVE".
+	MatchesStorageClasses []string `json:"matchesStorageClasses,omitempty"`
+
+	// MatchesSuffix is the condition matching an object if any of the
+	// matches_suffix strings are an exact suffix of the object's name.
+	MatchesSuffix []string `json:"matchesSuffix,omitempty"`
+
+	// Tags structure key/value pair representing an object tag to apply configuration
+	Tags                  map[string]string `json:"tags,omitempty"`
+	ObjectSizeLessThan    *int64            `json:"objectSizeLessThan,omitempty"`
+	ObjectSizeGreaterThan *int64            `json:"objectSizeGreaterThan,omitempty"`
 }
 
 // StorageTag structure key/value pair representing an object tag to apply configuration
@@ -456,20 +461,20 @@ type StorageTag struct {
 	Value *string `json:"value,omitempty"`
 }
 
-// LifecycleNoncurrentVersionExpiration - Specifies when noncurrent object versions expire.
+// ObjectLifecycleNoncurrentVersionExpiration - Specifies when noncurrent object versions expire.
 // Upon expiration, server permanently deletes the noncurrent object versions.
 // Set this lifecycle configuration action on a bucket that has versioning enabled
 // (or suspended) to request server delete noncurrent object versions at a
 // specific period in the object's lifetime.
-type LifecycleNoncurrentVersionExpiration struct {
+type ObjectLifecycleNoncurrentVersionExpiration struct {
 	NoncurrentDays          *int `json:"noncurrentDays,omitempty"`
 	NewerNoncurrentVersions *int `json:"newerNoncurrentVersions,omitempty"`
 }
 
-// LifecycleNoncurrentVersionTransition sets this action to request server to
+// ObjectLifecycleNoncurrentVersionTransition sets this action to request server to
 // transition noncurrent object versions to different set storage classes
 // at a specific period in the object's lifetime.
-type LifecycleNoncurrentVersionTransition struct {
+type ObjectLifecycleNoncurrentVersionTransition struct {
 	StorageClass            *string `json:"storageClass,omitempty"`
 	NoncurrentDays          *int    `json:"noncurrentDays"`
 	NewerNoncurrentVersions *int    `json:"newerNoncurrentVersions,omitempty"`

@@ -381,7 +381,7 @@ type UpdateBucketArguments struct {
 type UpdateStorageBucketOptions struct {
 	Tags              map[string]string                  `json:"tags,omitempty"`
 	VersioningEnabled *bool                              `json:"versioningEnabled"`
-	Lifecycle         *BucketLifecycleConfiguration      `json:"lifecycle"`
+	Lifecycle         *ObjectLifecycleConfiguration      `json:"lifecycle"`
 	Encryption        *ServerSideEncryptionConfiguration `json:"encryption"`
 	ObjectLock        *SetStorageObjectLockConfig        `json:"objectLock"`
 }
