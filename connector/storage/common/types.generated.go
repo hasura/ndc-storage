@@ -391,7 +391,7 @@ func (j ListStorageObjectsOptions) ToMap() map[string]any {
 func (j MakeStorageBucketOptions) ToMap() map[string]any {
 	r := make(map[string]any)
 	r["name"] = j.Name
-	r["objectLocking"] = j.ObjectLocking
+	r["objectLock"] = j.ObjectLock
 	r["region"] = j.Region
 	r["tags"] = j.Tags
 
@@ -526,13 +526,24 @@ func (j PutStorageObjectOptions) ToMap() map[string]any {
 	r["legalHold"] = j.LegalHold
 	r["numThreads"] = j.NumThreads
 	r["partSize"] = j.PartSize
-	r["retainUntilDate"] = j.RetainUntilDate
-	r["retentionMode"] = j.RetentionMode
+	if j.Retention != nil {
+		r["retention"] = (*j.Retention)
+	}
 	r["sendContentMd5"] = j.SendContentMd5
 	r["storageClass"] = j.StorageClass
 	r["userMetadata"] = j.UserMetadata
 	r["userTags"] = j.UserTags
 	r["websiteRedirectLocation"] = j.WebsiteRedirectLocation
+
+	return r
+}
+
+// ToMap encodes the struct to a value map
+func (j PutStorageObjectRetentionOptions) ToMap() map[string]any {
+	r := make(map[string]any)
+	r["governanceBypass"] = j.GovernanceBypass
+	r["mode"] = j.Mode
+	r["retainUntilDate"] = j.RetainUntilDate
 
 	return r
 }
@@ -647,10 +658,10 @@ func (j StorageBucketInfo) ToMap() map[string]any {
 // ToMap encodes the struct to a value map
 func (j StorageBucketVersioningConfiguration) ToMap() map[string]any {
 	r := make(map[string]any)
+	r["enabled"] = j.Enabled
 	r["excludeFolders"] = j.ExcludeFolders
 	r["excludedPrefixes"] = j.ExcludedPrefixes
 	r["mfaDelete"] = j.MFADelete
-	r["status"] = j.Enabled
 
 	return r
 }
@@ -1199,15 +1210,16 @@ const (
 	StorageRetentionModeLocked   StorageRetentionMode = "Locked"
 	StorageRetentionModeUnlocked StorageRetentionMode = "Unlocked"
 	StorageRetentionModeMutable  StorageRetentionMode = "Mutable"
+	StorageRetentionModeDelete   StorageRetentionMode = "Delete"
 )
 
-var enumValues_StorageRetentionMode = []StorageRetentionMode{StorageRetentionModeLocked, StorageRetentionModeUnlocked, StorageRetentionModeMutable}
+var enumValues_StorageRetentionMode = []StorageRetentionMode{StorageRetentionModeLocked, StorageRetentionModeUnlocked, StorageRetentionModeMutable, StorageRetentionModeDelete}
 
 // ParseStorageRetentionMode parses a StorageRetentionMode enum from string
 func ParseStorageRetentionMode(input string) (StorageRetentionMode, error) {
 	result := StorageRetentionMode(input)
 	if !slices.Contains(enumValues_StorageRetentionMode, result) {
-		return StorageRetentionMode(""), errors.New("failed to parse StorageRetentionMode, expect one of [Locked, Unlocked, Mutable]")
+		return StorageRetentionMode(""), errors.New("failed to parse StorageRetentionMode, expect one of [Locked, Unlocked, Mutable, Delete]")
 	}
 
 	return result, nil

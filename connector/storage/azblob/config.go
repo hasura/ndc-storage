@@ -160,6 +160,8 @@ type AuthCredentials struct {
 	// Enable multitenant authentication. The credential may request tokens from in addition to the tenant specified by AZURE_TENANT_ID.
 	// Set this value to "*" to enable the credential to request a token from any tenant.
 	AdditionallyAllowedTenants []string `json:"additionallyAllowedTenants,omitempty" mapstructure:"additionallyAllowedTenants" yaml:"additionallyAllowedTenants,omitempty"`
+	// Audience to use when requesting tokens for Azure Active Directory authentication.
+	Audience *utils.EnvString `json:"audience,omitempty" mapstructure:"audience" yaml:"audience,omitempty"`
 }
 
 // JSONSchema is used to generate a custom jsonschema.
@@ -245,6 +247,10 @@ func (ac AuthCredentials) JSONSchema() *jsonschema.Schema { //nolint:funlen
 		Description: "the path of a file containing a Kubernetes service account token",
 		Ref:         envStringRefName,
 	})
+	entraProps.Set("audience", &jsonschema.Schema{
+		Description: "Audience to use when requesting tokens for Azure Active Directory authentication",
+		Type:        envStringRefName,
+	})
 
 	entraProps.Set("disableInstanceDiscovery", &jsonschema.Schema{
 		Type: "boolean",
@@ -324,6 +330,15 @@ func (ac AuthCredentials) toAzureBlobClient(endpoint string, options *azblob.Cli
 		cred, err := ac.toDefaultAzureCredential(options)
 		if err != nil {
 			return nil, err
+		}
+
+		if ac.Audience != nil {
+			audience, err := ac.Audience.GetOrDefault("")
+			if err != nil {
+				return nil, fmt.Errorf("audience: %w", err)
+			}
+
+			options.Audience = audience
 		}
 
 		return azblob.NewClient(serviceURL, cred, options)

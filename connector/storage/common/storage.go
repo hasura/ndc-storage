@@ -306,7 +306,7 @@ type StorageObjectMultipartInfo struct {
 // type ServerSideEncryptionMethod string
 
 // StorageRetentionMode the object retention mode.
-// @enum Locked,Unlocked,Mutable
+// @enum Locked,Unlocked,Mutable,Delete
 type StorageRetentionMode string
 
 // RemoveStorageObjectError the container of Multi Delete S3 API error.
@@ -506,7 +506,7 @@ type StorageRetentionValidityUnit string
 
 // StorageBucketVersioningConfiguration is the versioning configuration structure
 type StorageBucketVersioningConfiguration struct {
-	Enabled   bool    `json:"status"`
+	Enabled   bool    `json:"enabled"`
 	MFADelete *string `json:"mfaDelete"`
 	// MinIO extension - allows selective, prefix-level versioning exclusion.
 	// Requires versioning to be enabled

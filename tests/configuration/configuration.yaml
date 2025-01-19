@@ -56,6 +56,33 @@ clients:
       connectionString:
         env: AZURE_STORAGE_CONNECTION_STRING
     defaultPresignedExpiry: "1h"
+  - id: gcs
+    type: gcs
+    defaultBucket:
+      env: GOOGLE_STORAGE_DEFAULT_BUCKET
+    endpoint:
+      env: GOOGLE_STORAGE_ENDPOINT
+    publicHost:
+      env: GOOGLE_STORAGE_PUBLIC_HOST
+    projectId:
+      env: GOOGLE_PROJECT_ID
+    authentication:
+      type: anonymous
+    defaultPresignedExpiry: "1h"
+  - id: gcs-cred
+    type: gcs
+    defaultBucket:
+      env: GOOGLE_STORAGE_DEFAULT_BUCKET
+    endpoint:
+      env: GOOGLE_STORAGE_ENDPOINT
+    publicHost:
+      env: GOOGLE_STORAGE_PUBLIC_HOST
+    projectId:
+      env: GOOGLE_PROJECT_ID
+    authentication:
+      type: credentials
+      credentialsFile:
+        env: GOOGLE_STORAGE_CREDENTIALS_FILE
 
 concurrency:
   query: 10

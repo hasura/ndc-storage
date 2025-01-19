@@ -142,14 +142,10 @@ func (c *Client) PutObject(ctx context.Context, bucketName string, objectName st
 	w.TemporaryHold = opts.LegalHold != nil && *opts.LegalHold
 	w.StorageClass = opts.StorageClass
 
-	if opts.RetentionMode != nil {
+	if opts.Retention != nil {
 		retention := &storage.ObjectRetention{
-			Mode:        string(*opts.RetentionMode),
-			RetainUntil: *opts.RetainUntilDate,
-		}
-
-		if opts.RetainUntilDate != nil && !opts.RetainUntilDate.IsZero() {
-			retention.RetainUntil = *opts.RetainUntilDate
+			Mode:        string(opts.Retention.Mode),
+			RetainUntil: opts.Retention.RetainUntilDate,
 		}
 
 		w.Retention = retention
@@ -221,6 +217,10 @@ func (c *Client) StatObject(ctx context.Context, bucketName, objectName string, 
 
 	object, err := c.client.Bucket(bucketName).Object(objectName).Attrs(ctx)
 	if err != nil {
+		if errors.Is(err, storage.ErrObjectNotExist) {
+			return nil, nil
+		}
+
 		span.SetStatus(codes.Error, err.Error())
 		span.RecordError(err)
 
@@ -249,6 +249,10 @@ func (c *Client) RemoveObject(ctx context.Context, bucketName string, objectName
 
 	err := c.client.Bucket(bucketName).Object(objectName).Delete(ctx)
 	if err != nil {
+		if errors.Is(err, storage.ErrObjectNotExist) {
+			return nil
+		}
+
 		span.SetStatus(codes.Error, err.Error())
 		span.RecordError(err)
 
@@ -374,7 +378,7 @@ func (c *Client) UpdateObject(ctx context.Context, bucketName string, objectName
 	updateAttrs := storage.ObjectAttrsToUpdate{}
 
 	if opts.LegalHold != nil {
-		updateAttrs.TemporaryHold = opts.LegalHold
+		updateAttrs.TemporaryHold = *opts.LegalHold
 	}
 
 	if opts.Retention != nil && opts.Retention.Mode != nil {

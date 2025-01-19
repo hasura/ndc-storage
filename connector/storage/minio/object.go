@@ -232,13 +232,14 @@ func (mc *Client) PutObject(ctx context.Context, bucketName string, objectName s
 		options.Expires = *opts.Expires
 	}
 
-	if opts.RetainUntilDate != nil {
-		options.RetainUntilDate = *opts.RetainUntilDate
-		span.SetAttributes(attribute.String("storage.options.retain_util_date", opts.RetainUntilDate.Format(time.RFC3339)))
-	}
+	if opts.Retention != nil {
+		options.Mode = validateObjectRetentionMode(opts.Retention.Mode)
+		options.RetainUntilDate = opts.Retention.RetainUntilDate
 
-	if opts.RetentionMode != nil {
-		options.Mode = validateObjectRetentionMode(*opts.RetentionMode)
+		span.SetAttributes(
+			attribute.String("storage.options.retention_mode", string(opts.Retention.Mode)),
+			attribute.String("storage.options.retain_util_date", opts.Retention.RetainUntilDate.Format(time.RFC3339)),
+		)
 	}
 
 	if opts.Checksum != nil {
@@ -802,12 +803,18 @@ func (mc *Client) GetObjectLockConfig(ctx context.Context, bucketName string) (*
 	ctx, span := mc.startOtelSpan(ctx, "GetObjectLockConfig", bucketName)
 	defer span.End()
 
+	// ObjectLockConfigurationNotFoundError
 	objectLock, mode, validity, unit, err := mc.client.GetObjectLockConfig(ctx, bucketName)
 	if err != nil {
+		respError := evalNotFoundError(err, "ObjectLockConfigurationNotFoundError")
+		if respError == nil {
+			return nil, nil
+		}
+
 		span.SetStatus(codes.Error, err.Error())
 		span.RecordError(err)
 
-		return nil, serializeErrorResponse(err)
+		return nil, respError
 	}
 
 	result := &common.StorageObjectLockConfig{

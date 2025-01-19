@@ -1,0 +1,18 @@
+{
+  "collection_relationships": {},
+  "operations": [
+    {
+      "type": "procedure",
+      "name": "updateStorageObject",
+      "arguments": {
+        "clientId": "gcs",
+        "bucket": "gcs-bucket",
+        "object": "public/hello.txt",
+        "tags": {
+          "Foo": "gcp-baz",
+          "UserID": "3"
+        }
+      }
+    }
+  ]
+}

@@ -4,17 +4,86 @@
       {
         "__value": [
           {
+            "lifecycle": null,
             "name": "minio-bucket-empty",
-            "tags": null
+            "objectLock": null,
+            "tags": null,
+            "versioning": {
+              "excludeFolders": false,
+              "excludedPrefixes": [],
+              "mfaDelete": null,
+              "enabled": false
+            }
           },
           {
+            "lifecycle": null,
             "name": "minio-bucket-lock",
-            "tags": null
+            "objectLock": {
+              "mode": "Locked",
+              "objectLock": "Enabled",
+              "unit": "DAYS",
+              "validity": 1
+            },
+            "tags": null,
+            "versioning": {
+              "excludeFolders": false,
+              "excludedPrefixes": [],
+              "mfaDelete": null,
+              "enabled": true
+            }
           },
           {
+            "lifecycle": {
+              "rules": [
+                {
+                  "abortIncompleteMultipartUpload": null,
+                  "allVersionsExpiration": null,
+                  "delMarkerExpiration": null,
+                  "expiration": {
+                    "date": null,
+                    "days": 4,
+                    "expiredObjectAllVersions": null,
+                    "expiredObjectDeleteMarker": false
+                  },
+                  "filter": {
+                    "and": {
+                      "objectSizeGreaterThan": 1000000,
+                      "objectSizeLessThan": 1,
+                      "prefix": "JSqXP0pJZF",
+                      "tags": [
+                        {
+                          "key": "7Uw1or2jrq",
+                          "value": "00sA2cRTCB"
+                        }
+                      ]
+                    },
+                    "objectSizeGreaterThan": null,
+                    "objectSizeLessThan": null,
+                    "prefix": null,
+                    "tag": null
+                  },
+                  "id": "aXD6eFi5JE",
+                  "noncurrentVersionExpiration": {
+                    "newerNoncurrentVersions": 108,
+                    "noncurrentDays": 12
+                  },
+                  "noncurrentVersionTransition": null,
+                  "prefix": "GPJel0xa2s",
+                  "status": "Enabled",
+                  "transition": null
+                }
+              ]
+            },
             "name": "minio-bucket-test",
+            "objectLock": null,
             "tags": {
               "Foo": "bar"
+            },
+            "versioning": {
+              "excludeFolders": false,
+              "excludedPrefixes": [],
+              "mfaDelete": null,
+              "enabled": true
             }
           }
         ]

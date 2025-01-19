@@ -52,7 +52,7 @@ type MakeStorageBucketOptions struct {
 	// Bucket location
 	Region string `json:"region,omitempty"`
 	// Enable object locking
-	ObjectLocking bool `json:"objectLocking,omitempty"`
+	ObjectLock bool `json:"objectLock,omitempty"`
 	// Optional tags
 	Tags map[string]string `json:"tags,omitempty"`
 }
@@ -301,18 +301,24 @@ type RemoveStorageObjectsOptions struct {
 	GovernanceBypass bool `json:"governanceBypass,omitempty"`
 }
 
+// PutStorageObjectRetentionOptions represent options of object retention configuration.
+type PutStorageObjectRetentionOptions struct {
+	Mode             StorageRetentionMode `json:"mode"`
+	RetainUntilDate  time.Time            `json:"retainUntilDate"`
+	GovernanceBypass bool                 `json:"governanceBypass,omitempty"`
+}
+
 // PutStorageObjectOptions represents options specified by user for PutObject call.
 type PutStorageObjectOptions struct {
-	UserMetadata       map[string]string     `json:"userMetadata,omitempty"`
-	UserTags           map[string]string     `json:"userTags,omitempty"`
-	ContentType        string                `json:"contentType,omitempty"`
-	ContentEncoding    string                `json:"contentEncoding,omitempty"`
-	ContentDisposition string                `json:"contentDisposition,omitempty"`
-	ContentLanguage    string                `json:"contentLanguage,omitempty"`
-	CacheControl       string                `json:"cacheControl,omitempty"`
-	Expires            *time.Time            `json:"expires,omitempty"`
-	RetentionMode      *StorageRetentionMode `json:"retentionMode,omitempty"`
-	RetainUntilDate    *time.Time            `json:"retainUntilDate,omitempty"`
+	UserMetadata       map[string]string                 `json:"userMetadata,omitempty"`
+	UserTags           map[string]string                 `json:"userTags,omitempty"`
+	ContentType        string                            `json:"contentType,omitempty"`
+	ContentEncoding    string                            `json:"contentEncoding,omitempty"`
+	ContentDisposition string                            `json:"contentDisposition,omitempty"`
+	ContentLanguage    string                            `json:"contentLanguage,omitempty"`
+	CacheControl       string                            `json:"cacheControl,omitempty"`
+	Expires            *time.Time                        `json:"expires,omitempty"`
+	Retention          *PutStorageObjectRetentionOptions `json:"retention,omitempty"`
 	// ServerSideEncryption    *ServerSideEncryptionMethod `json:"serverSideEncryption,omitempty"`
 	NumThreads              uint   `json:"numThreads,omitempty"`
 	StorageClass            string `json:"storageClass,omitempty"`

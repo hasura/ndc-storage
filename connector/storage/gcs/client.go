@@ -14,7 +14,7 @@ import (
 	"go.opentelemetry.io/otel/trace"
 )
 
-var tracer = connector.NewTracer("connector/storage/minio")
+var tracer = connector.NewTracer("connector/storage/gcs")
 
 // Client represents a Minio client wrapper.
 type Client struct {
@@ -42,7 +42,7 @@ func New(ctx context.Context, config *ClientConfig, logger *slog.Logger, version
 		return nil, errRequireProjectID
 	}
 
-	opts, err := config.toClientOptions(version)
+	opts, err := config.toClientOptions(ctx, logger, version)
 	if err != nil {
 		return nil, err
 	}
@@ -53,21 +53,15 @@ func New(ctx context.Context, config *ClientConfig, logger *slog.Logger, version
 		isDebug:    utils.IsDebug(logger),
 	}
 
-	client, err := storage.NewClient(ctx, opts...)
+	if config.UseGRPC {
+		mc.client, err = storage.NewGRPCClient(ctx, opts...)
+	} else {
+		mc.client, err = storage.NewClient(ctx, opts...)
+	}
+
 	if err != nil {
 		return nil, fmt.Errorf("failed to initialize the Google Cloud Storage client: %w", err)
 	}
-
-	if config.MaxRetries != nil {
-		maxRetries := *config.MaxRetries
-		if maxRetries <= -1 {
-			maxRetries = 1
-		}
-
-		client.SetRetry(storage.WithMaxAttempts(maxRetries))
-	}
-
-	mc.client = client
 
 	return mc, nil
 }

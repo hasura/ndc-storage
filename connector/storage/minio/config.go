@@ -31,7 +31,7 @@ type ClientConfig struct {
 func (cc ClientConfig) JSONSchema() *jsonschema.Schema {
 	envStringRef := "#/$defs/EnvString"
 
-	result := cc.BaseClientConfig.GetJSONSchema([]any{common.S3, common.GoogleStorage})
+	result := cc.BaseClientConfig.GetJSONSchema([]any{common.S3})
 	result.Required = append(result.Required, "authentication")
 
 	result.Properties.Set("region", &jsonschema.Schema{

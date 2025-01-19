@@ -2,6 +2,39 @@
 kind: ObjectType
 version: v1
 definition:
+  name: PutStorageObjectRetentionOptions
+  description: represent options of object retention configuration.
+  fields:
+    - name: governanceBypass
+      type: Boolean
+    - name: mode
+      type: StorageRetentionMode!
+    - name: retainUntilDate
+      type: TimestampTz!
+  graphql:
+    typeName: PutStorageObjectRetentionOptions
+    inputTypeName: PutStorageObjectRetentionOptionsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: storage
+      dataConnectorObjectType: PutStorageObjectRetentionOptions
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: PutStorageObjectRetentionOptions
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - governanceBypass
+          - mode
+          - retainUntilDate
+
+---
+kind: ObjectType
+version: v1
+definition:
   name: PutStorageObjectOptions
   description: represents options specified by user for PutObject call.
   fields:
@@ -29,14 +62,12 @@ definition:
       type: TimestampTz
     - name: legalHold
       type: Boolean
-    - name: mode
-      type: StorageRetentionMode
     - name: numThreads
       type: Int32
     - name: partSize
       type: Int64
-    - name: retainUntilDate
-      type: TimestampTz
+    - name: retention
+      type: PutStorageObjectRetentionOptions
     - name: sendContentMd5
       type: Boolean
     - name: storageClass
@@ -75,10 +106,9 @@ definition:
           - disableMultipart
           - expires
           - legalHold
-          - mode
           - numThreads
           - partSize
-          - retainUntilDate
+          - retention
           - sendContentMd5
           - storageClass
           - userMetadata

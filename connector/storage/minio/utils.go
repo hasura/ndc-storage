@@ -625,6 +625,26 @@ func serializeErrorResponse(err error) *schema.ConnectorError {
 	return schema.UnprocessableContentError(err.Error(), nil)
 }
 
+func evalNotFoundError(err error, notFoundCode string) *schema.ConnectorError {
+	var errResponse minio.ErrorResponse
+	if !errors.As(err, &errResponse) {
+		errRespPtr := &errResponse
+		if errors.As(err, &errRespPtr) {
+			errResponse = *errRespPtr
+		}
+	}
+
+	if errResponse.Code == notFoundCode {
+		return nil
+	}
+
+	if errResponse.StatusCode > 0 {
+		return evalMinioErrorResponse(errResponse)
+	}
+
+	return schema.UnprocessableContentError(err.Error(), nil)
+}
+
 func isStringNull(input string) bool {
 	return input == "" || input == "null"
 }

@@ -1,0 +1,22 @@
+[
+  {
+    "rows": [
+      {
+        "__value": [
+          {
+            "lifecycle": { "rules": [] },
+            "name": "gcs-bucket",
+            "objectLock": null,
+            "tags": null,
+            "versioning": {
+              "enabled": false,
+              "excludeFolders": null,
+              "excludedPrefixes": null,
+              "mfaDelete": null
+            }
+          }
+        ]
+      }
+    ]
+  }
+]

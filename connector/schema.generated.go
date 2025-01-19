@@ -255,7 +255,7 @@ func GetConnectorSchema() *schema.SchemaResponse {
 					"name": schema.ObjectField{
 						Type: schema.NewNamedType("String").Encode(),
 					},
-					"objectLocking": schema.ObjectField{
+					"objectLock": schema.ObjectField{
 						Type: schema.NewNullableType(schema.NewNamedType("Boolean")).Encode(),
 					},
 					"region": schema.ObjectField{
@@ -471,11 +471,8 @@ func GetConnectorSchema() *schema.SchemaResponse {
 					"partSize": schema.ObjectField{
 						Type: schema.NewNullableType(schema.NewNamedType("Int64")).Encode(),
 					},
-					"retainUntilDate": schema.ObjectField{
-						Type: schema.NewNullableType(schema.NewNamedType("TimestampTZ")).Encode(),
-					},
-					"retentionMode": schema.ObjectField{
-						Type: schema.NewNullableType(schema.NewNamedType("StorageRetentionMode")).Encode(),
+					"retention": schema.ObjectField{
+						Type: schema.NewNullableType(schema.NewNamedType("PutStorageObjectRetentionOptions")).Encode(),
 					},
 					"sendContentMd5": schema.ObjectField{
 						Type: schema.NewNullableType(schema.NewNamedType("Boolean")).Encode(),
@@ -491,6 +488,20 @@ func GetConnectorSchema() *schema.SchemaResponse {
 					},
 					"websiteRedirectLocation": schema.ObjectField{
 						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
+					},
+				},
+			},
+			"PutStorageObjectRetentionOptions": schema.ObjectType{
+				Description: toPtr("represent options of object retention configuration."),
+				Fields: schema.ObjectTypeFields{
+					"governanceBypass": schema.ObjectField{
+						Type: schema.NewNullableType(schema.NewNamedType("Boolean")).Encode(),
+					},
+					"mode": schema.ObjectField{
+						Type: schema.NewNamedType("StorageRetentionMode").Encode(),
+					},
+					"retainUntilDate": schema.ObjectField{
+						Type: schema.NewNamedType("TimestampTZ").Encode(),
 					},
 				},
 			},
@@ -637,6 +648,9 @@ func GetConnectorSchema() *schema.SchemaResponse {
 			"StorageBucketVersioningConfiguration": schema.ObjectType{
 				Description: toPtr("is the versioning configuration structure"),
 				Fields: schema.ObjectTypeFields{
+					"enabled": schema.ObjectField{
+						Type: schema.NewNamedType("Boolean").Encode(),
+					},
 					"excludeFolders": schema.ObjectField{
 						Type: schema.NewNullableType(schema.NewNamedType("Boolean")).Encode(),
 					},
@@ -645,9 +659,6 @@ func GetConnectorSchema() *schema.SchemaResponse {
 					},
 					"mfaDelete": schema.ObjectField{
 						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
-					},
-					"status": schema.ObjectField{
-						Type: schema.NewNamedType("Boolean").Encode(),
 					},
 				},
 			},
@@ -1518,7 +1529,7 @@ func GetConnectorSchema() *schema.SchemaResponse {
 					"name": {
 						Type: schema.NewNamedType("String").Encode(),
 					},
-					"objectLocking": {
+					"objectLock": {
 						Type: schema.NewNullableType(schema.NewNamedType("Boolean")).Encode(),
 					},
 					"region": {
@@ -1839,7 +1850,7 @@ func GetConnectorSchema() *schema.SchemaResponse {
 			"StorageRetentionMode": schema.ScalarType{
 				AggregateFunctions:  schema.ScalarTypeAggregateFunctions{},
 				ComparisonOperators: map[string]schema.ComparisonOperatorDefinition{},
-				Representation:      schema.NewTypeRepresentationEnum([]string{"Locked", "Unlocked", "Mutable"}).Encode(),
+				Representation:      schema.NewTypeRepresentationEnum([]string{"Locked", "Unlocked", "Mutable", "Delete"}).Encode(),
 			},
 			"StorageRetentionValidityUnit": schema.ScalarType{
 				AggregateFunctions:  schema.ScalarTypeAggregateFunctions{},

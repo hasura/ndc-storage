@@ -24,7 +24,7 @@ func (mc *Client) MakeBucket(ctx context.Context, args *common.MakeStorageBucket
 
 	err := mc.client.MakeBucket(ctx, args.Name, minio.MakeBucketOptions{
 		Region:        args.Region,
-		ObjectLocking: args.ObjectLocking,
+		ObjectLocking: args.ObjectLock,
 	})
 	if err != nil {
 		span.SetStatus(codes.Error, err.Error())

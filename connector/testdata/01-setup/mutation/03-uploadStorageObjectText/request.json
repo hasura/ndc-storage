@@ -22,8 +22,10 @@
           "disableMultipart": false,
           "expires": "2099-01-01T00:00:00Z",
           "legalHold": true,
-          "mode": "Unlocked",
-          "retainUntilDate": "2099-01-01T00:00:02Z",
+          "retention": {
+            "mode": "Unlocked",
+            "retainUntilDate": "2099-01-01T00:00:02Z"
+          },
           "numThreads": 2,
           "partSize": 35739157156577,
           "sendContentMd5": false,

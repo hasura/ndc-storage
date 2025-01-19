@@ -1,8 +1,11 @@
 package gcs
 
 import (
+	"context"
 	"errors"
 	"fmt"
+	"log/slog"
+	"net/http"
 	"net/url"
 	"slices"
 	"strings"
@@ -11,6 +14,7 @@ import (
 	"github.com/hasura/ndc-storage/connector/storage/common"
 	"github.com/invopop/jsonschema"
 	"google.golang.org/api/option"
+	ghttp "google.golang.org/api/transport/http"
 )
 
 var (
@@ -50,12 +54,18 @@ type OtherConfig struct {
 	ProjectID utils.EnvString `json:"projectId" mapstructure:"projectId" yaml:"projectId"`
 	// The public host to be used for presigned URL generation.
 	PublicHost *utils.EnvString `json:"publicHost,omitempty" mapstructure:"publicHost" yaml:"publicHost,omitempty"`
+	UseGRPC    bool             `json:"useGrpc,omitempty"    mapstructure:"useGrpc"    yaml:"useGrpc,omitempty"`
+	// GRPCConnPoolSize enable the connection pool for gRPC connections that requests will be balanced.
+	GRPCConnPoolSize int `json:"grpcConnPoolSize,omitempty" mapstructure:"grpcConnPoolSize" yaml:"grpcConnPoolSize,omitempty"`
 	// Authentication credentials.
 	Authentication AuthCredentials `json:"authentication" mapstructure:"authentication" yaml:"authentication"`
 }
 
-func (cc ClientConfig) toClientOptions(version string) ([]option.ClientOption, error) {
-	var opts []option.ClientOption
+func (cc ClientConfig) toClientOptions(ctx context.Context, logger *slog.Logger, version string) ([]option.ClientOption, error) {
+	opts := []option.ClientOption{
+		option.WithLogger(logger),
+		option.WithUserAgent(fmt.Sprintf("hasura/ndc-storage (%s)", version)),
+	}
 
 	cred, err := cc.Authentication.toCredentials()
 	if err != nil {
@@ -64,7 +74,7 @@ func (cc ClientConfig) toClientOptions(version string) ([]option.ClientOption, e
 
 	opts = append(opts, cred)
 
-	endpointURL, _, _, err := cc.BaseClientConfig.ValidateEndpoint()
+	endpointURL, port, secure, err := cc.BaseClientConfig.ValidateEndpoint()
 	if err != nil {
 		return nil, err
 	}
@@ -73,7 +83,19 @@ func (cc ClientConfig) toClientOptions(version string) ([]option.ClientOption, e
 		opts = append(opts, option.WithEndpoint(endpointURL.String()))
 	}
 
-	opts = append(opts, option.WithUserAgent(fmt.Sprintf("hasura/ndc-storage (%s)", version)))
+	if cc.UseGRPC {
+		if cc.GRPCConnPoolSize > 0 {
+			opts = append(opts, option.WithGRPCConnectionPool(cc.GRPCConnPoolSize))
+		}
+	} else if utils.IsDebug(logger) {
+		httpTransport, err := ghttp.NewTransport(ctx, common.NewTransport(logger, port, secure), opts...)
+		if err != nil {
+			return nil, err
+		}
+
+		httpClient := &http.Client{Transport: httpTransport}
+		opts = append(opts, option.WithHTTPClient(httpClient))
+	}
 
 	return opts, nil
 }

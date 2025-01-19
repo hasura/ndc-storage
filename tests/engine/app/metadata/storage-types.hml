@@ -262,82 +262,6 @@ definition:
 kind: ScalarType
 version: v1
 definition:
-  name: Date
-  graphql:
-    typeName: Date
-
----
-kind: BooleanExpressionType
-version: v1
-definition:
-  name: DateBoolExp
-  operand:
-    scalar:
-      type: Date
-      comparisonOperators: []
-      dataConnectorOperatorMapping:
-        - dataConnectorName: storage
-          dataConnectorScalarType: Date
-          operatorMapping: {}
-  logicalOperators:
-    enable: true
-  isNull:
-    enable: true
-  graphql:
-    typeName: DateBoolExp
-
----
-kind: DataConnectorScalarRepresentation
-version: v1
-definition:
-  dataConnectorName: storage
-  dataConnectorScalarType: Date
-  representation: Date
-  graphql:
-    comparisonExpressionTypeName: DateComparisonExp
-
----
-kind: ScalarType
-version: v1
-definition:
-  name: Int64
-  graphql:
-    typeName: Int64
-
----
-kind: BooleanExpressionType
-version: v1
-definition:
-  name: Int64BoolExp
-  operand:
-    scalar:
-      type: Int64
-      comparisonOperators: []
-      dataConnectorOperatorMapping:
-        - dataConnectorName: storage
-          dataConnectorScalarType: Int64
-          operatorMapping: {}
-  logicalOperators:
-    enable: true
-  isNull:
-    enable: true
-  graphql:
-    typeName: Int64BoolExp
-
----
-kind: DataConnectorScalarRepresentation
-version: v1
-definition:
-  dataConnectorName: storage
-  dataConnectorScalarType: Int64
-  representation: Int64
-  graphql:
-    comparisonExpressionTypeName: Int64ComparisonExp
-
----
-kind: ScalarType
-version: v1
-definition:
   name: StorageReplicationRuleStatus
   graphql:
     typeName: StorageReplicationRuleStatus
@@ -414,39 +338,77 @@ definition:
 kind: ScalarType
 version: v1
 definition:
-  name: StorageObjectReplicationStatus
+  name: Date
   graphql:
-    typeName: StorageObjectReplicationStatus
+    typeName: Date
 
 ---
 kind: BooleanExpressionType
 version: v1
 definition:
-  name: StorageObjectReplicationStatusBoolExp
+  name: DateBoolExp
   operand:
     scalar:
-      type: StorageObjectReplicationStatus
+      type: Date
       comparisonOperators: []
       dataConnectorOperatorMapping:
         - dataConnectorName: storage
-          dataConnectorScalarType: StorageObjectReplicationStatus
+          dataConnectorScalarType: Date
           operatorMapping: {}
   logicalOperators:
     enable: true
   isNull:
     enable: true
   graphql:
-    typeName: StorageObjectReplicationStatusBoolExp
+    typeName: DateBoolExp
 
 ---
 kind: DataConnectorScalarRepresentation
 version: v1
 definition:
   dataConnectorName: storage
-  dataConnectorScalarType: StorageObjectReplicationStatus
-  representation: StorageObjectReplicationStatus
+  dataConnectorScalarType: Date
+  representation: Date
   graphql:
-    comparisonExpressionTypeName: StorageObjectReplicationStatusComparisonExp
+    comparisonExpressionTypeName: DateComparisonExp
+
+---
+kind: ScalarType
+version: v1
+definition:
+  name: Int64
+  graphql:
+    typeName: Int64
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: Int64BoolExp
+  operand:
+    scalar:
+      type: Int64
+      comparisonOperators: []
+      dataConnectorOperatorMapping:
+        - dataConnectorName: storage
+          dataConnectorScalarType: Int64
+          operatorMapping: {}
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: Int64BoolExp
+
+---
+kind: DataConnectorScalarRepresentation
+version: v1
+definition:
+  dataConnectorName: storage
+  dataConnectorScalarType: Int64
+  representation: Int64
+  graphql:
+    comparisonExpressionTypeName: Int64ComparisonExp
 
 ---
 kind: ScalarType
@@ -523,6 +485,44 @@ definition:
   representation: StorageRetentionValidityUnit
   graphql:
     comparisonExpressionTypeName: StorageRetentionValidityUnitComparisonExp
+
+---
+kind: ScalarType
+version: v1
+definition:
+  name: StorageObjectReplicationStatus
+  graphql:
+    typeName: StorageObjectReplicationStatus
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: StorageObjectReplicationStatusBoolExp
+  operand:
+    scalar:
+      type: StorageObjectReplicationStatus
+      comparisonOperators: []
+      dataConnectorOperatorMapping:
+        - dataConnectorName: storage
+          dataConnectorScalarType: StorageObjectReplicationStatus
+          operatorMapping: {}
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: StorageObjectReplicationStatusBoolExp
+
+---
+kind: DataConnectorScalarRepresentation
+version: v1
+definition:
+  dataConnectorName: storage
+  dataConnectorScalarType: StorageObjectReplicationStatus
+  representation: StorageObjectReplicationStatus
+  graphql:
+    comparisonExpressionTypeName: StorageObjectReplicationStatusComparisonExp
 
 ---
 kind: ScalarType

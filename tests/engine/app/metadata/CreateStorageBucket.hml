@@ -9,7 +9,7 @@ definition:
       type: StorageClientId
     - name: name
       type: String!
-    - name: objectLocking
+    - name: objectLock
       type: Boolean
     - name: region
       type: String

@@ -253,6 +253,19 @@ func (c *Client) PutObject(ctx context.Context, bucketName string, objectName st
 		return nil, serializeErrorResponse(err)
 	}
 
+	if opts.Retention != nil && opts.Retention.Mode == common.StorageRetentionModeLocked {
+		err := c.SetObjectRetention(ctx, bucketName, objectName, "", common.SetStorageObjectRetentionOptions{
+			Mode:            &opts.Retention.Mode,
+			RetainUntilDate: &opts.Retention.RetainUntilDate,
+		})
+		if err != nil {
+			span.SetStatus(codes.Error, err.Error())
+			span.RecordError(err)
+
+			return nil, serializeErrorResponse(err)
+		}
+	}
+
 	result := serializeUploadObjectInfo(resp)
 	result.Name = objectName
 

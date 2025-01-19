@@ -140,8 +140,8 @@ github.com/googleapis/gax-go/v2 v2.14.0 h1:f+jMrjBPl+DL9nI4IQzLUxMq7XrAqFYB7hBPq
 github.com/googleapis/gax-go/v2 v2.14.0/go.mod h1:lhBCnjdLrWRaPvLWhmc8IS24m9mr07qSYnHncrgo+zk=
 github.com/grpc-ecosystem/grpc-gateway/v2 v2.22.0 h1:asbCHRVmodnJTuQ3qamDwqVOIjwqUPTYmYuemVOx+Ys=
 github.com/grpc-ecosystem/grpc-gateway/v2 v2.22.0/go.mod h1:ggCgvZ2r7uOoQjOyu2Y1NhHmEPPzzuhWgcza5M1Ji1I=
-github.com/hasura/ndc-sdk-go v1.7.0 h1:AWYERM3aRvFgqXKNr3qa1fuohkSvXH0RFsBKP+kdpbI=
-github.com/hasura/ndc-sdk-go v1.7.0/go.mod h1:79hEYe4HuPwFKi6aWjUDo9l/hhCiYFVEykjJsF1abg0=
+github.com/hasura/ndc-sdk-go v1.7.1-0.20250116172618-e81c1199f349 h1:pE/KbhkffaeTilb4wyN/Hehaap+sw8+Q0Q9nxjeyGtw=
+github.com/hasura/ndc-sdk-go v1.7.1-0.20250116172618-e81c1199f349/go.mod h1:79hEYe4HuPwFKi6aWjUDo9l/hhCiYFVEykjJsF1abg0=
 github.com/hexops/gotextdiff v1.0.3 h1:gitA9+qJrrTCsiCl7+kh75nPqQt1cx4ZkudSTLoUqJM=
 github.com/hexops/gotextdiff v1.0.3/go.mod h1:pSWU5MAI3yDq+fZBTazCSJysOMbxWL1BSow5/V2vxeg=
 github.com/invopop/jsonschema v0.13.0 h1:KvpoAJWEjR3uD9Kbm2HWJmqsEaHt8lBUpd0qHcIi21E=

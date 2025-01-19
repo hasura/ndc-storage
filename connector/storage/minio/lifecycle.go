@@ -34,10 +34,15 @@ func (mc *Client) GetBucketLifecycle(ctx context.Context, bucketName string) (*c
 
 	rawResult, err := mc.client.GetBucketLifecycle(ctx, bucketName)
 	if err != nil {
+		respError := evalNotFoundError(err, "NoSuchLifecycleConfiguration")
+		if respError == nil {
+			return nil, nil
+		}
+
 		span.SetStatus(codes.Error, err.Error())
 		span.RecordError(err)
 
-		return nil, serializeErrorResponse(err)
+		return nil, respError
 	}
 
 	result := serializeLifecycleConfiguration(*rawResult)

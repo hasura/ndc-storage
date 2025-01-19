@@ -1,0 +1,16 @@
+{
+  "collection_relationships": {},
+  "operations": [
+    {
+      "type": "procedure",
+      "name": "removeStorageObject",
+      "arguments": {
+        "clientId": "gcs",
+        "bucket": "gcs-bucket",
+        "forceDelete": true,
+        "governanceBypass": true,
+        "object": "public/hello.txt"
+      }
+    }
+  ]
+}

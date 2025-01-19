@@ -24,7 +24,7 @@ func (c *Client) MakeBucket(ctx context.Context, args *common.MakeStorageBucketO
 
 	handle := c.client.Bucket(args.Name)
 
-	if args.ObjectLocking {
+	if args.ObjectLock {
 		handle = handle.SetObjectRetention(true)
 	}
 
@@ -144,7 +144,7 @@ func (c *Client) UpdateBucket(ctx context.Context, bucketName string, opts commo
 	}
 
 	if opts.VersioningEnabled != nil {
-		inputAttrs.VersioningEnabled = opts.VersioningEnabled
+		inputAttrs.VersioningEnabled = *opts.VersioningEnabled
 	}
 
 	if opts.Encryption != nil {
