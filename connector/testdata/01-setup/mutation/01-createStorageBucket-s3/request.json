@@ -7,7 +7,7 @@
       "arguments": {
         "clientId": "s3",
         "name": "s3-bucket-test",
-        "objectLocking": true,
+        "objectLock": true,
         "region": "us-east-1"
       }
     }

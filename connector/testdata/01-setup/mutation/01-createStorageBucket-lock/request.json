@@ -7,7 +7,7 @@
       "arguments": {
         "clientId": "minio",
         "name": "minio-bucket-lock",
-        "objectLocking": true,
+        "objectLock": true,
         "region": "us-east-1"
       }
     }

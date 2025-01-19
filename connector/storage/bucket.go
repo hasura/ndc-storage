@@ -59,6 +59,20 @@ func (m *Manager) MakeBucket(ctx context.Context, clientID *common.StorageClient
 	return client.MakeBucket(ctx, args)
 }
 
+// UpdateBucket updates configurations for the bucket.
+func (m *Manager) UpdateBucket(ctx context.Context, args *common.UpdateBucketArguments) error {
+	if args.UpdateStorageBucketOptions.IsEmpty() {
+		return nil
+	}
+
+	client, bucketName, err := m.GetClientAndBucket(args.ClientID, args.Bucket)
+	if err != nil {
+		return err
+	}
+
+	return client.UpdateBucket(ctx, bucketName, args.UpdateStorageBucketOptions)
+}
+
 // ListBuckets list all buckets.
 func (m *Manager) ListBuckets(ctx context.Context, clientID *common.StorageClientID, options common.BucketOptions) ([]common.StorageBucketInfo, error) {
 	client, ok := m.GetClient(clientID)
@@ -87,116 +101,6 @@ func (m *Manager) RemoveBucket(ctx context.Context, args *common.StorageBucketAr
 	}
 
 	return client.RemoveBucket(ctx, bucketName)
-}
-
-// SetBucketTagging sets tags to a bucket.
-func (m *Manager) SetBucketTagging(ctx context.Context, args *common.SetStorageBucketTaggingArguments) error {
-	client, bucketName, err := m.GetClientAndBucket(args.ClientID, args.Bucket)
-	if err != nil {
-		return err
-	}
-
-	return client.SetBucketTagging(ctx, bucketName, args.Tags)
-}
-
-// SetBucketLifecycle sets lifecycle on bucket or an object prefix.
-func (m *Manager) SetBucketLifecycle(ctx context.Context, args *common.SetStorageBucketLifecycleArguments) error {
-	client, bucketName, err := m.GetClientAndBucket(args.ClientID, args.Bucket)
-	if err != nil {
-		return err
-	}
-
-	return client.SetBucketLifecycle(ctx, bucketName, args.BucketLifecycleConfiguration)
-}
-
-// GetBucketLifecycle gets lifecycle on a bucket or a prefix.
-func (m *Manager) GetBucketLifecycle(ctx context.Context, args *common.StorageBucketArguments) (*common.BucketLifecycleConfiguration, error) {
-	client, bucketName, err := m.GetClientAndBucket(args.ClientID, args.Bucket)
-	if err != nil {
-		return nil, err
-	}
-
-	return client.GetBucketLifecycle(ctx, bucketName)
-}
-
-// SetBucketEncryption sets default encryption configuration on a bucket.
-func (m *Manager) SetBucketEncryption(ctx context.Context, args *common.SetStorageBucketEncryptionArguments) error {
-	client, bucketName, err := m.GetClientAndBucket(args.ClientID, args.Bucket)
-	if err != nil {
-		return err
-	}
-
-	return client.SetBucketEncryption(ctx, bucketName, args.ServerSideEncryptionConfiguration)
-}
-
-// GetBucketEncryption gets default encryption configuration set on a bucket.
-func (m *Manager) GetBucketEncryption(ctx context.Context, args *common.StorageBucketArguments) (*common.ServerSideEncryptionConfiguration, error) {
-	client, bucketName, err := m.GetClientAndBucket(args.ClientID, args.Bucket)
-	if err != nil {
-		return nil, err
-	}
-
-	return client.GetBucketEncryption(ctx, bucketName)
-}
-
-// RemoveBucketEncryption removes default encryption configuration set on a bucket.
-func (m *Manager) RemoveBucketEncryption(ctx context.Context, args *common.StorageBucketArguments) error {
-	client, bucketName, err := m.GetClientAndBucket(args.ClientID, args.Bucket)
-	if err != nil {
-		return err
-	}
-
-	return client.RemoveBucketEncryption(ctx, bucketName)
-}
-
-// SetObjectLockConfig sets object lock configuration in given bucket. mode, validity and unit are either all set or all nil.
-func (m *Manager) SetObjectLockConfig(ctx context.Context, args *common.SetStorageObjectLockArguments) error {
-	client, bucketName, err := m.GetClientAndBucket(args.ClientID, args.Bucket)
-	if err != nil {
-		return err
-	}
-
-	return client.SetObjectLockConfig(ctx, bucketName, args.SetStorageObjectLockConfig)
-}
-
-// GetObjectLockConfig gets object lock configuration of given bucket.
-func (m *Manager) GetObjectLockConfig(ctx context.Context, args *common.StorageBucketArguments) (*common.StorageObjectLockConfig, error) {
-	client, bucketName, err := m.GetClientAndBucket(args.ClientID, args.Bucket)
-	if err != nil {
-		return nil, err
-	}
-
-	return client.GetObjectLockConfig(ctx, bucketName)
-}
-
-// EnableVersioning enables bucket versioning support.
-func (m *Manager) EnableVersioning(ctx context.Context, args *common.StorageBucketArguments) error {
-	client, bucketName, err := m.GetClientAndBucket(args.ClientID, args.Bucket)
-	if err != nil {
-		return err
-	}
-
-	return client.EnableVersioning(ctx, bucketName)
-}
-
-// SuspendVersioning disables bucket versioning support.
-func (m *Manager) SuspendVersioning(ctx context.Context, args *common.StorageBucketArguments) error {
-	client, bucketName, err := m.GetClientAndBucket(args.ClientID, args.Bucket)
-	if err != nil {
-		return err
-	}
-
-	return client.SuspendVersioning(ctx, bucketName)
-}
-
-// GetBucketVersioning gets versioning configuration set on a bucket.
-func (m *Manager) GetBucketVersioning(ctx context.Context, args *common.StorageBucketArguments) (*common.StorageBucketVersioningConfiguration, error) {
-	client, bucketName, err := m.GetClientAndBucket(args.ClientID, args.Bucket)
-	if err != nil {
-		return nil, err
-	}
-
-	return client.GetBucketVersioning(ctx, bucketName)
 }
 
 // SetBucketReplication sets replication configuration on a bucket. Role can be obtained by first defining the replication target on MinIO

@@ -188,8 +188,6 @@ definition:
       type: TimestampTz
     - name: destinationSnapshot
       type: String
-    - name: encryptionScope
-      type: String
     - name: etag
       type: String
     - name: expiration
@@ -202,14 +200,12 @@ definition:
       type: "[StorageGrant!]"
     - name: group
       type: String
-    - name: immutabilityPolicyMode
-      type: String
-    - name: immutabilityPolicyUntilDate
-      type: TimestampTz
     - name: incrementalCopy
       type: Boolean
     - name: isLatest
       type: Boolean
+    - name: kmsKeyName
+      type: String
     - name: lastAccessTime
       type: TimestampTz
     - name: lastModified
@@ -242,6 +238,10 @@ definition:
       type: String
     - name: restore
       type: StorageRestoreInfo
+    - name: retentionMode
+      type: String
+    - name: retentionUntilDate
+      type: TimestampTz
     - name: sealed
       type: Boolean
     - name: serverEncrypted
@@ -304,17 +304,15 @@ definition:
           - deleted
           - deletedTime
           - destinationSnapshot
-          - encryptionScope
           - etag
           - expiration
           - expirationRuleId
           - expires
           - grant
           - group
-          - immutabilityPolicyMode
-          - immutabilityPolicyUntilDate
           - incrementalCopy
           - isLatest
+          - kmsKeyName
           - lastAccessTime
           - lastModified
           - leaseDuration
@@ -331,6 +329,8 @@ definition:
           - replicationStatus
           - resourceType
           - restore
+          - retentionMode
+          - retentionUntilDate
           - sealed
           - serverEncrypted
           - size

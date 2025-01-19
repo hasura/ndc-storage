@@ -12,6 +12,7 @@ import (
 	"github.com/hasura/ndc-sdk-go/schema"
 	"github.com/hasura/ndc-storage/connector/storage/azblob"
 	"github.com/hasura/ndc-storage/connector/storage/common"
+	"github.com/hasura/ndc-storage/connector/storage/gcs"
 	"github.com/hasura/ndc-storage/connector/storage/minio"
 	"github.com/invopop/jsonschema"
 )
@@ -95,7 +96,7 @@ func (cc ClientConfig) Validate() error {
 	return errors.New("unsupported storage client: " + string(baseConfig.Type))
 }
 
-func (cc ClientConfig) toStorageClient(ctx context.Context, logger *slog.Logger) (*common.BaseClientConfig, common.StorageClient, error) {
+func (cc ClientConfig) toStorageClient(ctx context.Context, logger *slog.Logger, version string) (*common.BaseClientConfig, common.StorageClient, error) {
 	if len(cc) == 0 {
 		return nil, nil, errConfigEmpty
 	}
@@ -111,7 +112,7 @@ func (cc ClientConfig) toStorageClient(ctx context.Context, logger *slog.Logger)
 	}
 
 	switch baseConfig.Type {
-	case common.S3, common.GoogleStorage:
+	case common.S3:
 		minioConfig := minio.ClientConfig{
 			BaseClientConfig: baseConfig,
 		}
@@ -121,6 +122,18 @@ func (cc ClientConfig) toStorageClient(ctx context.Context, logger *slog.Logger)
 		}
 
 		client, err := minio.New(ctx, baseConfig.Type, &minioConfig, logger)
+
+		return &baseConfig, client, err
+	case common.GoogleStorage:
+		gcsConfig := gcs.ClientConfig{
+			BaseClientConfig: baseConfig,
+		}
+
+		if err := mapstructure.Decode(cc, &gcsConfig.OtherConfig); err != nil {
+			return nil, nil, err
+		}
+
+		client, err := gcs.New(ctx, &gcsConfig, logger, version)
 
 		return &baseConfig, client, err
 	case common.AzureBlobStore:
@@ -145,6 +158,7 @@ func (cc ClientConfig) JSONSchema() *jsonschema.Schema {
 		OneOf: []*jsonschema.Schema{
 			minio.ClientConfig{}.JSONSchema(),
 			azblob.ClientConfig{}.JSONSchema(),
+			gcs.ClientConfig{}.JSONSchema(),
 		},
 	}
 }

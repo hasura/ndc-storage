@@ -3,7 +3,7 @@
   "operations": [
     {
       "type": "procedure",
-      "name": "setStorageObjectTags",
+      "name": "updateStorageObject",
       "arguments": {
         "bucket": "azblob-bucket-test",
         "object": "public/hello.txt",

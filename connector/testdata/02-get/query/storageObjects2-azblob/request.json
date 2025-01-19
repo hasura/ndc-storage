@@ -341,6 +341,12 @@
         "expressions": [
           {
             "type": "binary_comparison_operator",
+            "column": { "type": "column", "name": "clientId", "path": [] },
+            "operator": "_eq",
+            "value": { "type": "scalar", "value": "azblob-connstr" }
+          },
+          {
+            "type": "binary_comparison_operator",
             "column": { "type": "column", "name": "bucket", "path": [] },
             "operator": "_eq",
             "value": { "type": "scalar", "value": "azblob-bucket-test" }

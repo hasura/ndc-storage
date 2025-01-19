@@ -113,6 +113,36 @@ definition:
 kind: ObjectType
 version: v1
 definition:
+  name: StorageTag
+  description: structure key/value pair representing an object tag to apply configuration
+  fields:
+    - name: key
+      type: String
+    - name: value
+      type: String
+  graphql:
+    typeName: StorageTag
+    inputTypeName: StorageTagInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: storage
+      dataConnectorObjectType: StorageTag
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: StorageTag
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - key
+          - value
+
+---
+kind: ObjectType
+version: v1
+definition:
   name: StorageReplicationFilterAnd
   description: "- a tag to combine a prefix and multiple tags for replication
     configuration rule."

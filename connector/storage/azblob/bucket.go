@@ -13,6 +13,7 @@ import (
 	"github.com/hasura/ndc-storage/connector/storage/common"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/codes"
+	"go.opentelemetry.io/otel/trace"
 )
 
 // MakeBucket creates a new bucket.
@@ -40,16 +41,22 @@ func (c *Client) MakeBucket(ctx context.Context, args *common.MakeStorageBucketO
 }
 
 // ListBuckets lists all buckets.
-func (c *Client) ListBuckets(ctx context.Context, options common.BucketOptions) ([]common.StorageBucketInfo, error) {
+func (c *Client) ListBuckets(ctx context.Context, options common.BucketOptions) ([]common.StorageBucketInfo, error) { //nolint:gocognit
 	ctx, span := c.startOtelSpan(ctx, "ListBuckets", "")
 	defer span.End()
 
-	pager := c.client.NewListContainersPager(&azblob.ListContainersOptions{
+	opts := &azblob.ListContainersOptions{
 		Include: azblob.ListContainersInclude{
 			Metadata: options.IncludeTags,
 			Deleted:  false,
 		},
-	})
+	}
+
+	if options.Prefix != "" {
+		opts.Prefix = &options.Prefix
+	}
+
+	pager := c.client.NewListContainersPager(opts)
 
 	var results []common.StorageBucketInfo
 
@@ -79,8 +86,22 @@ func (c *Client) ListBuckets(ctx context.Context, options common.BucketOptions) 
 				}
 			}
 
-			if container.Properties != nil && container.Properties.LastModified != nil {
-				result.CreationDate = *container.Properties.LastModified
+			if container.Properties != nil {
+				if container.Properties.LastModified != nil {
+					result.CreationDate = *container.Properties.LastModified
+				}
+
+				if container.Properties.IsImmutableStorageWithVersioningEnabled != nil {
+					result.Versioning = &common.StorageBucketVersioningConfiguration{
+						Enabled: *container.Properties.IsImmutableStorageWithVersioningEnabled,
+					}
+				}
+
+				if container.Properties.DefaultEncryptionScope != nil {
+					result.Encryption = &common.ServerSideEncryptionConfiguration{
+						KmsMasterKeyID: *container.Properties.DefaultEncryptionScope,
+					}
+				}
 			}
 
 			results = append(results, result)
@@ -174,6 +195,20 @@ func (c *Client) getBucket(ctx context.Context, bucketName string, options commo
 	return nil, nil
 }
 
+// UpdateBucket updates configurations for the bucket.
+func (c *Client) UpdateBucket(ctx context.Context, bucketName string, opts common.UpdateStorageBucketOptions) error {
+	ctx, span := c.startOtelSpanWithKind(ctx, trace.SpanKindInternal, "UpdateBucket", bucketName)
+	defer span.End()
+
+	if opts.Tags != nil {
+		if err := c.SetBucketTagging(ctx, bucketName, opts.Tags); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
 // RemoveBucket removes a bucket, bucket should be empty to be successfully removed.
 func (c *Client) RemoveBucket(ctx context.Context, bucketName string) error {
 	ctx, span := c.startOtelSpan(ctx, "RemoveBucket", bucketName)
@@ -212,10 +247,6 @@ func (c *Client) SetBucketTagging(ctx context.Context, bucketName string, bucket
 		inputTags = map[string]*string{}
 
 		for key, value := range bucketTags {
-			if value == "" {
-				continue
-			}
-
 			span.SetAttributes(attribute.String("storage.bucket_tag"+key, value))
 			inputTags[key] = &value
 		}
@@ -275,11 +306,6 @@ func (c *Client) RemoveAllBucketNotification(ctx context.Context, bucketName str
 	return errNotSupported
 }
 
-// GetBucketVersioning gets the versioning configuration set on a bucket.
-func (c *Client) GetBucketVersioning(ctx context.Context, bucketName string) (*common.StorageBucketVersioningConfiguration, error) {
-	return nil, errNotSupported
-}
-
 // SetBucketReplication sets replication configuration on a bucket. Role can be obtained by first defining the replication target
 // to associate the source and destination buckets for replication with the replication endpoint.
 func (c *Client) SetBucketReplication(ctx context.Context, bucketName string, cfg common.StorageReplicationConfig) error {
@@ -293,40 +319,5 @@ func (c *Client) GetBucketReplication(ctx context.Context, bucketName string) (*
 
 // RemoveBucketReplication removes replication configuration on a bucket.
 func (c *Client) RemoveBucketReplication(ctx context.Context, bucketName string) error {
-	return errNotSupported
-}
-
-// EnableVersioning enables bucket versioning support.
-func (c *Client) EnableVersioning(ctx context.Context, bucketName string) error {
-	return errNotSupported
-}
-
-// SuspendVersioning disables bucket versioning support.
-func (c *Client) SuspendVersioning(ctx context.Context, bucketName string) error {
-	return errNotSupported
-}
-
-// SetBucketLifecycle sets lifecycle on bucket or an object prefix.
-func (c *Client) SetBucketLifecycle(ctx context.Context, bucketName string, config common.BucketLifecycleConfiguration) error {
-	return errNotSupported
-}
-
-// GetBucketLifecycle gets lifecycle on a bucket or a prefix.
-func (c *Client) GetBucketLifecycle(ctx context.Context, bucketName string) (*common.BucketLifecycleConfiguration, error) {
-	return nil, errNotSupported
-}
-
-// SetBucketEncryption sets default encryption configuration on a bucket.
-func (c *Client) SetBucketEncryption(ctx context.Context, bucketName string, input common.ServerSideEncryptionConfiguration) error {
-	return errNotSupported
-}
-
-// GetBucketEncryption gets default encryption configuration set on a bucket.
-func (c *Client) GetBucketEncryption(ctx context.Context, bucketName string) (*common.ServerSideEncryptionConfiguration, error) {
-	return nil, errNotSupported
-}
-
-// RemoveBucketEncryption remove default encryption configuration set on a bucket.
-func (c *Client) RemoveBucketEncryption(ctx context.Context, bucketName string) error {
 	return errNotSupported
 }

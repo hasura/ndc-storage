@@ -8,6 +8,7 @@ services:
       - 8080:8080
     volumes:
       - ./tests/configuration:/etc/connector:ro
+      - ./tests/certs/service_account.json:/service_account.json
     extra_hosts:
       - local.hasura.dev=host-gateway
     environment:
@@ -26,6 +27,11 @@ services:
       AZURE_STORAGE_DEFAULT_BUCKET: $AZURE_STORAGE_DEFAULT_BUCKET
       AZURE_STORAGE_ACCOUNT_NAME: $AZURE_STORAGE_ACCOUNT_NAME
       AZURE_STORAGE_ACCOUNT_KEY: $AZURE_STORAGE_ACCOUNT_KEY
+      GOOGLE_STORAGE_DEFAULT_BUCKET: $GOOGLE_STORAGE_DEFAULT_BUCKET
+      GOOGLE_STORAGE_ENDPOINT: $GOOGLE_STORAGE_ENDPOINT
+      GOOGLE_STORAGE_PUBLIC_HOST: $GOOGLE_STORAGE_PUBLIC_HOST
+      GOOGLE_PROJECT_ID: $GOOGLE_PROJECT_ID
+      GOOGLE_STORAGE_CREDENTIALS_FILE: /service_account.json
       HASURA_LOG_LEVEL: debug
       OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4317
       OTEL_METRICS_EXPORTER: prometheus
@@ -67,6 +73,21 @@ services:
       - "10000:10000"
     environment:
       AZURITE_ACCOUNTS: "${AZURE_STORAGE_ACCOUNT_NAME}:${AZURE_STORAGE_ACCOUNT_KEY}"
+
+  # https://github.com/fsouza/fake-gcs-server
+  gcp-storage-emulator:
+    image: fsouza/fake-gcs-server:1.52.1
+    command:
+      [
+        "-scheme",
+        "http",
+        "-public-host",
+        "http://localhost:10010",
+        "-log-level",
+        "debug",
+      ]
+    ports:
+      - "10010:4443"
 
 volumes:
   minio_data:

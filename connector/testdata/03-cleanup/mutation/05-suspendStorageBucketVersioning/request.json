@@ -3,9 +3,11 @@
   "operations": [
     {
       "type": "procedure",
-      "name": "suspendStorageBucketVersioning",
+      "name": "updateStorageBucket",
       "arguments": {
-        "bucket": "minio-bucket-test"
+        "bucket": "minio-bucket-test",
+        "versioning": false,
+        "tags": {}
       }
     }
   ]

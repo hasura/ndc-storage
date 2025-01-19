@@ -24,7 +24,7 @@ type StorageProviderType string
 
 const (
 	S3             StorageProviderType = "s3"
-	GoogleStorage  StorageProviderType = "gs"
+	GoogleStorage  StorageProviderType = "gcs"
 	AzureBlobStore StorageProviderType = "azblob"
 )
 

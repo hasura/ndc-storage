@@ -63,7 +63,7 @@ func (cor ObjectPredicate) HasPostPredicate() bool {
 	return len(cor.objectNamePostPredicates) > 0
 }
 
-func (cor *ObjectPredicate) EvalSelection(selection schema.NestedField) error {
+func (cor *ObjectPredicate) EvalSelection(selection schema.NestedField) error { //nolint:gocognit
 	if len(selection) == 0 {
 		return nil
 	}
@@ -106,12 +106,28 @@ func (cor *ObjectPredicate) EvalSelection(selection schema.NestedField) error {
 			cor.Include.Tags = true
 		}
 
-		if _, versionExists := expr.Fields["versionId"]; versionExists {
-			cor.Include.Versions = true
+		for _, key := range []string{"versionId", "versioning"} {
+			if _, ok := expr.Fields[key]; ok {
+				cor.Include.Versions = true
+
+				break
+			}
 		}
 
 		if _, legalHoldExists := expr.Fields["legalHold"]; legalHoldExists {
 			cor.Include.LegalHold = true
+		}
+
+		if _, ok := expr.Fields["lifecycle"]; ok {
+			cor.Include.Lifecycle = true
+		}
+
+		if _, ok := expr.Fields["encryption"]; ok {
+			cor.Include.Encryption = true
+		}
+
+		if _, ok := expr.Fields["objectLock"]; ok {
+			cor.Include.ObjectLock = true
 		}
 	}
 

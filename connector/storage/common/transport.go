@@ -17,7 +17,7 @@ import (
 	"go.opentelemetry.io/otel/trace"
 )
 
-var tranportTracer = connector.NewTracer("connector/storage/common/transport")
+var transportTracer = connector.NewTracer("connector/storage/common/transport")
 
 // NewTransport creates a new HTTP transporter for the storage client.
 func NewTransport(logger *slog.Logger, port int, secure bool) http.RoundTripper {
@@ -46,7 +46,7 @@ type debugRoundTripper struct {
 }
 
 func (mrt debugRoundTripper) RoundTrip(req *http.Request) (*http.Response, error) {
-	ctx, span := tranportTracer.Start(req.Context(), fmt.Sprintf("%s %s", req.Method, req.URL.Path), trace.WithSpanKind(trace.SpanKindClient))
+	ctx, span := transportTracer.Start(req.Context(), fmt.Sprintf("%s %s", req.Method, req.URL.Path), trace.WithSpanKind(trace.SpanKindClient))
 	defer span.End()
 
 	span.SetAttributes(

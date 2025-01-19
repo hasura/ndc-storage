@@ -89,6 +89,10 @@ func (j *ListStorageBucketArguments) FromValue(input map[string]any) error {
 	if err != nil {
 		return err
 	}
+	j.Prefix, err = utils.GetStringDefault(input, "prefix")
+	if err != nil {
+		return err
+	}
 	return nil
 }
 
@@ -187,60 +191,6 @@ func (j *StorageBucketArguments) FromValue(input map[string]any) error {
 }
 
 // ToMap encodes the struct to a value map
-func (j AbortIncompleteMultipartUpload) ToMap() map[string]any {
-	r := make(map[string]any)
-	r["daysAfterInitiation"] = j.DaysAfterInitiation
-
-	return r
-}
-
-// ToMap encodes the struct to a value map
-func (j BucketLifecycleConfiguration) ToMap() map[string]any {
-	r := make(map[string]any)
-	j_Rules := make([]any, len(j.Rules))
-	for i, j_Rules_v := range j.Rules {
-		j_Rules[i] = j_Rules_v
-	}
-	r["rules"] = j_Rules
-
-	return r
-}
-
-// ToMap encodes the struct to a value map
-func (j BucketLifecycleRule) ToMap() map[string]any {
-	r := make(map[string]any)
-	if j.AbortIncompleteMultipartUpload != nil {
-		r["abortIncompleteMultipartUpload"] = (*j.AbortIncompleteMultipartUpload)
-	}
-	if j.AllVersionsExpiration != nil {
-		r["allVersionsExpiration"] = (*j.AllVersionsExpiration)
-	}
-	if j.DelMarkerExpiration != nil {
-		r["delMarkerExpiration"] = (*j.DelMarkerExpiration)
-	}
-	if j.Expiration != nil {
-		r["expiration"] = (*j.Expiration)
-	}
-	if j.RuleFilter != nil {
-		r["filter"] = (*j.RuleFilter)
-	}
-	r["id"] = j.ID
-	if j.NoncurrentVersionExpiration != nil {
-		r["noncurrentVersionExpiration"] = (*j.NoncurrentVersionExpiration)
-	}
-	if j.NoncurrentVersionTransition != nil {
-		r["noncurrentVersionTransition"] = (*j.NoncurrentVersionTransition)
-	}
-	r["prefix"] = j.Prefix
-	r["status"] = j.Status
-	if j.Transition != nil {
-		r["transition"] = (*j.Transition)
-	}
-
-	return r
-}
-
-// ToMap encodes the struct to a value map
 func (j DeleteMarkerReplication) ToMap() map[string]any {
 	r := make(map[string]any)
 	r["status"] = j.Status
@@ -276,94 +226,6 @@ func (j GetStorageObjectOptions) ToMap() map[string]any {
 }
 
 // ToMap encodes the struct to a value map
-func (j LifecycleAllVersionsExpiration) ToMap() map[string]any {
-	r := make(map[string]any)
-	r["days"] = j.Days
-	r["deleteMarker"] = j.DeleteMarker
-
-	return r
-}
-
-// ToMap encodes the struct to a value map
-func (j LifecycleDelMarkerExpiration) ToMap() map[string]any {
-	r := make(map[string]any)
-	r["days"] = j.Days
-
-	return r
-}
-
-// ToMap encodes the struct to a value map
-func (j LifecycleExpiration) ToMap() map[string]any {
-	r := make(map[string]any)
-	r["date"] = j.Date
-	r["days"] = j.Days
-	r["expiredObjectAllVersions"] = j.DeleteAll
-	r["expiredObjectDeleteMarker"] = j.DeleteMarker
-
-	return r
-}
-
-// ToMap encodes the struct to a value map
-func (j LifecycleFilter) ToMap() map[string]any {
-	r := make(map[string]any)
-	if j.And != nil {
-		r["and"] = (*j.And)
-	}
-	r["objectSizeGreaterThan"] = j.ObjectSizeGreaterThan
-	r["objectSizeLessThan"] = j.ObjectSizeLessThan
-	r["prefix"] = j.Prefix
-	if j.Tag != nil {
-		r["tag"] = (*j.Tag)
-	}
-
-	return r
-}
-
-// ToMap encodes the struct to a value map
-func (j LifecycleFilterAnd) ToMap() map[string]any {
-	r := make(map[string]any)
-	r["objectSizeGreaterThan"] = j.ObjectSizeGreaterThan
-	r["objectSizeLessThan"] = j.ObjectSizeLessThan
-	r["prefix"] = j.Prefix
-	j_Tags := make([]any, len(j.Tags))
-	for i, j_Tags_v := range j.Tags {
-		j_Tags[i] = j_Tags_v
-	}
-	r["tags"] = j_Tags
-
-	return r
-}
-
-// ToMap encodes the struct to a value map
-func (j LifecycleNoncurrentVersionExpiration) ToMap() map[string]any {
-	r := make(map[string]any)
-	r["newerNoncurrentVersions"] = j.NewerNoncurrentVersions
-	r["noncurrentDays"] = j.NoncurrentDays
-
-	return r
-}
-
-// ToMap encodes the struct to a value map
-func (j LifecycleNoncurrentVersionTransition) ToMap() map[string]any {
-	r := make(map[string]any)
-	r["newerNoncurrentVersions"] = j.NewerNoncurrentVersions
-	r["noncurrentDays"] = j.NoncurrentDays
-	r["storageClass"] = j.StorageClass
-
-	return r
-}
-
-// ToMap encodes the struct to a value map
-func (j LifecycleTransition) ToMap() map[string]any {
-	r := make(map[string]any)
-	r["date"] = j.Date
-	r["days"] = j.Days
-	r["storageClass"] = j.StorageClass
-
-	return r
-}
-
-// ToMap encodes the struct to a value map
 func (j ListIncompleteUploadsOptions) ToMap() map[string]any {
 	r := make(map[string]any)
 	r["prefix"] = j.Prefix
@@ -387,7 +249,7 @@ func (j ListStorageObjectsOptions) ToMap() map[string]any {
 func (j MakeStorageBucketOptions) ToMap() map[string]any {
 	r := make(map[string]any)
 	r["name"] = j.Name
-	r["objectLocking"] = j.ObjectLocking
+	r["objectLock"] = j.ObjectLock
 	r["region"] = j.Region
 	r["tags"] = j.Tags
 
@@ -488,6 +350,132 @@ func (j NotificationTopicConfig) ToMap() map[string]any {
 }
 
 // ToMap encodes the struct to a value map
+func (j ObjectAbortIncompleteMultipartUpload) ToMap() map[string]any {
+	r := make(map[string]any)
+	r["daysAfterInitiation"] = j.DaysAfterInitiation
+
+	return r
+}
+
+// ToMap encodes the struct to a value map
+func (j ObjectLifecycleAllVersionsExpiration) ToMap() map[string]any {
+	r := make(map[string]any)
+	r["days"] = j.Days
+	r["deleteMarker"] = j.DeleteMarker
+
+	return r
+}
+
+// ToMap encodes the struct to a value map
+func (j ObjectLifecycleConfiguration) ToMap() map[string]any {
+	r := make(map[string]any)
+	j_Rules := make([]any, len(j.Rules))
+	for i, j_Rules_v := range j.Rules {
+		j_Rules[i] = j_Rules_v
+	}
+	r["rules"] = j_Rules
+
+	return r
+}
+
+// ToMap encodes the struct to a value map
+func (j ObjectLifecycleDelMarkerExpiration) ToMap() map[string]any {
+	r := make(map[string]any)
+	r["days"] = j.Days
+
+	return r
+}
+
+// ToMap encodes the struct to a value map
+func (j ObjectLifecycleExpiration) ToMap() map[string]any {
+	r := make(map[string]any)
+	r["date"] = j.Date
+	r["days"] = j.Days
+	r["expiredObjectAllVersions"] = j.DeleteAll
+	r["expiredObjectDeleteMarker"] = j.DeleteMarker
+
+	return r
+}
+
+// ToMap encodes the struct to a value map
+func (j ObjectLifecycleFilter) ToMap() map[string]any {
+	r := make(map[string]any)
+	r["matchesPrefix"] = j.MatchesPrefix
+	r["matchesStorageClasses"] = j.MatchesStorageClasses
+	r["matchesSuffix"] = j.MatchesSuffix
+	r["objectSizeGreaterThan"] = j.ObjectSizeGreaterThan
+	r["objectSizeLessThan"] = j.ObjectSizeLessThan
+	r["tags"] = j.Tags
+
+	return r
+}
+
+// ToMap encodes the struct to a value map
+func (j ObjectLifecycleNoncurrentVersionExpiration) ToMap() map[string]any {
+	r := make(map[string]any)
+	r["newerNoncurrentVersions"] = j.NewerNoncurrentVersions
+	r["noncurrentDays"] = j.NoncurrentDays
+
+	return r
+}
+
+// ToMap encodes the struct to a value map
+func (j ObjectLifecycleNoncurrentVersionTransition) ToMap() map[string]any {
+	r := make(map[string]any)
+	r["newerNoncurrentVersions"] = j.NewerNoncurrentVersions
+	r["noncurrentDays"] = j.NoncurrentDays
+	r["storageClass"] = j.StorageClass
+
+	return r
+}
+
+// ToMap encodes the struct to a value map
+func (j ObjectLifecycleRule) ToMap() map[string]any {
+	r := make(map[string]any)
+	if j.AbortIncompleteMultipartUpload != nil {
+		r["abortIncompleteMultipartUpload"] = (*j.AbortIncompleteMultipartUpload)
+	}
+	if j.AllVersionsExpiration != nil {
+		r["allVersionsExpiration"] = (*j.AllVersionsExpiration)
+	}
+	if j.DelMarkerExpiration != nil {
+		r["delMarkerExpiration"] = (*j.DelMarkerExpiration)
+	}
+	r["enabled"] = j.Enabled
+	if j.Expiration != nil {
+		r["expiration"] = (*j.Expiration)
+	}
+	j_RuleFilter := make([]any, len(j.RuleFilter))
+	for i, j_RuleFilter_v := range j.RuleFilter {
+		j_RuleFilter[i] = j_RuleFilter_v
+	}
+	r["filter"] = j_RuleFilter
+	r["id"] = j.ID
+	if j.NoncurrentVersionExpiration != nil {
+		r["noncurrentVersionExpiration"] = (*j.NoncurrentVersionExpiration)
+	}
+	if j.NoncurrentVersionTransition != nil {
+		r["noncurrentVersionTransition"] = (*j.NoncurrentVersionTransition)
+	}
+	r["prefix"] = j.Prefix
+	if j.Transition != nil {
+		r["transition"] = (*j.Transition)
+	}
+
+	return r
+}
+
+// ToMap encodes the struct to a value map
+func (j ObjectLifecycleTransition) ToMap() map[string]any {
+	r := make(map[string]any)
+	r["date"] = j.Date
+	r["days"] = j.Days
+	r["storageClass"] = j.StorageClass
+
+	return r
+}
+
+// ToMap encodes the struct to a value map
 func (j PresignedGetStorageObjectOptions) ToMap() map[string]any {
 	r := make(map[string]any)
 	r["expiry"] = j.Expiry
@@ -520,15 +508,26 @@ func (j PutStorageObjectOptions) ToMap() map[string]any {
 	r["disableMultipart"] = j.DisableMultipart
 	r["expires"] = j.Expires
 	r["legalHold"] = j.LegalHold
-	r["mode"] = j.Mode
 	r["numThreads"] = j.NumThreads
 	r["partSize"] = j.PartSize
-	r["retainUntilDate"] = j.RetainUntilDate
+	if j.Retention != nil {
+		r["retention"] = (*j.Retention)
+	}
 	r["sendContentMd5"] = j.SendContentMd5
 	r["storageClass"] = j.StorageClass
 	r["userMetadata"] = j.UserMetadata
 	r["userTags"] = j.UserTags
 	r["websiteRedirectLocation"] = j.WebsiteRedirectLocation
+
+	return r
+}
+
+// ToMap encodes the struct to a value map
+func (j PutStorageObjectRetentionOptions) ToMap() map[string]any {
+	r := make(map[string]any)
+	r["governanceBypass"] = j.GovernanceBypass
+	r["mode"] = j.Mode
+	r["retainUntilDate"] = j.RetainUntilDate
 
 	return r
 }
@@ -573,28 +572,8 @@ func (j ReplicaModifications) ToMap() map[string]any {
 // ToMap encodes the struct to a value map
 func (j ServerSideEncryptionConfiguration) ToMap() map[string]any {
 	r := make(map[string]any)
-	j_Rules := make([]any, len(j.Rules))
-	for i, j_Rules_v := range j.Rules {
-		j_Rules[i] = j_Rules_v
-	}
-	r["rules"] = j_Rules
-
-	return r
-}
-
-// ToMap encodes the struct to a value map
-func (j ServerSideEncryptionRule) ToMap() map[string]any {
-	r := make(map[string]any)
-	r["apply"] = j.Apply
-
-	return r
-}
-
-// ToMap encodes the struct to a value map
-func (j SetStorageObjectLegalHoldOptions) ToMap() map[string]any {
-	r := make(map[string]any)
-	r["status"] = j.Status
-	r["versionId"] = j.VersionID
+	r["kmsMasterKeyId"] = j.KmsMasterKeyID
+	r["sseAlgorithm"] = j.SSEAlgorithm
 
 	return r
 }
@@ -615,16 +594,6 @@ func (j SetStorageObjectRetentionOptions) ToMap() map[string]any {
 	r["governanceBypass"] = j.GovernanceBypass
 	r["mode"] = j.Mode
 	r["retainUntilDate"] = j.RetainUntilDate
-	r["versionId"] = j.VersionID
-
-	return r
-}
-
-// ToMap encodes the struct to a value map
-func (j SetStorageObjectTagsOptions) ToMap() map[string]any {
-	r := make(map[string]any)
-	r["tags"] = j.Tags
-	r["versionId"] = j.VersionID
 
 	return r
 }
@@ -635,15 +604,6 @@ func (j SourceSelectionCriteria) ToMap() map[string]any {
 	if j.ReplicaModifications != nil {
 		r["replicaModifications"] = (*j.ReplicaModifications)
 	}
-
-	return r
-}
-
-// ToMap encodes the struct to a value map
-func (j StorageApplySSEByDefault) ToMap() map[string]any {
-	r := make(map[string]any)
-	r["kmsMasterKeyId"] = j.KmsMasterKeyID
-	r["sseAlgorithm"] = j.SSEAlgorithm
 
 	return r
 }
@@ -661,8 +621,20 @@ func (j StorageBucketArguments) ToMap() map[string]any {
 func (j StorageBucketInfo) ToMap() map[string]any {
 	r := make(map[string]any)
 	r["creationDate"] = j.CreationDate
+	if j.Encryption != nil {
+		r["encryption"] = (*j.Encryption)
+	}
+	if j.Lifecycle != nil {
+		r["lifecycle"] = (*j.Lifecycle)
+	}
 	r["name"] = j.Name
+	if j.ObjectLock != nil {
+		r["objectLock"] = (*j.ObjectLock)
+	}
 	r["tags"] = j.Tags
+	if j.Versioning != nil {
+		r["versioning"] = (*j.Versioning)
+	}
 
 	return r
 }
@@ -670,10 +642,10 @@ func (j StorageBucketInfo) ToMap() map[string]any {
 // ToMap encodes the struct to a value map
 func (j StorageBucketVersioningConfiguration) ToMap() map[string]any {
 	r := make(map[string]any)
+	r["enabled"] = j.Enabled
 	r["excludeFolders"] = j.ExcludeFolders
 	r["excludedPrefixes"] = j.ExcludedPrefixes
 	r["mfaDelete"] = j.MFADelete
-	r["status"] = j.Status
 
 	return r
 }
@@ -762,7 +734,6 @@ func (j StorageObject) ToMap() map[string]any {
 	r["deleted"] = j.Deleted
 	r["deletedTime"] = j.DeletedTime
 	r["destinationSnapshot"] = j.DestinationSnapshot
-	r["encryptionScope"] = j.EncryptionScope
 	r["etag"] = j.ETag
 	r["expiration"] = j.Expiration
 	r["expirationRuleId"] = j.ExpirationRuleID
@@ -773,10 +744,9 @@ func (j StorageObject) ToMap() map[string]any {
 	}
 	r["grant"] = j_Grant
 	r["group"] = j.Group
-	r["immutabilityPolicyMode"] = j.ImmutabilityPolicyMode
-	r["immutabilityPolicyUntilDate"] = j.ImmutabilityPolicyUntilDate
 	r["incrementalCopy"] = j.IncrementalCopy
 	r["isLatest"] = j.IsLatest
+	r["kmsKeyName"] = j.KMSKeyName
 	r["lastAccessTime"] = j.LastAccessTime
 	r["lastModified"] = j.LastModified
 	r["leaseDuration"] = j.LeaseDuration
@@ -797,6 +767,8 @@ func (j StorageObject) ToMap() map[string]any {
 	if j.Restore != nil {
 		r["restore"] = (*j.Restore)
 	}
+	r["retentionMode"] = j.RetentionMode
+	r["retentionUntilDate"] = j.RetentionUntilDate
 	r["sealed"] = j.IsSealed
 	r["serverEncrypted"] = j.ServerEncrypted
 	r["size"] = j.Size
@@ -981,6 +953,37 @@ func (j StorageUploadInfo) ToMap() map[string]any {
 	r["location"] = j.Location
 	r["name"] = j.Name
 	r["size"] = j.Size
+	r["versionId"] = j.VersionID
+
+	return r
+}
+
+// ToMap encodes the struct to a value map
+func (j UpdateStorageBucketOptions) ToMap() map[string]any {
+	r := make(map[string]any)
+	if j.Encryption != nil {
+		r["encryption"] = (*j.Encryption)
+	}
+	if j.Lifecycle != nil {
+		r["lifecycle"] = (*j.Lifecycle)
+	}
+	if j.ObjectLock != nil {
+		r["objectLock"] = (*j.ObjectLock)
+	}
+	r["tags"] = j.Tags
+	r["versioningEnabled"] = j.VersioningEnabled
+
+	return r
+}
+
+// ToMap encodes the struct to a value map
+func (j UpdateStorageObjectOptions) ToMap() map[string]any {
+	r := make(map[string]any)
+	r["legalHold"] = j.LegalHold
+	if j.Retention != nil {
+		r["retention"] = (*j.Retention)
+	}
+	r["tags"] = j.Tags
 	r["versionId"] = j.VersionID
 
 	return r
@@ -1190,15 +1193,17 @@ func (j StorageRetentionMode) ScalarName() string {
 const (
 	StorageRetentionModeLocked   StorageRetentionMode = "Locked"
 	StorageRetentionModeUnlocked StorageRetentionMode = "Unlocked"
+	StorageRetentionModeMutable  StorageRetentionMode = "Mutable"
+	StorageRetentionModeDelete   StorageRetentionMode = "Delete"
 )
 
-var enumValues_StorageRetentionMode = []StorageRetentionMode{StorageRetentionModeLocked, StorageRetentionModeUnlocked}
+var enumValues_StorageRetentionMode = []StorageRetentionMode{StorageRetentionModeLocked, StorageRetentionModeUnlocked, StorageRetentionModeMutable, StorageRetentionModeDelete}
 
 // ParseStorageRetentionMode parses a StorageRetentionMode enum from string
 func ParseStorageRetentionMode(input string) (StorageRetentionMode, error) {
 	result := StorageRetentionMode(input)
 	if !slices.Contains(enumValues_StorageRetentionMode, result) {
-		return StorageRetentionMode(""), errors.New("failed to parse StorageRetentionMode, expect one of [Locked, Unlocked]")
+		return StorageRetentionMode(""), errors.New("failed to parse StorageRetentionMode, expect one of [Locked, Unlocked, Mutable, Delete]")
 	}
 
 	return result, nil

@@ -10,8 +10,7 @@
             "type": {
               "type": "string",
               "enum": [
-                "s3",
-                "gs"
+                "s3"
               ],
               "description": "Cloud provider type of the storage client"
             },
@@ -26,10 +25,6 @@
             "endpoint": {
               "$ref": "#/$defs/EnvString",
               "description": "Endpoint of the storage server. Required for other S3 compatible services such as MinIO, Cloudflare R2, DigitalOcean Spaces, etc..."
-            },
-            "publicHost": {
-              "$ref": "#/$defs/EnvString",
-              "description": "The public host to be used for presigned URL generation"
             },
             "maxRetries": {
               "type": "integer",
@@ -60,6 +55,10 @@
                 }
               ],
               "description": "Optional region"
+            },
+            "publicHost": {
+              "$ref": "#/$defs/EnvString",
+              "description": "The public host to be used for presigned URL generation"
             },
             "authentication": {
               "oneOf": [
@@ -139,10 +138,6 @@
             "endpoint": {
               "$ref": "#/$defs/EnvString",
               "description": "Endpoint of the storage server. Required for other S3 compatible services such as MinIO, Cloudflare R2, DigitalOcean Spaces, etc..."
-            },
-            "publicHost": {
-              "$ref": "#/$defs/EnvString",
-              "description": "The public host to be used for presigned URL generation"
             },
             "maxRetries": {
               "type": "integer",
@@ -272,6 +267,10 @@
                       "$ref": "#/$defs/EnvString",
                       "description": "the path of a file containing a Kubernetes service account token"
                     },
+                    "audience": {
+                      "type": "#/$defs/EnvString",
+                      "description": "Audience to use when requesting tokens for Azure Active Directory authentication"
+                    },
                     "disableInstanceDiscovery": {
                       "type": "boolean"
                     },
@@ -307,6 +306,116 @@
             "type",
             "defaultBucket",
             "authentication"
+          ]
+        },
+        {
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": [
+                "gcs"
+              ],
+              "description": "Cloud provider type of the storage client"
+            },
+            "id": {
+              "type": "string",
+              "description": "The unique identity of a client. Use this setting if there are many configured clients"
+            },
+            "defaultBucket": {
+              "$ref": "#/$defs/EnvString",
+              "description": "Default bucket name to be set if the user doesn't specify any bucket"
+            },
+            "endpoint": {
+              "$ref": "#/$defs/EnvString",
+              "description": "Endpoint of the storage server. Required for other S3 compatible services such as MinIO, Cloudflare R2, DigitalOcean Spaces, etc..."
+            },
+            "maxRetries": {
+              "type": "integer",
+              "minimum": 1,
+              "description": "Maximum number of retry times",
+              "default": 10
+            },
+            "defaultPresignedExpiry": {
+              "type": "string",
+              "pattern": "[0-9]+(s|m|h)",
+              "description": "Default bucket name to be set if the user doesn't specify any bucket",
+              "default": "24h"
+            },
+            "allowedBuckets": {
+              "items": {
+                "type": "string"
+              },
+              "type": "array",
+              "description": "Allowed buckets. This setting prevents users to get buckets and objects outside the list. However, it's recommended to restrict the permissions for the IAM credentials"
+            },
+            "authentication": {
+              "oneOf": [
+                {
+                  "oneOf": [
+                    {
+                      "required": [
+                        "credentials"
+                      ]
+                    },
+                    {
+                      "required": [
+                        "credentialsFile"
+                      ]
+                    }
+                  ],
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "enum": [
+                        "credentials"
+                      ],
+                      "description": "Authorize with a service account or refresh token JSON credentials"
+                    },
+                    "credentials": {
+                      "$ref": "#/$defs/EnvString",
+                      "description": "The given service account or refresh token JSON credentials in JSON string format"
+                    },
+                    "credentialsFile": {
+                      "$ref": "#/$defs/EnvString",
+                      "description": "The given service account or refresh token JSON credentials file"
+                    }
+                  },
+                  "type": "object",
+                  "required": [
+                    "type"
+                  ]
+                },
+                {
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "enum": [
+                        "anonymous"
+                      ]
+                    }
+                  },
+                  "type": "object",
+                  "required": [
+                    "type"
+                  ]
+                }
+              ]
+            },
+            "publicHost": {
+              "$ref": "#/$defs/EnvString",
+              "description": "The public host to be used for presigned URL generation"
+            },
+            "projectId": {
+              "$ref": "#/$defs/EnvString",
+              "description": "Project ID of the Google Cloud account"
+            }
+          },
+          "type": "object",
+          "required": [
+            "type",
+            "defaultBucket",
+            "authentication",
+            "projectId"
           ]
         }
       ]

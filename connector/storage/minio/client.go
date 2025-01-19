@@ -16,7 +16,7 @@ import (
 
 var tracer = connector.NewTracer("connector/storage/minio")
 
-// Client prepresents a Minio client wrapper.
+// Client represents a Minio client wrapper.
 type Client struct {
 	publicHost   *url.URL
 	providerType common.StorageProviderType
@@ -60,6 +60,10 @@ func (mc *Client) startOtelSpan(ctx context.Context, name string, bucketName str
 		spanKind = trace.SpanKindInternal
 	}
 
+	return mc.startOtelSpanWithKind(ctx, spanKind, name, bucketName)
+}
+
+func (mc *Client) startOtelSpanWithKind(ctx context.Context, spanKind trace.SpanKind, name string, bucketName string) (context.Context, trace.Span) {
 	ctx, span := tracer.Start(ctx, name, trace.WithSpanKind(spanKind))
 	span.SetAttributes(
 		common.NewDBSystemAttribute(),

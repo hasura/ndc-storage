@@ -1,0 +1,88 @@
+{
+  "collection_relationships": {},
+  "operations": [
+    {
+      "type": "procedure",
+      "name": "copyStorageObject",
+      "arguments": {
+        "clientId": "gcs",
+        "dest": {
+          "bucket": "gcs-bucket",
+          "object": "public/hello2.txt",
+          "replaceMetadata": false,
+          "replaceTags": true,
+          "size": 8502136105187820186,
+          "userMetadata": {
+            "UserID": "2"
+          },
+          "userTags": {
+            "Copy": "true"
+          }
+        },
+        "source": {
+          "bucket": "gcs-bucket",
+          "end": 1730102302880743319,
+          "matchModifiedSince": "1970-01-01T00:00:01Z",
+          "matchRange": true,
+          "matchUnmodifiedSince": "2099-01-01T00:00:01Z",
+          "noMatchETag": "ic0R0GYP3Z",
+          "object": "public/hello.txt",
+          "start": 1
+        }
+      },
+      "fields": {
+        "fields": {
+          "bucket": {
+            "column": "bucket",
+            "type": "column"
+          },
+          "checksumCrc32": {
+            "column": "checksumCrc32",
+            "type": "column"
+          },
+          "checksumCrc32C": {
+            "column": "checksumCrc32C",
+            "type": "column"
+          },
+          "checksumCrc64Nvme": {
+            "column": "checksumCrc64Nvme",
+            "type": "column"
+          },
+          "checksumSha1": {
+            "column": "checksumSha1",
+            "type": "column"
+          },
+          "checksumSha256": {
+            "column": "checksumSha256",
+            "type": "column"
+          },
+          "expiration": {
+            "column": "expiration",
+            "type": "column"
+          },
+          "expirationRuleId": {
+            "column": "expirationRuleId",
+            "type": "column"
+          },
+          "expires": {
+            "column": "expires",
+            "type": "column"
+          },
+          "location": {
+            "column": "location",
+            "type": "column"
+          },
+          "name": {
+            "column": "name",
+            "type": "column"
+          },
+          "size": {
+            "column": "size",
+            "type": "column"
+          }
+        },
+        "type": "object"
+      }
+    }
+  ]
+}

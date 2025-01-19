@@ -1,0 +1,73 @@
+[
+  {
+    "rows": [
+      {
+        "__value": {
+          "objects": [
+            {
+              "accessTierInferred": null,
+              "acl": null,
+              "archiveStatus": null,
+              "blobSequenceNumber": null,
+              "blobType": null,
+              "bucket": "gcs-bucket",
+              "cacheControl": null,
+              "checksumCrc32": null,
+              "checksumCrc32C": null,
+              "checksumCrc64Nvme": null,
+              "checksumSha1": null,
+              "checksumSha256": null,
+              "clientId": "gcs",
+              "contentDisposition": "attachment",
+              "contentEncoding": "gzip",
+              "contentLanguage": "en-US",
+              "contentMd5": "KZ0tkTzqqDd9IiRNs5cjyg==",
+              "contentType": "text/plain",
+              "copyCompletionTime": null,
+              "copyId": null,
+              "copyProgress": null,
+              "copySource": null,
+              "copyStatus": null,
+              "copyStatusDescription": null,
+              "customerProvidedKeySha256": null,
+              "deleted": null,
+              "deletedTime": null,
+              "destinationSnapshot": null,
+              "encryptionScope": null,
+              "expiration": null,
+              "expirationRuleId": null,
+              "expires": null,
+              "grant": [],
+              "group": null,
+              "immutabilityPolicyMode": null,
+              "immutabilityPolicyUntilDate": null,
+              "incrementalCopy": null,
+              "leaseDuration": null,
+              "leaseState": null,
+              "leaseStatus": null,
+              "legalHold": false,
+              "metadata": { "Foo": "gcp-baz", "UserID": "3" },
+              "name": "public/hello.txt",
+              "owner": null,
+              "permissions": null,
+              "rehydratePriority": null,
+              "remainingRetentionDays": null,
+              "replicationReady": null,
+              "replicationStatus": null,
+              "resourceType": null,
+              "restore": null,
+              "sealed": null,
+              "serverEncrypted": null,
+              "size": 10,
+              "storageClass": "Cool",
+              "userMetadata": null,
+              "userTagCount": 0,
+              "userTags": null
+            }
+          ],
+          "pageInfo": { "cursor": null, "hasNextPage": true, "nextCursor": "" }
+        }
+      }
+    ]
+  }
+]

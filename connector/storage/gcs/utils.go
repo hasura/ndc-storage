@@ -1,0 +1,350 @@
+package gcs
+
+import (
+	"encoding/base64"
+	"errors"
+	"strconv"
+	"time"
+
+	"cloud.google.com/go/storage"
+	"github.com/hasura/ndc-sdk-go/schema"
+	"github.com/hasura/ndc-storage/connector/storage/common"
+	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/trace"
+	"google.golang.org/api/googleapi"
+)
+
+const (
+	size256K = 256 * 1024
+)
+
+var errNotSupported = schema.NotSupportedError("Google Cloud Storage doesn't support this method", nil)
+
+func serializeBucketInfo(bucket *storage.BucketAttrs) common.StorageBucketInfo {
+	result := common.StorageBucketInfo{
+		Name:         bucket.Name,
+		Tags:         bucket.Labels,
+		CreationDate: bucket.Created,
+		Lifecycle:    serializeLifecycleConfiguration(bucket.Lifecycle),
+		Versioning: &common.StorageBucketVersioningConfiguration{
+			Enabled: bucket.VersioningEnabled,
+		},
+	}
+
+	if bucket.Encryption != nil && bucket.Encryption.DefaultKMSKeyName != "" {
+		result.Encryption = &common.ServerSideEncryptionConfiguration{
+			KmsMasterKeyID: bucket.Encryption.DefaultKMSKeyName,
+		}
+	}
+
+	return result
+}
+
+func serializeObjectInfo(obj *storage.ObjectAttrs) common.StorageObject {
+	object := common.StorageObject{
+		Bucket:       obj.Bucket,
+		Name:         obj.Name,
+		CreationTime: &obj.Created,
+		LastModified: obj.Updated,
+		Size:         &obj.Size,
+		Metadata:     obj.Metadata,
+		StorageClass: &obj.StorageClass,
+		LegalHold:    &obj.TemporaryHold,
+	}
+
+	if obj.Etag != "" {
+		object.ETag = &obj.Etag
+	}
+
+	if obj.ContentType != "" {
+		object.ContentType = &obj.ContentType
+	}
+
+	if obj.CacheControl != "" {
+		object.CacheControl = &obj.CacheControl
+	}
+
+	if obj.ContentDisposition != "" {
+		object.ContentDisposition = &obj.ContentDisposition
+	}
+
+	if obj.ContentEncoding != "" {
+		object.ContentEncoding = &obj.ContentEncoding
+	}
+
+	if obj.ContentLanguage != "" {
+		object.ContentLanguage = &obj.ContentLanguage
+	}
+
+	if obj.CustomerKeySHA256 != "" {
+		object.CustomerProvidedKeySHA256 = &obj.CustomerKeySHA256
+	}
+
+	if obj.KMSKeyName != "" {
+		object.KMSKeyName = &obj.KMSKeyName
+	}
+
+	if obj.Owner != "" {
+		object.Owner = &common.StorageOwner{
+			DisplayName: &obj.Owner,
+		}
+	}
+
+	if obj.Retention != nil {
+		if obj.Retention.Mode != "" {
+			object.RetentionMode = &obj.Retention.Mode
+		}
+
+		if !obj.Retention.RetainUntil.IsZero() {
+			object.RetentionUntilDate = &obj.Retention.RetainUntil
+		}
+	}
+
+	if !obj.RetentionExpirationTime.IsZero() {
+		object.Expiration = &obj.RetentionExpirationTime
+	}
+
+	if !obj.Deleted.IsZero() {
+		deleted := true
+		object.Deleted = &deleted
+		object.DeletedTime = &obj.Deleted
+	}
+
+	if obj.Generation > 0 {
+		versionID := strconv.Itoa(int(obj.Generation))
+		object.VersionID = &versionID
+	}
+
+	if len(obj.MD5) > 0 {
+		contentMd5 := base64.StdEncoding.EncodeToString(obj.MD5)
+		object.ContentMD5 = &contentMd5
+	}
+
+	return object
+}
+
+func (c *Client) validateListObjectsOptions(span trace.Span, opts *common.ListStorageObjectsOptions) *storage.Query {
+	span.SetAttributes(
+		attribute.Bool("storage.options.recursive", opts.Recursive),
+		attribute.Bool("storage.options.with_versions", opts.Include.Versions),
+		attribute.Bool("storage.options.with_metadata", opts.Include.Metadata),
+	)
+
+	if opts.Prefix != "" {
+		span.SetAttributes(attribute.String("storage.options.prefix", opts.Prefix))
+	}
+
+	if opts.StartAfter != "" {
+		span.SetAttributes(attribute.String("storage.options.start_after", opts.StartAfter))
+	}
+
+	if opts.MaxResults > 0 {
+		span.SetAttributes(attribute.Int("storage.options.max_results", opts.MaxResults))
+	}
+
+	return &storage.Query{
+		Versions:    opts.Include.Versions,
+		Prefix:      opts.Prefix,
+		StartOffset: opts.StartAfter,
+	}
+}
+
+func serializeUploadObjectInfo(obj *storage.Writer) common.StorageUploadInfo {
+	object := common.StorageUploadInfo{
+		Bucket: obj.Bucket,
+		Name:   obj.Name,
+	}
+
+	if obj.Etag != "" {
+		object.ETag = &obj.Etag
+	}
+
+	if obj.Size > 0 {
+		object.Size = &obj.Size
+	}
+
+	if !obj.Updated.IsZero() {
+		object.LastModified = &obj.Updated
+	} else if !obj.Created.IsZero() {
+		object.LastModified = &obj.Created
+	}
+
+	if !obj.RetentionExpirationTime.IsZero() {
+		object.Expiration = &obj.RetentionExpirationTime
+	}
+
+	versionID := strconv.Itoa(int(obj.Generation))
+	object.VersionID = &versionID
+
+	if len(obj.MD5) > 0 {
+		contentMd5 := base64.StdEncoding.EncodeToString(obj.MD5)
+		object.ContentMD5 = &contentMd5
+	}
+
+	return object
+}
+
+func validateLifecycleRule(rule common.ObjectLifecycleRule) storage.LifecycleRule {
+	r := storage.LifecycleRule{}
+
+	for _, filter := range rule.RuleFilter {
+		r.Condition.MatchesPrefix = append(r.Condition.MatchesPrefix, filter.MatchesPrefix...)
+		r.Condition.MatchesSuffix = append(r.Condition.MatchesSuffix, filter.MatchesSuffix...)
+		r.Condition.MatchesStorageClasses = append(r.Condition.MatchesStorageClasses, filter.MatchesStorageClasses...)
+	}
+
+	if rule.NoncurrentVersionExpiration != nil {
+		if rule.NoncurrentVersionExpiration.NewerNoncurrentVersions != nil {
+			r.Condition.NumNewerVersions = int64(*rule.NoncurrentVersionExpiration.NewerNoncurrentVersions)
+		}
+
+		if rule.NoncurrentVersionExpiration.NoncurrentDays != nil {
+			r.Condition.DaysSinceNoncurrentTime = int64(*rule.NoncurrentVersionExpiration.NoncurrentDays)
+		}
+
+		r.Action.Type = storage.DeleteAction
+	}
+
+	if rule.NoncurrentVersionTransition != nil {
+		if rule.NoncurrentVersionTransition.NewerNoncurrentVersions != nil {
+			r.Condition.NumNewerVersions = int64(*rule.NoncurrentVersionTransition.NewerNoncurrentVersions)
+		}
+
+		if rule.NoncurrentVersionTransition.NoncurrentDays != nil {
+			r.Condition.DaysSinceNoncurrentTime = int64(*rule.NoncurrentVersionTransition.NoncurrentDays)
+		}
+
+		if rule.NoncurrentVersionTransition.StorageClass != nil {
+			r.Action.StorageClass = *rule.NoncurrentVersionTransition.StorageClass
+		}
+
+		r.Action.Type = storage.SetStorageClassAction
+	}
+
+	if rule.Expiration != nil && rule.Expiration.Days != nil {
+		r.Condition.AgeInDays = int64(*rule.Expiration.Days)
+		r.Condition.AllObjects = *rule.Expiration.Days == 0
+
+		r.Action.Type = storage.DeleteAction
+
+		return r
+	}
+
+	if rule.Transition != nil || rule.Transition.StorageClass != nil {
+		if rule.Transition.Days != nil {
+			r.Condition.AgeInDays = int64(*rule.Transition.Days)
+		} else if rule.Transition.Date != nil {
+			r.Condition.AgeInDays = int64(time.Since(rule.Expiration.Date.Time).Hours() / 24)
+		}
+
+		r.Condition.AllObjects = r.Condition.AgeInDays == 0
+		r.Action.StorageClass = *rule.Transition.StorageClass
+		r.Action.Type = storage.SetStorageClassAction
+
+		return r
+	}
+
+	if rule.AbortIncompleteMultipartUpload != nil && rule.AbortIncompleteMultipartUpload.DaysAfterInitiation != nil {
+		r.Action.Type = storage.AbortIncompleteMPUAction
+		r.Condition.AgeInDays = int64(*rule.AbortIncompleteMultipartUpload.DaysAfterInitiation)
+		r.Condition.AllObjects = r.Condition.AgeInDays == 0
+
+		return r
+	}
+
+	if rule.AllVersionsExpiration != nil && rule.AllVersionsExpiration.Days != nil {
+		r.Condition.AgeInDays = int64(*rule.AllVersionsExpiration.Days)
+		r.Condition.AllObjects = r.Condition.AgeInDays == 0
+		r.Action.Type = storage.DeleteAction
+
+		return r
+	}
+
+	return r
+}
+
+func validateLifecycleConfiguration(input common.ObjectLifecycleConfiguration) *storage.Lifecycle {
+	result := &storage.Lifecycle{
+		Rules: make([]storage.LifecycleRule, len(input.Rules)),
+	}
+
+	for i, rule := range input.Rules {
+		if !rule.Enabled {
+			continue
+		}
+
+		r := validateLifecycleRule(rule)
+		result.Rules[i] = r
+	}
+
+	return result
+}
+
+func serializeLifecycleConfiguration(input storage.Lifecycle) *common.ObjectLifecycleConfiguration {
+	result := &common.ObjectLifecycleConfiguration{
+		Rules: make([]common.ObjectLifecycleRule, len(input.Rules)),
+	}
+
+	for i, rule := range input.Rules {
+		r := serializeLifecycleRule(rule)
+		result.Rules[i] = r
+	}
+
+	return result
+}
+
+func serializeLifecycleRule(rule storage.LifecycleRule) common.ObjectLifecycleRule {
+	r := common.ObjectLifecycleRule{}
+
+	if len(rule.Condition.MatchesPrefix) > 0 || len(rule.Condition.MatchesSuffix) > 0 || len(rule.Condition.MatchesStorageClasses) > 0 {
+		r.RuleFilter = []common.ObjectLifecycleFilter{
+			{
+				MatchesPrefix:         rule.Condition.MatchesPrefix,
+				MatchesSuffix:         rule.Condition.MatchesSuffix,
+				MatchesStorageClasses: rule.Condition.MatchesStorageClasses,
+			},
+		}
+	}
+
+	ageInDays := int(rule.Condition.AgeInDays)
+
+	switch rule.Action.Type {
+	case storage.SetStorageClassAction:
+		r.Transition = &common.ObjectLifecycleTransition{
+			Days:         &ageInDays,
+			StorageClass: &rule.Action.StorageClass,
+		}
+	case storage.DeleteAction:
+		r.Expiration = &common.ObjectLifecycleExpiration{
+			Days: &ageInDays,
+		}
+	case storage.AbortIncompleteMPUAction:
+		r.AbortIncompleteMultipartUpload = &common.ObjectAbortIncompleteMultipartUpload{
+			DaysAfterInitiation: &ageInDays,
+		}
+	}
+
+	return r
+}
+
+func evalGoogleErrorResponse(err *googleapi.Error) *schema.ConnectorError {
+	details := map[string]any{
+		"statusCode": err.Code,
+		"details":    err.Details,
+	}
+
+	if err.Code >= 500 {
+		return schema.NewConnectorError(err.Code, err.Message, details)
+	}
+
+	return schema.UnprocessableContentError(err.Message, details)
+}
+
+func serializeErrorResponse(err error) *schema.ConnectorError {
+	var e *googleapi.Error
+	if ok := errors.As(err, &e); ok {
+		return evalGoogleErrorResponse(e)
+	}
+
+	return schema.UnprocessableContentError(err.Error(), nil)
+}

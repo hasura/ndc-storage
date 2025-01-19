@@ -11,6 +11,7 @@ import (
 	"github.com/hasura/ndc-sdk-go/connector"
 	"github.com/hasura/ndc-sdk-go/schema"
 	"github.com/hasura/ndc-sdk-go/utils"
+	"github.com/hasura/ndc-storage/configuration/version"
 	"github.com/hasura/ndc-storage/connector/functions"
 	"github.com/hasura/ndc-storage/connector/storage"
 	"github.com/hasura/ndc-storage/connector/types"
@@ -72,7 +73,7 @@ func (c *Connector) ParseConfiguration(ctx context.Context, configurationDir str
 func (c *Connector) TryInitState(ctx context.Context, configuration *types.Configuration, metrics *connector.TelemetryState) (*types.State, error) {
 	logger := connector.GetLogger(ctx)
 
-	manager, err := storage.NewManager(ctx, configuration.Clients, logger)
+	manager, err := storage.NewManager(ctx, configuration.Clients, logger, version.BuildVersion)
 	if err != nil {
 		return nil, err
 	}
