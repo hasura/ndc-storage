@@ -191,6 +191,54 @@ func (j *StorageBucketArguments) FromValue(input map[string]any) error {
 }
 
 // ToMap encodes the struct to a value map
+func (j Autoclass) ToMap() map[string]any {
+	r := make(map[string]any)
+	r["enabled"] = j.Enabled
+	r["terminalStorageClass"] = j.TerminalStorageClass
+	r["terminalStorageClassUpdateTime"] = j.TerminalStorageClassUpdateTime
+	r["toggleTime"] = j.ToggleTime
+
+	return r
+}
+
+// ToMap encodes the struct to a value map
+func (j BucketCors) ToMap() map[string]any {
+	r := make(map[string]any)
+	r["maxAge"] = j.MaxAge
+	r["methods"] = j.Methods
+	r["origins"] = j.Origins
+	r["responseHeaders"] = j.ResponseHeaders
+
+	return r
+}
+
+// ToMap encodes the struct to a value map
+func (j BucketLogging) ToMap() map[string]any {
+	r := make(map[string]any)
+	r["logBucket"] = j.LogBucket
+	r["logObjectPrefix"] = j.LogObjectPrefix
+
+	return r
+}
+
+// ToMap encodes the struct to a value map
+func (j BucketWebsite) ToMap() map[string]any {
+	r := make(map[string]any)
+	r["mainPageSuffix"] = j.MainPageSuffix
+	r["notFoundPage"] = j.NotFoundPage
+
+	return r
+}
+
+// ToMap encodes the struct to a value map
+func (j CustomPlacementConfig) ToMap() map[string]any {
+	r := make(map[string]any)
+	r["DataLocations"] = j.DataLocations
+
+	return r
+}
+
+// ToMap encodes the struct to a value map
 func (j GetStorageObjectOptions) ToMap() map[string]any {
 	r := make(map[string]any)
 	r["headers"] = j.Headers
@@ -485,20 +533,47 @@ func (j StorageBucketArguments) ToMap() map[string]any {
 // ToMap encodes the struct to a value map
 func (j StorageBucketInfo) ToMap() map[string]any {
 	r := make(map[string]any)
-	r["creationDate"] = j.CreationDate
+	if j.Autoclass != nil {
+		r["autoclass"] = (*j.Autoclass)
+	}
+	j_CORS := make([]any, len(j.CORS))
+	for i, j_CORS_v := range j.CORS {
+		j_CORS[i] = j_CORS_v
+	}
+	r["cors"] = j_CORS
+	r["createdAt"] = j.CreatedAt
+	if j.CustomPlacementConfig != nil {
+		r["customPlacementConfig"] = (*j.CustomPlacementConfig)
+	}
 	if j.Encryption != nil {
 		r["encryption"] = (*j.Encryption)
 	}
+	r["etag"] = j.Etag
 	if j.Lifecycle != nil {
 		r["lifecycle"] = (*j.Lifecycle)
+	}
+	r["locationType"] = j.LocationType
+	if j.Logging != nil {
+		r["logging"] = (*j.Logging)
 	}
 	r["name"] = j.Name
 	if j.ObjectLock != nil {
 		r["objectLock"] = (*j.ObjectLock)
 	}
+	r["region"] = j.Region
+	r["requesterPays"] = j.RequesterPays
+	r["rpo"] = j.RPO
+	if j.SoftDeletePolicy != nil {
+		r["softDeletePolicy"] = (*j.SoftDeletePolicy)
+	}
+	r["storageClass"] = j.StorageClass
 	r["tags"] = j.Tags
+	r["updatedAt"] = j.UpdatedAt
 	if j.Versioning != nil {
 		r["versioning"] = (*j.Versioning)
+	}
+	if j.Website != nil {
+		r["website"] = (*j.Website)
 	}
 
 	return r
@@ -673,7 +748,7 @@ func (j StorageObjectListResults) ToMap() map[string]any {
 func (j StorageObjectLockConfig) ToMap() map[string]any {
 	r := make(map[string]any)
 	r = utils.MergeMap(r, j.SetStorageObjectLockConfig.ToMap())
-	r["objectLock"] = j.ObjectLock
+	r["enabled"] = j.Enabled
 
 	return r
 }
@@ -696,6 +771,15 @@ func (j StorageObjectPaginationInfo) ToMap() map[string]any {
 	r["cursor"] = j.Cursor
 	r["hasNextPage"] = j.HasNextPage
 	r["nextCursor"] = j.NextCursor
+
+	return r
+}
+
+// ToMap encodes the struct to a value map
+func (j StorageObjectSoftDeletePolicy) ToMap() map[string]any {
+	r := make(map[string]any)
+	r["effectiveTime"] = j.EffectiveTime
+	r["retentionDuration"] = j.RetentionDuration
 
 	return r
 }
@@ -828,6 +912,67 @@ func (s *ChecksumType) FromValue(value any) error {
 		return nil
 	}
 	result, err := ParseChecksumType(*valueStr)
+	if err != nil {
+		return err
+	}
+
+	*s = result
+	return nil
+}
+
+// ScalarName get the schema name of the scalar
+func (j GoogleStorageRPO) ScalarName() string {
+	return "GoogleStorageRPO"
+}
+
+const (
+	GoogleStorageRpoDefault    GoogleStorageRPO = "DEFAULT"
+	GoogleStorageRpoAsyncTurbo GoogleStorageRPO = "ASYNC_TURBO"
+)
+
+var enumValues_GoogleStorageRpo = []GoogleStorageRPO{GoogleStorageRpoDefault, GoogleStorageRpoAsyncTurbo}
+
+// ParseGoogleStorageRpo parses a GoogleStorageRPO enum from string
+func ParseGoogleStorageRpo(input string) (GoogleStorageRPO, error) {
+	result := GoogleStorageRPO(input)
+	if !slices.Contains(enumValues_GoogleStorageRpo, result) {
+		return GoogleStorageRPO(""), errors.New("failed to parse GoogleStorageRPO, expect one of [DEFAULT, ASYNC_TURBO]")
+	}
+
+	return result, nil
+}
+
+// IsValid checks if the value is invalid
+func (j GoogleStorageRPO) IsValid() bool {
+	return slices.Contains(enumValues_GoogleStorageRpo, j)
+}
+
+// UnmarshalJSON implements json.Unmarshaler.
+func (j *GoogleStorageRPO) UnmarshalJSON(b []byte) error {
+	var rawValue string
+	if err := json.Unmarshal(b, &rawValue); err != nil {
+		return err
+	}
+
+	value, err := ParseGoogleStorageRpo(rawValue)
+	if err != nil {
+		return err
+	}
+
+	*j = value
+	return nil
+}
+
+// FromValue decodes the scalar from an unknown value
+func (s *GoogleStorageRPO) FromValue(value any) error {
+	valueStr, err := utils.DecodeNullableString(value)
+	if err != nil {
+		return err
+	}
+	if valueStr == nil {
+		return nil
+	}
+	result, err := ParseGoogleStorageRpo(*valueStr)
 	if err != nil {
 		return err
 	}

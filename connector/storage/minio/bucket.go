@@ -741,8 +741,8 @@ func serializeBucketReplicationRule(item replication.Rule) common.StorageReplica
 
 func (mc *Client) populateBucket(ctx context.Context, item minio.BucketInfo, options common.BucketOptions) (common.StorageBucketInfo, error) {
 	bucket := common.StorageBucketInfo{
-		Name:         item.Name,
-		CreationDate: item.CreationDate,
+		Name:      item.Name,
+		CreatedAt: &item.CreationDate,
 	}
 
 	if options.IncludeTags {

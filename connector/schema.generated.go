@@ -14,6 +14,70 @@ func GetConnectorSchema() *schema.SchemaResponse {
 	return &schema.SchemaResponse{
 		Collections: []schema.CollectionInfo{},
 		ObjectTypes: schema.SchemaResponseObjectTypes{
+			"Autoclass": schema.ObjectType{
+				Description: toPtr("holds the bucket's autoclass configuration. If enabled, allows for the automatic selection of the best storage class based on object access patterns."),
+				Fields: schema.ObjectTypeFields{
+					"enabled": schema.ObjectField{
+						Type: schema.NewNamedType("Boolean").Encode(),
+					},
+					"terminalStorageClass": schema.ObjectField{
+						Type: schema.NewNamedType("String").Encode(),
+					},
+					"terminalStorageClassUpdateTime": schema.ObjectField{
+						Type: schema.NewNamedType("TimestampTZ").Encode(),
+					},
+					"toggleTime": schema.ObjectField{
+						Type: schema.NewNamedType("TimestampTZ").Encode(),
+					},
+				},
+			},
+			"BucketCors": schema.ObjectType{
+				Description: toPtr("is the bucket's Cross-Origin Resource Sharing (CORS) configuration."),
+				Fields: schema.ObjectTypeFields{
+					"maxAge": schema.ObjectField{
+						Type: schema.NewNamedType("Duration").Encode(),
+					},
+					"methods": schema.ObjectField{
+						Type: schema.NewArrayType(schema.NewNamedType("String")).Encode(),
+					},
+					"origins": schema.ObjectField{
+						Type: schema.NewArrayType(schema.NewNamedType("String")).Encode(),
+					},
+					"responseHeaders": schema.ObjectField{
+						Type: schema.NewArrayType(schema.NewNamedType("String")).Encode(),
+					},
+				},
+			},
+			"BucketLogging": schema.ObjectType{
+				Description: toPtr("holds the bucket's logging configuration, which defines the destination bucket and optional name prefix for the current bucket's logs."),
+				Fields: schema.ObjectTypeFields{
+					"logBucket": schema.ObjectField{
+						Type: schema.NewNamedType("String").Encode(),
+					},
+					"logObjectPrefix": schema.ObjectField{
+						Type: schema.NewNamedType("String").Encode(),
+					},
+				},
+			},
+			"BucketWebsite": schema.ObjectType{
+				Description: toPtr("holds the bucket's website configuration, controlling how the service behaves when accessing bucket contents as a web site. See https://cloud.google.com/storage/docs/static-website for more information."),
+				Fields: schema.ObjectTypeFields{
+					"mainPageSuffix": schema.ObjectField{
+						Type: schema.NewNamedType("String").Encode(),
+					},
+					"notFoundPage": schema.ObjectField{
+						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
+					},
+				},
+			},
+			"CustomPlacementConfig": schema.ObjectType{
+				Description: toPtr("holds the bucket's custom placement configuration for Custom Dual Regions. See https://cloud.google.com/storage/docs/locations#location-dr for more information."),
+				Fields: schema.ObjectTypeFields{
+					"DataLocations": schema.ObjectField{
+						Type: schema.NewArrayType(schema.NewNamedType("String")).Encode(),
+					},
+				},
+			},
 			"GetStorageObjectOptions": schema.ObjectType{
 				Description: toPtr("are used to specify additional headers or options during GET requests."),
 				Fields: schema.ObjectTypeFields{
@@ -448,14 +512,32 @@ func GetConnectorSchema() *schema.SchemaResponse {
 			"StorageBucketInfo": schema.ObjectType{
 				Description: toPtr("container for bucket metadata."),
 				Fields: schema.ObjectTypeFields{
-					"creationDate": schema.ObjectField{
-						Type: schema.NewNamedType("TimestampTZ").Encode(),
+					"autoclass": schema.ObjectField{
+						Type: schema.NewNullableType(schema.NewNamedType("Autoclass")).Encode(),
+					},
+					"cors": schema.ObjectField{
+						Type: schema.NewNullableType(schema.NewArrayType(schema.NewNamedType("BucketCors"))).Encode(),
+					},
+					"createdAt": schema.ObjectField{
+						Type: schema.NewNullableType(schema.NewNamedType("TimestampTZ")).Encode(),
+					},
+					"customPlacementConfig": schema.ObjectField{
+						Type: schema.NewNullableType(schema.NewNamedType("CustomPlacementConfig")).Encode(),
 					},
 					"encryption": schema.ObjectField{
 						Type: schema.NewNullableType(schema.NewNamedType("ServerSideEncryptionConfiguration")).Encode(),
 					},
+					"etag": schema.ObjectField{
+						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
+					},
 					"lifecycle": schema.ObjectField{
 						Type: schema.NewNullableType(schema.NewNamedType("ObjectLifecycleConfiguration")).Encode(),
+					},
+					"locationType": schema.ObjectField{
+						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
+					},
+					"logging": schema.ObjectField{
+						Type: schema.NewNullableType(schema.NewNamedType("BucketLogging")).Encode(),
 					},
 					"name": schema.ObjectField{
 						Type: schema.NewNamedType("String").Encode(),
@@ -463,11 +545,32 @@ func GetConnectorSchema() *schema.SchemaResponse {
 					"objectLock": schema.ObjectField{
 						Type: schema.NewNullableType(schema.NewNamedType("StorageObjectLockConfig")).Encode(),
 					},
+					"region": schema.ObjectField{
+						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
+					},
+					"requesterPays": schema.ObjectField{
+						Type: schema.NewNullableType(schema.NewNamedType("Boolean")).Encode(),
+					},
+					"rpo": schema.ObjectField{
+						Type: schema.NewNullableType(schema.NewNamedType("GoogleStorageRPO")).Encode(),
+					},
+					"softDeletePolicy": schema.ObjectField{
+						Type: schema.NewNullableType(schema.NewNamedType("StorageObjectSoftDeletePolicy")).Encode(),
+					},
+					"storageClass": schema.ObjectField{
+						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
+					},
 					"tags": schema.ObjectField{
 						Type: schema.NewNullableType(schema.NewNamedType("JSON")).Encode(),
 					},
+					"updatedAt": schema.ObjectField{
+						Type: schema.NewNullableType(schema.NewNamedType("TimestampTZ")).Encode(),
+					},
 					"versioning": schema.ObjectField{
 						Type: schema.NewNullableType(schema.NewNamedType("StorageBucketVersioningConfiguration")).Encode(),
+					},
+					"website": schema.ObjectField{
+						Type: schema.NewNullableType(schema.NewNamedType("BucketWebsite")).Encode(),
 					},
 				},
 			},
@@ -811,11 +914,11 @@ func GetConnectorSchema() *schema.SchemaResponse {
 			"StorageObjectLockConfig": schema.ObjectType{
 				Description: toPtr("represents the object lock configuration in given bucket"),
 				Fields: schema.ObjectTypeFields{
+					"enabled": schema.ObjectField{
+						Type: schema.NewNamedType("Boolean").Encode(),
+					},
 					"mode": schema.ObjectField{
 						Type: schema.NewNullableType(schema.NewNamedType("StorageRetentionMode")).Encode(),
-					},
-					"objectLock": schema.ObjectField{
-						Type: schema.NewNamedType("String").Encode(),
 					},
 					"unit": schema.ObjectField{
 						Type: schema.NewNullableType(schema.NewNamedType("StorageRetentionValidityUnit")).Encode(),
@@ -856,6 +959,17 @@ func GetConnectorSchema() *schema.SchemaResponse {
 					},
 					"nextCursor": schema.ObjectField{
 						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
+					},
+				},
+			},
+			"StorageObjectSoftDeletePolicy": schema.ObjectType{
+				Description: toPtr("contains the bucket's soft delete policy, which defines the period of time that soft-deleted objects will be retained, and cannot be permanently deleted."),
+				Fields: schema.ObjectTypeFields{
+					"effectiveTime": schema.ObjectField{
+						Type: schema.NewNamedType("TimestampTZ").Encode(),
+					},
+					"retentionDuration": schema.ObjectField{
+						Type: schema.NewNamedType("Duration").Encode(),
 					},
 				},
 			},
@@ -1475,6 +1589,11 @@ func GetConnectorSchema() *schema.SchemaResponse {
 				AggregateFunctions:  schema.ScalarTypeAggregateFunctions{},
 				ComparisonOperators: map[string]schema.ComparisonOperatorDefinition{},
 				Representation:      schema.NewTypeRepresentationJSON().Encode(),
+			},
+			"GoogleStorageRPO": schema.ScalarType{
+				AggregateFunctions:  schema.ScalarTypeAggregateFunctions{},
+				ComparisonOperators: map[string]schema.ComparisonOperatorDefinition{},
+				Representation:      schema.NewTypeRepresentationEnum([]string{"DEFAULT", "ASYNC_TURBO"}).Encode(),
 			},
 			"Int32": schema.ScalarType{
 				AggregateFunctions:  schema.ScalarTypeAggregateFunctions{},

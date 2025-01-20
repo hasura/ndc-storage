@@ -3,10 +3,12 @@ package gcs
 import (
 	"encoding/base64"
 	"errors"
+	"math"
 	"strconv"
 	"time"
 
 	"cloud.google.com/go/storage"
+	"github.com/hasura/ndc-sdk-go/scalar"
 	"github.com/hasura/ndc-sdk-go/schema"
 	"github.com/hasura/ndc-storage/connector/storage/common"
 	"go.opentelemetry.io/otel/attribute"
@@ -22,18 +24,82 @@ var errNotSupported = schema.NotSupportedError("Google Cloud Storage doesn't sup
 
 func serializeBucketInfo(bucket *storage.BucketAttrs) common.StorageBucketInfo {
 	result := common.StorageBucketInfo{
-		Name:         bucket.Name,
-		Tags:         bucket.Labels,
-		CreationDate: bucket.Created,
-		Lifecycle:    serializeLifecycleConfiguration(bucket.Lifecycle),
+		Name:                  bucket.Name,
+		Tags:                  bucket.Labels,
+		CORS:                  make([]common.BucketCors, len(bucket.CORS)),
+		CreatedAt:             &bucket.Created,
+		UpdatedAt:             &bucket.Updated,
+		DefaultEventBasedHold: &bucket.DefaultEventBasedHold,
+		Lifecycle:             serializeLifecycleConfiguration(bucket.Lifecycle),
 		Versioning: &common.StorageBucketVersioningConfiguration{
 			Enabled: bucket.VersioningEnabled,
 		},
 	}
 
+	if bucket.Location != "" {
+		result.Region = &bucket.Location
+	}
+
+	if bucket.LocationType != "" {
+		result.LocationType = &bucket.LocationType
+	}
+
+	if bucket.Etag != "" {
+		result.Etag = &bucket.Etag
+	}
+
+	if bucket.Autoclass != nil {
+		result.Autoclass = &common.BucketAutoclass{
+			Enabled:                        bucket.Autoclass.Enabled,
+			ToggleTime:                     bucket.Autoclass.ToggleTime,
+			TerminalStorageClass:           bucket.Autoclass.TerminalStorageClass,
+			TerminalStorageClassUpdateTime: bucket.Autoclass.TerminalStorageClassUpdateTime,
+		}
+	}
+
+	for i, cors := range bucket.CORS {
+		result.CORS[i] = common.BucketCors{
+			MaxAge:          scalar.NewDuration(cors.MaxAge),
+			Methods:         cors.Methods,
+			Origins:         cors.Origins,
+			ResponseHeaders: cors.ResponseHeaders,
+		}
+	}
+
+	if bucket.CustomPlacementConfig != nil {
+		result.CustomPlacementConfig = &common.CustomPlacementConfig{
+			DataLocations: bucket.CustomPlacementConfig.DataLocations,
+		}
+	}
+
+	if bucket.HierarchicalNamespace != nil {
+		result.HierarchicalNamespace = &common.BucketHierarchicalNamespace{
+			Enabled: bucket.HierarchicalNamespace.Enabled,
+		}
+	}
+
 	if bucket.Encryption != nil && bucket.Encryption.DefaultKMSKeyName != "" {
 		result.Encryption = &common.ServerSideEncryptionConfiguration{
 			KmsMasterKeyID: bucket.Encryption.DefaultKMSKeyName,
+		}
+	}
+
+	if bucket.RetentionPolicy != nil {
+		unit := common.StorageRetentionValidityUnitDays
+		var validity uint = uint(math.Ceil(bucket.RetentionPolicy.RetentionPeriod.Hours()))
+		mode := common.StorageRetentionModeUnlocked
+
+		if bucket.RetentionPolicy.IsLocked {
+			mode = common.StorageRetentionModeLocked
+		}
+
+		result.ObjectLock = &common.StorageObjectLockConfig{
+			Enabled: true,
+			SetStorageObjectLockConfig: common.SetStorageObjectLockConfig{
+				Mode:     &mode,
+				Validity: &validity,
+				Unit:     &unit,
+			},
 		}
 	}
 

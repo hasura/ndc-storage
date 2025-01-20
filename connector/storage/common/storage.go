@@ -74,8 +74,6 @@ type BucketOptions struct {
 type StorageBucketInfo struct {
 	// The name of the bucket.
 	Name string `json:"name"`
-	// Date the bucket was created.
-	CreationDate time.Time `json:"creationDate"`
 	// Bucket tags or metadata.
 	Tags map[string]string `json:"tags,omitempty"`
 	// The versioning configuration
@@ -84,7 +82,183 @@ type StorageBucketInfo struct {
 	Lifecycle *ObjectLifecycleConfiguration `json:"lifecycle"`
 	// The server-side encryption configuration.
 	Encryption *ServerSideEncryptionConfiguration `json:"encryption"`
-	ObjectLock *StorageObjectLockConfig           `json:"objectLock"`
+
+	// Retention policy enforces a minimum retention time for all objects
+	// contained in the bucket. A RetentionPolicy of nil implies the bucket
+	// has no minimum data retention.
+	ObjectLock *StorageObjectLockConfig `json:"objectLock"`
+
+	// The location of the bucket.
+	Region *string `json:"region"`
+
+	// The bucket's custom placement configuration that holds a list of
+	// regional locations for custom dual regions.
+	CustomPlacementConfig *CustomPlacementConfig `json:"customPlacementConfig"`
+
+	// DefaultEventBasedHold is the default value for event-based hold on newly created objects in this bucket. It defaults to false.
+	DefaultEventBasedHold *bool `json:"defaultEventBasedHold"`
+
+	// StorageClass is the default storage class of the bucket. This defines
+	// how objects in the bucket are stored and determines the SLA and the cost of storage.
+	StorageClass *string `json:"storageClass"`
+
+	// Date time the bucket was created.
+	CreatedAt *time.Time `json:"createdAt"`
+	// Date time the bucket was created.
+	UpdatedAt *time.Time `json:"updatedAt"`
+
+	// RequesterPays reports whether the bucket is a Requester Pays bucket.
+	// Clients performing operations on Requester Pays buckets must provide
+	// a user project (see BucketHandle.UserProject), which will be billed
+	// for the operations.
+	RequesterPays *bool `json:"requesterPays"`
+
+	// The bucket's Cross-Origin Resource Sharing (CORS) configuration.
+	CORS []BucketCors `json:"cors,omitempty"`
+
+	// The logging configuration.
+	Logging *BucketLogging `json:"logging"`
+
+	// The website configuration.
+	Website *BucketWebsite `json:"website,omitempty"`
+
+	// Etag is the HTTP/1.1 Entity tag for the bucket.
+	// This field is read-only.
+	Etag *string `json:"etag"`
+
+	// LocationType describes how data is stored and replicated.
+	// Typical values are "multi-region", "region" and "dual-region".
+	LocationType *string `json:"locationType"`
+
+	// RPO configures the Recovery Point Objective (RPO) policy of the bucket.
+	// Set to RPOAsyncTurbo to turn on Turbo Replication for a bucket.
+	// See https://cloud.google.com/storage/docs/managing-turbo-replication for
+	// more information.
+	RPO *GoogleStorageRPO `json:"rpo"`
+
+	// Autoclass holds the bucket's autoclass configuration. If enabled,
+	// allows for the automatic selection of the best storage class
+	// based on object access patterns.
+	Autoclass *BucketAutoclass `json:"autoclass"`
+
+	// SoftDeletePolicy contains the bucket's soft delete policy, which defines
+	// the period of time that soft-deleted objects will be retained, and cannot
+	// be permanently deleted.
+	SoftDeletePolicy *StorageObjectSoftDeletePolicy `json:"softDeletePolicy"`
+
+	// HierarchicalNamespace contains the bucket's hierarchical namespace
+	// configuration. Hierarchical namespace enabled buckets can contain
+	// [cloud.google.com/go/storage/control/apiv2/controlpb.Folder] resources.
+	// It cannot be modified after bucket creation time.
+	// UniformBucketLevelAccess must also be enabled on the bucket.
+	HierarchicalNamespace *BucketHierarchicalNamespace `json:"hierarchicalNamespace"`
+}
+
+// HierarchicalNamespace contains the bucket's hierarchical namespace
+// configuration. Hierarchical namespace enabled buckets can contain
+// [cloud.google.com/go/storage/control/apiv2/controlpb.Folder] resources.
+type BucketHierarchicalNamespace struct {
+	// Enabled indicates whether hierarchical namespace features are enabled on
+	// the bucket. This can only be set at bucket creation time currently.
+	Enabled bool `json:"enabled"`
+}
+
+// BucketLogging holds the bucket's logging configuration, which defines the
+// destination bucket and optional name prefix for the current bucket's logs.
+type BucketLogging struct {
+	// The destination bucket where the current bucket's logs
+	// should be placed.
+	LogBucket string `json:"logBucket"`
+
+	// A prefix for log object names.
+	LogObjectPrefix string `json:"logObjectPrefix"`
+}
+
+// GoogleStorageRPO (Recovery Point Objective) configures the turbo replication feature. See
+// https://cloud.google.com/storage/docs/managing-turbo-replication for more information.
+// @enum DEFAULT,ASYNC_TURBO
+type GoogleStorageRPO string
+
+// BucketCors is the bucket's Cross-Origin Resource Sharing (CORS) configuration.
+type BucketCors struct {
+	// MaxAge is the value to return in the Access-Control-Max-Age
+	// header used in preflight responses.
+	MaxAge scalar.Duration `json:"maxAge"`
+
+	// Methods is the list of HTTP methods on which to include CORS response
+	// headers, (GET, OPTIONS, POST, etc) Note: "*" is permitted in the list
+	// of methods, and means "any method".
+	Methods []string `json:"methods"`
+
+	// Origins is the list of Origins eligible to receive CORS response
+	// headers. Note: "*" is permitted in the list of origins, and means
+	// "any Origin".
+	Origins []string `json:"origins"`
+
+	// ResponseHeaders is the list of HTTP headers other than the simple
+	// response headers to give permission for the user-agent to share
+	// across domains.
+	ResponseHeaders []string `json:"responseHeaders"`
+}
+
+// BucketWebsite holds the bucket's website configuration, controlling how the
+// service behaves when accessing bucket contents as a web site. See
+// https://cloud.google.com/storage/docs/static-website for more information.
+type BucketWebsite struct {
+	// If the requested object path is missing, the service will ensure the path has
+	// a trailing '/', append this suffix, and attempt to retrieve the resulting
+	// object. This allows the creation of index.html objects to represent directory
+	// pages.
+	MainPageSuffix string `json:"mainPageSuffix"`
+
+	// If the requested object path is missing, and any mainPageSuffix object is
+	// missing, if applicable, the service will return the named object from this
+	// bucket as the content for a 404 Not Found result.
+	NotFoundPage *string `json:"notFoundPage,omitempty"`
+}
+
+// CustomPlacementConfig holds the bucket's custom placement
+// configuration for Custom Dual Regions. See
+// https://cloud.google.com/storage/docs/locations#location-dr for more information.
+type CustomPlacementConfig struct {
+	// The list of regional locations in which data is placed.
+	// Custom Dual Regions require exactly 2 regional locations.
+	DataLocations []string
+}
+
+// Autoclass holds the bucket's autoclass configuration. If enabled,
+// allows for the automatic selection of the best storage class
+// based on object access patterns. See
+// https://cloud.google.com/storage/docs/using-autoclass for more information.
+type BucketAutoclass struct {
+	// Enabled specifies whether the autoclass feature is enabled
+	// on the bucket.
+	Enabled bool `json:"enabled"`
+	// ToggleTime is the time from which Autoclass was last toggled.
+	// If Autoclass is enabled when the bucket is created, the ToggleTime
+	// is set to the bucket creation time. This field is read-only.
+	ToggleTime time.Time `json:"toggleTime"`
+	// TerminalStorageClass: The storage class that objects in the bucket
+	// eventually transition to if they are not read for a certain length of
+	// time. Valid values are NEARLINE and ARCHIVE.
+	// To modify TerminalStorageClass, Enabled must be set to true.
+	TerminalStorageClass string `json:"terminalStorageClass"`
+	// TerminalStorageClassUpdateTime represents the time of the most recent
+	// update to "TerminalStorageClass".
+	TerminalStorageClassUpdateTime time.Time `json:"terminalStorageClassUpdateTime"`
+}
+
+// StorageObjectSoftDeletePolicy contains the bucket's soft delete policy, which defines the
+// period of time that soft-deleted objects will be retained, and cannot be
+// permanently deleted.
+type StorageObjectSoftDeletePolicy struct {
+	// EffectiveTime indicates the time from which the policy, or one with a
+	// greater retention, was effective. This field is read-only.
+	EffectiveTime time.Time `json:"effectiveTime"`
+
+	// RetentionDuration is the amount of time that soft-deleted objects in the
+	// bucket will be retained and cannot be permanently deleted.
+	RetentionDuration scalar.Duration `json:"retentionDuration"`
 }
 
 // StorageOwner name.
@@ -485,7 +659,7 @@ type SetStorageObjectLockConfig struct {
 type StorageObjectLockConfig struct {
 	SetStorageObjectLockConfig
 
-	ObjectLock string `json:"objectLock"`
+	Enabled bool `json:"enabled"`
 }
 
 // StorageRetentionValidityUnit retention validity unit.

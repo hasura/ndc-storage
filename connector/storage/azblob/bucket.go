@@ -87,9 +87,7 @@ func (c *Client) ListBuckets(ctx context.Context, options common.BucketOptions) 
 			}
 
 			if container.Properties != nil {
-				if container.Properties.LastModified != nil {
-					result.CreationDate = *container.Properties.LastModified
-				}
+				result.UpdatedAt = container.Properties.LastModified
 
 				if container.Properties.IsImmutableStorageWithVersioningEnabled != nil {
 					result.Versioning = &common.StorageBucketVersioningConfiguration{
@@ -100,6 +98,21 @@ func (c *Client) ListBuckets(ctx context.Context, options common.BucketOptions) 
 				if container.Properties.DefaultEncryptionScope != nil {
 					result.Encryption = &common.ServerSideEncryptionConfiguration{
 						KmsMasterKeyID: *container.Properties.DefaultEncryptionScope,
+					}
+				}
+
+				if container.Properties.RemainingRetentionDays != nil && container.Properties.HasImmutabilityPolicy != nil {
+					mode := common.StorageRetentionModeLocked
+					unit := common.StorageRetentionValidityUnitDays
+					days := uint(*container.Properties.RemainingRetentionDays)
+
+					result.ObjectLock = &common.StorageObjectLockConfig{
+						Enabled: true,
+						SetStorageObjectLockConfig: common.SetStorageObjectLockConfig{
+							Mode:     &mode,
+							Unit:     &unit,
+							Validity: &days,
+						},
 					}
 				}
 			}
@@ -185,7 +198,7 @@ func (c *Client) getBucket(ctx context.Context, bucketName string, options commo
 			}
 
 			if container.Properties != nil && container.Properties.LastModified != nil {
-				result.CreationDate = *container.Properties.LastModified
+				result.UpdatedAt = container.Properties.LastModified
 			}
 
 			return &result, nil

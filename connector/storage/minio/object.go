@@ -818,7 +818,7 @@ func (mc *Client) GetObjectLockConfig(ctx context.Context, bucketName string) (*
 	}
 
 	result := &common.StorageObjectLockConfig{
-		ObjectLock: objectLock,
+		Enabled: objectLock == "Enabled",
 		SetStorageObjectLockConfig: common.SetStorageObjectLockConfig{
 			Mode:     serializeObjectRetentionMode(mode),
 			Validity: validity,
