@@ -22,26 +22,24 @@
                 "expiredObjectAllVersions": false,
                 "expiredObjectDeleteMarker": false
               },
-              "filter": {
-                "and": {
+              "filter": [
+                {
                   "objectSizeGreaterThan": 1000000,
                   "objectSizeLessThan": 1,
-                  "prefix": "JSqXP0pJZF",
-                  "tags": [
-                    {
-                      "key": "7Uw1or2jrq",
-                      "value": "00sA2cRTCB"
-                    }
-                  ]
+                  "matchesPrefix": ["30LomArtyT"],
+                  "tags": {
+                    "raZx9yPMwi": "JbBh0wCDaQ"
+                  }
                 },
-                "objectSizeGreaterThan": 1000000,
-                "objectSizeLessThan": 1,
-                "prefix": "30LomArtyT",
-                "tag": {
-                  "key": "raZx9yPMwi",
-                  "value": "JbBh0wCDaQ"
+                {
+                  "objectSizeGreaterThan": 1000000,
+                  "objectSizeLessThan": 1,
+                  "matchesPrefix": ["JSqXP0pJZF"],
+                  "tags": {
+                    "7Uw1or2jrq": "00sA2cRTCB"
+                  }
                 }
-              },
+              ],
               "id": "aXD6eFi5JE",
               "noncurrentVersionExpiration": {
                 "newerNoncurrentVersions": 108,
@@ -52,7 +50,7 @@
                 "noncurrentDays": 7
               },
               "prefix": "GPJel0xa2s",
-              "status": "Enabled",
+              "enabled": true,
               "transition": {
                 "days": 5583
               }

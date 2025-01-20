@@ -26,10 +26,10 @@
           "partSize": 1024000000,
           "sendContentMd5": true,
           "storageClass": "Cool",
-          "userMetadata": {
+          "metadata": {
             "Foo": "Bar"
           },
-          "userTags": {
+          "tags": {
             "UserID": "1"
           },
           "websiteRedirectLocation": "http://localhost:9001"

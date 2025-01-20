@@ -329,16 +329,16 @@
               "column": "storageClass",
               "type": "column"
             },
-            "userMetadata": {
-              "column": "userMetadata",
+            "rawMetadata": {
+              "column": "rawMetadata",
               "type": "column"
             },
-            "userTagCount": {
-              "column": "userTagCount",
+            "tagCount": {
+              "column": "tagCount",
               "type": "column"
             },
-            "userTags": {
-              "column": "userTags",
+            "tags": {
+              "column": "tags",
               "type": "column"
             }
           },

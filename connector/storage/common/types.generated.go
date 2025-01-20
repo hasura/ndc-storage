@@ -508,6 +508,7 @@ func (j PutStorageObjectOptions) ToMap() map[string]any {
 	r["disableMultipart"] = j.DisableMultipart
 	r["expires"] = j.Expires
 	r["legalHold"] = j.LegalHold
+	r["metadata"] = j.Metadata
 	r["numThreads"] = j.NumThreads
 	r["partSize"] = j.PartSize
 	if j.Retention != nil {
@@ -515,8 +516,7 @@ func (j PutStorageObjectOptions) ToMap() map[string]any {
 	}
 	r["sendContentMd5"] = j.SendContentMd5
 	r["storageClass"] = j.StorageClass
-	r["userMetadata"] = j.UserMetadata
-	r["userTags"] = j.UserTags
+	r["tags"] = j.Tags
 	r["websiteRedirectLocation"] = j.WebsiteRedirectLocation
 
 	return r
@@ -655,14 +655,12 @@ func (j StorageCopyDestOptions) ToMap() map[string]any {
 	r := make(map[string]any)
 	r["bucket"] = j.Bucket
 	r["legalHold"] = j.LegalHold
+	r["metadata"] = j.Metadata
 	r["mode"] = j.Mode
 	r["object"] = j.Object
-	r["replaceMetadata"] = j.ReplaceMetadata
-	r["replaceTags"] = j.ReplaceTags
 	r["retainUntilDate"] = j.RetainUntilDate
 	r["size"] = j.Size
-	r["userMetadata"] = j.UserMetadata
-	r["userTags"] = j.UserTags
+	r["tags"] = j.Tags
 
 	return r
 }
@@ -759,6 +757,7 @@ func (j StorageObject) ToMap() map[string]any {
 		r["owner"] = (*j.Owner)
 	}
 	r["permissions"] = j.Permissions
+	r["rawMetadata"] = j.RawMetadata
 	r["rehydratePriority"] = j.RehydratePriority
 	r["remainingRetentionDays"] = j.RemainingRetentionDays
 	r["replicationReady"] = j.ReplicationReady
@@ -773,9 +772,8 @@ func (j StorageObject) ToMap() map[string]any {
 	r["serverEncrypted"] = j.ServerEncrypted
 	r["size"] = j.Size
 	r["storageClass"] = j.StorageClass
-	r["userMetadata"] = j.UserMetadata
-	r["userTagCount"] = j.UserTagCount
-	r["userTags"] = j.UserTags
+	r["tagCount"] = j.TagCount
+	r["tags"] = j.Tags
 	r["versionId"] = j.VersionID
 
 	return r
@@ -980,6 +978,7 @@ func (j UpdateStorageBucketOptions) ToMap() map[string]any {
 func (j UpdateStorageObjectOptions) ToMap() map[string]any {
 	r := make(map[string]any)
 	r["legalHold"] = j.LegalHold
+	r["metadata"] = j.Metadata
 	if j.Retention != nil {
 		r["retention"] = (*j.Retention)
 	}

@@ -193,7 +193,7 @@ func (c *Client) PutObject(ctx context.Context, bucketName string, objectName st
 
 	uploadOptions := &azblob.UploadStreamOptions{
 		HTTPHeaders: &blob.HTTPHeaders{},
-		Tags:        opts.UserTags,
+		Tags:        opts.Tags,
 		Metadata:    map[string]*string{},
 		Concurrency: int(opts.NumThreads),
 		BlockSize:   int64(opts.PartSize),
@@ -208,7 +208,7 @@ func (c *Client) PutObject(ctx context.Context, bucketName string, objectName st
 		uploadOptions.AccessTier = &accessTier
 	}
 
-	for key, value := range opts.UserMetadata {
+	for key, value := range opts.Metadata {
 		if value != "" {
 			uploadOptions.Metadata[key] = &value
 		}
@@ -262,7 +262,7 @@ func (c *Client) PutObject(ctx context.Context, bucketName string, objectName st
 			span.SetStatus(codes.Error, err.Error())
 			span.RecordError(err)
 
-			return nil, serializeErrorResponse(err)
+			return nil, err
 		}
 	}
 
@@ -290,12 +290,12 @@ func (c *Client) CopyObject(ctx context.Context, dest common.StorageCopyDestOpti
 	blobClient := c.client.ServiceClient().NewContainerClient(dest.Bucket).NewBlobClient(dest.Object)
 
 	options := &blob.CopyFromURLOptions{
-		BlobTags:  dest.UserTags,
+		BlobTags:  dest.Tags,
 		Metadata:  make(map[string]*string),
 		LegalHold: dest.LegalHold,
 	}
 
-	for key, value := range dest.UserMetadata {
+	for key, value := range dest.Metadata {
 		if value != "" {
 			options.Metadata[key] = &value
 		}

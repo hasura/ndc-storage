@@ -46,7 +46,7 @@
           "leaseState": null,
           "leaseStatus": null,
           "legalHold": null,
-          "metadata": {
+          "rawMetadata": {
             "Cache-Control": "max-age=180, public",
             "Content-Disposition": "attachment",
             "Content-Encoding": "gzip",
@@ -68,11 +68,11 @@
           "serverEncrypted": null,
           "size": 10,
           "storageClass": null,
-          "userMetadata": {
+          "metadata": {
             "Foo": "Bar"
           },
-          "userTagCount": 1,
-          "userTags": {
+          "tagCount": 1,
+          "tags": {
             "UserID": "1"
           }
         }

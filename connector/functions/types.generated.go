@@ -98,6 +98,43 @@ func (dch DataConnectorHandler) execQuery(ctx context.Context, state *types.Stat
 		})
 		return FunctionDownloadStorageObjectText(ctx, state, &args)
 
+	case "storageBucket":
+
+		selection, err := queryFields.AsObject()
+		if err != nil {
+			return nil, schema.UnprocessableContentError("the selection field type must be object", map[string]any{
+				"cause": err.Error(),
+			})
+		}
+		var args common.StorageBucketArguments
+		parseErr := args.FromValue(rawArgs)
+		if parseErr != nil {
+			return nil, schema.UnprocessableContentError("failed to resolve arguments", map[string]any{
+				"cause": parseErr.Error(),
+			})
+		}
+
+		connector_addSpanEvent(span, logger, "execute_function", map[string]any{
+			"arguments": args,
+		})
+		rawResult, err := FunctionStorageBucket(ctx, state, &args)
+
+		if err != nil {
+			return nil, err
+		}
+
+		if rawResult == nil {
+			return nil, nil
+		}
+		connector_addSpanEvent(span, logger, "evaluate_response_selection", map[string]any{
+			"raw_result": rawResult,
+		})
+		result, err := utils.EvalNestedColumnObject(selection, rawResult)
+		if err != nil {
+			return nil, err
+		}
+		return result, nil
+
 	case "storageBucketExists":
 
 		if len(queryFields) > 0 {
@@ -426,7 +463,7 @@ func (dch DataConnectorHandler) execQuery(ctx context.Context, state *types.Stat
 	}
 }
 
-var enumValues_FunctionName = []string{"downloadStorageObject", "downloadStorageObjectText", "storageBucketExists", "storageBucketNotification", "storageBucketPolicy", "storageBucketReplication", "storageBuckets", "storageIncompleteUploads", "storageObject", "storageObjects", "storagePresignedDownloadUrl", "storagePresignedUploadUrl"}
+var enumValues_FunctionName = []string{"downloadStorageObject", "downloadStorageObjectText", "storageBucket", "storageBucketExists", "storageBucketNotification", "storageBucketPolicy", "storageBucketReplication", "storageBuckets", "storageIncompleteUploads", "storageObject", "storageObjects", "storagePresignedDownloadUrl", "storagePresignedUploadUrl"}
 
 // MutationExists check if the mutation name exists
 func (dch DataConnectorHandler) MutationExists(name string) bool {

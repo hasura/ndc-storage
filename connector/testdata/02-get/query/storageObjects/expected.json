@@ -49,12 +49,7 @@
               "leaseStatus": null,
               "legalHold": null,
               "metadata": {
-                "X-Amz-Meta-Foo": "Bar",
-                "cache-control": "max-age=180, public",
-                "content-disposition": "attachment",
-                "content-encoding": "gzip",
-                "content-language": "en-US",
-                "content-type": "text/plain"
+                "Foo": "Bar"
               },
               "name": "public/hello.txt",
               "owner": {
@@ -62,6 +57,14 @@
                 "name": "02d6176db174dc93cb1b899f7c6078f08654445fe8cf1b6ce98d8855f66bdbf4"
               },
               "permissions": null,
+              "rawMetadata": {
+                "X-Amz-Meta-Foo": "Bar",
+                "cache-control": "max-age=180, public",
+                "content-disposition": "attachment",
+                "content-encoding": "gzip",
+                "content-language": "en-US",
+                "content-type": "text/plain"
+              },
               "rehydratePriority": null,
               "remainingRetentionDays": null,
               "replicationReady": false,
@@ -72,11 +75,8 @@
               "serverEncrypted": null,
               "size": 10,
               "storageClass": "STANDARD",
-              "userMetadata": {
-                "Foo": "Bar"
-              },
-              "userTagCount": 0,
-              "userTags": {
+              "tagCount": 1,
+              "tags": {
                 "UserID": "1"
               }
             },
@@ -125,12 +125,7 @@
               "leaseStatus": null,
               "legalHold": null,
               "metadata": {
-                "X-Amz-Meta-Foo": "Bar",
-                "cache-control": "max-age=180, public",
-                "content-disposition": "attachment",
-                "content-encoding": "gzip",
-                "content-language": "en-US",
-                "content-type": "text/plain"
+                "Foo": "Bar"
               },
               "name": "public/hello2.txt",
               "owner": {
@@ -138,6 +133,14 @@
                 "name": "02d6176db174dc93cb1b899f7c6078f08654445fe8cf1b6ce98d8855f66bdbf4"
               },
               "permissions": null,
+              "rawMetadata": {
+                "X-Amz-Meta-Foo": "Bar",
+                "cache-control": "max-age=180, public",
+                "content-disposition": "attachment",
+                "content-encoding": "gzip",
+                "content-language": "en-US",
+                "content-type": "text/plain"
+              },
               "rehydratePriority": null,
               "remainingRetentionDays": null,
               "replicationReady": false,
@@ -148,11 +151,8 @@
               "serverEncrypted": null,
               "size": 10,
               "storageClass": "STANDARD",
-              "userMetadata": {
-                "Foo": "Bar"
-              },
-              "userTagCount": 0,
-              "userTags": {
+              "tagCount": 1,
+              "tags": {
                 "UserID": "1"
               }
             },
@@ -201,12 +201,7 @@
               "leaseStatus": null,
               "legalHold": null,
               "metadata": {
-                "X-Amz-Meta-Foo": "Bar",
-                "cache-control": "max-age=180, public",
-                "content-disposition": "attachment",
-                "content-encoding": "gzip",
-                "content-language": "en-US",
-                "content-type": "text/plain"
+                "Foo": "Bar"
               },
               "name": "public/hello3.txt",
               "owner": {
@@ -214,6 +209,14 @@
                 "name": "02d6176db174dc93cb1b899f7c6078f08654445fe8cf1b6ce98d8855f66bdbf4"
               },
               "permissions": null,
+              "rawMetadata": {
+                "X-Amz-Meta-Foo": "Bar",
+                "cache-control": "max-age=180, public",
+                "content-disposition": "attachment",
+                "content-encoding": "gzip",
+                "content-language": "en-US",
+                "content-type": "text/plain"
+              },
               "rehydratePriority": null,
               "remainingRetentionDays": null,
               "replicationReady": false,
@@ -224,11 +227,8 @@
               "serverEncrypted": null,
               "size": 10,
               "storageClass": "STANDARD",
-              "userMetadata": {
-                "Foo": "Bar"
-              },
-              "userTagCount": 0,
-              "userTags": {
+              "tagCount": 1,
+              "tags": {
                 "UserID": "1"
               }
             },
@@ -240,18 +240,18 @@
               "blobSequenceNumber": null,
               "blobType": null,
               "bucket": "minio-bucket-test",
-              "cacheControl": "max-age=180, public",
+              "cacheControl": null,
               "checksumCrc32": null,
               "checksumCrc32C": null,
               "checksumCrc64Nvme": null,
               "checksumSha1": null,
               "checksumSha256": null,
               "clientId": "minio",
-              "contentDisposition": "attachment",
-              "contentEncoding": "gzip",
-              "contentLanguage": "en-US",
+              "contentDisposition": null,
+              "contentEncoding": null,
+              "contentLanguage": null,
               "contentMd5": null,
-              "contentType": "text/plain",
+              "contentType": "binary/octet-stream",
               "copyCompletionTime": null,
               "copyId": null,
               "copyProgress": null,
@@ -277,12 +277,7 @@
               "leaseStatus": null,
               "legalHold": null,
               "metadata": {
-                "X-Amz-Meta-Foo": "Bar",
-                "cache-control": "max-age=180, public",
-                "content-disposition": "attachment",
-                "content-encoding": "gzip",
-                "content-language": "en-US",
-                "content-type": "text/plain"
+                "Userid": "2"
               },
               "name": "public/workd2.txt",
               "owner": {
@@ -290,6 +285,10 @@
                 "name": "02d6176db174dc93cb1b899f7c6078f08654445fe8cf1b6ce98d8855f66bdbf4"
               },
               "permissions": null,
+              "rawMetadata": {
+                "X-Amz-Meta-Userid": "2",
+                "content-type": "binary/octet-stream"
+              },
               "rehydratePriority": null,
               "remainingRetentionDays": null,
               "replicationReady": false,
@@ -300,11 +299,8 @@
               "serverEncrypted": null,
               "size": 10,
               "storageClass": "STANDARD",
-              "userMetadata": {
-                "Foo": "Bar"
-              },
-              "userTagCount": 0,
-              "userTags": {
+              "tagCount": 2,
+              "tags": {
                 "Foo": "baz",
                 "UserID": "3"
               }

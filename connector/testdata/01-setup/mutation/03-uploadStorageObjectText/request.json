@@ -30,10 +30,10 @@
           "partSize": 35739157156577,
           "sendContentMd5": false,
           "storageClass": "STANDARD",
-          "userMetadata": {
+          "metadata": {
             "Foo": "Baz"
           },
-          "userTags": {
+          "tags": {
             "UserID": "2"
           },
           "websiteRedirectLocation": "http://localhost:9001"

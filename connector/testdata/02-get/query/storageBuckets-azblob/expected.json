@@ -2,7 +2,18 @@
   {
     "rows": [
       {
-        "__value": [{ "name": "azblob-bucket-test", "tags": { "foo": "baz" } }]
+        "__value": [
+          {
+            "encryption": null,
+            "lifecycle": null,
+            "name": "azblob-bucket-test",
+            "objectLock": null,
+            "tags": {
+              "foo": "baz"
+            },
+            "versioning": null
+          }
+        ]
       }
     ]
   }

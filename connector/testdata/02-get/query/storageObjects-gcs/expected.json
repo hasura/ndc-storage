@@ -60,9 +60,9 @@
               "serverEncrypted": null,
               "size": 10,
               "storageClass": "Cool",
-              "userMetadata": null,
-              "userTagCount": 0,
-              "userTags": null
+              "rawMetadata": null,
+              "tagCount": 0,
+              "tags": null
             }
           ],
           "pageInfo": { "cursor": null, "hasNextPage": true, "nextCursor": "" }

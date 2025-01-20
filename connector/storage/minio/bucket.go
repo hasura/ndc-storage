@@ -517,10 +517,15 @@ func (mc *Client) GetBucketEncryption(ctx context.Context, bucketName string) (*
 
 	rawResult, err := mc.client.GetBucketEncryption(ctx, bucketName)
 	if err != nil {
+		respError := evalNotFoundError(err, "ServerSideEncryptionConfigurationNotFoundError")
+		if respError == nil {
+			return nil, nil
+		}
+
 		span.SetStatus(codes.Error, err.Error())
 		span.RecordError(err)
 
-		return nil, serializeErrorResponse(err)
+		return nil, respError
 	}
 
 	return serializeBucketEncryptionConfiguration(rawResult), nil

@@ -14,12 +14,21 @@
         "fields": {
           "fields": {
             "fields": {
-              "name": {
-                "column": "name",
-                "type": "column"
-              },
-              "tags": {
-                "column": "tags",
+              "encryption": {
+                "column": "encryption",
+                "fields": {
+                  "fields": {
+                    "kmsMasterKeyId": {
+                      "column": "kmsMasterKeyId",
+                      "type": "column"
+                    },
+                    "sseAlgorithm": {
+                      "column": "sseAlgorithm",
+                      "type": "column"
+                    }
+                  },
+                  "type": "object"
+                },
                 "type": "column"
               },
               "lifecycle": {
@@ -74,6 +83,10 @@
                               },
                               "type": "column"
                             },
+                            "enabled": {
+                              "column": "enabled",
+                              "type": "column"
+                            },
                             "expiration": {
                               "column": "expiration",
                               "fields": {
@@ -103,78 +116,35 @@
                               "column": "filter",
                               "fields": {
                                 "fields": {
-                                  "and": {
-                                    "column": "and",
-                                    "fields": {
-                                      "fields": {
-                                        "objectSizeGreaterThan": {
-                                          "column": "objectSizeGreaterThan",
-                                          "type": "column"
-                                        },
-                                        "objectSizeLessThan": {
-                                          "column": "objectSizeLessThan",
-                                          "type": "column"
-                                        },
-                                        "prefix": {
-                                          "column": "prefix",
-                                          "type": "column"
-                                        },
-                                        "tags": {
-                                          "column": "tags",
-                                          "fields": {
-                                            "fields": {
-                                              "fields": {
-                                                "key": {
-                                                  "column": "key",
-                                                  "type": "column"
-                                                },
-                                                "value": {
-                                                  "column": "value",
-                                                  "type": "column"
-                                                }
-                                              },
-                                              "type": "object"
-                                            },
-                                            "type": "array"
-                                          },
-                                          "type": "column"
-                                        }
-                                      },
-                                      "type": "object"
+                                  "fields": {
+                                    "matchesPrefix": {
+                                      "column": "matchesPrefix",
+                                      "type": "column"
                                     },
-                                    "type": "column"
-                                  },
-                                  "objectSizeGreaterThan": {
-                                    "column": "objectSizeGreaterThan",
-                                    "type": "column"
-                                  },
-                                  "objectSizeLessThan": {
-                                    "column": "objectSizeLessThan",
-                                    "type": "column"
-                                  },
-                                  "prefix": {
-                                    "column": "prefix",
-                                    "type": "column"
-                                  },
-                                  "tag": {
-                                    "column": "tag",
-                                    "fields": {
-                                      "fields": {
-                                        "key": {
-                                          "column": "key",
-                                          "type": "column"
-                                        },
-                                        "value": {
-                                          "column": "value",
-                                          "type": "column"
-                                        }
-                                      },
-                                      "type": "object"
+                                    "matchesStorageClasses": {
+                                      "column": "matchesStorageClasses",
+                                      "type": "column"
                                     },
-                                    "type": "column"
-                                  }
+                                    "matchesSuffix": {
+                                      "column": "matchesSuffix",
+                                      "type": "column"
+                                    },
+                                    "objectSizeGreaterThan": {
+                                      "column": "objectSizeGreaterThan",
+                                      "type": "column"
+                                    },
+                                    "objectSizeLessThan": {
+                                      "column": "objectSizeLessThan",
+                                      "type": "column"
+                                    },
+                                    "tags": {
+                                      "column": "tags",
+                                      "type": "column"
+                                    }
+                                  },
+                                  "type": "object"
                                 },
-                                "type": "object"
+                                "type": "array"
                               },
                               "type": "column"
                             },
@@ -224,10 +194,6 @@
                               "column": "prefix",
                               "type": "column"
                             },
-                            "status": {
-                              "column": "status",
-                              "type": "column"
-                            },
                             "transition": {
                               "column": "transition",
                               "fields": {
@@ -261,29 +227,8 @@
                 },
                 "type": "column"
               },
-              "versioning": {
-                "column": "versioning",
-                "fields": {
-                  "fields": {
-                    "excludeFolders": {
-                      "column": "excludeFolders",
-                      "type": "column"
-                    },
-                    "excludedPrefixes": {
-                      "column": "excludedPrefixes",
-                      "type": "column"
-                    },
-                    "mfaDelete": {
-                      "column": "mfaDelete",
-                      "type": "column"
-                    },
-                    "enabled": {
-                      "column": "enabled",
-                      "type": "column"
-                    }
-                  },
-                  "type": "object"
-                },
+              "name": {
+                "column": "name",
                 "type": "column"
               },
               "objectLock": {
@@ -304,6 +249,35 @@
                     },
                     "validity": {
                       "column": "validity",
+                      "type": "column"
+                    }
+                  },
+                  "type": "object"
+                },
+                "type": "column"
+              },
+              "tags": {
+                "column": "tags",
+                "type": "column"
+              },
+              "versioning": {
+                "column": "versioning",
+                "fields": {
+                  "fields": {
+                    "enabled": {
+                      "column": "enabled",
+                      "type": "column"
+                    },
+                    "excludeFolders": {
+                      "column": "excludeFolders",
+                      "type": "column"
+                    },
+                    "excludedPrefixes": {
+                      "column": "excludedPrefixes",
+                      "type": "column"
+                    },
+                    "mfaDelete": {
+                      "column": "mfaDelete",
                       "type": "column"
                     }
                   },

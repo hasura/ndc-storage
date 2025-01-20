@@ -62,9 +62,9 @@
               "serverEncrypted": true,
               "size": 10,
               "storageClass": "Cool",
-              "userMetadata": {},
-              "userTagCount": 2,
-              "userTags": {
+              "rawMetadata": null,
+              "tagCount": 2,
+              "tags": {
                 "Foo": "baz",
                 "UserID": "3"
               }

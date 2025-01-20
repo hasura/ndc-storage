@@ -19,11 +19,10 @@ var errNotSupported = schema.NotSupportedError("Azure Blob Storage doesn't suppo
 
 func serializeObjectInfo(item *container.BlobItem) common.StorageObject { //nolint:funlen
 	object := common.StorageObject{
-		Metadata:     make(map[string]string),
-		UserMetadata: make(map[string]string),
-		IsLatest:     item.IsCurrentVersion,
-		Deleted:      item.Deleted,
-		VersionID:    item.VersionID,
+		Metadata:  make(map[string]string),
+		IsLatest:  item.IsCurrentVersion,
+		Deleted:   item.Deleted,
+		VersionID: item.VersionID,
 	}
 
 	if item.Name != nil {
@@ -31,14 +30,14 @@ func serializeObjectInfo(item *container.BlobItem) common.StorageObject { //noli
 	}
 
 	if item.BlobTags != nil && len(item.BlobTags.BlobTagSet) > 0 {
-		object.UserTags = make(map[string]string)
+		object.Tags = make(map[string]string)
 
 		for _, bt := range item.BlobTags.BlobTagSet {
 			if bt.Key == nil || bt.Value == nil {
 				continue
 			}
 
-			object.UserTags[*bt.Key] = *bt.Value
+			object.Tags[*bt.Key] = *bt.Value
 		}
 	}
 
@@ -79,7 +78,9 @@ func serializeObjectInfo(item *container.BlobItem) common.StorageObject { //noli
 	}
 
 	if item.Properties.TagCount != nil {
-		object.UserTagCount = int(*item.Properties.TagCount)
+		object.TagCount = int(*item.Properties.TagCount)
+	} else {
+		object.TagCount = len(object.Tags)
 	}
 
 	if item.Properties.ExpiresOn != nil {

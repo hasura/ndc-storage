@@ -4,7 +4,10 @@
       {
         "__value": [
           {
-            "lifecycle": { "rules": [] },
+            "encryption": null,
+            "lifecycle": {
+              "rules": []
+            },
             "name": "gcs-bucket",
             "objectLock": null,
             "tags": null,

@@ -45,6 +45,7 @@
           "leaseStatus": "unlocked",
           "legalHold": null,
           "metadata": { "foo": "Bar" },
+          "rawMetadata": null,
           "name": "public/hello.txt",
           "owner": null,
           "permissions": null,
@@ -58,9 +59,8 @@
           "serverEncrypted": true,
           "size": 10,
           "storageClass": "Cool",
-          "userMetadata": {},
-          "userTagCount": 2,
-          "userTags": { "Foo": "baz", "UserID": "3" }
+          "tagCount": 2,
+          "tags": { "Foo": "baz", "UserID": "3" }
         }
       }
     ]

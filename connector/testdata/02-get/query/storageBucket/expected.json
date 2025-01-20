@@ -1,0 +1,62 @@
+[
+  {
+    "rows": [
+      {
+        "__value": {
+          "encryption": null,
+          "lifecycle": {
+            "rules": [
+              {
+                "abortIncompleteMultipartUpload": null,
+                "allVersionsExpiration": null,
+                "delMarkerExpiration": null,
+                "enabled": true,
+                "expiration": {
+                  "date": null,
+                  "days": 4,
+                  "expiredObjectAllVersions": null,
+                  "expiredObjectDeleteMarker": false
+                },
+                "filter": [
+                  {
+                    "matchesPrefix": null,
+                    "matchesStorageClasses": null,
+                    "matchesSuffix": null,
+                    "objectSizeGreaterThan": null,
+                    "objectSizeLessThan": null,
+                    "tags": null
+                  },
+                  {
+                    "matchesPrefix": ["JSqXP0pJZF"],
+                    "matchesStorageClasses": null,
+                    "matchesSuffix": null,
+                    "objectSizeGreaterThan": 1000000,
+                    "objectSizeLessThan": 1,
+                    "tags": { "7Uw1or2jrq": "00sA2cRTCB" }
+                  }
+                ],
+                "id": "aXD6eFi5JE",
+                "noncurrentVersionExpiration": {
+                  "newerNoncurrentVersions": 108,
+                  "noncurrentDays": 12
+                },
+                "noncurrentVersionTransition": null,
+                "prefix": "GPJel0xa2s",
+                "transition": null
+              }
+            ]
+          },
+          "name": "minio-bucket-test",
+          "objectLock": null,
+          "tags": { "Foo": "bar" },
+          "versioning": {
+            "enabled": true,
+            "excludeFolders": false,
+            "excludedPrefixes": [],
+            "mfaDelete": null
+          }
+        }
+      }
+    ]
+  }
+]

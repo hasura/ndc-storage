@@ -60,9 +60,9 @@
               "serverEncrypted": true,
               "size": 10,
               "storageClass": "Cool",
-              "userMetadata": {},
-              "userTagCount": 1,
-              "userTags": {
+              "rawMetadata": null,
+              "tagCount": 1,
+              "tags": {
                 "Copy": "true"
               }
             }

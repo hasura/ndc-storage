@@ -8,7 +8,7 @@
         "clientId": "gcs",
         "bucket": "gcs-bucket",
         "object": "public/hello.txt",
-        "tags": {
+        "metadata": {
           "Foo": "gcp-baz",
           "UserID": "3"
         }

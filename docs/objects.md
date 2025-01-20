@@ -103,11 +103,11 @@ query DownloadObjectText {
 
 | Service              | Pagination |
 | -------------------- | ---------- |
-| AWS S3               | ❌        |
-| MinIO                | ❌        |
-| Google Cloud Storage | ❌        |
-| Cloudflare R2        | ❌        |
-| DigitalOcean Spaces  | ❌        |
+| AWS S3               | ❌         |
+| MinIO                | ❌         |
+| Google Cloud Storage | ❌         |
+| Cloudflare R2        | ❌         |
+| DigitalOcean Spaces  | ❌         |
 | Azure Blob Storage   | ✅         |
 
 ```graphql
@@ -126,9 +126,8 @@ query ListObjects {
       serverEncrypted
       size
       storageClass
-      userMetadata
-      userTagCount
-      userTags
+      tagCount
+      tags
       cacheControl
       checksumCrc32
       checksumCrc64Nvme

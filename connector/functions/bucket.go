@@ -37,6 +37,24 @@ func FunctionStorageBuckets(ctx context.Context, state *types.State, args *commo
 	})
 }
 
+// FunctionStorageBucket gets a bucket by name.
+func FunctionStorageBucket(ctx context.Context, state *types.State, args *common.StorageBucketArguments) (*common.StorageBucketInfo, error) {
+	request := internal.ObjectPredicate{}
+
+	if err := request.EvalSelection(utils.CommandSelectionFieldFromContext(ctx)); err != nil {
+		return nil, err
+	}
+
+	return state.Storage.GetBucket(ctx, args, common.BucketOptions{
+		IncludeTags:       request.Include.Tags,
+		IncludeVersioning: request.Include.Versions,
+		IncludeLifecycle:  request.Include.Lifecycle,
+		IncludeEncryption: request.Include.Encryption,
+		IncludeObjectLock: request.Include.ObjectLock,
+		NumThreads:        state.Concurrency.Query,
+	})
+}
+
 // FunctionStorageBucketExists checks if a bucket exists.
 func FunctionStorageBucketExists(ctx context.Context, state *types.State, args *common.StorageBucketArguments) (bool, error) {
 	return state.Storage.BucketExists(ctx, args)

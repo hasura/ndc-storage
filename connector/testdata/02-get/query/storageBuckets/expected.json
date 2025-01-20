@@ -4,18 +4,20 @@
       {
         "__value": [
           {
+            "encryption": null,
             "lifecycle": null,
             "name": "minio-bucket-empty",
             "objectLock": null,
             "tags": null,
             "versioning": {
+              "enabled": false,
               "excludeFolders": false,
               "excludedPrefixes": [],
-              "mfaDelete": null,
-              "enabled": false
+              "mfaDelete": null
             }
           },
           {
+            "encryption": null,
             "lifecycle": null,
             "name": "minio-bucket-lock",
             "objectLock": {
@@ -26,42 +28,47 @@
             },
             "tags": null,
             "versioning": {
+              "enabled": true,
               "excludeFolders": false,
               "excludedPrefixes": [],
-              "mfaDelete": null,
-              "enabled": true
+              "mfaDelete": null
             }
           },
           {
+            "encryption": null,
             "lifecycle": {
               "rules": [
                 {
                   "abortIncompleteMultipartUpload": null,
                   "allVersionsExpiration": null,
                   "delMarkerExpiration": null,
+                  "enabled": true,
                   "expiration": {
                     "date": null,
                     "days": 4,
                     "expiredObjectAllVersions": null,
                     "expiredObjectDeleteMarker": false
                   },
-                  "filter": {
-                    "and": {
+                  "filter": [
+                    {
+                      "matchesPrefix": null,
+                      "matchesStorageClasses": null,
+                      "matchesSuffix": null,
+                      "objectSizeGreaterThan": null,
+                      "objectSizeLessThan": null,
+                      "tags": null
+                    },
+                    {
+                      "matchesPrefix": ["JSqXP0pJZF"],
+                      "matchesStorageClasses": null,
+                      "matchesSuffix": null,
                       "objectSizeGreaterThan": 1000000,
                       "objectSizeLessThan": 1,
-                      "prefix": "JSqXP0pJZF",
-                      "tags": [
-                        {
-                          "key": "7Uw1or2jrq",
-                          "value": "00sA2cRTCB"
-                        }
-                      ]
-                    },
-                    "objectSizeGreaterThan": null,
-                    "objectSizeLessThan": null,
-                    "prefix": null,
-                    "tag": null
-                  },
+                      "tags": {
+                        "7Uw1or2jrq": "00sA2cRTCB"
+                      }
+                    }
+                  ],
                   "id": "aXD6eFi5JE",
                   "noncurrentVersionExpiration": {
                     "newerNoncurrentVersions": 108,
@@ -69,7 +76,6 @@
                   },
                   "noncurrentVersionTransition": null,
                   "prefix": "GPJel0xa2s",
-                  "status": "Enabled",
                   "transition": null
                 }
               ]
@@ -80,10 +86,10 @@
               "Foo": "bar"
             },
             "versioning": {
+              "enabled": true,
               "excludeFolders": false,
               "excludedPrefixes": [],
-              "mfaDelete": null,
-              "enabled": true
+              "mfaDelete": null
             }
           }
         ]

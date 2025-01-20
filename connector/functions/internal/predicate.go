@@ -86,10 +86,12 @@ func (cor *ObjectPredicate) EvalSelection(selection schema.NestedField) error { 
 			return cor.EvalSelection(objectsColumn.Fields)
 		}
 
-		if _, metadataExists := expr.Fields["metadata"]; metadataExists {
-			cor.Include.Metadata = true
-		} else if _, metadataExists := expr.Fields["userMetadata"]; metadataExists {
-			cor.Include.Metadata = true
+		for _, key := range []string{"metadata", "rawMetadata"} {
+			if _, ok := expr.Fields[key]; ok {
+				cor.Include.Metadata = true
+
+				break
+			}
 		}
 
 		for _, key := range checksumColumnNames {
@@ -100,9 +102,7 @@ func (cor *ObjectPredicate) EvalSelection(selection schema.NestedField) error { 
 			}
 		}
 
-		if _, metadataExists := expr.Fields["userTags"]; metadataExists {
-			cor.Include.Tags = true
-		} else if _, metadataExists := expr.Fields["tags"]; metadataExists {
+		if _, metadataExists := expr.Fields["tags"]; metadataExists {
 			cor.Include.Tags = true
 		}
 

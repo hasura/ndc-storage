@@ -195,19 +195,10 @@ type StorageCopyDestOptions struct {
 	// if no user-metadata is provided, it is copied from source
 	// (when there is only once source object in the compose
 	// request)
-	UserMetadata map[string]string `json:"userMetadata,omitempty"`
-	// UserMetadata is only set to destination if ReplaceMetadata is true
-	// other value is UserMetadata is ignored and we preserve src.UserMetadata
-	// NOTE: if you set this value to true and now metadata is present
-	// in UserMetadata your destination object will not have any metadata
-	// set.
-	ReplaceMetadata bool `json:"replaceMetadata,omitempty"`
+	Metadata map[string]string `json:"metadata,omitempty"`
 
-	// `userTags` is the user defined object tags to be set on destination.
-	// This will be set only if the `replaceTags` field is set to true.
-	// Otherwise this field is ignored
-	UserTags    map[string]string `json:"userTags,omitempty"`
-	ReplaceTags bool              `json:"replaceTags,omitempty"`
+	// `tags` is the user defined object tags to be set on destination.
+	Tags map[string]string `json:"tags,omitempty"`
 
 	// Specifies whether you want to apply a Legal Hold to the copied object.
 	LegalHold *bool `json:"legalHold"`
@@ -268,6 +259,7 @@ type UpdateStorageObjectOptions struct {
 	VersionID string                            `json:"versionId,omitempty"`
 	Retention *SetStorageObjectRetentionOptions `json:"retention"`
 	LegalHold *bool                             `json:"legalHold"`
+	Metadata  map[string]string                 `json:"metadata,omitempty"`
 	Tags      map[string]string                 `json:"tags,omitempty"`
 }
 
@@ -276,7 +268,8 @@ func (ubo UpdateStorageObjectOptions) IsEmpty() bool {
 	return ubo.VersionID == "" &&
 		ubo.Tags == nil &&
 		ubo.Retention == nil &&
-		ubo.LegalHold == nil
+		ubo.LegalHold == nil &&
+		ubo.Metadata == nil
 }
 
 // SetStorageObjectRetentionOptions represents options specified by user for PutObject call.
@@ -310,8 +303,8 @@ type PutStorageObjectRetentionOptions struct {
 
 // PutStorageObjectOptions represents options specified by user for PutObject call.
 type PutStorageObjectOptions struct {
-	UserMetadata       map[string]string                 `json:"userMetadata,omitempty"`
-	UserTags           map[string]string                 `json:"userTags,omitempty"`
+	Metadata           map[string]string                 `json:"metadata,omitempty"`
+	Tags               map[string]string                 `json:"tags,omitempty"`
 	ContentType        string                            `json:"contentType,omitempty"`
 	ContentEncoding    string                            `json:"contentEncoding,omitempty"`
 	ContentDisposition string                            `json:"contentDisposition,omitempty"`

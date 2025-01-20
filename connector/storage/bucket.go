@@ -83,6 +83,16 @@ func (m *Manager) ListBuckets(ctx context.Context, clientID *common.StorageClien
 	return client.ListBuckets(ctx, options)
 }
 
+// GetBucket gets bucket by name.
+func (m *Manager) GetBucket(ctx context.Context, bucketInfo *common.StorageBucketArguments, options common.BucketOptions) (*common.StorageBucketInfo, error) {
+	client, bucketName, err := m.GetClientAndBucket(bucketInfo.ClientID, bucketInfo.Bucket)
+	if err != nil {
+		return nil, err
+	}
+
+	return client.GetBucket(ctx, bucketName, options)
+}
+
 // BucketExists checks if a bucket exists.
 func (m *Manager) BucketExists(ctx context.Context, args *common.StorageBucketArguments) (bool, error) {
 	client, bucketName, err := m.GetClientAndBucket(args.ClientID, args.Bucket)

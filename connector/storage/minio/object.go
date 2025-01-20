@@ -210,8 +210,8 @@ func (mc *Client) PutObject(ctx context.Context, bucketName string, objectName s
 	)
 
 	options := minio.PutObjectOptions{
-		UserMetadata:            opts.UserMetadata,
-		UserTags:                opts.UserTags,
+		UserMetadata:            opts.Metadata,
+		UserTags:                opts.Tags,
 		ContentType:             opts.ContentType,
 		ContentEncoding:         opts.ContentEncoding,
 		ContentDisposition:      opts.ContentDisposition,
@@ -352,7 +352,7 @@ func (mc *Client) StatObject(ctx context.Context, bucketName, objectName string,
 			return nil, err
 		}
 
-		result.UserTags = userTags
+		result.Tags = userTags
 	}
 
 	if opts.Include.LegalHold {

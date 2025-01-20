@@ -133,7 +133,7 @@ func (c *Client) PutObject(ctx context.Context, bucketName string, objectName st
 
 	w := c.client.Bucket(bucketName).Object(objectName).NewWriter(ctx)
 	w.ChunkSize = chunkSize
-	w.Metadata = opts.UserMetadata
+	w.Metadata = opts.Metadata
 	w.CacheControl = opts.CacheControl
 	w.ContentDisposition = opts.ContentDisposition
 	w.ContentEncoding = opts.ContentEncoding
@@ -391,8 +391,8 @@ func (c *Client) UpdateObject(ctx context.Context, bucketName string, objectName
 		}
 	}
 
-	if opts.Tags != nil {
-		updateAttrs.Metadata = opts.Tags
+	if opts.Metadata != nil {
+		updateAttrs.Metadata = opts.Metadata
 	}
 
 	_, err := handle.Update(ctx, updateAttrs)

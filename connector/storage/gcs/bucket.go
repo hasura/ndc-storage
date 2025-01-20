@@ -20,6 +20,7 @@ func (c *Client) MakeBucket(ctx context.Context, args *common.MakeStorageBucketO
 	attrs := &storage.BucketAttrs{
 		Location: args.Region,
 		Labels:   args.Tags,
+		Name:     args.Name,
 	}
 
 	handle := c.client.Bucket(args.Name)

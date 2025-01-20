@@ -149,19 +149,17 @@ type StorageObject struct {
 	Expires            *time.Time `json:"expires"` // The date and time at which the object is no longer able to be cached.
 
 	// Collection of additional metadata on the object.
-	// eg: x-amz-meta-*, content-encoding etc.
+	// In MinIO and S3, x-amz-meta-* headers stripped "x-amz-meta-" prefix containing the first value.
 	Metadata map[string]string `json:"metadata,omitempty"`
 
-	// x-amz-meta-* headers stripped "x-amz-meta-" prefix containing the first value.
-	// Only returned by MinIO servers.
-	UserMetadata map[string]string `json:"userMetadata,omitempty"`
+	// Raw metadata headers, eg: x-amz-meta-*, content-encoding etc... Only returned by MinIO servers.
+	RawMetadata map[string]string `json:"rawMetadata,omitempty"`
 
-	// x-amz-tagging values in their k/v values.
-	// Only returned by MinIO servers.
-	UserTags map[string]string `json:"userTags,omitempty"`
+	// User tags
+	Tags map[string]string `json:"tags,omitempty"`
 
-	// x-amz-tagging-count value
-	UserTagCount int `json:"userTagCount,omitempty"`
+	// The total count value of tags
+	TagCount int `json:"tagCount,omitempty"`
 
 	// Owner name.
 	Owner *StorageOwner `json:"owner"`

@@ -55,16 +55,12 @@ func SetObjectInfoSpanAttributes(span trace.Span, object *StorageObject) {
 		span.SetAttributes(attribute.String("storage.object.version", *object.VersionID))
 	}
 
-	if object.UserTagCount > 0 {
-		span.SetAttributes(attribute.Int("storage.object.user_tag_count", object.UserTagCount))
+	if object.TagCount > 0 {
+		span.SetAttributes(attribute.Int("storage.object.tags_count", object.TagCount))
 	}
 
 	if len(object.Metadata) > 0 {
 		span.SetAttributes(attribute.Int("storage.object.metadata_count", len(object.Metadata)))
-	}
-
-	if len(object.UserMetadata) > 0 {
-		span.SetAttributes(attribute.Int("storage.object.user_metadata_count", len(object.UserMetadata)))
 	}
 
 	if !object.Expires.IsZero() {

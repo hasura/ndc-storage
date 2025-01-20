@@ -1,0 +1,298 @@
+{
+  "arguments": {
+    "clientId": {
+      "type": "literal",
+      "value": "minio"
+    },
+    "bucket": {
+      "type": "literal",
+      "value": "minio-bucket-test"
+    }
+  },
+  "collection": "storageBucket",
+  "collection_relationships": {},
+  "query": {
+    "fields": {
+      "__value": {
+        "column": "__value",
+        "fields": {
+          "fields": {
+            "encryption": {
+              "column": "encryption",
+              "fields": {
+                "fields": {
+                  "kmsMasterKeyId": {
+                    "column": "kmsMasterKeyId",
+                    "type": "column"
+                  },
+                  "sseAlgorithm": {
+                    "column": "sseAlgorithm",
+                    "type": "column"
+                  }
+                },
+                "type": "object"
+              },
+              "type": "column"
+            },
+            "lifecycle": {
+              "column": "lifecycle",
+              "fields": {
+                "fields": {
+                  "rules": {
+                    "column": "rules",
+                    "fields": {
+                      "fields": {
+                        "fields": {
+                          "abortIncompleteMultipartUpload": {
+                            "column": "abortIncompleteMultipartUpload",
+                            "fields": {
+                              "fields": {
+                                "daysAfterInitiation": {
+                                  "column": "daysAfterInitiation",
+                                  "type": "column"
+                                }
+                              },
+                              "type": "object"
+                            },
+                            "type": "column"
+                          },
+                          "allVersionsExpiration": {
+                            "column": "allVersionsExpiration",
+                            "fields": {
+                              "fields": {
+                                "days": {
+                                  "column": "days",
+                                  "type": "column"
+                                },
+                                "deleteMarker": {
+                                  "column": "deleteMarker",
+                                  "type": "column"
+                                }
+                              },
+                              "type": "object"
+                            },
+                            "type": "column"
+                          },
+                          "delMarkerExpiration": {
+                            "column": "delMarkerExpiration",
+                            "fields": {
+                              "fields": {
+                                "days": {
+                                  "column": "days",
+                                  "type": "column"
+                                }
+                              },
+                              "type": "object"
+                            },
+                            "type": "column"
+                          },
+                          "enabled": {
+                            "column": "enabled",
+                            "type": "column"
+                          },
+                          "expiration": {
+                            "column": "expiration",
+                            "fields": {
+                              "fields": {
+                                "date": {
+                                  "column": "date",
+                                  "type": "column"
+                                },
+                                "days": {
+                                  "column": "days",
+                                  "type": "column"
+                                },
+                                "expiredObjectAllVersions": {
+                                  "column": "expiredObjectAllVersions",
+                                  "type": "column"
+                                },
+                                "expiredObjectDeleteMarker": {
+                                  "column": "expiredObjectDeleteMarker",
+                                  "type": "column"
+                                }
+                              },
+                              "type": "object"
+                            },
+                            "type": "column"
+                          },
+                          "filter": {
+                            "column": "filter",
+                            "fields": {
+                              "fields": {
+                                "fields": {
+                                  "matchesPrefix": {
+                                    "column": "matchesPrefix",
+                                    "type": "column"
+                                  },
+                                  "matchesStorageClasses": {
+                                    "column": "matchesStorageClasses",
+                                    "type": "column"
+                                  },
+                                  "matchesSuffix": {
+                                    "column": "matchesSuffix",
+                                    "type": "column"
+                                  },
+                                  "objectSizeGreaterThan": {
+                                    "column": "objectSizeGreaterThan",
+                                    "type": "column"
+                                  },
+                                  "objectSizeLessThan": {
+                                    "column": "objectSizeLessThan",
+                                    "type": "column"
+                                  },
+                                  "tags": {
+                                    "column": "tags",
+                                    "type": "column"
+                                  }
+                                },
+                                "type": "object"
+                              },
+                              "type": "array"
+                            },
+                            "type": "column"
+                          },
+                          "id": {
+                            "column": "id",
+                            "type": "column"
+                          },
+                          "noncurrentVersionExpiration": {
+                            "column": "noncurrentVersionExpiration",
+                            "fields": {
+                              "fields": {
+                                "newerNoncurrentVersions": {
+                                  "column": "newerNoncurrentVersions",
+                                  "type": "column"
+                                },
+                                "noncurrentDays": {
+                                  "column": "noncurrentDays",
+                                  "type": "column"
+                                }
+                              },
+                              "type": "object"
+                            },
+                            "type": "column"
+                          },
+                          "noncurrentVersionTransition": {
+                            "column": "noncurrentVersionTransition",
+                            "fields": {
+                              "fields": {
+                                "newerNoncurrentVersions": {
+                                  "column": "newerNoncurrentVersions",
+                                  "type": "column"
+                                },
+                                "noncurrentDays": {
+                                  "column": "noncurrentDays",
+                                  "type": "column"
+                                },
+                                "storageClass": {
+                                  "column": "storageClass",
+                                  "type": "column"
+                                }
+                              },
+                              "type": "object"
+                            },
+                            "type": "column"
+                          },
+                          "prefix": {
+                            "column": "prefix",
+                            "type": "column"
+                          },
+                          "transition": {
+                            "column": "transition",
+                            "fields": {
+                              "fields": {
+                                "date": {
+                                  "column": "date",
+                                  "type": "column"
+                                },
+                                "days": {
+                                  "column": "days",
+                                  "type": "column"
+                                },
+                                "storageClass": {
+                                  "column": "storageClass",
+                                  "type": "column"
+                                }
+                              },
+                              "type": "object"
+                            },
+                            "type": "column"
+                          }
+                        },
+                        "type": "object"
+                      },
+                      "type": "array"
+                    },
+                    "type": "column"
+                  }
+                },
+                "type": "object"
+              },
+              "type": "column"
+            },
+            "name": {
+              "column": "name",
+              "type": "column"
+            },
+            "objectLock": {
+              "column": "objectLock",
+              "fields": {
+                "fields": {
+                  "mode": {
+                    "column": "mode",
+                    "type": "column"
+                  },
+                  "objectLock": {
+                    "column": "objectLock",
+                    "type": "column"
+                  },
+                  "unit": {
+                    "column": "unit",
+                    "type": "column"
+                  },
+                  "validity": {
+                    "column": "validity",
+                    "type": "column"
+                  }
+                },
+                "type": "object"
+              },
+              "type": "column"
+            },
+            "tags": {
+              "column": "tags",
+              "type": "column"
+            },
+            "versioning": {
+              "column": "versioning",
+              "fields": {
+                "fields": {
+                  "enabled": {
+                    "column": "enabled",
+                    "type": "column"
+                  },
+                  "excludeFolders": {
+                    "column": "excludeFolders",
+                    "type": "column"
+                  },
+                  "excludedPrefixes": {
+                    "column": "excludedPrefixes",
+                    "type": "column"
+                  },
+                  "mfaDelete": {
+                    "column": "mfaDelete",
+                    "type": "column"
+                  }
+                },
+                "type": "object"
+              },
+              "type": "column"
+            }
+          },
+          "type": "object"
+        },
+        "type": "column"
+      }
+    }
+  }
+}
