@@ -191,30 +191,6 @@ func (j *StorageBucketArguments) FromValue(input map[string]any) error {
 }
 
 // ToMap encodes the struct to a value map
-func (j DeleteMarkerReplication) ToMap() map[string]any {
-	r := make(map[string]any)
-	r["status"] = j.Status
-
-	return r
-}
-
-// ToMap encodes the struct to a value map
-func (j DeleteReplication) ToMap() map[string]any {
-	r := make(map[string]any)
-	r["status"] = j.Status
-
-	return r
-}
-
-// ToMap encodes the struct to a value map
-func (j ExistingObjectReplication) ToMap() map[string]any {
-	r := make(map[string]any)
-	r["status"] = j.Status
-
-	return r
-}
-
-// ToMap encodes the struct to a value map
 func (j GetStorageObjectOptions) ToMap() map[string]any {
 	r := make(map[string]any)
 	r["headers"] = j.Headers
@@ -252,99 +228,6 @@ func (j MakeStorageBucketOptions) ToMap() map[string]any {
 	r["objectLock"] = j.ObjectLock
 	r["region"] = j.Region
 	r["tags"] = j.Tags
-
-	return r
-}
-
-// ToMap encodes the struct to a value map
-func (j NotificationCommonConfig) ToMap() map[string]any {
-	r := make(map[string]any)
-	r["arn"] = j.Arn
-	r["event"] = j.Events
-	if j.Filter != nil {
-		r["filter"] = (*j.Filter)
-	}
-	r["id"] = j.ID
-
-	return r
-}
-
-// ToMap encodes the struct to a value map
-func (j NotificationConfig) ToMap() map[string]any {
-	r := make(map[string]any)
-	j_LambdaConfigs := make([]any, len(j.LambdaConfigs))
-	for i, j_LambdaConfigs_v := range j.LambdaConfigs {
-		j_LambdaConfigs[i] = j_LambdaConfigs_v
-	}
-	r["cloudFunctionConfigurations"] = j_LambdaConfigs
-	j_QueueConfigs := make([]any, len(j.QueueConfigs))
-	for i, j_QueueConfigs_v := range j.QueueConfigs {
-		j_QueueConfigs[i] = j_QueueConfigs_v
-	}
-	r["queueConfigurations"] = j_QueueConfigs
-	j_TopicConfigs := make([]any, len(j.TopicConfigs))
-	for i, j_TopicConfigs_v := range j.TopicConfigs {
-		j_TopicConfigs[i] = j_TopicConfigs_v
-	}
-	r["topicConfigurations"] = j_TopicConfigs
-
-	return r
-}
-
-// ToMap encodes the struct to a value map
-func (j NotificationFilter) ToMap() map[string]any {
-	r := make(map[string]any)
-	if j.S3Key != nil {
-		r["s3Key"] = (*j.S3Key)
-	}
-
-	return r
-}
-
-// ToMap encodes the struct to a value map
-func (j NotificationFilterRule) ToMap() map[string]any {
-	r := make(map[string]any)
-	r["name"] = j.Name
-	r["value"] = j.Value
-
-	return r
-}
-
-// ToMap encodes the struct to a value map
-func (j NotificationLambdaConfig) ToMap() map[string]any {
-	r := make(map[string]any)
-	r = utils.MergeMap(r, j.NotificationCommonConfig.ToMap())
-	r["cloudFunction"] = j.Lambda
-
-	return r
-}
-
-// ToMap encodes the struct to a value map
-func (j NotificationQueueConfig) ToMap() map[string]any {
-	r := make(map[string]any)
-	r = utils.MergeMap(r, j.NotificationCommonConfig.ToMap())
-	r["queue"] = j.Queue
-
-	return r
-}
-
-// ToMap encodes the struct to a value map
-func (j NotificationS3Key) ToMap() map[string]any {
-	r := make(map[string]any)
-	j_FilterRules := make([]any, len(j.FilterRules))
-	for i, j_FilterRules_v := range j.FilterRules {
-		j_FilterRules[i] = j_FilterRules_v
-	}
-	r["filterRule"] = j_FilterRules
-
-	return r
-}
-
-// ToMap encodes the struct to a value map
-func (j NotificationTopicConfig) ToMap() map[string]any {
-	r := make(map[string]any)
-	r = utils.MergeMap(r, j.NotificationCommonConfig.ToMap())
-	r["topic"] = j.Topic
 
 	return r
 }
@@ -562,14 +445,6 @@ func (j RemoveStorageObjectsOptions) ToMap() map[string]any {
 }
 
 // ToMap encodes the struct to a value map
-func (j ReplicaModifications) ToMap() map[string]any {
-	r := make(map[string]any)
-	r["status"] = j.Status
-
-	return r
-}
-
-// ToMap encodes the struct to a value map
 func (j ServerSideEncryptionConfiguration) ToMap() map[string]any {
 	r := make(map[string]any)
 	r["kmsMasterKeyId"] = j.KmsMasterKeyID
@@ -594,16 +469,6 @@ func (j SetStorageObjectRetentionOptions) ToMap() map[string]any {
 	r["governanceBypass"] = j.GovernanceBypass
 	r["mode"] = j.Mode
 	r["retainUntilDate"] = j.RetainUntilDate
-
-	return r
-}
-
-// ToMap encodes the struct to a value map
-func (j SourceSelectionCriteria) ToMap() map[string]any {
-	r := make(map[string]any)
-	if j.ReplicaModifications != nil {
-		r["replicaModifications"] = (*j.ReplicaModifications)
-	}
 
 	return r
 }
@@ -845,94 +710,10 @@ func (j StorageOwner) ToMap() map[string]any {
 }
 
 // ToMap encodes the struct to a value map
-func (j StorageReplicationConfig) ToMap() map[string]any {
-	r := make(map[string]any)
-	r["role"] = j.Role
-	j_Rules := make([]any, len(j.Rules))
-	for i, j_Rules_v := range j.Rules {
-		j_Rules[i] = j_Rules_v
-	}
-	r["rules"] = j_Rules
-
-	return r
-}
-
-// ToMap encodes the struct to a value map
-func (j StorageReplicationDestination) ToMap() map[string]any {
-	r := make(map[string]any)
-	r["bucket"] = j.Bucket
-	r["storageClass"] = j.StorageClass
-
-	return r
-}
-
-// ToMap encodes the struct to a value map
-func (j StorageReplicationFilter) ToMap() map[string]any {
-	r := make(map[string]any)
-	if j.And != nil {
-		r["and"] = (*j.And)
-	}
-	r["rrefix"] = j.Prefix
-	if j.Tag != nil {
-		r["tag"] = (*j.Tag)
-	}
-
-	return r
-}
-
-// ToMap encodes the struct to a value map
-func (j StorageReplicationFilterAnd) ToMap() map[string]any {
-	r := make(map[string]any)
-	r["rrefix"] = j.Prefix
-	j_Tags := make([]any, len(j.Tags))
-	for i, j_Tags_v := range j.Tags {
-		j_Tags[i] = j_Tags_v
-	}
-	r["tag"] = j_Tags
-
-	return r
-}
-
-// ToMap encodes the struct to a value map
-func (j StorageReplicationRule) ToMap() map[string]any {
-	r := make(map[string]any)
-	if j.DeleteMarkerReplication != nil {
-		r["deleteMarkerReplication"] = (*j.DeleteMarkerReplication)
-	}
-	if j.DeleteReplication != nil {
-		r["deleteReplication"] = (*j.DeleteReplication)
-	}
-	if j.Destination != nil {
-		r["destination"] = (*j.Destination)
-	}
-	if j.ExistingObjectReplication != nil {
-		r["existingObjectReplication"] = (*j.ExistingObjectReplication)
-	}
-	r["filter"] = j.Filter
-	r["id"] = j.ID
-	r["priority"] = j.Priority
-	if j.SourceSelectionCriteria != nil {
-		r["sourceSelectionCriteria"] = (*j.SourceSelectionCriteria)
-	}
-	r["status"] = j.Status
-
-	return r
-}
-
-// ToMap encodes the struct to a value map
 func (j StorageRestoreInfo) ToMap() map[string]any {
 	r := make(map[string]any)
 	r["expiryTime"] = j.ExpiryTime
 	r["ongoingRestore"] = j.OngoingRestore
-
-	return r
-}
-
-// ToMap encodes the struct to a value map
-func (j StorageTag) ToMap() map[string]any {
-	r := make(map[string]any)
-	r["key"] = j.Key
-	r["value"] = j.Value
 
 	return r
 }
@@ -1115,67 +896,6 @@ func (s *StorageObjectReplicationStatus) FromValue(value any) error {
 		return nil
 	}
 	result, err := ParseStorageObjectReplicationStatus(*valueStr)
-	if err != nil {
-		return err
-	}
-
-	*s = result
-	return nil
-}
-
-// ScalarName get the schema name of the scalar
-func (j StorageReplicationRuleStatus) ScalarName() string {
-	return "StorageReplicationRuleStatus"
-}
-
-const (
-	StorageReplicationRuleStatusEnabled  StorageReplicationRuleStatus = "Enabled"
-	StorageReplicationRuleStatusDisabled StorageReplicationRuleStatus = "Disabled"
-)
-
-var enumValues_StorageReplicationRuleStatus = []StorageReplicationRuleStatus{StorageReplicationRuleStatusEnabled, StorageReplicationRuleStatusDisabled}
-
-// ParseStorageReplicationRuleStatus parses a StorageReplicationRuleStatus enum from string
-func ParseStorageReplicationRuleStatus(input string) (StorageReplicationRuleStatus, error) {
-	result := StorageReplicationRuleStatus(input)
-	if !slices.Contains(enumValues_StorageReplicationRuleStatus, result) {
-		return StorageReplicationRuleStatus(""), errors.New("failed to parse StorageReplicationRuleStatus, expect one of [Enabled, Disabled]")
-	}
-
-	return result, nil
-}
-
-// IsValid checks if the value is invalid
-func (j StorageReplicationRuleStatus) IsValid() bool {
-	return slices.Contains(enumValues_StorageReplicationRuleStatus, j)
-}
-
-// UnmarshalJSON implements json.Unmarshaler.
-func (j *StorageReplicationRuleStatus) UnmarshalJSON(b []byte) error {
-	var rawValue string
-	if err := json.Unmarshal(b, &rawValue); err != nil {
-		return err
-	}
-
-	value, err := ParseStorageReplicationRuleStatus(rawValue)
-	if err != nil {
-		return err
-	}
-
-	*j = value
-	return nil
-}
-
-// FromValue decodes the scalar from an unknown value
-func (s *StorageReplicationRuleStatus) FromValue(value any) error {
-	valueStr, err := utils.DecodeNullableString(value)
-	if err != nil {
-		return err
-	}
-	if valueStr == nil {
-		return nil
-	}
-	result, err := ParseStorageReplicationRuleStatus(*valueStr)
 	if err != nil {
 		return err
 	}

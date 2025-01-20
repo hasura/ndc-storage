@@ -290,34 +290,3 @@ func (c *Client) GetBucketPolicy(ctx context.Context, bucketName string) (string
 
 	return result, nil
 }
-
-// GetBucketNotification gets notification configuration on a bucket.
-func (c *Client) GetBucketNotification(ctx context.Context, bucketName string) (*common.NotificationConfig, error) {
-	return nil, errNotSupported
-}
-
-// SetBucketNotification sets a new bucket notification on a bucket.
-func (c *Client) SetBucketNotification(ctx context.Context, bucketName string, config common.NotificationConfig) error {
-	return errNotSupported
-}
-
-// RemoveAllBucketNotification removes all configured bucket notifications on a bucket.
-func (c *Client) RemoveAllBucketNotification(ctx context.Context, bucketName string) error {
-	return errNotSupported
-}
-
-// SetBucketReplication sets replication configuration on a bucket. Role can be obtained by first defining the replication target
-// to associate the source and destination buckets for replication with the replication endpoint.
-func (c *Client) SetBucketReplication(ctx context.Context, bucketName string, cfg common.StorageReplicationConfig) error {
-	return errNotSupported
-}
-
-// Get current replication config on a bucket.
-func (c *Client) GetBucketReplication(ctx context.Context, bucketName string) (*common.StorageReplicationConfig, error) {
-	return nil, errNotSupported
-}
-
-// RemoveBucketReplication removes replication configuration on a bucket.
-func (c *Client) RemoveBucketReplication(ctx context.Context, bucketName string) error {
-	return errNotSupported
-}

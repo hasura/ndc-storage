@@ -22,8 +22,6 @@ type StorageClient interface { //nolint:interfacebloat
 	RemoveBucket(ctx context.Context, bucketName string) error
 	// UpdateBucket updates configurations for the bucket.
 	UpdateBucket(ctx context.Context, bucketName string, opts UpdateStorageBucketOptions) error
-	// GetBucketPolicy gets access permissions on a bucket or a prefix.
-	GetBucketPolicy(ctx context.Context, bucketName string) (string, error)
 	// ListObjects lists objects in a bucket.
 	ListObjects(ctx context.Context, bucketName string, opts *ListStorageObjectsOptions, predicate func(string) bool) (*StorageObjectListResults, error)
 	// ListIncompleteUploads list partially uploaded objects in a bucket.
@@ -59,19 +57,6 @@ type StorageClient interface { //nolint:interfacebloat
 	// This presigned URL can have an associated expiration time in seconds after which it is no longer operational.
 	// The default expiry is set to 7 days.
 	PresignedPutObject(ctx context.Context, bucketName string, objectName string, expiry time.Duration) (string, error)
-	// GetBucketNotification gets notification configuration on a bucket.
-	GetBucketNotification(ctx context.Context, bucketName string) (*NotificationConfig, error)
-	// Set a new bucket notification on a bucket.
-	SetBucketNotification(ctx context.Context, bucketName string, config NotificationConfig) error
-	// Remove all configured bucket notifications on a bucket.
-	RemoveAllBucketNotification(ctx context.Context, bucketName string) error
-	// SetBucketReplication sets replication configuration on a bucket. Role can be obtained by first defining the replication target on MinIO
-	// to associate the source and destination buckets for replication with the replication endpoint.
-	SetBucketReplication(ctx context.Context, bucketname string, cfg StorageReplicationConfig) error
-	// GetBucketReplication gets current replication config on a bucket.
-	GetBucketReplication(ctx context.Context, bucketName string) (*StorageReplicationConfig, error)
-	// RemoveBucketReplication removes replication configuration on a bucket.
-	RemoveBucketReplication(ctx context.Context, bucketName string) error
 }
 
 // BucketOptions hold options to get bucket information.

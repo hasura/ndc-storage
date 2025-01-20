@@ -347,7 +347,7 @@ func (mc *Client) StatObject(ctx context.Context, bucketName, objectName string,
 	result.Bucket = bucketName
 
 	if opts.Include.Tags {
-		userTags, err := mc.GetObjectTagging(ctx, bucketName, objectName, opts.VersionID)
+		userTags, err := mc.GetObjectTags(ctx, bucketName, objectName, opts.VersionID)
 		if err != nil {
 			return nil, err
 		}
@@ -581,13 +581,13 @@ func (mc *Client) GetObjectLegalHold(ctx context.Context, bucketName string, obj
 	return status != nil && *status == minio.LegalHoldEnabled, nil
 }
 
-// PutObjectTagging sets new object Tags to the given object, replaces/overwrites any existing tags.
+// SetObjectTags sets new object Tags to the given object, replaces/overwrites any existing tags.
 func (mc *Client) SetObjectTags(ctx context.Context, bucketName string, objectName, versionID string, objectTags map[string]string) error {
 	if len(objectTags) == 0 {
-		return mc.RemoveObjectTagging(ctx, bucketName, objectName, versionID)
+		return mc.RemoveObjectTags(ctx, bucketName, objectName, versionID)
 	}
 
-	ctx, span := mc.startOtelSpan(ctx, "SetStorageObjectTags", bucketName)
+	ctx, span := mc.startOtelSpan(ctx, "SetObjectTags", bucketName)
 	defer span.End()
 
 	span.SetAttributes(attribute.String("storage.key", objectName))
@@ -617,9 +617,9 @@ func (mc *Client) SetObjectTags(ctx context.Context, bucketName string, objectNa
 	return nil
 }
 
-// GetObjectTagging fetches Object Tags from the given object.
-func (mc *Client) GetObjectTagging(ctx context.Context, bucketName, objectName string, versionID *string) (map[string]string, error) {
-	ctx, span := mc.startOtelSpan(ctx, "GetObjectTagging", bucketName)
+// GetObjectTags fetches Object Tags from the given object.
+func (mc *Client) GetObjectTags(ctx context.Context, bucketName, objectName string, versionID *string) (map[string]string, error) {
+	ctx, span := mc.startOtelSpan(ctx, "GetObjectTags", bucketName)
 	defer span.End()
 
 	span.SetAttributes(attribute.String("storage.key", objectName))
@@ -642,9 +642,9 @@ func (mc *Client) GetObjectTagging(ctx context.Context, bucketName, objectName s
 	return results.ToMap(), nil
 }
 
-// RemoveObjectTagging removes Object Tags from the given object.
-func (mc *Client) RemoveObjectTagging(ctx context.Context, bucketName, objectName, versionID string) error {
-	ctx, span := mc.startOtelSpan(ctx, "RemoveObjectTagging", bucketName)
+// RemoveObjectTags removes Object Tags from the given object.
+func (mc *Client) RemoveObjectTags(ctx context.Context, bucketName, objectName, versionID string) error {
+	ctx, span := mc.startOtelSpan(ctx, "RemoveObjectTags", bucketName)
 	defer span.End()
 
 	span.SetAttributes(attribute.String("storage.key", objectName))
