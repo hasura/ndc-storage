@@ -89,7 +89,15 @@ func (j *ListStorageBucketArguments) FromValue(input map[string]any) error {
 	if err != nil {
 		return err
 	}
+	j.MaxResults, err = utils.GetIntDefault[int](input, "maxResults")
+	if err != nil {
+		return err
+	}
 	j.Prefix, err = utils.GetStringDefault(input, "prefix")
+	if err != nil {
+		return err
+	}
+	j.StartAfter, err = utils.GetStringDefault(input, "startAfter")
 	if err != nil {
 		return err
 	}
@@ -191,7 +199,7 @@ func (j *StorageBucketArguments) FromValue(input map[string]any) error {
 }
 
 // ToMap encodes the struct to a value map
-func (j Autoclass) ToMap() map[string]any {
+func (j BucketAutoclass) ToMap() map[string]any {
 	r := make(map[string]any)
 	r["enabled"] = j.Enabled
 	r["terminalStorageClass"] = j.TerminalStorageClass
@@ -208,6 +216,14 @@ func (j BucketCors) ToMap() map[string]any {
 	r["methods"] = j.Methods
 	r["origins"] = j.Origins
 	r["responseHeaders"] = j.ResponseHeaders
+
+	return r
+}
+
+// ToMap encodes the struct to a value map
+func (j BucketHierarchicalNamespace) ToMap() map[string]any {
+	r := make(map[string]any)
+	r["enabled"] = j.Enabled
 
 	return r
 }
@@ -522,16 +538,7 @@ func (j SetStorageObjectRetentionOptions) ToMap() map[string]any {
 }
 
 // ToMap encodes the struct to a value map
-func (j StorageBucketArguments) ToMap() map[string]any {
-	r := make(map[string]any)
-	r["bucket"] = j.Bucket
-	r["clientId"] = j.ClientID
-
-	return r
-}
-
-// ToMap encodes the struct to a value map
-func (j StorageBucketInfo) ToMap() map[string]any {
+func (j StorageBucket) ToMap() map[string]any {
 	r := make(map[string]any)
 	if j.Autoclass != nil {
 		r["autoclass"] = (*j.Autoclass)
@@ -545,10 +552,14 @@ func (j StorageBucketInfo) ToMap() map[string]any {
 	if j.CustomPlacementConfig != nil {
 		r["customPlacementConfig"] = (*j.CustomPlacementConfig)
 	}
+	r["defaultEventBasedHold"] = j.DefaultEventBasedHold
 	if j.Encryption != nil {
 		r["encryption"] = (*j.Encryption)
 	}
 	r["etag"] = j.Etag
+	if j.HierarchicalNamespace != nil {
+		r["hierarchicalNamespace"] = (*j.HierarchicalNamespace)
+	}
 	if j.Lifecycle != nil {
 		r["lifecycle"] = (*j.Lifecycle)
 	}
@@ -575,6 +586,28 @@ func (j StorageBucketInfo) ToMap() map[string]any {
 	if j.Website != nil {
 		r["website"] = (*j.Website)
 	}
+
+	return r
+}
+
+// ToMap encodes the struct to a value map
+func (j StorageBucketArguments) ToMap() map[string]any {
+	r := make(map[string]any)
+	r["bucket"] = j.Bucket
+	r["clientId"] = j.ClientID
+
+	return r
+}
+
+// ToMap encodes the struct to a value map
+func (j StorageBucketListResults) ToMap() map[string]any {
+	r := make(map[string]any)
+	j_Buckets := make([]any, len(j.Buckets))
+	for i, j_Buckets_v := range j.Buckets {
+		j_Buckets[i] = j_Buckets_v
+	}
+	r["buckets"] = j_Buckets
+	r["pageInfo"] = j.PageInfo
 
 	return r
 }
@@ -766,16 +799,6 @@ func (j StorageObjectMultipartInfo) ToMap() map[string]any {
 }
 
 // ToMap encodes the struct to a value map
-func (j StorageObjectPaginationInfo) ToMap() map[string]any {
-	r := make(map[string]any)
-	r["cursor"] = j.Cursor
-	r["hasNextPage"] = j.HasNextPage
-	r["nextCursor"] = j.NextCursor
-
-	return r
-}
-
-// ToMap encodes the struct to a value map
 func (j StorageObjectSoftDeletePolicy) ToMap() map[string]any {
 	r := make(map[string]any)
 	r["effectiveTime"] = j.EffectiveTime
@@ -789,6 +812,16 @@ func (j StorageOwner) ToMap() map[string]any {
 	r := make(map[string]any)
 	r["id"] = j.ID
 	r["name"] = j.DisplayName
+
+	return r
+}
+
+// ToMap encodes the struct to a value map
+func (j StoragePaginationInfo) ToMap() map[string]any {
+	r := make(map[string]any)
+	r["cursor"] = j.Cursor
+	r["hasNextPage"] = j.HasNextPage
+	r["nextCursor"] = j.NextCursor
 
 	return r
 }

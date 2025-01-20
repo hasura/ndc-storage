@@ -41,14 +41,23 @@ func (c *Client) MakeBucket(ctx context.Context, args *common.MakeStorageBucketO
 }
 
 // ListBuckets lists all buckets.
-func (c *Client) ListBuckets(ctx context.Context, options common.BucketOptions) ([]common.StorageBucketInfo, error) {
+func (c *Client) ListBuckets(ctx context.Context, options *common.ListStorageBucketsOptions) (*common.StorageBucketListResults, error) {
 	ctx, span := c.startOtelSpan(ctx, "ListBuckets", "")
 	defer span.End()
 
 	pager := c.client.Buckets(ctx, c.projectID)
 	pager.Prefix = options.Prefix
 
-	var results []common.StorageBucketInfo
+	maxResults := options.MaxResults
+	// Do not set the limit if the post-predicate function exists.
+	// Results will be filtered and paginated by the client.
+	// if predicate != nil {
+	// 	opts.MaxResults = 0
+	// }
+
+	var count int
+	var results []common.StorageBucket
+	pageInfo := common.StoragePaginationInfo{}
 
 	for {
 		bucket, err := pager.Next()
@@ -63,18 +72,32 @@ func (c *Client) ListBuckets(ctx context.Context, options common.BucketOptions) 
 			return nil, serializeErrorResponse(err)
 		}
 
+		pi := pager.PageInfo()
 		result := serializeBucketInfo(bucket)
 		results = append(results, result)
+		count++
+
+		if maxResults > 0 && count >= maxResults {
+			pageInfo.HasNextPage = pi.Remaining() > 0
+			pageInfo.NextCursor = &pi.Token
+
+			break
+		}
+
+		pageInfo.Cursor = &pi.Token
 	}
 
 	span.SetAttributes(attribute.Int("storage.bucket_count", len(results)))
 
-	return results, nil
+	return &common.StorageBucketListResults{
+		Buckets:  results,
+		PageInfo: pageInfo,
+	}, nil
 }
 
 // GetBucket gets a bucket by name.
-func (c *Client) GetBucket(ctx context.Context, name string, options common.BucketOptions) (*common.StorageBucketInfo, error) {
-	ctx, span := c.startOtelSpan(ctx, "GetBucket", "")
+func (c *Client) GetBucket(ctx context.Context, name string, options common.BucketOptions) (*common.StorageBucket, error) {
+	ctx, span := c.startOtelSpan(ctx, "GetBucket", name)
 	defer span.End()
 
 	bucketInfo, err := c.client.Bucket(name).Attrs(ctx)

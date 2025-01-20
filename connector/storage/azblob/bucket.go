@@ -41,13 +41,13 @@ func (c *Client) MakeBucket(ctx context.Context, args *common.MakeStorageBucketO
 }
 
 // ListBuckets lists all buckets.
-func (c *Client) ListBuckets(ctx context.Context, options common.BucketOptions) ([]common.StorageBucketInfo, error) { //nolint:gocognit
+func (c *Client) ListBuckets(ctx context.Context, options *common.ListStorageBucketsOptions) (*common.StorageBucketListResults, error) { //nolint:gocognit,cyclop,funlen
 	ctx, span := c.startOtelSpan(ctx, "ListBuckets", "")
 	defer span.End()
 
 	opts := &azblob.ListContainersOptions{
 		Include: azblob.ListContainersInclude{
-			Metadata: options.IncludeTags,
+			Metadata: options.Include.Tags,
 			Deleted:  false,
 		},
 	}
@@ -56,9 +56,20 @@ func (c *Client) ListBuckets(ctx context.Context, options common.BucketOptions) 
 		opts.Prefix = &options.Prefix
 	}
 
+	maxResults := int32(options.MaxResults)
+	if options.MaxResults > 0 {
+		opts.MaxResults = &maxResults
+	}
+
+	if options.StartAfter != "" {
+		opts.Marker = &options.StartAfter
+	}
+
 	pager := c.client.NewListContainersPager(opts)
 
-	var results []common.StorageBucketInfo
+	var count int32
+	var results []common.StorageBucket
+	pageInfo := common.StoragePaginationInfo{}
 
 	for pager.More() {
 		resp, err := pager.NextPage(ctx)
@@ -70,7 +81,7 @@ func (c *Client) ListBuckets(ctx context.Context, options common.BucketOptions) 
 		}
 
 		for _, container := range resp.ContainerItems {
-			result := common.StorageBucketInfo{}
+			result := common.StorageBucket{}
 
 			if container.Name != nil {
 				result.Name = *container.Name
@@ -118,12 +129,29 @@ func (c *Client) ListBuckets(ctx context.Context, options common.BucketOptions) 
 			}
 
 			results = append(results, result)
+			count++
+
+			if maxResults > 0 && count >= maxResults {
+				if pager.More() {
+					pageInfo.HasNextPage = true
+					pageInfo.NextCursor = resp.NextMarker
+				}
+
+				if resp.Marker != nil && *resp.Marker != "" {
+					pageInfo.Cursor = resp.Marker
+				}
+
+				break
+			}
 		}
 	}
 
 	span.SetAttributes(attribute.Int("storage.bucket_count", len(results)))
 
-	return results, nil
+	return &common.StorageBucketListResults{
+		Buckets:  results,
+		PageInfo: pageInfo,
+	}, nil
 }
 
 // BucketExists checks if a bucket exists.
@@ -145,7 +173,7 @@ func (c *Client) BucketExists(ctx context.Context, bucketName string) (bool, err
 }
 
 // GetBucket gets a bucket by name.
-func (c *Client) GetBucket(ctx context.Context, bucketName string, options common.BucketOptions) (*common.StorageBucketInfo, error) {
+func (c *Client) GetBucket(ctx context.Context, bucketName string, options common.BucketOptions) (*common.StorageBucket, error) {
 	ctx, span := c.startOtelSpan(ctx, "GetBucket", bucketName)
 	defer span.End()
 
@@ -160,11 +188,11 @@ func (c *Client) GetBucket(ctx context.Context, bucketName string, options commo
 	return result, nil
 }
 
-func (c *Client) getBucket(ctx context.Context, bucketName string, options common.BucketOptions) (*common.StorageBucketInfo, error) {
+func (c *Client) getBucket(ctx context.Context, bucketName string, options common.BucketOptions) (*common.StorageBucket, error) {
 	pager := c.client.NewListContainersPager(&service.ListContainersOptions{
 		Prefix: &bucketName,
 		Include: service.ListContainersInclude{
-			Metadata: options.IncludeTags,
+			Metadata: options.Include.Tags,
 			Deleted:  false,
 			System:   false,
 		},
@@ -181,7 +209,7 @@ func (c *Client) getBucket(ctx context.Context, bucketName string, options commo
 				continue
 			}
 
-			result := common.StorageBucketInfo{}
+			result := common.StorageBucket{}
 
 			if container.Name != nil {
 				result.Name = *container.Name

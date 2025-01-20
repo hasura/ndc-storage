@@ -60,7 +60,7 @@ func (c *Client) ListObjects(ctx context.Context, bucketName string, opts *commo
 	var count int32
 	objects := make([]common.StorageObject, 0)
 	pager := c.client.NewListBlobsFlatPager(bucketName, options)
-	pageInfo := common.StorageObjectPaginationInfo{}
+	pageInfo := common.StoragePaginationInfo{}
 
 	for pager.More() {
 		resp, err := pager.NextPage(ctx)

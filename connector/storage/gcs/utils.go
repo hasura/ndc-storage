@@ -22,14 +22,17 @@ const (
 
 var errNotSupported = schema.NotSupportedError("Google Cloud Storage doesn't support this method", nil)
 
-func serializeBucketInfo(bucket *storage.BucketAttrs) common.StorageBucketInfo {
-	result := common.StorageBucketInfo{
+func serializeBucketInfo(bucket *storage.BucketAttrs) common.StorageBucket {
+	result := common.StorageBucket{
 		Name:                  bucket.Name,
 		Tags:                  bucket.Labels,
 		CORS:                  make([]common.BucketCors, len(bucket.CORS)),
 		CreatedAt:             &bucket.Created,
 		UpdatedAt:             &bucket.Updated,
 		DefaultEventBasedHold: &bucket.DefaultEventBasedHold,
+		RequesterPays:         &bucket.RequesterPays,
+		StorageClass:          &bucket.StorageClass,
+		ObjectLock:            serializeRetentionPolicy(bucket.RetentionPolicy),
 		Lifecycle:             serializeLifecycleConfiguration(bucket.Lifecycle),
 		Versioning: &common.StorageBucketVersioningConfiguration{
 			Enabled: bucket.VersioningEnabled,
@@ -78,32 +81,66 @@ func serializeBucketInfo(bucket *storage.BucketAttrs) common.StorageBucketInfo {
 		}
 	}
 
+	if bucket.Logging != nil {
+		result.Logging = &common.BucketLogging{
+			LogBucket:       bucket.Logging.LogBucket,
+			LogObjectPrefix: bucket.Logging.LogObjectPrefix,
+		}
+	}
+
+	if bucket.RPO != storage.RPOUnknown {
+		rpo := bucket.RPO.String()
+		result.RPO = (*common.GoogleStorageRPO)(&rpo)
+	}
+
+	if bucket.SoftDeletePolicy != nil {
+		result.SoftDeletePolicy = &common.StorageObjectSoftDeletePolicy{
+			EffectiveTime:     bucket.SoftDeletePolicy.EffectiveTime,
+			RetentionDuration: scalar.NewDuration(bucket.SoftDeletePolicy.RetentionDuration),
+		}
+	}
+
+	if bucket.Website != nil {
+		result.Website = &common.BucketWebsite{
+			MainPageSuffix: bucket.Website.MainPageSuffix,
+			NotFoundPage:   &bucket.Website.NotFoundPage,
+		}
+
+		if bucket.Website.NotFoundPage != "" {
+			result.Website.NotFoundPage = &bucket.Website.NotFoundPage
+		}
+	}
+
 	if bucket.Encryption != nil && bucket.Encryption.DefaultKMSKeyName != "" {
 		result.Encryption = &common.ServerSideEncryptionConfiguration{
 			KmsMasterKeyID: bucket.Encryption.DefaultKMSKeyName,
 		}
 	}
 
-	if bucket.RetentionPolicy != nil {
-		unit := common.StorageRetentionValidityUnitDays
-		var validity uint = uint(math.Ceil(bucket.RetentionPolicy.RetentionPeriod.Hours()))
-		mode := common.StorageRetentionModeUnlocked
+	return result
+}
 
-		if bucket.RetentionPolicy.IsLocked {
-			mode = common.StorageRetentionModeLocked
-		}
-
-		result.ObjectLock = &common.StorageObjectLockConfig{
-			Enabled: true,
-			SetStorageObjectLockConfig: common.SetStorageObjectLockConfig{
-				Mode:     &mode,
-				Validity: &validity,
-				Unit:     &unit,
-			},
-		}
+func serializeRetentionPolicy(retentionPolicy *storage.RetentionPolicy) *common.StorageObjectLockConfig {
+	if retentionPolicy == nil {
+		return nil
 	}
 
-	return result
+	unit := common.StorageRetentionValidityUnitDays
+	var validity uint = uint(math.Ceil(retentionPolicy.RetentionPeriod.Hours()))
+	mode := common.StorageRetentionModeUnlocked
+
+	if retentionPolicy.IsLocked {
+		mode = common.StorageRetentionModeLocked
+	}
+
+	return &common.StorageObjectLockConfig{
+		Enabled: true,
+		SetStorageObjectLockConfig: common.SetStorageObjectLockConfig{
+			Mode:     &mode,
+			Validity: &validity,
+			Unit:     &unit,
+		},
+	}
 }
 
 func serializeObjectInfo(obj *storage.ObjectAttrs) common.StorageObject {

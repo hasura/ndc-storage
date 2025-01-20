@@ -12,6 +12,10 @@ type ListStorageBucketArguments struct {
 	// The storage client ID.
 	ClientID *StorageClientID `json:"clientId,omitempty"`
 	Prefix   string           `json:"prefix,omitempty"`
+	// The maximum number of objects requested per batch.
+	MaxResults int `json:"maxResults,omitempty"`
+	// StartAfter start listing lexically at this object onwards.
+	StartAfter string `json:"startAfter,omitempty"`
 }
 
 // StorageBucketArguments represent the common input arguments for bucket-related methods.

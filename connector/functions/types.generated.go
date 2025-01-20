@@ -155,9 +155,9 @@ func (dch DataConnectorHandler) execQuery(ctx context.Context, state *types.Stat
 
 	case "storageBuckets":
 
-		selection, err := queryFields.AsArray()
+		selection, err := queryFields.AsObject()
 		if err != nil {
-			return nil, schema.UnprocessableContentError("the selection field type must be array", map[string]any{
+			return nil, schema.UnprocessableContentError("the selection field type must be object", map[string]any{
 				"cause": err.Error(),
 			})
 		}
@@ -181,7 +181,7 @@ func (dch DataConnectorHandler) execQuery(ctx context.Context, state *types.Stat
 		connector_addSpanEvent(span, logger, "evaluate_response_selection", map[string]any{
 			"raw_result": rawResult,
 		})
-		result, err := utils.EvalNestedColumnArrayIntoSlice(selection, rawResult)
+		result, err := utils.EvalNestedColumnObject(selection, rawResult)
 		if err != nil {
 			return nil, err
 		}

@@ -13,9 +13,9 @@ type StorageClient interface { //nolint:interfacebloat
 	// MakeBucket creates a new bucket.
 	MakeBucket(ctx context.Context, options *MakeStorageBucketOptions) error
 	// ListBuckets list all buckets.
-	ListBuckets(ctx context.Context, options BucketOptions) ([]StorageBucketInfo, error)
+	ListBuckets(ctx context.Context, options *ListStorageBucketsOptions) (*StorageBucketListResults, error)
 	// GetBucket gets a bucket by name.
-	GetBucket(ctx context.Context, name string, options BucketOptions) (*StorageBucketInfo, error)
+	GetBucket(ctx context.Context, name string, options BucketOptions) (*StorageBucket, error)
 	// BucketExists checks if a bucket exists.
 	BucketExists(ctx context.Context, bucketName string) (bool, error)
 	// RemoveBucket removes a bucket, bucket should be empty to be successfully removed.
@@ -59,19 +59,50 @@ type StorageClient interface { //nolint:interfacebloat
 	PresignedPutObject(ctx context.Context, bucketName string, objectName string, expiry time.Duration) (string, error)
 }
 
-// BucketOptions hold options to get bucket information.
-type BucketOptions struct {
-	Prefix            string
-	IncludeTags       bool
-	IncludeVersioning bool
-	IncludeLifecycle  bool
-	IncludeEncryption bool
-	IncludeObjectLock bool
-	NumThreads        int
+// ListStorageBucketsOptions holds all options of a list bucket request.
+type ListStorageBucketsOptions struct {
+	// Only list objects with the prefix
+	Prefix string `json:"prefix"`
+	// The maximum number of objects requested per
+	// batch, advanced use-case not useful for most
+	// applications
+	MaxResults int `json:"maxResults"`
+	// StartAfter start listing lexically at this object onwards.
+	StartAfter string `json:"startAfter"`
+	// Options to be included for the object information.
+	Include    BucketIncludeOptions `json:"-"`
+	NumThreads int                  `json:"-"`
 }
 
-// StorageBucketInfo container for bucket metadata.
-type StorageBucketInfo struct {
+// BucketIncludeOptions contain include options for getting bucket information.
+type BucketIncludeOptions struct {
+	Tags       bool
+	Versioning bool
+	Lifecycle  bool
+	Encryption bool
+	ObjectLock bool
+}
+
+// IsEmpty checks if all include options are false
+func (bio BucketIncludeOptions) IsEmpty() bool {
+	return !bio.Tags && !bio.Versioning && !bio.Lifecycle && !bio.Encryption && !bio.ObjectLock
+}
+
+// BucketOptions hold options to get bucket information.
+type BucketOptions struct {
+	Prefix     string `json:"prefix"`
+	NumThreads int
+	Include    BucketIncludeOptions
+}
+
+// StorageBucketListResults hold the paginated results of the storage bucket list.
+type StorageBucketListResults struct {
+	Buckets  []StorageBucket       `json:"buckets"`
+	PageInfo StoragePaginationInfo `json:"pageInfo"`
+}
+
+// StorageBucket the container for bucket metadata.
+type StorageBucket struct {
 	// The name of the bucket.
 	Name string `json:"name"`
 	// Bucket tags or metadata.
@@ -389,8 +420,8 @@ type StorageObject struct {
 	ResourceType           *string `json:"resourceType"`
 }
 
-// StorageObjectPaginationInfo holds the pagination information.
-type StorageObjectPaginationInfo struct {
+// StoragePaginationInfo holds the pagination information.
+type StoragePaginationInfo struct {
 	HasNextPage bool    `json:"hasNextPage"`
 	Cursor      *string `json:"cursor"`
 	NextCursor  *string `json:"nextCursor"`
@@ -398,8 +429,8 @@ type StorageObjectPaginationInfo struct {
 
 // StorageObjectListResults hold the paginated results of the storage object list.
 type StorageObjectListResults struct {
-	Objects  []StorageObject             `json:"objects"`
-	PageInfo StorageObjectPaginationInfo `json:"pageInfo"`
+	Objects  []StorageObject       `json:"objects"`
+	PageInfo StoragePaginationInfo `json:"pageInfo"`
 }
 
 // StorageObjectReplicationStatus represents the x-amz-replication-status value enum.

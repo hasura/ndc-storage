@@ -46,7 +46,7 @@ func (mc *Client) MakeBucket(ctx context.Context, args *common.MakeStorageBucket
 }
 
 // ListBuckets lists all buckets.
-func (mc *Client) ListBuckets(ctx context.Context, options common.BucketOptions) ([]common.StorageBucketInfo, error) {
+func (mc *Client) ListBuckets(ctx context.Context, options *common.ListStorageBucketsOptions) (*common.StorageBucketListResults, error) {
 	ctx, span := mc.startOtelSpan(ctx, "ListBuckets", "")
 	defer span.End()
 
@@ -71,11 +71,21 @@ func (mc *Client) ListBuckets(ctx context.Context, options common.BucketOptions)
 	}
 
 	span.SetAttributes(attribute.Int("storage.bucket_count", len(bucketInfos)))
-	results := make([]common.StorageBucketInfo, len(filteredBuckets))
+
+	if len(bucketInfos) == 0 {
+		return &common.StorageBucketListResults{
+			Buckets: []common.StorageBucket{},
+		}, nil
+	}
+
+	results := make([]common.StorageBucket, len(filteredBuckets))
 
 	if options.NumThreads <= 1 {
 		for i, item := range filteredBuckets {
-			bucket, err := mc.populateBucket(ctx, item, options)
+			bucket, err := mc.populateBucket(ctx, item, common.BucketOptions{
+				NumThreads: options.NumThreads,
+				Include:    options.Include,
+			})
 			if err != nil {
 				span.SetStatus(codes.Error, err.Error())
 				span.RecordError(err)
@@ -86,7 +96,9 @@ func (mc *Client) ListBuckets(ctx context.Context, options common.BucketOptions)
 			results[i] = bucket
 		}
 
-		return results, nil
+		return &common.StorageBucketListResults{
+			Buckets: results,
+		}, nil
 	}
 
 	eg := errgroup.Group{}
@@ -94,7 +106,10 @@ func (mc *Client) ListBuckets(ctx context.Context, options common.BucketOptions)
 
 	populateFunc := func(item minio.BucketInfo, index int) {
 		eg.Go(func() error {
-			bucket, err := mc.populateBucket(ctx, item, options)
+			bucket, err := mc.populateBucket(ctx, item, common.BucketOptions{
+				NumThreads: options.NumThreads,
+				Include:    options.Include,
+			})
 			if err != nil {
 				return err
 			}
@@ -116,11 +131,13 @@ func (mc *Client) ListBuckets(ctx context.Context, options common.BucketOptions)
 		return nil, err
 	}
 
-	return results, nil
+	return &common.StorageBucketListResults{
+		Buckets: results,
+	}, nil
 }
 
 // GetBucket gets a bucket by name.
-func (mc *Client) GetBucket(ctx context.Context, name string, options common.BucketOptions) (*common.StorageBucketInfo, error) {
+func (mc *Client) GetBucket(ctx context.Context, name string, options common.BucketOptions) (*common.StorageBucket, error) {
 	ctx, span := mc.startOtelSpan(ctx, "GetBucket", "")
 	defer span.End()
 
@@ -739,13 +756,13 @@ func serializeBucketReplicationRule(item replication.Rule) common.StorageReplica
 	return rule
 }
 
-func (mc *Client) populateBucket(ctx context.Context, item minio.BucketInfo, options common.BucketOptions) (common.StorageBucketInfo, error) {
-	bucket := common.StorageBucketInfo{
+func (mc *Client) populateBucket(ctx context.Context, item minio.BucketInfo, options common.BucketOptions) (common.StorageBucket, error) {
+	bucket := common.StorageBucket{
 		Name:      item.Name,
 		CreatedAt: &item.CreationDate,
 	}
 
-	if options.IncludeTags {
+	if options.Include.Tags {
 		tags, err := mc.GetBucketTagging(ctx, item.Name)
 		if err != nil {
 			return bucket, err
@@ -754,7 +771,7 @@ func (mc *Client) populateBucket(ctx context.Context, item minio.BucketInfo, opt
 		bucket.Tags = tags
 	}
 
-	if options.IncludeVersioning {
+	if options.Include.Versioning {
 		versioning, err := mc.GetBucketVersioning(ctx, bucket.Name)
 		if err != nil {
 			return bucket, err
@@ -763,7 +780,7 @@ func (mc *Client) populateBucket(ctx context.Context, item minio.BucketInfo, opt
 		bucket.Versioning = versioning
 	}
 
-	if options.IncludeLifecycle {
+	if options.Include.Lifecycle {
 		lc, err := mc.GetBucketLifecycle(ctx, bucket.Name)
 		if err != nil {
 			return bucket, err
@@ -772,7 +789,7 @@ func (mc *Client) populateBucket(ctx context.Context, item minio.BucketInfo, opt
 		bucket.Lifecycle = lc
 	}
 
-	if options.IncludeEncryption {
+	if options.Include.Encryption {
 		encryption, err := mc.GetBucketEncryption(ctx, bucket.Name)
 		if err != nil {
 			return bucket, err
@@ -781,7 +798,7 @@ func (mc *Client) populateBucket(ctx context.Context, item minio.BucketInfo, opt
 		bucket.Encryption = encryption
 	}
 
-	if options.IncludeObjectLock {
+	if options.Include.ObjectLock {
 		lock, err := mc.GetObjectLockConfig(ctx, bucket.Name)
 		if err != nil {
 			return bucket, err

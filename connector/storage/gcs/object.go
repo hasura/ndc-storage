@@ -39,7 +39,7 @@ func (c *Client) ListObjects(ctx context.Context, bucketName string, opts *commo
 	objects := make([]common.StorageObject, 0)
 	q := c.validateListObjectsOptions(span, opts)
 	pager := c.client.Bucket(bucketName).Objects(ctx, q)
-	pageInfo := common.StorageObjectPaginationInfo{}
+	pageInfo := common.StoragePaginationInfo{}
 
 	for {
 		object, err := pager.Next()

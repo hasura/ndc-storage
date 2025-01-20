@@ -19,26 +19,35 @@ func ProcedureCreateStorageBucket(ctx context.Context, state *types.State, args 
 }
 
 // FunctionStorageBuckets list all buckets.
-func FunctionStorageBuckets(ctx context.Context, state *types.State, args *common.ListStorageBucketArguments) ([]common.StorageBucketInfo, error) {
+func FunctionStorageBuckets(ctx context.Context, state *types.State, args *common.ListStorageBucketArguments) (common.StorageBucketListResults, error) {
 	request := internal.ObjectPredicate{}
 
 	if err := request.EvalSelection(utils.CommandSelectionFieldFromContext(ctx)); err != nil {
-		return nil, err
+		return common.StorageBucketListResults{}, err
 	}
 
-	return state.Storage.ListBuckets(ctx, args.ClientID, common.BucketOptions{
-		Prefix:            args.Prefix,
-		IncludeTags:       request.Include.Tags,
-		IncludeVersioning: request.Include.Versions,
-		IncludeLifecycle:  request.Include.Lifecycle,
-		IncludeEncryption: request.Include.Encryption,
-		IncludeObjectLock: request.Include.ObjectLock,
-		NumThreads:        state.Concurrency.Query,
+	result, err := state.Storage.ListBuckets(ctx, args.ClientID, &common.ListStorageBucketsOptions{
+		Prefix:     args.Prefix,
+		MaxResults: args.MaxResults,
+		StartAfter: args.StartAfter,
+		Include: common.BucketIncludeOptions{
+			Tags:       request.Include.Tags,
+			Versioning: request.Include.Versions,
+			Lifecycle:  request.Include.Lifecycle,
+			Encryption: request.Include.Encryption,
+			ObjectLock: request.Include.ObjectLock,
+		},
+		NumThreads: state.Concurrency.Query,
 	})
+	if err != nil {
+		return common.StorageBucketListResults{}, err
+	}
+
+	return *result, nil
 }
 
 // FunctionStorageBucket gets a bucket by name.
-func FunctionStorageBucket(ctx context.Context, state *types.State, args *common.StorageBucketArguments) (*common.StorageBucketInfo, error) {
+func FunctionStorageBucket(ctx context.Context, state *types.State, args *common.StorageBucketArguments) (*common.StorageBucket, error) {
 	request := internal.ObjectPredicate{}
 
 	if err := request.EvalSelection(utils.CommandSelectionFieldFromContext(ctx)); err != nil {
@@ -46,12 +55,14 @@ func FunctionStorageBucket(ctx context.Context, state *types.State, args *common
 	}
 
 	return state.Storage.GetBucket(ctx, args, common.BucketOptions{
-		IncludeTags:       request.Include.Tags,
-		IncludeVersioning: request.Include.Versions,
-		IncludeLifecycle:  request.Include.Lifecycle,
-		IncludeEncryption: request.Include.Encryption,
-		IncludeObjectLock: request.Include.ObjectLock,
-		NumThreads:        state.Concurrency.Query,
+		Include: common.BucketIncludeOptions{
+			Tags:       request.Include.Tags,
+			Versioning: request.Include.Versions,
+			Lifecycle:  request.Include.Lifecycle,
+			Encryption: request.Include.Encryption,
+			ObjectLock: request.Include.ObjectLock,
+		},
+		NumThreads: state.Concurrency.Query,
 	})
 }
 

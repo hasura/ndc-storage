@@ -3,7 +3,13 @@
     "rows": [
       {
         "__value": {
+          "autoclass": null,
+          "cors": [],
+          "customPlacementConfig": null,
+          "defaultEventBasedHold": null,
           "encryption": null,
+          "etag": null,
+          "hierarchicalNamespace": null,
           "lifecycle": {
             "rules": [
               {
@@ -32,7 +38,9 @@
                     "matchesSuffix": null,
                     "objectSizeGreaterThan": 1000000,
                     "objectSizeLessThan": 1,
-                    "tags": { "7Uw1or2jrq": "00sA2cRTCB" }
+                    "tags": {
+                      "7Uw1or2jrq": "00sA2cRTCB"
+                    }
                   }
                 ],
                 "id": "aXD6eFi5JE",
@@ -46,15 +54,26 @@
               }
             ]
           },
+          "locationType": null,
+          "logging": null,
           "name": "minio-bucket-test",
           "objectLock": null,
-          "tags": { "Foo": "bar" },
+          "region": null,
+          "requesterPays": null,
+          "rpo": null,
+          "softDeletePolicy": null,
+          "storageClass": null,
+          "tags": {
+            "Foo": "bar"
+          },
+          "updatedAt": null,
           "versioning": {
             "enabled": true,
             "excludeFolders": false,
             "excludedPrefixes": [],
             "mfaDelete": null
-          }
+          },
+          "website": null
         }
       }
     ]
