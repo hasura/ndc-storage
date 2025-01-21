@@ -46,7 +46,7 @@ func (mc *Client) MakeBucket(ctx context.Context, args *common.MakeStorageBucket
 }
 
 // ListBuckets lists all buckets.
-func (mc *Client) ListBuckets(ctx context.Context, options *common.ListStorageBucketsOptions) (*common.StorageBucketListResults, error) {
+func (mc *Client) ListBuckets(ctx context.Context, options *common.ListStorageBucketsOptions, predicate func(string) bool) (*common.StorageBucketListResults, error) {
 	ctx, span := mc.startOtelSpan(ctx, "ListBuckets", "")
 	defer span.End()
 
@@ -60,13 +60,16 @@ func (mc *Client) ListBuckets(ctx context.Context, options *common.ListStorageBu
 
 	var filteredBuckets []minio.BucketInfo
 
-	if options.Prefix == "" {
+	if options.Prefix == "" && predicate == nil {
 		filteredBuckets = bucketInfos
 	} else {
 		for _, info := range bucketInfos {
-			if strings.HasPrefix(info.Name, options.Prefix) {
-				filteredBuckets = append(filteredBuckets, info)
+			if (options.Prefix != "" && !strings.HasPrefix(info.Name, options.Prefix)) ||
+				(predicate != nil && !predicate(info.Name)) {
+				continue
 			}
+
+			filteredBuckets = append(filteredBuckets, info)
 		}
 	}
 
@@ -627,13 +630,12 @@ func validateBucketReplicationFilter(input common.StorageReplicationFilter) repl
 		result.Prefix = *input.Prefix
 	}
 
-	if input.Tag != nil {
-		if input.Tag.Key != nil {
-			result.Tag.Key = *input.Tag.Key
-		}
+	if len(input.Tag) > 0 {
+		for key, value := range input.Tag {
+			result.Tag.Key = key
+			result.Tag.Value = value
 
-		if input.Tag.Value != nil {
-			result.Tag.Value = *input.Tag.Value
+			break
 		}
 	}
 
@@ -642,19 +644,13 @@ func validateBucketReplicationFilter(input common.StorageReplicationFilter) repl
 			result.And.Prefix = *input.Prefix
 		}
 
-		result.And.Tags = make([]replication.Tag, len(input.And.Tags))
-
-		for i, tag := range input.And.Tags {
-			t := replication.Tag{}
-			if tag.Key != nil {
-				t.Key = *tag.Key
+		for key, value := range input.And.Tags {
+			t := replication.Tag{
+				Key:   key,
+				Value: value,
 			}
 
-			if tag.Value != nil {
-				t.Value = *tag.Value
-			}
-
-			result.And.Tags[i] = t
+			result.And.Tags = append(result.And.Tags, t)
 		}
 	}
 
@@ -720,14 +716,8 @@ func serializeBucketReplicationRule(item replication.Rule) common.StorageReplica
 	}
 
 	if item.Filter.Tag.Key != "" || item.Filter.Tag.Value != "" {
-		rule.Filter.Tag = &common.StorageTag{}
-
-		if item.Filter.Tag.Key != "" {
-			rule.Filter.Tag.Key = &item.Filter.Tag.Key
-		}
-
-		if item.Filter.Tag.Value != "" {
-			rule.Filter.Tag.Value = &item.Filter.Tag.Value
+		rule.Filter.Tag = map[string]string{
+			item.Filter.Tag.Key: item.Filter.Tag.Value,
 		}
 	}
 
@@ -737,19 +727,10 @@ func serializeBucketReplicationRule(item replication.Rule) common.StorageReplica
 			rule.Filter.And.Prefix = &item.Filter.Prefix
 		}
 
-		rule.Filter.And.Tags = make([]common.StorageTag, len(item.Filter.And.Tags))
+		rule.Filter.And.Tags = make(map[string]string)
 
-		for i, tag := range item.Filter.And.Tags {
-			t := common.StorageTag{}
-			if tag.Key != "" {
-				t.Key = &tag.Key
-			}
-
-			if tag.Value != "" {
-				t.Value = &tag.Value
-			}
-
-			rule.Filter.And.Tags[i] = t
+		for _, tag := range item.Filter.And.Tags {
+			rule.Filter.And.Tags[tag.Key] = tag.Value
 		}
 	}
 
@@ -758,8 +739,8 @@ func serializeBucketReplicationRule(item replication.Rule) common.StorageReplica
 
 func (mc *Client) populateBucket(ctx context.Context, item minio.BucketInfo, options common.BucketOptions) (common.StorageBucket, error) {
 	bucket := common.StorageBucket{
-		Name:      item.Name,
-		CreatedAt: &item.CreationDate,
+		Name:         item.Name,
+		CreationTime: &item.CreationDate,
 	}
 
 	if options.Include.Tags {

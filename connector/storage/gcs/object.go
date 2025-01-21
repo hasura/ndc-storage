@@ -28,14 +28,8 @@ func (c *Client) ListObjects(ctx context.Context, bucketName string, opts *commo
 	ctx, span := c.startOtelSpan(ctx, "ListObjects", bucketName)
 	defer span.End()
 
-	maxResults := opts.MaxResults
-	// Do not set the limit if the post-predicate function exists.
-	// Results will be filtered and paginated by the client.
-	if predicate != nil {
-		opts.MaxResults = 0
-	}
-
 	var count int
+	maxResults := opts.MaxResults
 	objects := make([]common.StorageObject, 0)
 	q := c.validateListObjectsOptions(span, opts)
 	pager := c.client.Bucket(bucketName).Objects(ctx, q)

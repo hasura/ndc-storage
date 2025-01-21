@@ -34,13 +34,13 @@ func (m *Manager) UpdateBucket(ctx context.Context, args *common.UpdateBucketArg
 }
 
 // ListBuckets list all buckets.
-func (m *Manager) ListBuckets(ctx context.Context, clientID *common.StorageClientID, options *common.ListStorageBucketsOptions) (*common.StorageBucketListResults, error) {
+func (m *Manager) ListBuckets(ctx context.Context, clientID *common.StorageClientID, options *common.ListStorageBucketsOptions, predicate func(string) bool) (*common.StorageBucketListResults, error) {
 	client, ok := m.GetClient(clientID)
 	if !ok {
 		return nil, schema.InternalServerError("client not found", nil)
 	}
 
-	return client.ListBuckets(ctx, options)
+	return client.ListBuckets(ctx, options, predicate)
 }
 
 // GetBucket gets bucket by name.

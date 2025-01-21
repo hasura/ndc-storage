@@ -44,6 +44,8 @@ definition:
       type: StorageClientId
     - name: legalHold
       type: Boolean
+    - name: metadata
+      type: Json
     - name: object
       type: String!
     - name: retention
@@ -53,7 +55,7 @@ definition:
     - name: versionId
       type: String
     - name: where
-      type: StorageObjectSimpleBoolExp
+      type: StorageObjectFilterBoolExp
   source:
     dataConnectorName: storage
     dataConnectorCommand:

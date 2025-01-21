@@ -7,7 +7,7 @@
             {
               "autoclass": null,
               "cors": [],
-              "createdAt": null,
+              "creationTime": null,
               "customPlacementConfig": null,
               "defaultEventBasedHold": null,
               "encryption": null,

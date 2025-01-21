@@ -404,8 +404,8 @@
               "column": "tags",
               "type": "column"
             },
-            "updatedAt": {
-              "column": "updatedAt",
+            "lastModified": {
+              "column": "lastModified",
               "type": "column"
             },
             "versioning": {

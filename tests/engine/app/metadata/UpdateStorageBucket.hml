@@ -45,7 +45,7 @@ definition:
     - name: encryption
       type: ServerSideEncryptionConfiguration
     - name: lifecycle
-      type: BucketLifecycleConfiguration
+      type: ObjectLifecycleConfiguration
     - name: objectLock
       type: SetStorageObjectLockConfig
     - name: tags

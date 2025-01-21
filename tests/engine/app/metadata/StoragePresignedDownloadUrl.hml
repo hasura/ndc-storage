@@ -46,7 +46,7 @@ definition:
     - name: requestParams
       type: Json
     - name: where
-      type: StorageObjectSimpleBoolExp
+      type: StorageObjectFilterBoolExp
   source:
     dataConnectorName: storage
     dataConnectorCommand:

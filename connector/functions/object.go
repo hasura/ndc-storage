@@ -34,7 +34,7 @@ func FunctionStorageObjects(ctx context.Context, state *types.State, args *commo
 	}
 
 	options := &common.ListStorageObjectsOptions{
-		Prefix:     request.Prefix,
+		Prefix:     request.ObjectNamePredicate.GetPrefix(),
 		Recursive:  args.Recursive,
 		Include:    request.Include,
 		NumThreads: state.Concurrency.Query,
@@ -48,13 +48,13 @@ func FunctionStorageObjects(ctx context.Context, state *types.State, args *commo
 		options.StartAfter = *args.StartAfter
 	}
 
-	predicate := request.CheckPostObjectNamePredicate
+	predicate := request.ObjectNamePredicate.CheckPostPredicate
 
-	if !request.HasPostPredicate() {
+	if !request.ObjectNamePredicate.HasPostPredicate() {
 		predicate = nil
 	}
 
-	objects, err := state.Storage.ListObjects(ctx, request.StorageBucketArguments, options, predicate)
+	objects, err := state.Storage.ListObjects(ctx, request.GetBucketArguments(), options, predicate)
 	if err != nil {
 		return common.StorageObjectListResults{}, err
 	}
@@ -80,7 +80,7 @@ func FunctionStorageObject(ctx context.Context, state *types.State, args *common
 	opts := args.GetStorageObjectOptions
 	opts.Include = request.Include
 
-	return state.Storage.StatObject(ctx, request.StorageBucketArguments, request.Prefix, opts)
+	return state.Storage.StatObject(ctx, request.GetBucketArguments(), request.ObjectNamePredicate.GetPrefix(), opts)
 }
 
 // FunctionDownloadStorageObject returns a stream of the object data. Most of the common errors occur when reading the stream.
@@ -129,7 +129,7 @@ func downloadStorageObject(ctx context.Context, state *types.State, args *common
 		return nil, nil
 	}
 
-	return state.Storage.GetObject(ctx, request.StorageBucketArguments, request.Prefix, args.GetStorageObjectOptions)
+	return state.Storage.GetObject(ctx, request.GetBucketArguments(), request.ObjectNamePredicate.GetPrefix(), args.GetStorageObjectOptions)
 }
 
 // FunctionStoragePresignedDownloadUrl generates a presigned URL for HTTP GET operations.
@@ -146,7 +146,7 @@ func FunctionStoragePresignedDownloadUrl(ctx context.Context, state *types.State
 		return nil, nil
 	}
 
-	return state.Storage.PresignedGetObject(ctx, request.StorageBucketArguments, request.Prefix, args.PresignedGetStorageObjectOptions)
+	return state.Storage.PresignedGetObject(ctx, request.GetBucketArguments(), request.ObjectNamePredicate.GetPrefix(), args.PresignedGetStorageObjectOptions)
 }
 
 // FunctionStoragePresignedUploadUrl generates a presigned URL for HTTP PUT operations.
@@ -163,7 +163,7 @@ func FunctionStoragePresignedUploadUrl(ctx context.Context, state *types.State, 
 		return nil, nil
 	}
 
-	return state.Storage.PresignedPutObject(ctx, request.StorageBucketArguments, request.Prefix, args.Expiry)
+	return state.Storage.PresignedPutObject(ctx, request.GetBucketArguments(), request.ObjectNamePredicate.GetPrefix(), args.Expiry)
 }
 
 // FunctionStorageIncompleteUploads list partially uploaded objects in a bucket.
@@ -177,7 +177,7 @@ type PutStorageObjectArguments struct {
 
 	Object  string                         `json:"object"`
 	Options common.PutStorageObjectOptions `json:"options,omitempty"`
-	Where   schema.Expression              `json:"where"             ndc:"predicate=StorageObjectSimple"`
+	Where   schema.Expression              `json:"where"             ndc:"predicate=StorageObjectFilter"`
 }
 
 // PutStorageObjectArguments represents input arguments of the PutObject method.
@@ -200,10 +200,10 @@ func uploadStorageObject(ctx context.Context, state *types.State, args *PutStora
 	}
 
 	if !request.IsValid {
-		return common.StorageUploadInfo{}, schema.ForbiddenError("permission dennied", nil)
+		return common.StorageUploadInfo{}, schema.ForbiddenError("permission denied", nil)
 	}
 
-	result, err := state.Storage.PutObject(ctx, request.StorageBucketArguments, request.Prefix, &args.Options, data)
+	result, err := state.Storage.PutObject(ctx, request.GetBucketArguments(), request.ObjectNamePredicate.GetPrefix(), &args.Options, data)
 	if err != nil {
 		return common.StorageUploadInfo{}, err
 	}
@@ -256,7 +256,7 @@ func ProcedureUpdateStorageObject(ctx context.Context, state *types.State, args 
 		return false, errPermissionDenied
 	}
 
-	if err := state.Storage.UpdateObject(ctx, request.StorageBucketArguments, request.Prefix, args.UpdateStorageObjectOptions); err != nil {
+	if err := state.Storage.UpdateObject(ctx, request.GetBucketArguments(), request.ObjectNamePredicate.GetPrefix(), args.UpdateStorageObjectOptions); err != nil {
 		return false, err
 	}
 
@@ -274,7 +274,7 @@ func ProcedureRemoveStorageObject(ctx context.Context, state *types.State, args 
 		return false, errPermissionDenied
 	}
 
-	if err := state.Storage.RemoveObject(ctx, request.StorageBucketArguments, request.Prefix, args.RemoveStorageObjectOptions); err != nil {
+	if err := state.Storage.RemoveObject(ctx, request.GetBucketArguments(), request.ObjectNamePredicate.GetPrefix(), args.RemoveStorageObjectOptions); err != nil {
 		return false, err
 	}
 
@@ -293,14 +293,14 @@ func ProcedureRemoveStorageObjects(ctx context.Context, state *types.State, args
 		return nil, nil
 	}
 
-	predicate := request.CheckPostObjectNamePredicate
-	if !request.HasPostPredicate() {
+	predicate := request.ObjectNamePredicate.CheckPostPredicate
+	if !request.ObjectNamePredicate.HasPostPredicate() {
 		predicate = nil
 	}
 
-	return state.Storage.RemoveObjects(ctx, request.StorageBucketArguments, &common.RemoveStorageObjectsOptions{
+	return state.Storage.RemoveObjects(ctx, request.GetBucketArguments(), &common.RemoveStorageObjectsOptions{
 		ListStorageObjectsOptions: common.ListStorageObjectsOptions{
-			Prefix:     request.Prefix,
+			Prefix:     request.ObjectNamePredicate.GetPrefix(),
 			Recursive:  args.Recursive,
 			StartAfter: args.StartAfter,
 		},

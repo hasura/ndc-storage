@@ -23,7 +23,7 @@
               "softDeletePolicy": null,
               "storageClass": null,
               "tags": null,
-              "updatedAt": null,
+              "lastModified": null,
               "versioning": null,
               "website": null
             },
@@ -46,7 +46,7 @@
               "softDeletePolicy": null,
               "storageClass": null,
               "tags": null,
-              "updatedAt": null,
+              "lastModified": null,
               "versioning": null,
               "website": null
             },
@@ -69,7 +69,7 @@
               "softDeletePolicy": null,
               "storageClass": null,
               "tags": null,
-              "updatedAt": null,
+              "lastModified": null,
               "versioning": null,
               "website": null
             }

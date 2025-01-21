@@ -41,22 +41,16 @@ func (c *Client) MakeBucket(ctx context.Context, args *common.MakeStorageBucketO
 }
 
 // ListBuckets lists all buckets.
-func (c *Client) ListBuckets(ctx context.Context, options *common.ListStorageBucketsOptions) (*common.StorageBucketListResults, error) {
+func (c *Client) ListBuckets(ctx context.Context, options *common.ListStorageBucketsOptions, predicate func(string) bool) (*common.StorageBucketListResults, error) {
 	ctx, span := c.startOtelSpan(ctx, "ListBuckets", "")
 	defer span.End()
 
 	pager := c.client.Buckets(ctx, c.projectID)
 	pager.Prefix = options.Prefix
 
-	maxResults := options.MaxResults
-	// Do not set the limit if the post-predicate function exists.
-	// Results will be filtered and paginated by the client.
-	// if predicate != nil {
-	// 	opts.MaxResults = 0
-	// }
-
 	var count int
 	var results []common.StorageBucket
+	maxResults := options.MaxResults
 	pageInfo := common.StoragePaginationInfo{}
 
 	for {
@@ -73,6 +67,12 @@ func (c *Client) ListBuckets(ctx context.Context, options *common.ListStorageBuc
 		}
 
 		pi := pager.PageInfo()
+		if predicate != nil && !predicate(bucket.Name) {
+			pageInfo.Cursor = &pi.Token
+
+			continue
+		}
+
 		result := serializeBucketInfo(bucket)
 		results = append(results, result)
 		count++

@@ -27,8 +27,8 @@ func serializeBucketInfo(bucket *storage.BucketAttrs) common.StorageBucket {
 		Name:                  bucket.Name,
 		Tags:                  bucket.Labels,
 		CORS:                  make([]common.BucketCors, len(bucket.CORS)),
-		CreatedAt:             &bucket.Created,
-		UpdatedAt:             &bucket.Updated,
+		CreationTime:          &bucket.Created,
+		LastModified:          &bucket.Updated,
 		DefaultEventBasedHold: &bucket.DefaultEventBasedHold,
 		RequesterPays:         &bucket.RequesterPays,
 		StorageClass:          &bucket.StorageClass,
@@ -126,7 +126,7 @@ func serializeRetentionPolicy(retentionPolicy *storage.RetentionPolicy) *common.
 	}
 
 	unit := common.StorageRetentionValidityUnitDays
-	var validity uint = uint(math.Ceil(retentionPolicy.RetentionPeriod.Hours()))
+	validity := uint(math.Ceil(retentionPolicy.RetentionPeriod.Hours()))
 	mode := common.StorageRetentionModeUnlocked
 
 	if retentionPolicy.IsLocked {
@@ -187,6 +187,10 @@ func serializeObjectInfo(obj *storage.ObjectAttrs) common.StorageObject {
 		object.KMSKeyName = &obj.KMSKeyName
 	}
 
+	if obj.MediaLink != "" {
+		object.MediaLink = &obj.MediaLink
+	}
+
 	if obj.Owner != "" {
 		object.Owner = &common.StorageOwner{
 			DisplayName: &obj.Owner,
@@ -222,6 +226,14 @@ func serializeObjectInfo(obj *storage.ObjectAttrs) common.StorageObject {
 		contentMd5 := base64.StdEncoding.EncodeToString(obj.MD5)
 		object.ContentMD5 = &contentMd5
 	}
+
+	aclRules := make([]ACLRule, len(obj.ACL))
+
+	for i, acl := range obj.ACL {
+		aclRules[i] = makeACLRule(acl)
+	}
+
+	object.ACL = aclRules
 
 	return object
 }

@@ -2,26 +2,26 @@
 kind: ObjectType
 version: v1
 definition:
-  name: StorageObjectSimple
+  name: StorageObjectFilter
   fields:
     - name: bucket
-      type: BucketName!
+      type: StorageBucketName!
     - name: clientId
       type: StorageClientId!
     - name: object
-      type: ObjectPath!
+      type: StorageStringFilter!
   graphql:
-    typeName: StorageObjectSimple
-    inputTypeName: StorageObjectSimpleInput
+    typeName: StorageObjectFilter
+    inputTypeName: StorageObjectFilterInput
   dataConnectorTypeMapping:
     - dataConnectorName: storage
-      dataConnectorObjectType: StorageObjectSimple
+      dataConnectorObjectType: StorageObjectFilter
 
 ---
 kind: TypePermissions
 version: v1
 definition:
-  typeName: StorageObjectSimple
+  typeName: StorageObjectFilter
   permissions:
     - role: admin
       output:
@@ -34,24 +34,24 @@ definition:
 kind: BooleanExpressionType
 version: v1
 definition:
-  name: StorageObjectSimpleBoolExp
+  name: StorageObjectFilterBoolExp
   operand:
     object:
-      type: StorageObjectSimple
+      type: StorageObjectFilter
       comparableFields:
         - fieldName: bucket
-          booleanExpressionType: BucketNameBoolExp
+          booleanExpressionType: StorageBucketNameBoolExp
         - fieldName: clientId
           booleanExpressionType: StorageClientIdBoolExp
         - fieldName: object
-          booleanExpressionType: ObjectPathBoolExp
+          booleanExpressionType: StorageStringFilterBoolExp
       comparableRelationships: []
   logicalOperators:
     enable: true
   isNull:
     enable: true
   graphql:
-    typeName: StorageObjectSimpleBoolExp
+    typeName: StorageObjectFilterBoolExp
 
 ---
 kind: Command
@@ -75,7 +75,7 @@ definition:
     - name: versionId
       type: String
     - name: where
-      type: StorageObjectSimpleBoolExp
+      type: StorageObjectFilterBoolExp
   source:
     dataConnectorName: storage
     dataConnectorCommand:

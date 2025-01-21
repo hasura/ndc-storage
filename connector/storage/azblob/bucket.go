@@ -41,7 +41,7 @@ func (c *Client) MakeBucket(ctx context.Context, args *common.MakeStorageBucketO
 }
 
 // ListBuckets lists all buckets.
-func (c *Client) ListBuckets(ctx context.Context, options *common.ListStorageBucketsOptions) (*common.StorageBucketListResults, error) { //nolint:gocognit,cyclop,funlen
+func (c *Client) ListBuckets(ctx context.Context, options *common.ListStorageBucketsOptions, predicate func(string) bool) (*common.StorageBucketListResults, error) { //nolint:gocognit,cyclop,funlen
 	ctx, span := c.startOtelSpan(ctx, "ListBuckets", "")
 	defer span.End()
 
@@ -57,7 +57,7 @@ func (c *Client) ListBuckets(ctx context.Context, options *common.ListStorageBuc
 	}
 
 	maxResults := int32(options.MaxResults)
-	if options.MaxResults > 0 {
+	if options.MaxResults > 0 && predicate == nil {
 		opts.MaxResults = &maxResults
 	}
 
@@ -81,6 +81,10 @@ func (c *Client) ListBuckets(ctx context.Context, options *common.ListStorageBuc
 		}
 
 		for _, container := range resp.ContainerItems {
+			if container.Name == nil || (predicate != nil && !predicate(*container.Name)) {
+				continue
+			}
+
 			result := common.StorageBucket{}
 
 			if container.Name != nil {
@@ -98,7 +102,7 @@ func (c *Client) ListBuckets(ctx context.Context, options *common.ListStorageBuc
 			}
 
 			if container.Properties != nil {
-				result.UpdatedAt = container.Properties.LastModified
+				result.LastModified = container.Properties.LastModified
 
 				if container.Properties.IsImmutableStorageWithVersioningEnabled != nil {
 					result.Versioning = &common.StorageBucketVersioningConfiguration{
@@ -226,7 +230,7 @@ func (c *Client) getBucket(ctx context.Context, bucketName string, options commo
 			}
 
 			if container.Properties != nil && container.Properties.LastModified != nil {
-				result.UpdatedAt = container.Properties.LastModified
+				result.LastModified = container.Properties.LastModified
 			}
 
 			return &result, nil

@@ -85,19 +85,15 @@ func (j *ListIncompleteUploadsOptions) FromValue(input map[string]any) error {
 // FromValue decodes values from map
 func (j *ListStorageBucketArguments) FromValue(input map[string]any) error {
 	var err error
-	j.ClientID, err = utils.DecodeNullableObjectValue[StorageClientID](input, "clientId")
-	if err != nil {
-		return err
-	}
 	j.MaxResults, err = utils.GetIntDefault[int](input, "maxResults")
 	if err != nil {
 		return err
 	}
-	j.Prefix, err = utils.GetStringDefault(input, "prefix")
+	j.StartAfter, err = utils.GetStringDefault(input, "startAfter")
 	if err != nil {
 		return err
 	}
-	j.StartAfter, err = utils.GetStringDefault(input, "startAfter")
+	j.Where, err = utils.DecodeObjectValueDefault[schema.Expression](input, "where")
 	if err != nil {
 		return err
 	}
@@ -548,7 +544,7 @@ func (j StorageBucket) ToMap() map[string]any {
 		j_CORS[i] = j_CORS_v
 	}
 	r["cors"] = j_CORS
-	r["createdAt"] = j.CreatedAt
+	r["creationTime"] = j.CreationTime
 	if j.CustomPlacementConfig != nil {
 		r["customPlacementConfig"] = (*j.CustomPlacementConfig)
 	}
@@ -560,6 +556,7 @@ func (j StorageBucket) ToMap() map[string]any {
 	if j.HierarchicalNamespace != nil {
 		r["hierarchicalNamespace"] = (*j.HierarchicalNamespace)
 	}
+	r["lastModified"] = j.LastModified
 	if j.Lifecycle != nil {
 		r["lifecycle"] = (*j.Lifecycle)
 	}
@@ -579,7 +576,6 @@ func (j StorageBucket) ToMap() map[string]any {
 	}
 	r["storageClass"] = j.StorageClass
 	r["tags"] = j.Tags
-	r["updatedAt"] = j.UpdatedAt
 	if j.Versioning != nil {
 		r["versioning"] = (*j.Versioning)
 	}

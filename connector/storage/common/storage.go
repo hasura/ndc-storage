@@ -13,7 +13,7 @@ type StorageClient interface { //nolint:interfacebloat
 	// MakeBucket creates a new bucket.
 	MakeBucket(ctx context.Context, options *MakeStorageBucketOptions) error
 	// ListBuckets list all buckets.
-	ListBuckets(ctx context.Context, options *ListStorageBucketsOptions) (*StorageBucketListResults, error)
+	ListBuckets(ctx context.Context, options *ListStorageBucketsOptions, predicate func(string) bool) (*StorageBucketListResults, error)
 	// GetBucket gets a bucket by name.
 	GetBucket(ctx context.Context, name string, options BucketOptions) (*StorageBucket, error)
 	// BucketExists checks if a bucket exists.
@@ -134,9 +134,9 @@ type StorageBucket struct {
 	StorageClass *string `json:"storageClass"`
 
 	// Date time the bucket was created.
-	CreatedAt *time.Time `json:"createdAt"`
+	CreationTime *time.Time `json:"creationTime"`
 	// Date time the bucket was created.
-	UpdatedAt *time.Time `json:"updatedAt"`
+	LastModified *time.Time `json:"lastModified"`
 
 	// RequesterPays reports whether the bucket is a Requester Pays bucket.
 	// Clients performing operations on Requester Pays buckets must provide
@@ -380,7 +380,7 @@ type StorageObject struct {
 	StorageObjectChecksum
 
 	// Azure Blob Store properties
-	ACL                       *string    `json:"acl"`
+	ACL                       any        `json:"acl,omitempty"`
 	AccessTierChangeTime      *time.Time `json:"accessTierChangeTime"`
 	AccessTierInferred        *bool      `json:"accessTierInferred"`
 	ArchiveStatus             *string    `json:"archiveStatus"`
@@ -397,7 +397,7 @@ type StorageObject struct {
 	DeletedTime               *time.Time `json:"deletedTime"`
 	CustomerProvidedKeySHA256 *string    `json:"customerProvidedKeySha256"`
 	DestinationSnapshot       *string    `json:"destinationSnapshot"`
-
+	MediaLink                 *string    `json:"mediaLink"`
 	// The name of the encryption scope under which the blob is encrypted.
 	KMSKeyName         *string    `json:"kmsKeyName"`
 	ServerEncrypted    *bool      `json:"serverEncrypted"`
@@ -535,7 +535,7 @@ type NotificationLambdaConfig struct {
 	Lambda string `json:"cloudFunction"`
 }
 
-// NotificationConfig the struct that represents a notification configration object.
+// NotificationConfig the struct that represents a notification configuration object.
 type NotificationConfig struct {
 	LambdaConfigs []NotificationLambdaConfig `json:"cloudFunctionConfigurations"`
 	TopicConfigs  []NotificationTopicConfig  `json:"topicConfigurations"`
@@ -641,12 +641,6 @@ type ObjectLifecycleFilter struct {
 	Tags                  map[string]string `json:"tags,omitempty"`
 	ObjectSizeLessThan    *int64            `json:"objectSizeLessThan,omitempty"`
 	ObjectSizeGreaterThan *int64            `json:"objectSizeGreaterThan,omitempty"`
-}
-
-// StorageTag structure key/value pair representing an object tag to apply configuration
-type StorageTag struct {
-	Key   *string `json:"key,omitempty"`
-	Value *string `json:"value,omitempty"`
 }
 
 // ObjectLifecycleNoncurrentVersionExpiration - Specifies when noncurrent object versions expire.
@@ -765,13 +759,13 @@ type SourceSelectionCriteria struct {
 
 // StorageReplicationFilter a filter for a replication configuration Rule.
 type StorageReplicationFilter struct {
-	Prefix *string                      `json:"rrefix,omitempty"`
+	Prefix *string                      `json:"prefix,omitempty"`
 	And    *StorageReplicationFilterAnd `json:"and,omitempty"`
-	Tag    *StorageTag                  `json:"tag,omitempty"`
+	Tag    map[string]string            `json:"tag,omitempty"`
 }
 
 // StorageReplicationFilterAnd - a tag to combine a prefix and multiple tags for replication configuration rule.
 type StorageReplicationFilterAnd struct {
-	Prefix *string      `json:"rrefix,omitempty"`
-	Tags   []StorageTag `json:"tag,omitempty"`
+	Prefix *string           `json:"prefix,omitempty"`
+	Tags   map[string]string `json:"tag,omitempty"`
 }

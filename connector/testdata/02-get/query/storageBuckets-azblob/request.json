@@ -1,20 +1,32 @@
 {
   "arguments": {
-    "clientId": {
-      "type": "literal",
-      "value": "azblob"
-    },
     "maxResults": {
       "type": "literal",
       "value": 10
     },
-    "prefix": {
-      "type": "literal",
-      "value": null
-    },
     "startAfter": {
       "type": "literal",
       "value": null
+    },
+    "where": {
+      "type": "literal",
+      "value": {
+        "type": "and",
+        "expressions": [
+          {
+            "type": "binary_comparison_operator",
+            "column": { "type": "column", "name": "clientId", "path": [] },
+            "operator": "_eq",
+            "value": { "type": "scalar", "value": "azblob" }
+          },
+          {
+            "type": "binary_comparison_operator",
+            "column": { "type": "column", "name": "bucket", "path": [] },
+            "operator": "_starts_with",
+            "value": { "type": "scalar", "value": "azblob" }
+          }
+        ]
+      }
     }
   },
   "collection": "storageBuckets",
@@ -83,8 +95,8 @@
                       },
                       "type": "column"
                     },
-                    "createdAt": {
-                      "column": "createdAt",
+                    "creationTime": {
+                      "column": "creationTime",
                       "type": "column"
                     },
                     "customPlacementConfig": {

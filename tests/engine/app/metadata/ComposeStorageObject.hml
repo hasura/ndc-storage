@@ -9,21 +9,17 @@ definition:
       type: String
     - name: legalHold
       type: Boolean
+    - name: metadata
+      type: Json
     - name: mode
       type: StorageRetentionMode
     - name: object
       type: String!
-    - name: replaceMetadata
-      type: Boolean
-    - name: replaceTags
-      type: Boolean
     - name: retainUntilDate
       type: TimestampTz
     - name: size
       type: Int64
-    - name: userMetadata
-      type: Json
-    - name: userTags
+    - name: tags
       type: Json
   graphql:
     typeName: StorageCopyDestOptions
@@ -43,14 +39,12 @@ definition:
         allowedFields:
           - bucket
           - legalHold
+          - metadata
           - mode
           - object
-          - replaceMetadata
-          - replaceTags
           - retainUntilDate
           - size
-          - userMetadata
-          - userTags
+          - tags
 
 ---
 kind: ObjectType

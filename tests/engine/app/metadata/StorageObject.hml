@@ -133,7 +133,7 @@ definition:
     - name: accessTierInferred
       type: Boolean
     - name: acl
-      type: String
+      type: Json
     - name: archiveStatus
       type: String
     - name: blobSequenceNumber
@@ -226,6 +226,8 @@ definition:
       type: StorageOwner
     - name: permissions
       type: String
+    - name: rawMetadata
+      type: Json
     - name: rehydratePriority
       type: String
     - name: remainingRetentionDays
@@ -250,11 +252,9 @@ definition:
       type: Int64
     - name: storageClass
       type: String
-    - name: userMetadata
-      type: Json
-    - name: userTagCount
+    - name: tagCount
       type: Int32
-    - name: userTags
+    - name: tags
       type: Json
     - name: versionId
       type: String
@@ -323,6 +323,7 @@ definition:
           - name
           - owner
           - permissions
+          - rawMetadata
           - rehydratePriority
           - remainingRetentionDays
           - replicationReady
@@ -335,9 +336,8 @@ definition:
           - serverEncrypted
           - size
           - storageClass
-          - userMetadata
-          - userTagCount
-          - userTags
+          - tagCount
+          - tags
           - versionId
 
 ---
@@ -362,7 +362,7 @@ definition:
     - name: versionId
       type: String
     - name: where
-      type: StorageObjectSimpleBoolExp
+      type: StorageObjectFilterBoolExp
   source:
     dataConnectorName: storage
     dataConnectorCommand:

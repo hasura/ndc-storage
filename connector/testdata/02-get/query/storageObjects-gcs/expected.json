@@ -6,7 +6,13 @@
           "objects": [
             {
               "accessTierInferred": null,
-              "acl": null,
+              "acl": [
+                {
+                  "entity": "projectOwner-test-project",
+                  "projectTeam": {},
+                  "role": "OWNER"
+                }
+              ],
               "archiveStatus": null,
               "blobSequenceNumber": null,
               "blobType": null,
@@ -46,10 +52,14 @@
               "leaseState": null,
               "leaseStatus": null,
               "legalHold": false,
-              "metadata": { "Foo": "gcp-baz", "UserID": "3" },
+              "metadata": {
+                "Foo": "gcp-baz",
+                "UserID": "3"
+              },
               "name": "public/hello.txt",
               "owner": null,
               "permissions": null,
+              "rawMetadata": null,
               "rehydratePriority": null,
               "remainingRetentionDays": null,
               "replicationReady": null,
@@ -60,12 +70,15 @@
               "serverEncrypted": null,
               "size": 10,
               "storageClass": "Cool",
-              "rawMetadata": null,
               "tagCount": 0,
               "tags": null
             }
           ],
-          "pageInfo": { "cursor": null, "hasNextPage": true, "nextCursor": "" }
+          "pageInfo": {
+            "cursor": null,
+            "hasNextPage": true,
+            "nextCursor": ""
+          }
         }
       }
     ]

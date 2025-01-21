@@ -10,29 +10,34 @@ import (
 	"github.com/hasura/ndc-storage/connector/storage/common"
 )
 
-// ObjectPredicate the structured predicate result which is evaluated from the raw expression.
-type ObjectPredicate struct {
-	common.StorageBucketArguments
+// PredicateEvaluator the structured predicate result which is evaluated from the raw expression.
+type PredicateEvaluator struct {
+	ClientID *common.StorageClientID
+	IsValid  bool
+	Include  common.StorageObjectIncludeOptions
 
-	IsValid bool
-	Include common.StorageObjectIncludeOptions
-	Prefix  string
-
-	variables                map[string]any
-	objectNamePrePredicate   *StringComparisonOperator
-	objectNamePostPredicates []StringComparisonOperator
+	variables           map[string]any
+	BucketPredicate     StringFilterPredicate
+	ObjectNamePredicate StringFilterPredicate
 }
 
 // EvalObjectPredicate evaluates the predicate condition of the query request.
-func EvalObjectPredicate(bucketInfo common.StorageBucketArguments, objectName string, predicate schema.Expression, variables map[string]any) (*ObjectPredicate, error) {
-	result := &ObjectPredicate{
-		StorageBucketArguments: bucketInfo,
-		Include:                common.StorageObjectIncludeOptions{},
-		variables:              variables,
+func EvalObjectPredicate(bucketInfo common.StorageBucketArguments, objectName string, predicate schema.Expression, variables map[string]any) (*PredicateEvaluator, error) {
+	result := &PredicateEvaluator{
+		ClientID:  bucketInfo.ClientID,
+		Include:   common.StorageObjectIncludeOptions{},
+		variables: variables,
+	}
+
+	if bucketInfo.Bucket != "" {
+		result.BucketPredicate.Pre = &StringComparisonOperator{
+			Value:    bucketInfo.Bucket,
+			Operator: OperatorEqual,
+		}
 	}
 
 	if objectName != "" {
-		result.objectNamePrePredicate = &StringComparisonOperator{
+		result.ObjectNamePredicate.Pre = &StringComparisonOperator{
 			Value:    normalizeObjectName(objectName),
 			Operator: OperatorEqual,
 		}
@@ -49,21 +54,22 @@ func EvalObjectPredicate(bucketInfo common.StorageBucketArguments, objectName st
 		}
 	}
 
-	if result.objectNamePrePredicate != nil {
-		result.Prefix = result.objectNamePrePredicate.Value
-	}
-
 	result.IsValid = true
 
 	return result, nil
 }
 
-// HasPostPredicate checks if the request has post-predicate expressions
-func (cor ObjectPredicate) HasPostPredicate() bool {
-	return len(cor.objectNamePostPredicates) > 0
+// GetBucketArguments get bucket arguments information
+func (pe PredicateEvaluator) GetBucketArguments() common.StorageBucketArguments {
+	result := common.StorageBucketArguments{
+		ClientID: pe.ClientID,
+		Bucket:   pe.BucketPredicate.GetPrefix(),
+	}
+
+	return result
 }
 
-func (cor *ObjectPredicate) EvalSelection(selection schema.NestedField) error { //nolint:gocognit
+func (pe *PredicateEvaluator) EvalSelection(selection schema.NestedField) error { //nolint:gocognit
 	if len(selection) == 0 {
 		return nil
 	}
@@ -75,7 +81,7 @@ func (cor *ObjectPredicate) EvalSelection(selection schema.NestedField) error { 
 
 	switch expr := exprT.(type) {
 	case *schema.NestedArray:
-		return cor.EvalSelection(expr.Fields)
+		return pe.EvalSelection(expr.Fields)
 	case *schema.NestedObject:
 		if objectsField, ok := expr.Fields["objects"]; ok {
 			objectsColumn, err := objectsField.AsColumn()
@@ -83,12 +89,12 @@ func (cor *ObjectPredicate) EvalSelection(selection schema.NestedField) error { 
 				return err
 			}
 
-			return cor.EvalSelection(objectsColumn.Fields)
+			return pe.EvalSelection(objectsColumn.Fields)
 		}
 
 		for _, key := range []string{"metadata", "rawMetadata"} {
 			if _, ok := expr.Fields[key]; ok {
-				cor.Include.Metadata = true
+				pe.Include.Metadata = true
 
 				break
 			}
@@ -96,45 +102,45 @@ func (cor *ObjectPredicate) EvalSelection(selection schema.NestedField) error { 
 
 		for _, key := range checksumColumnNames {
 			if _, ok := expr.Fields[key]; ok {
-				cor.Include.Checksum = true
+				pe.Include.Checksum = true
 
 				break
 			}
 		}
 
 		if _, metadataExists := expr.Fields["tags"]; metadataExists {
-			cor.Include.Tags = true
+			pe.Include.Tags = true
 		}
 
 		for _, key := range []string{"versionId", "versioning"} {
 			if _, ok := expr.Fields[key]; ok {
-				cor.Include.Versions = true
+				pe.Include.Versions = true
 
 				break
 			}
 		}
 
 		if _, legalHoldExists := expr.Fields["legalHold"]; legalHoldExists {
-			cor.Include.LegalHold = true
+			pe.Include.LegalHold = true
 		}
 
 		if _, ok := expr.Fields["lifecycle"]; ok {
-			cor.Include.Lifecycle = true
+			pe.Include.Lifecycle = true
 		}
 
 		if _, ok := expr.Fields["encryption"]; ok {
-			cor.Include.Encryption = true
+			pe.Include.Encryption = true
 		}
 
 		if _, ok := expr.Fields["objectLock"]; ok {
-			cor.Include.ObjectLock = true
+			pe.Include.ObjectLock = true
 		}
 	}
 
 	return nil
 }
 
-func (cor *ObjectPredicate) evalQueryPredicate(expression schema.Expression) (bool, error) {
+func (pe *PredicateEvaluator) evalQueryPredicate(expression schema.Expression) (bool, error) {
 	exprT, err := expression.InterfaceT()
 	if err != nil {
 		return false, err
@@ -143,7 +149,7 @@ func (cor *ObjectPredicate) evalQueryPredicate(expression schema.Expression) (bo
 	switch expr := exprT.(type) {
 	case *schema.ExpressionAnd:
 		for _, nestedExpr := range expr.Expressions {
-			ok, err := cor.evalQueryPredicate(nestedExpr)
+			ok, err := pe.evalQueryPredicate(nestedExpr)
 			if err != nil {
 				return false, err
 			}
@@ -159,7 +165,7 @@ func (cor *ObjectPredicate) evalQueryPredicate(expression schema.Expression) (bo
 			return false, fmt.Errorf("%s: unsupported comparison target `%s`", expr.Column.Name, expr.Column.Type)
 		}
 
-		isNull, err := cor.evalIsNullBoolExp(expr)
+		isNull, err := pe.evalIsNullBoolExp(expr)
 		if err != nil {
 			return false, err
 		}
@@ -170,25 +176,25 @@ func (cor *ObjectPredicate) evalQueryPredicate(expression schema.Expression) (bo
 
 		switch expr.Column.Name {
 		case StorageObjectColumnClientID:
-			return cor.evalPredicateClientID(expr)
+			return pe.evalPredicateClientID(expr)
 		case StorageObjectColumnBucket:
-			return cor.evalPredicateBucket(expr)
+			return pe.evalStringFilter(&pe.BucketPredicate, expr)
 		case StorageObjectColumnObject:
-			return cor.evalObjectName(expr)
+			return pe.evalStringFilter(&pe.ObjectNamePredicate, expr)
 		default:
-			return false, errors.New("unsupport predicate on column " + expr.Column.Name)
+			return false, errors.New("unsupported predicate on column " + expr.Column.Name)
 		}
 	default:
 		return false, fmt.Errorf("unsupported expression: %+v", expression)
 	}
 }
 
-func (cor *ObjectPredicate) evalIsNullBoolExp(expr *schema.ExpressionBinaryComparisonOperator) (*bool, error) {
+func (pe *PredicateEvaluator) evalIsNullBoolExp(expr *schema.ExpressionBinaryComparisonOperator) (*bool, error) {
 	if expr.Operator != OperatorIsNull {
 		return nil, nil
 	}
 
-	boolValue, err := getComparisonValueBoolean(expr.Value, cor.variables)
+	boolValue, err := getComparisonValueBoolean(expr.Value, pe.variables)
 	if err != nil {
 		return nil, fmt.Errorf("%s: %w", expr.Column.Name, err)
 	}
@@ -196,10 +202,10 @@ func (cor *ObjectPredicate) evalIsNullBoolExp(expr *schema.ExpressionBinaryCompa
 	return boolValue, nil
 }
 
-func (cor *ObjectPredicate) evalPredicateClientID(expr *schema.ExpressionBinaryComparisonOperator) (bool, error) {
+func (pe *PredicateEvaluator) evalPredicateClientID(expr *schema.ExpressionBinaryComparisonOperator) (bool, error) {
 	switch expr.Operator {
 	case OperatorEqual:
-		value, err := getComparisonValueString(expr.Value, cor.variables)
+		value, err := getComparisonValueString(expr.Value, pe.variables)
 		if err != nil {
 			return false, fmt.Errorf("clientId: %w", err)
 		}
@@ -208,49 +214,25 @@ func (cor *ObjectPredicate) evalPredicateClientID(expr *schema.ExpressionBinaryC
 			return true, nil
 		}
 
-		if cor.ClientID == nil || *cor.ClientID == "" {
+		if pe.ClientID == nil || *pe.ClientID == "" {
 			clientID := common.StorageClientID(*value)
-			cor.ClientID = &clientID
+			pe.ClientID = &clientID
 
 			return true, nil
 		}
 
-		return string(*cor.ClientID) == *value, nil
+		return string(*pe.ClientID) == *value, nil
 	default:
 		return false, fmt.Errorf("unsupported operator `%s` for clientId", expr.Operator)
 	}
 }
 
-func (cor *ObjectPredicate) evalPredicateBucket(expr *schema.ExpressionBinaryComparisonOperator) (bool, error) {
-	switch expr.Operator {
-	case OperatorEqual:
-		value, err := getComparisonValueString(expr.Value, cor.variables)
-		if err != nil {
-			return false, fmt.Errorf("bucket: %w", err)
-		}
-
-		if value == nil {
-			return true, nil
-		}
-
-		if cor.Bucket == "" {
-			cor.Bucket = *value
-
-			return true, nil
-		}
-
-		return cor.Bucket == *value, nil
-	default:
-		return false, fmt.Errorf("unsupported operator `%s` for bucket", expr.Operator)
-	}
-}
-
-func (cor *ObjectPredicate) evalObjectName(expr *schema.ExpressionBinaryComparisonOperator) (bool, error) { //nolint:gocognit,cyclop
+func (pe *PredicateEvaluator) evalStringFilter(predicate *StringFilterPredicate, expr *schema.ExpressionBinaryComparisonOperator) (bool, error) { //nolint:gocognit,cyclop
 	if !slices.Contains([]string{OperatorStartsWith, OperatorEqual}, expr.Operator) {
-		return false, fmt.Errorf("unsupported operator `%s` for object name", expr.Operator)
+		return false, fmt.Errorf("unsupported operator `%s` for string filter expression", expr.Operator)
 	}
 
-	value, err := getComparisonValueString(expr.Value, cor.variables)
+	value, err := getComparisonValueString(expr.Value, pe.variables)
 	if err != nil {
 		return false, fmt.Errorf("bucket: %w", err)
 	}
@@ -261,14 +243,14 @@ func (cor *ObjectPredicate) evalObjectName(expr *schema.ExpressionBinaryComparis
 
 	valueStr := normalizeObjectName(*value)
 
-	if cor.objectNamePrePredicate == nil {
+	if predicate.Pre == nil {
 		if expr.Operator == OperatorStartsWith || expr.Operator == OperatorEqual {
-			cor.objectNamePrePredicate = &StringComparisonOperator{
+			predicate.Pre = &StringComparisonOperator{
 				Value:    valueStr,
 				Operator: expr.Operator,
 			}
 		} else {
-			cor.objectNamePostPredicates = append(cor.objectNamePostPredicates, StringComparisonOperator{
+			predicate.Post = append(predicate.Post, StringComparisonOperator{
 				Value:    valueStr,
 				Operator: expr.Operator,
 			})
@@ -279,81 +261,92 @@ func (cor *ObjectPredicate) evalObjectName(expr *schema.ExpressionBinaryComparis
 
 	switch expr.Operator {
 	case OperatorStartsWith:
-		switch cor.objectNamePrePredicate.Operator {
+		switch predicate.Pre.Operator {
 		case OperatorStartsWith:
-			if len(cor.objectNamePrePredicate.Value) >= len(valueStr) {
-				return strings.HasPrefix(cor.objectNamePrePredicate.Value, valueStr), nil
+			if len(predicate.Pre.Value) >= len(valueStr) {
+				return strings.HasPrefix(predicate.Pre.Value, valueStr), nil
 			}
 
-			if !strings.HasPrefix(valueStr, cor.objectNamePrePredicate.Value) {
+			if !strings.HasPrefix(valueStr, predicate.Pre.Value) {
 				return false, nil
 			}
 
-			cor.objectNamePrePredicate.Value = valueStr
+			predicate.Pre.Value = valueStr
 		case OperatorEqual:
-			return strings.HasPrefix(cor.objectNamePrePredicate.Value, valueStr), nil
+			return strings.HasPrefix(predicate.Pre.Value, valueStr), nil
 		}
 	case OperatorEqual:
-		switch cor.objectNamePrePredicate.Operator {
+		switch predicate.Pre.Operator {
 		case OperatorStartsWith:
-			if !strings.HasPrefix(cor.objectNamePrePredicate.Value, valueStr) {
+			if !strings.HasPrefix(predicate.Pre.Value, valueStr) {
 				return false, nil
 			}
 
-			cor.objectNamePrePredicate = &StringComparisonOperator{
+			predicate.Pre = &StringComparisonOperator{
 				Value:    valueStr,
 				Operator: OperatorEqual,
 			}
 		case OperatorEqual:
-			return cor.objectNamePrePredicate.Value == valueStr, nil
+			return predicate.Pre.Value == valueStr, nil
 		}
 	case OperatorContains:
-		switch cor.objectNamePrePredicate.Operator {
+		switch predicate.Pre.Operator {
 		case OperatorStartsWith:
-			if strings.Contains(cor.objectNamePrePredicate.Value, valueStr) {
+			if strings.Contains(predicate.Pre.Value, valueStr) {
 				return true, nil
 			}
 
-			cor.objectNamePostPredicates = append(cor.objectNamePostPredicates, StringComparisonOperator{
+			predicate.Post = append(predicate.Post, StringComparisonOperator{
 				Value:    valueStr,
 				Operator: expr.Operator,
 			})
 		case OperatorEqual:
-			return strings.Contains(cor.objectNamePrePredicate.Value, valueStr), nil
+			return strings.Contains(predicate.Pre.Value, valueStr), nil
 		}
 	case OperatorInsensitiveContains:
-		switch cor.objectNamePrePredicate.Operator {
+		switch predicate.Pre.Operator {
 		case OperatorStartsWith:
-			if strings.Contains(strings.ToLower(cor.objectNamePrePredicate.Value), strings.ToLower(valueStr)) {
+			if strings.Contains(strings.ToLower(predicate.Pre.Value), strings.ToLower(valueStr)) {
 				return true, nil
 			}
 
-			cor.objectNamePostPredicates = append(cor.objectNamePostPredicates, StringComparisonOperator{
+			predicate.Post = append(predicate.Post, StringComparisonOperator{
 				Value:    valueStr,
 				Operator: expr.Operator,
 			})
 		case OperatorEqual:
-			return strings.Contains(strings.ToLower(cor.objectNamePrePredicate.Value), strings.ToLower(valueStr)), nil
+			return strings.Contains(strings.ToLower(predicate.Pre.Value), strings.ToLower(valueStr)), nil
 		}
 	}
 
 	return true, nil
 }
 
-// CheckPostObjectPredicate the predicate function to filter the object with post conditions
-func (cor ObjectPredicate) CheckPostObjectPredicate(input common.StorageObject) bool {
-	if len(cor.objectNamePostPredicates) == 0 {
-		return true
+// StringFilterPredicate the structured predicate result which is evaluated from the raw expression.
+type StringFilterPredicate struct {
+	Pre  *StringComparisonOperator
+	Post []StringComparisonOperator
+}
+
+// HasPostPredicate checks if the request has post-predicate expressions
+func (sfp StringFilterPredicate) GetPrefix() string {
+	if sfp.Pre != nil {
+		return sfp.Pre.Value
 	}
 
-	return cor.CheckPostObjectNamePredicate(input.Name)
+	return ""
+}
+
+// HasPostPredicate checks if the request has post-predicate expressions
+func (sfp StringFilterPredicate) HasPostPredicate() bool {
+	return len(sfp.Post) > 0
 }
 
 // CheckPostObjectPredicate the predicate function to filter the object with post conditions
-func (cor ObjectPredicate) CheckPostObjectNamePredicate(name string) bool {
-	for _, pred := range cor.objectNamePostPredicates {
-		if (pred.Operator == OperatorContains && !strings.Contains(name, pred.Value)) ||
-			(pred.Operator == OperatorInsensitiveContains && !strings.Contains(strings.ToLower(name), strings.ToLower(pred.Value))) {
+func (sfp StringFilterPredicate) CheckPostPredicate(input string) bool {
+	for _, pred := range sfp.Post {
+		if (pred.Operator == OperatorContains && !strings.Contains(input, pred.Value)) ||
+			(pred.Operator == OperatorInsensitiveContains && !strings.Contains(strings.ToLower(input), strings.ToLower(pred.Value))) {
 			return false
 		}
 	}

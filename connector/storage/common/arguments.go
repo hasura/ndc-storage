@@ -9,13 +9,18 @@ import (
 
 // ListStorageBucketArguments represent the input arguments for the ListBuckets methods.
 type ListStorageBucketArguments struct {
-	// The storage client ID.
-	ClientID *StorageClientID `json:"clientId,omitempty"`
-	Prefix   string           `json:"prefix,omitempty"`
 	// The maximum number of objects requested per batch.
 	MaxResults int `json:"maxResults,omitempty"`
 	// StartAfter start listing lexically at this object onwards.
-	StartAfter string `json:"startAfter,omitempty"`
+	StartAfter string            `json:"startAfter,omitempty"`
+	Where      schema.Expression `json:"where"                ndc:"predicate=StorageBucketFilter"`
+}
+
+// StorageBucketArguments represent the common input arguments for bucket-related methods.
+type GetStorageBucketArguments struct {
+	StorageBucketArguments
+
+	Where schema.Expression `json:"where" ndc:"predicate=StorageBucketFilter"`
 }
 
 // StorageBucketArguments represent the common input arguments for bucket-related methods.
@@ -86,7 +91,7 @@ type PresignedGetStorageObjectArguments struct {
 	PresignedGetStorageObjectOptions
 
 	Object string            `json:"object"`
-	Where  schema.Expression `json:"where"  ndc:"predicate=StorageObjectSimple"`
+	Where  schema.Expression `json:"where"  ndc:"predicate=StorageObjectFilter"`
 }
 
 // PresignedGetStorageObjectOptions represent the options for the PresignedGetObject method.
@@ -101,7 +106,7 @@ type PresignedPutStorageObjectArguments struct {
 
 	Object string            `json:"object"`
 	Expiry *scalar.Duration  `json:"expiry"`
-	Where  schema.Expression `json:"where"  ndc:"predicate=StorageObjectSimple"`
+	Where  schema.Expression `json:"where"  ndc:"predicate=StorageObjectFilter"`
 }
 
 // ListStorageObjectsArguments holds all arguments of a list object request.
@@ -115,7 +120,7 @@ type ListStorageObjectsArguments struct {
 	// StartAfter start listing lexically at this object onwards.
 	StartAfter *string `json:"startAfter,omitempty"`
 
-	Where schema.Expression `json:"where" ndc:"predicate=StorageObjectSimple"`
+	Where schema.Expression `json:"where" ndc:"predicate=StorageObjectFilter"`
 }
 
 // StorageObjectIncludeOptions hold options to be included for the object information.
@@ -166,7 +171,7 @@ type GetStorageObjectArguments struct {
 	GetStorageObjectOptions
 
 	Object string            `json:"object"`
-	Where  schema.Expression `json:"where"  ndc:"predicate=StorageObjectSimple"`
+	Where  schema.Expression `json:"where"  ndc:"predicate=StorageObjectFilter"`
 }
 
 // GetStorageObjectOptions are used to specify additional headers or options during GET requests.
@@ -239,7 +244,7 @@ type RemoveStorageObjectArguments struct {
 	RemoveStorageObjectOptions
 
 	Object string            `json:"object"`
-	Where  schema.Expression `json:"where"  ndc:"predicate=StorageObjectSimple"`
+	Where  schema.Expression `json:"where"  ndc:"predicate=StorageObjectFilter"`
 }
 
 // RemoveStorageObjectOptions represents options specified by user for RemoveObject call.
@@ -255,7 +260,7 @@ type UpdateStorageObjectArguments struct {
 	UpdateStorageObjectOptions
 
 	Object string            `json:"object"`
-	Where  schema.Expression `json:"where"  ndc:"predicate=StorageObjectSimple"`
+	Where  schema.Expression `json:"where"  ndc:"predicate=StorageObjectFilter"`
 }
 
 // UpdateStorageObjectOptions represents options specified by user for updating object.
@@ -288,7 +293,7 @@ type RemoveStorageObjectsArguments struct {
 	StorageBucketArguments
 	RemoveStorageObjectsOptions
 
-	Where schema.Expression `json:"where" ndc:"predicate=StorageObjectSimple"`
+	Where schema.Expression `json:"where" ndc:"predicate=StorageObjectFilter"`
 }
 
 // RemoveStorageObjectsOptions represents options specified by user for RemoveObjects call.
@@ -342,24 +347,6 @@ type PutStorageObjectOptions struct {
 	// fill them serially and upload them in parallel.
 	// This can be used for faster uploads on non-seekable or slow-to-seek input.
 	ConcurrentStreamParts bool `json:"concurrentStreamParts,omitempty"`
-}
-
-// SetBucketNotificationArguments represents input arguments for the SetBucketNotification method.
-type SetBucketNotificationArguments struct {
-	StorageBucketArguments
-	NotificationConfig
-}
-
-// SetStorageObjectLockArguments represents input arguments for the SetStorageObjectLock method.
-type SetStorageObjectLockArguments struct {
-	StorageBucketArguments
-	SetStorageObjectLockConfig
-}
-
-// SetStorageBucketReplicationArguments storage bucket replication arguments.
-type SetStorageBucketReplicationArguments struct {
-	StorageBucketArguments
-	StorageReplicationConfig
 }
 
 // PresignedURLResponse holds the presigned URL and expiry information.
