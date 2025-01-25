@@ -786,6 +786,12 @@ definition:
                 underlying_type:
                   type: named
                   name: Boolean
+            softDelete:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
             versionId:
               type:
                 type: nullable
@@ -1333,42 +1339,12 @@ definition:
                 underlying_type:
                   type: named
                   name: String
-            copyCompletionTime:
+            copy:
               type:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: TimestampTZ
-            copyId:
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: String
-            copyProgress:
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: String
-            copySource:
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: String
-            copyStatus:
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: String
-            copyStatusDescription:
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: String
+                  name: StorageObjectCopyInfo
             creationTime:
               type:
                 type: nullable
@@ -1489,6 +1465,12 @@ definition:
                 underlying_type:
                   type: named
                   name: Boolean
+            mediaLink:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
             metadata:
               type:
                 type: nullable
@@ -1640,6 +1622,43 @@ definition:
                 underlying_type:
                   type: named
                   name: String
+        StorageObjectCopyInfo:
+          description: holds the copy information if the object was copied from another object.
+          fields:
+            completionTime:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: TimestampTZ
+            id:
+              type:
+                type: named
+                name: String
+            progress:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
+            source:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
+            status:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
+            statusDescription:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
         StorageObjectFilter:
           fields:
             bucket:
@@ -1764,12 +1783,6 @@ definition:
               type:
                 type: named
                 name: Boolean
-            nextCursor:
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: String
         StorageRestoreInfo:
           description: contains information of the restore operation of an archived object.
           fields:
@@ -2114,6 +2127,36 @@ definition:
           result_type:
             type: named
             name: StorageBucketListResults
+        - name: storageDeletedObjects
+          description: list deleted objects in a bucket.
+          arguments:
+            maxResults:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Int32
+            recursive:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            startAfter:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
+            where:
+              type:
+                type: nullable
+                underlying_type:
+                  type: predicate
+                  object_type_name: StorageObjectFilter
+          result_type:
+            type: named
+            name: StorageObjectListResults
         - name: storageIncompleteUploads
           description: list partially uploaded objects in a bucket.
           arguments:
@@ -2454,6 +2497,12 @@ definition:
               type:
                 type: named
                 name: String
+            softDelete:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
             versionId:
               type:
                 type: nullable
@@ -2517,6 +2566,34 @@ definition:
             element_type:
               type: named
               name: RemoveStorageObjectError
+        - name: restoreStorageObject
+          description: restore a soft-deleted object.
+          arguments:
+            bucket:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
+            clientId:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: StorageClientID
+            object:
+              type:
+                type: named
+                name: String
+            where:
+              type:
+                type: nullable
+                underlying_type:
+                  type: predicate
+                  object_type_name: StorageObjectFilter
+          result_type:
+            type: named
+            name: Boolean
         - name: updateStorageBucket
           description: updates the bucket's configuration.
           arguments:

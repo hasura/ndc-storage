@@ -490,6 +490,7 @@ func (j RemoveStorageObjectOptions) ToMap() map[string]any {
 	r := make(map[string]any)
 	r["forceDelete"] = j.ForceDelete
 	r["governanceBypass"] = j.GovernanceBypass
+	r["softDelete"] = j.SoftDelete
 	r["versionId"] = j.VersionID
 
 	return r
@@ -690,12 +691,9 @@ func (j StorageObject) ToMap() map[string]any {
 	r["contentLanguage"] = j.ContentLanguage
 	r["contentMd5"] = j.ContentMD5
 	r["contentType"] = j.ContentType
-	r["copyCompletionTime"] = j.CopyCompletionTime
-	r["copyId"] = j.CopyID
-	r["copyProgress"] = j.CopyProgress
-	r["copySource"] = j.CopySource
-	r["copyStatus"] = j.CopyStatus
-	r["copyStatusDescription"] = j.CopyStatusDescription
+	if j.Copy != nil {
+		r["copy"] = (*j.Copy)
+	}
 	r["creationTime"] = j.CreationTime
 	r["customerProvidedKeySha256"] = j.CustomerProvidedKeySHA256
 	r["deleted"] = j.Deleted
@@ -720,6 +718,7 @@ func (j StorageObject) ToMap() map[string]any {
 	r["leaseState"] = j.LeaseState
 	r["leaseStatus"] = j.LeaseStatus
 	r["legalHold"] = j.LegalHold
+	r["mediaLink"] = j.MediaLink
 	r["metadata"] = j.Metadata
 	r["name"] = j.Name
 	if j.Owner != nil {
@@ -756,6 +755,19 @@ func (j StorageObjectChecksum) ToMap() map[string]any {
 	r["checksumCrc64Nvme"] = j.ChecksumCRC64NVME
 	r["checksumSha1"] = j.ChecksumSHA1
 	r["checksumSha256"] = j.ChecksumSHA256
+
+	return r
+}
+
+// ToMap encodes the struct to a value map
+func (j StorageObjectCopyInfo) ToMap() map[string]any {
+	r := make(map[string]any)
+	r["completionTime"] = j.CompletionTime
+	r["id"] = j.ID
+	r["progress"] = j.Progress
+	r["source"] = j.Source
+	r["status"] = j.Status
+	r["statusDescription"] = j.StatusDescription
 
 	return r
 }
@@ -817,7 +829,6 @@ func (j StoragePaginationInfo) ToMap() map[string]any {
 	r := make(map[string]any)
 	r["cursor"] = j.Cursor
 	r["hasNextPage"] = j.HasNextPage
-	r["nextCursor"] = j.NextCursor
 
 	return r
 }

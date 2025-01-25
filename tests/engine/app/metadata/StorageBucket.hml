@@ -357,8 +357,7 @@ kind: ObjectType
 version: v1
 definition:
   name: ObjectLifecycleNoncurrentVersionTransition
-  description:
-    sets this action to request server to transition noncurrent object
+  description: sets this action to request server to transition noncurrent object
     versions to different set storage classes at a specific period in the
     object's lifetime.
   fields:
@@ -577,8 +576,7 @@ kind: ObjectType
 version: v1
 definition:
   name: StorageObjectSoftDeletePolicy
-  description:
-    contains the bucket's soft delete policy, which defines the period
+  description: contains the bucket's soft delete policy, which defines the period
     of time that soft-deleted objects will be retained, and cannot be
     permanently deleted.
   fields:
@@ -696,6 +694,8 @@ definition:
       type: String
     - name: hierarchicalNamespace
       type: BucketHierarchicalNamespace
+    - name: lastModified
+      type: TimestampTz
     - name: lifecycle
       type: ObjectLifecycleConfiguration
     - name: locationType
@@ -718,8 +718,6 @@ definition:
       type: String
     - name: tags
       type: Json
-    - name: lastModified
-      type: TimestampTz
     - name: versioning
       type: StorageBucketVersioningConfiguration
     - name: website
@@ -748,6 +746,7 @@ definition:
           - encryption
           - etag
           - hierarchicalNamespace
+          - lastModified
           - lifecycle
           - locationType
           - logging
@@ -759,7 +758,6 @@ definition:
           - softDeletePolicy
           - storageClass
           - tags
-          - lastModified
           - versioning
           - website
 
@@ -791,3 +789,4 @@ definition:
   permissions:
     - role: admin
       allowExecution: true
+

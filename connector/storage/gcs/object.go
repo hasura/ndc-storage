@@ -31,7 +31,7 @@ func (c *Client) ListObjects(ctx context.Context, bucketName string, opts *commo
 	var count int
 	maxResults := opts.MaxResults
 	objects := make([]common.StorageObject, 0)
-	q := c.validateListObjectsOptions(span, opts)
+	q := c.validateListObjectsOptions(span, opts, false)
 	pager := c.client.Bucket(bucketName).Objects(ctx, q)
 	pageInfo := common.StoragePaginationInfo{}
 
@@ -48,25 +48,25 @@ func (c *Client) ListObjects(ctx context.Context, bucketName string, opts *commo
 			return nil, serializeErrorResponse(err)
 		}
 
+		var cursor *string
 		pi := pager.PageInfo()
-		if predicate != nil && !predicate(object.Name) {
-			pageInfo.Cursor = &pi.Token
 
-			continue
+		if pi.Token != "" {
+			cursor = &pi.Token
 		}
 
-		result := serializeObjectInfo(object)
-		objects = append(objects, result)
-		count++
+		if predicate == nil || predicate(object.Name) {
+			result := serializeObjectInfo(object)
+			objects = append(objects, result)
+			count++
+		}
 
 		if maxResults > 0 && count >= maxResults {
 			pageInfo.HasNextPage = pi.Remaining() > 0
-			pageInfo.NextCursor = &pi.Token
+			pageInfo.Cursor = cursor
 
 			break
 		}
-
-		pageInfo.Cursor = &pi.Token
 	}
 
 	span.SetAttributes(attribute.Int("storage.object_count", count))
@@ -81,12 +81,72 @@ func (c *Client) ListObjects(ctx context.Context, bucketName string, opts *commo
 
 // ListIncompleteUploads list partially uploaded objects in a bucket.
 func (c *Client) ListIncompleteUploads(ctx context.Context, bucketName string, args common.ListIncompleteUploadsOptions) ([]common.StorageObjectMultipartInfo, error) {
-	return nil, errNotSupported
+	return []common.StorageObjectMultipartInfo{}, nil
 }
 
 // RemoveIncompleteUpload removes a partially uploaded object.
 func (c *Client) RemoveIncompleteUpload(ctx context.Context, bucketName string, objectName string) error {
-	return errNotSupported
+	return nil
+}
+
+// ListDeletedObjects list deleted objects in a bucket.
+func (c *Client) ListDeletedObjects(ctx context.Context, bucketName string, opts *common.ListStorageObjectsOptions, predicate func(string) bool) (*common.StorageObjectListResults, error) {
+	ctx, span := c.startOtelSpan(ctx, "ListDeletedObjects", bucketName)
+	defer span.End()
+
+	var count int
+	maxResults := opts.MaxResults
+	objects := make([]common.StorageObject, 0)
+	q := c.validateListObjectsOptions(span, opts, true)
+	pager := c.client.Bucket(bucketName).Objects(ctx, q)
+	pageInfo := common.StoragePaginationInfo{}
+
+	for {
+		object, err := pager.Next()
+		if err != nil {
+			if errors.Is(err, iterator.Done) {
+				break
+			}
+
+			span.SetStatus(codes.Error, err.Error())
+			span.RecordError(err)
+
+			return nil, serializeErrorResponse(err)
+		}
+
+		var cursor *string
+		pi := pager.PageInfo()
+
+		if pi.Token != "" {
+			cursor = &pi.Token
+		}
+
+		if (object.Deleted.IsZero() && object.SoftDeleteTime.IsZero()) || (predicate != nil && !predicate(object.Name)) {
+			pageInfo.Cursor = cursor
+
+			continue
+		}
+
+		result := serializeObjectInfo(object)
+		objects = append(objects, result)
+		count++
+
+		if maxResults > 0 && count >= maxResults {
+			pageInfo.HasNextPage = pi.Remaining() > 0
+			pageInfo.Cursor = cursor
+
+			break
+		}
+	}
+
+	span.SetAttributes(attribute.Int("storage.object_count", count))
+
+	results := &common.StorageObjectListResults{
+		Objects:  objects,
+		PageInfo: pageInfo,
+	}
+
+	return results, nil
 }
 
 // GetObject returns a stream of the object data. Most of the common errors occur when reading the stream.
@@ -241,7 +301,13 @@ func (c *Client) RemoveObject(ctx context.Context, bucketName string, objectName
 		span.SetAttributes(attribute.String("storage.options.version", opts.VersionID))
 	}
 
-	err := c.client.Bucket(bucketName).Object(objectName).Delete(ctx)
+	objectClient := c.client.Bucket(bucketName).Object(objectName)
+
+	if opts.SoftDelete {
+		objectClient = objectClient.SoftDeleted()
+	}
+
+	err := objectClient.SoftDeleted().Delete(ctx)
 	if err != nil {
 		if errors.Is(err, storage.ErrObjectNotExist) {
 			return nil
@@ -262,7 +328,7 @@ func (c *Client) RemoveObjects(ctx context.Context, bucketName string, opts *com
 	ctx, span := c.startOtelSpan(ctx, "RemoveObjects", bucketName)
 	defer span.End()
 
-	q := c.validateListObjectsOptions(span, &opts.ListStorageObjectsOptions)
+	q := c.validateListObjectsOptions(span, &opts.ListStorageObjectsOptions, false)
 	pager := c.client.Bucket(bucketName).Objects(ctx, q)
 	objects := []*storage.ObjectAttrs{}
 
@@ -390,6 +456,26 @@ func (c *Client) UpdateObject(ctx context.Context, bucketName string, objectName
 	}
 
 	_, err := handle.Update(ctx, updateAttrs)
+	if err != nil {
+		span.SetStatus(codes.Error, err.Error())
+		span.RecordError(err)
+
+		return serializeErrorResponse(err)
+	}
+
+	return nil
+}
+
+// RestoreObject restores a soft-deleted object.
+func (c *Client) RestoreObject(ctx context.Context, bucketName string, objectName string) error {
+	ctx, span := c.startOtelSpan(ctx, "RestoreObject", bucketName)
+	defer span.End()
+
+	span.SetAttributes(attribute.String("storage.key", objectName))
+
+	blobClient := c.client.Bucket(bucketName).Object(objectName)
+
+	_, err := blobClient.Restore(ctx, &storage.RestoreOptions{})
 	if err != nil {
 		span.SetStatus(codes.Error, err.Error())
 		span.RecordError(err)

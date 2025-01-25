@@ -161,6 +161,13 @@ func (mc *Client) ListIncompleteUploads(ctx context.Context, bucketName string, 
 	return objects, nil
 }
 
+// ListDeletedObjects list soft-deleted objects in a bucket.
+func (mc *Client) ListDeletedObjects(ctx context.Context, bucketName string, opts *common.ListStorageObjectsOptions, predicate func(string) bool) (*common.StorageObjectListResults, error) {
+	return &common.StorageObjectListResults{
+		Objects: []common.StorageObject{},
+	}, nil
+}
+
 // RemoveIncompleteUpload removes a partially uploaded object.
 func (mc *Client) RemoveIncompleteUpload(ctx context.Context, bucketName string, objectName string) error {
 	ctx, span := mc.startOtelSpan(ctx, "RemoveIncompleteUpload", bucketName)
@@ -481,6 +488,11 @@ func (mc *Client) UpdateObject(ctx context.Context, bucketName string, objectNam
 	}
 
 	return nil
+}
+
+// RestoreObject restores a soft-deleted object.
+func (mc *Client) RestoreObject(ctx context.Context, bucketName string, objectName string) error {
+	return schema.NotSupportedError("MinIO does not support this function", nil)
 }
 
 // SetObjectRetention applies object retention lock onto an object.

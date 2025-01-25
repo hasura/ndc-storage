@@ -76,8 +76,7 @@
           ],
           "pageInfo": {
             "cursor": null,
-            "hasNextPage": false,
-            "nextCursor": null
+            "hasNextPage": false
           }
         }
       }

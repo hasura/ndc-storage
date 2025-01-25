@@ -238,11 +238,11 @@ func serializeObjectInfo(obj *storage.ObjectAttrs) common.StorageObject {
 	return object
 }
 
-func (c *Client) validateListObjectsOptions(span trace.Span, opts *common.ListStorageObjectsOptions) *storage.Query {
+func (c *Client) validateListObjectsOptions(span trace.Span, opts *common.ListStorageObjectsOptions, includeDeleted bool) *storage.Query {
 	span.SetAttributes(
 		attribute.Bool("storage.options.recursive", opts.Recursive),
+		attribute.Bool("storage.options.with_deleted", includeDeleted),
 		attribute.Bool("storage.options.with_versions", opts.Include.Versions),
-		attribute.Bool("storage.options.with_metadata", opts.Include.Metadata),
 	)
 
 	if opts.Prefix != "" {
@@ -261,6 +261,7 @@ func (c *Client) validateListObjectsOptions(span trace.Span, opts *common.ListSt
 		Versions:    opts.Include.Versions,
 		Prefix:      opts.Prefix,
 		StartOffset: opts.StartAfter,
+		SoftDeleted: includeDeleted,
 	}
 }
 

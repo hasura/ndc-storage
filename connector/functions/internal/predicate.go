@@ -108,8 +108,12 @@ func (pe *PredicateEvaluator) EvalSelection(selection schema.NestedField) error 
 			}
 		}
 
-		if _, metadataExists := expr.Fields["tags"]; metadataExists {
+		if _, ok := expr.Fields["tags"]; ok {
 			pe.Include.Tags = true
+		}
+
+		if _, ok := expr.Fields["copy"]; ok {
+			pe.Include.Copy = true
 		}
 
 		for _, key := range []string{"versionId", "versioning"} {

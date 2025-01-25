@@ -138,7 +138,7 @@ func (c *Client) ListBuckets(ctx context.Context, options *common.ListStorageBuc
 			if maxResults > 0 && count >= maxResults {
 				if pager.More() {
 					pageInfo.HasNextPage = true
-					pageInfo.NextCursor = resp.NextMarker
+					pageInfo.Cursor = resp.NextMarker
 				}
 
 				if resp.Marker != nil && *resp.Marker != "" {

@@ -66,25 +66,25 @@ func (c *Client) ListBuckets(ctx context.Context, options *common.ListStorageBuc
 			return nil, serializeErrorResponse(err)
 		}
 
+		var cursor *string
 		pi := pager.PageInfo()
-		if predicate != nil && !predicate(bucket.Name) {
-			pageInfo.Cursor = &pi.Token
 
-			continue
+		if pi.Token != "" {
+			cursor = &pi.Token
 		}
 
-		result := serializeBucketInfo(bucket)
-		results = append(results, result)
-		count++
+		if predicate == nil || predicate(bucket.Name) {
+			result := serializeBucketInfo(bucket)
+			results = append(results, result)
+			count++
+		}
 
 		if maxResults > 0 && count >= maxResults {
 			pageInfo.HasNextPage = pi.Remaining() > 0
-			pageInfo.NextCursor = &pi.Token
+			pageInfo.Cursor = cursor
 
 			break
 		}
-
-		pageInfo.Cursor = &pi.Token
 	}
 
 	span.SetAttributes(attribute.Int("storage.bucket_count", len(results)))

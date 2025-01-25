@@ -32,6 +32,26 @@ func (m *Manager) ListObjects(ctx context.Context, bucketInfo common.StorageBuck
 	return results, nil
 }
 
+// ListObjects lists deleted objects in a bucket.
+func (m *Manager) ListDeletedObjects(ctx context.Context, bucketInfo common.StorageBucketArguments, opts *common.ListStorageObjectsOptions, predicate func(string) bool) (*common.StorageObjectListResults, error) {
+	client, bucketName, err := m.GetClientAndBucket(bucketInfo.ClientID, bucketInfo.Bucket)
+	if err != nil {
+		return nil, err
+	}
+
+	results, err := client.ListDeletedObjects(ctx, bucketName, opts, predicate)
+	if err != nil {
+		return nil, err
+	}
+
+	for i := range results.Objects {
+		results.Objects[i].ClientID = string(client.id)
+		results.Objects[i].Bucket = bucketName
+	}
+
+	return results, nil
+}
+
 // ListIncompleteUploads list partially uploaded objects in a bucket.
 func (m *Manager) ListIncompleteUploads(ctx context.Context, bucketInfo common.StorageBucketArguments, opts common.ListIncompleteUploadsOptions) ([]common.StorageObjectMultipartInfo, error) {
 	client, bucketName, err := m.GetClientAndBucket(bucketInfo.ClientID, bucketInfo.Bucket)
@@ -175,6 +195,16 @@ func (m *Manager) RemoveObjects(ctx context.Context, bucketInfo common.StorageBu
 	}
 
 	return client.RemoveObjects(ctx, bucketName, opts, predicate), nil
+}
+
+// RestoreObject restores a soft-deleted object.
+func (m *Manager) RestoreObject(ctx context.Context, bucketInfo common.StorageBucketArguments, objectName string) error {
+	client, bucketName, err := m.GetClientAndBucket(bucketInfo.ClientID, bucketInfo.Bucket)
+	if err != nil {
+		return err
+	}
+
+	return client.RestoreObject(ctx, bucketName, objectName)
 }
 
 // RemoveIncompleteUpload removes a partially uploaded object.

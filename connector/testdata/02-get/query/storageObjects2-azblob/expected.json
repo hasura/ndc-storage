@@ -5,6 +5,7 @@
         "__value": {
           "objects": [
             {
+              "accessTierChangeTime": null,
               "accessTierInferred": null,
               "acl": null,
               "archiveStatus": null,
@@ -23,54 +24,59 @@
               "contentLanguage": null,
               "contentMd5": "KZ0tkTzqqDd9IiRNs5cjyg==",
               "contentType": "application/octet-stream",
-              "copyProgress": "10/10",
-              "copySource": "http://local.hasura.dev:10000/azblob-bucket-test/public%2Fhello.txt",
-              "copyStatus": "success",
-              "copyStatusDescription": null,
+              "copy": {
+                "progress": "10/10",
+                "source": "http://local.hasura.dev:10000/azblob-bucket-test/public%2Fhello.txt",
+                "status": "success",
+                "statusDescription": null
+              },
               "customerProvidedKeySha256": null,
               "deleted": null,
               "deletedTime": null,
               "destinationSnapshot": null,
-              "encryptionScope": null,
               "expiration": null,
               "expirationRuleId": null,
               "expires": null,
               "grant": [],
               "group": null,
-              "immutabilityPolicyMode": null,
-              "immutabilityPolicyUntilDate": null,
               "incrementalCopy": false,
+              "isLatest": null,
+              "kmsKeyName": null,
+              "lastAccessTime": null,
               "leaseDuration": null,
               "leaseState": "available",
               "leaseStatus": "unlocked",
               "legalHold": null,
+              "mediaLink": null,
               "metadata": {
                 "userid": "2"
               },
               "name": "public/hello2.txt",
               "owner": null,
               "permissions": null,
+              "rawMetadata": null,
               "rehydratePriority": null,
               "remainingRetentionDays": null,
               "replicationReady": null,
               "replicationStatus": null,
               "resourceType": null,
               "restore": null,
+              "retentionMode": null,
+              "retentionUntilDate": null,
               "sealed": null,
               "serverEncrypted": true,
               "size": 10,
               "storageClass": "Cool",
-              "rawMetadata": null,
               "tagCount": 1,
               "tags": {
                 "Copy": "true"
-              }
+              },
+              "versionId": null
             }
           ],
           "pageInfo": {
-            "cursor": "public/hello.txt",
-            "hasNextPage": false,
-            "nextCursor": null
+            "cursor": null,
+            "hasNextPage": false
           }
         }
       }

@@ -35,11 +35,11 @@ func (c *Client) ListObjects(ctx context.Context, bucketName string, opts *commo
 			Tags:                opts.Include.Tags,
 			Copy:                opts.Include.Copy,
 			Snapshots:           opts.Include.Snapshots,
-			Deleted:             opts.Include.Deleted,
 			LegalHold:           opts.Include.LegalHold,
 			ImmutabilityPolicy:  opts.Include.Retention,
-			DeletedWithVersions: opts.Include.DeletedWithVersions,
 			Permissions:         opts.Include.Permissions,
+			Deleted:             false,
+			DeletedWithVersions: false,
 			UncommittedBlobs:    false,
 		},
 	}
@@ -83,11 +83,7 @@ func (c *Client) ListObjects(ctx context.Context, bucketName string, opts *commo
 		if maxResults > 0 && count >= maxResults {
 			if pager.More() {
 				pageInfo.HasNextPage = true
-				pageInfo.NextCursor = resp.NextMarker
-			}
-
-			if resp.Marker != nil && *resp.Marker != "" {
-				pageInfo.Cursor = resp.Marker
+				pageInfo.Cursor = resp.NextMarker
 			}
 
 			break
@@ -155,6 +151,80 @@ func (c *Client) ListIncompleteUploads(ctx context.Context, bucketName string, a
 	span.SetAttributes(attribute.Int("storage.object_count", len(objects)))
 
 	return objects, nil
+}
+
+// ListDeletedObjects list soft-deleted objects in a bucket.
+func (c *Client) ListDeletedObjects(ctx context.Context, bucketName string, opts *common.ListStorageObjectsOptions, predicate func(string) bool) (*common.StorageObjectListResults, error) {
+	ctx, span := c.startOtelSpan(ctx, "ListDeletedObjects", bucketName)
+	defer span.End()
+
+	options := &container.ListBlobsFlatOptions{
+		Include: container.ListBlobsInclude{
+			Versions:            opts.Include.Versions,
+			Metadata:            opts.Include.Metadata,
+			Tags:                opts.Include.Tags,
+			Copy:                opts.Include.Copy,
+			Snapshots:           opts.Include.Snapshots,
+			LegalHold:           opts.Include.LegalHold,
+			ImmutabilityPolicy:  opts.Include.Retention,
+			Permissions:         opts.Include.Permissions,
+			Deleted:             true,
+			DeletedWithVersions: true,
+			UncommittedBlobs:    false,
+		},
+	}
+
+	if opts.Prefix != "" {
+		options.Prefix = &opts.Prefix
+	}
+
+	maxResults := int32(opts.MaxResults)
+
+	if opts.StartAfter != "" {
+		options.Marker = &opts.StartAfter
+	}
+
+	var count int32
+	objects := make([]common.StorageObject, 0)
+	pager := c.client.NewListBlobsFlatPager(bucketName, options)
+	pageInfo := common.StoragePaginationInfo{}
+
+	for pager.More() {
+		resp, err := pager.NextPage(ctx)
+		if err != nil {
+			span.SetStatus(codes.Error, err.Error())
+			span.RecordError(err)
+
+			return nil, serializeErrorResponse(err)
+		}
+
+		for _, item := range resp.Segment.BlobItems {
+			if item.Name == nil || item.Deleted == nil || !*item.Deleted || (predicate != nil && !predicate(*item.Name)) {
+				continue
+			}
+
+			objects = append(objects, serializeObjectInfo(item))
+			count++
+		}
+
+		if maxResults > 0 && count >= maxResults {
+			if pager.More() {
+				pageInfo.HasNextPage = true
+				pageInfo.Cursor = resp.Marker
+			}
+
+			break
+		}
+	}
+
+	span.SetAttributes(attribute.Int("storage.object_count", int(count)))
+
+	results := &common.StorageObjectListResults{
+		Objects:  objects,
+		PageInfo: pageInfo,
+	}
+
+	return results, nil
 }
 
 // RemoveIncompleteUpload removes a partially uploaded object.
@@ -497,6 +567,26 @@ func (c *Client) UpdateObject(ctx context.Context, bucketName string, objectName
 		if err := c.SetObjectRetention(ctx, bucketName, objectName, opts.VersionID, *opts.Retention); err != nil {
 			return err
 		}
+	}
+
+	return nil
+}
+
+// RestoreObject restores an object with some specified options.
+func (c *Client) RestoreObject(ctx context.Context, bucketName string, objectName string) error {
+	ctx, span := c.startOtelSpan(ctx, "RestoreObject", bucketName)
+	defer span.End()
+
+	span.SetAttributes(attribute.String("storage.key", objectName))
+
+	blobClient := c.client.ServiceClient().NewContainerClient(bucketName).NewBlobClient(objectName)
+
+	_, err := blobClient.Undelete(ctx, nil)
+	if err != nil {
+		span.SetStatus(codes.Error, err.Error())
+		span.RecordError(err)
+
+		return serializeErrorResponse(err)
 	}
 
 	return nil

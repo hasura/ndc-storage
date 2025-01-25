@@ -35,9 +35,8 @@
             }
           ],
           "pageInfo": {
-            "cursor": "",
-            "hasNextPage": false,
-            "nextCursor": null
+            "cursor": null,
+            "hasNextPage": false
           }
         }
       }

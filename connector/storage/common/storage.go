@@ -22,10 +22,12 @@ type StorageClient interface { //nolint:interfacebloat
 	RemoveBucket(ctx context.Context, bucketName string) error
 	// UpdateBucket updates configurations for the bucket.
 	UpdateBucket(ctx context.Context, bucketName string, opts UpdateStorageBucketOptions) error
-	// ListObjects lists objects in a bucket.
+	// ListObjects list objects in a bucket.
 	ListObjects(ctx context.Context, bucketName string, opts *ListStorageObjectsOptions, predicate func(string) bool) (*StorageObjectListResults, error)
 	// ListIncompleteUploads list partially uploaded objects in a bucket.
 	ListIncompleteUploads(ctx context.Context, bucketName string, args ListIncompleteUploadsOptions) ([]StorageObjectMultipartInfo, error)
+	// ListDeletedObjects list deleted objects in a bucket.
+	ListDeletedObjects(ctx context.Context, bucketName string, opts *ListStorageObjectsOptions, predicate func(string) bool) (*StorageObjectListResults, error)
 	// GetObject returns a stream of the object data. Most of the common errors occur when reading the stream.
 	GetObject(ctx context.Context, bucketName string, objectName string, opts GetStorageObjectOptions) (io.ReadCloser, error)
 	// PutObject uploads objects that are less than 128MiB in a single PUT operation. For objects that are greater than 128MiB in size,
@@ -46,6 +48,8 @@ type StorageClient interface { //nolint:interfacebloat
 	RemoveObjects(ctx context.Context, bucketName string, opts *RemoveStorageObjectsOptions, predicate func(string) bool) []RemoveStorageObjectError
 	// UpdateObject updates object configurations.
 	UpdateObject(ctx context.Context, bucketName string, objectName string, opts UpdateStorageObjectOptions) error
+	// RestoreObject restores a soft-deleted object.
+	RestoreObject(ctx context.Context, bucketName string, objectName string) error
 	// RemoveIncompleteUpload removes a partially uploaded object.
 	RemoveIncompleteUpload(ctx context.Context, bucketName string, objectName string) error
 	// PresignedGetObject generates a presigned URL for HTTP GET operations. Browsers/Mobile clients may point to this URL to directly download objects even if the bucket is private.
@@ -380,24 +384,19 @@ type StorageObject struct {
 	StorageObjectChecksum
 
 	// Azure Blob Store properties
-	ACL                       any        `json:"acl,omitempty"`
-	AccessTierChangeTime      *time.Time `json:"accessTierChangeTime"`
-	AccessTierInferred        *bool      `json:"accessTierInferred"`
-	ArchiveStatus             *string    `json:"archiveStatus"`
-	BlobSequenceNumber        *int64     `json:"blobSequenceNumber"`
-	BlobType                  *string    `json:"blobType"`
-	ContentMD5                *string    `json:"contentMd5"`
-	CopyCompletionTime        *time.Time `json:"copyCompletionTime"`
-	CopyID                    *string    `json:"copyId"`
-	CopyProgress              *string    `json:"copyProgress"`
-	CopySource                *string    `json:"copySource"`
-	CopyStatus                *string    `json:"copyStatus"`
-	CopyStatusDescription     *string    `json:"copyStatusDescription"`
-	CreationTime              *time.Time `json:"creationTime"`
-	DeletedTime               *time.Time `json:"deletedTime"`
-	CustomerProvidedKeySHA256 *string    `json:"customerProvidedKeySha256"`
-	DestinationSnapshot       *string    `json:"destinationSnapshot"`
-	MediaLink                 *string    `json:"mediaLink"`
+	ACL                       any                    `json:"acl,omitempty"`
+	AccessTierChangeTime      *time.Time             `json:"accessTierChangeTime"`
+	AccessTierInferred        *bool                  `json:"accessTierInferred"`
+	ArchiveStatus             *string                `json:"archiveStatus"`
+	BlobSequenceNumber        *int64                 `json:"blobSequenceNumber"`
+	BlobType                  *string                `json:"blobType"`
+	ContentMD5                *string                `json:"contentMd5"`
+	Copy                      *StorageObjectCopyInfo `json:"copy"`
+	CreationTime              *time.Time             `json:"creationTime"`
+	DeletedTime               *time.Time             `json:"deletedTime"`
+	CustomerProvidedKeySHA256 *string                `json:"customerProvidedKeySha256"`
+	DestinationSnapshot       *string                `json:"destinationSnapshot"`
+	MediaLink                 *string                `json:"mediaLink"`
 	// The name of the encryption scope under which the blob is encrypted.
 	KMSKeyName         *string    `json:"kmsKeyName"`
 	ServerEncrypted    *bool      `json:"serverEncrypted"`
@@ -420,11 +419,20 @@ type StorageObject struct {
 	ResourceType           *string `json:"resourceType"`
 }
 
+// StorageObjectCopyInfo holds the copy information if the object was copied from another object.
+type StorageObjectCopyInfo struct {
+	ID                string     `json:"id"`
+	CompletionTime    *time.Time `json:"completionTime"`
+	Progress          *string    `json:"progress"`
+	Source            *string    `json:"source"`
+	Status            *string    `json:"status"`
+	StatusDescription *string    `json:"statusDescription"`
+}
+
 // StoragePaginationInfo holds the pagination information.
 type StoragePaginationInfo struct {
 	HasNextPage bool    `json:"hasNextPage"`
 	Cursor      *string `json:"cursor"`
-	NextCursor  *string `json:"nextCursor"`
 }
 
 // StorageObjectListResults hold the paginated results of the storage object list.

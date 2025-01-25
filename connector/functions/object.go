@@ -14,11 +14,7 @@ import (
 
 // FunctionStorageObjects lists objects in a bucket.
 func FunctionStorageObjects(ctx context.Context, state *types.State, args *common.ListStorageObjectsArguments) (common.StorageObjectListResults, error) {
-	if args.MaxResults != nil && *args.MaxResults <= 0 {
-		return common.StorageObjectListResults{}, schema.UnprocessableContentError("maxResults must be larger than 0", nil)
-	}
-
-	request, err := internal.EvalObjectPredicate(common.StorageBucketArguments{}, "", args.Where, types.QueryVariablesFromContext(ctx))
+	request, options, err := evalStorageObjectsArguments(ctx, state, args)
 	if err != nil {
 		return common.StorageObjectListResults{}, err
 	}
@@ -29,23 +25,31 @@ func FunctionStorageObjects(ctx context.Context, state *types.State, args *commo
 		}, nil
 	}
 
-	if err := request.EvalSelection(utils.CommandSelectionFieldFromContext(ctx)); err != nil {
+	predicate := request.ObjectNamePredicate.CheckPostPredicate
+
+	if !request.ObjectNamePredicate.HasPostPredicate() {
+		predicate = nil
+	}
+
+	objects, err := state.Storage.ListObjects(ctx, request.GetBucketArguments(), options, predicate)
+	if err != nil {
 		return common.StorageObjectListResults{}, err
 	}
 
-	options := &common.ListStorageObjectsOptions{
-		Prefix:     request.ObjectNamePredicate.GetPrefix(),
-		Recursive:  args.Recursive,
-		Include:    request.Include,
-		NumThreads: state.Concurrency.Query,
+	return *objects, nil
+}
+
+// FunctionStorageDeletedObjects list deleted objects in a bucket.
+func FunctionStorageDeletedObjects(ctx context.Context, state *types.State, args *common.ListStorageObjectsArguments) (common.StorageObjectListResults, error) {
+	request, options, err := evalStorageObjectsArguments(ctx, state, args)
+	if err != nil {
+		return common.StorageObjectListResults{}, err
 	}
 
-	if args.MaxResults != nil {
-		options.MaxResults = *args.MaxResults
-	}
-
-	if args.StartAfter != nil {
-		options.StartAfter = *args.StartAfter
+	if !request.IsValid {
+		return common.StorageObjectListResults{
+			Objects: []common.StorageObject{},
+		}, nil
 	}
 
 	predicate := request.ObjectNamePredicate.CheckPostPredicate
@@ -54,7 +58,7 @@ func FunctionStorageObjects(ctx context.Context, state *types.State, args *commo
 		predicate = nil
 	}
 
-	objects, err := state.Storage.ListObjects(ctx, request.GetBucketArguments(), options, predicate)
+	objects, err := state.Storage.ListDeletedObjects(ctx, request.GetBucketArguments(), options, predicate)
 	if err != nil {
 		return common.StorageObjectListResults{}, err
 	}
@@ -315,4 +319,58 @@ func ProcedureRemoveIncompleteStorageUpload(ctx context.Context, state *types.St
 	}
 
 	return true, nil
+}
+
+// ProcedureRestoreStorageObject restore a soft-deleted object.
+func ProcedureRestoreStorageObject(ctx context.Context, state *types.State, args *common.RestoreStorageObjectArguments) (bool, error) {
+	request, err := internal.EvalObjectPredicate(args.StorageBucketArguments, args.Object, args.Where, types.QueryVariablesFromContext(ctx))
+	if err != nil {
+		return false, err
+	}
+
+	if !request.IsValid {
+		return false, errPermissionDenied
+	}
+
+	if err := state.Storage.RestoreObject(ctx, request.GetBucketArguments(), request.ObjectNamePredicate.GetPrefix()); err != nil {
+		return false, err
+	}
+
+	return true, nil
+}
+
+func evalStorageObjectsArguments(ctx context.Context, state *types.State, args *common.ListStorageObjectsArguments) (*internal.PredicateEvaluator, *common.ListStorageObjectsOptions, error) {
+	if args.MaxResults != nil && *args.MaxResults <= 0 {
+		return nil, nil, schema.UnprocessableContentError("maxResults must be larger than 0", nil)
+	}
+
+	request, err := internal.EvalObjectPredicate(common.StorageBucketArguments{}, "", args.Where, types.QueryVariablesFromContext(ctx))
+	if err != nil {
+		return nil, nil, err
+	}
+
+	if !request.IsValid {
+		return request, nil, nil
+	}
+
+	if err := request.EvalSelection(utils.CommandSelectionFieldFromContext(ctx)); err != nil {
+		return nil, nil, err
+	}
+
+	options := &common.ListStorageObjectsOptions{
+		Prefix:     request.ObjectNamePredicate.GetPrefix(),
+		Recursive:  args.Recursive,
+		Include:    request.Include,
+		NumThreads: state.Concurrency.Query,
+	}
+
+	if args.MaxResults != nil {
+		options.MaxResults = *args.MaxResults
+	}
+
+	if args.StartAfter != nil {
+		options.StartAfter = *args.StartAfter
+	}
+
+	return request, options, nil
 }

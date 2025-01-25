@@ -2,39 +2,31 @@
 kind: Command
 version: v1
 definition:
-  name: RemoveStorageObject
+  name: RestoreStorageObject
   outputType: Boolean!
   arguments:
     - name: bucket
       type: String
     - name: clientId
       type: StorageClientId
-    - name: forceDelete
-      type: Boolean
-    - name: governanceBypass
-      type: Boolean
     - name: object
       type: String!
-    - name: softDelete
-      type: Boolean
-    - name: versionId
-      type: String
     - name: where
       type: StorageObjectFilterBoolExp
   source:
     dataConnectorName: storage
     dataConnectorCommand:
-      procedure: removeStorageObject
+      procedure: restoreStorageObject
   graphql:
-    rootFieldName: removeStorageObject
+    rootFieldName: restoreStorageObject
     rootFieldKind: Mutation
-  description: removes an object with some specified options.
+  description: restore a soft-deleted object.
 
 ---
 kind: CommandPermissions
 version: v1
 definition:
-  commandName: RemoveStorageObject
+  commandName: RestoreStorageObject
   permissions:
     - role: admin
       allowExecution: true

@@ -136,16 +136,14 @@ type StorageObjectIncludeOptions struct {
 	// Include objects metadata in the listing
 	Metadata bool
 
-	Copy                bool
-	Snapshots           bool
-	Deleted             bool
-	LegalHold           bool
-	Retention           bool
-	DeletedWithVersions bool
-	Permissions         bool
-	Lifecycle           bool
-	Encryption          bool
-	ObjectLock          bool
+	Copy        bool
+	Snapshots   bool
+	LegalHold   bool
+	Retention   bool
+	Permissions bool
+	Lifecycle   bool
+	Encryption  bool
+	ObjectLock  bool
 }
 
 // ListStorageObjectsOptions holds all options of a list object request.
@@ -249,6 +247,7 @@ type RemoveStorageObjectArguments struct {
 
 // RemoveStorageObjectOptions represents options specified by user for RemoveObject call.
 type RemoveStorageObjectOptions struct {
+	SoftDelete       bool   `json:"softDelete,omitempty"`
 	ForceDelete      bool   `json:"forceDelete,omitempty"`
 	GovernanceBypass bool   `json:"governanceBypass,omitempty"`
 	VersionID        string `json:"versionId,omitempty"`
@@ -377,4 +376,12 @@ func (ubo UpdateStorageBucketOptions) IsEmpty() bool {
 		ubo.Lifecycle == nil &&
 		ubo.Encryption == nil &&
 		ubo.ObjectLock == nil
+}
+
+// RestoreStorageObjectArguments represent arguments specified by user for RestoreObject call.
+type RestoreStorageObjectArguments struct {
+	StorageBucketArguments
+
+	Object string            `json:"object"`
+	Where  schema.Expression `json:"where"  ndc:"predicate=StorageObjectFilter"`
 }

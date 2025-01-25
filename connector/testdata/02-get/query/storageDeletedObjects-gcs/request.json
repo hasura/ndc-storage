@@ -1,5 +1,40 @@
 {
-  "collection": "storageObjects",
+  "arguments": {
+    "maxResults": {
+      "type": "literal",
+      "value": 10
+    },
+    "prefix": {
+      "type": "literal",
+      "value": null
+    },
+    "startAfter": {
+      "type": "literal",
+      "value": null
+    },
+    "where": {
+      "type": "literal",
+      "value": {
+        "type": "and",
+        "expressions": [
+          {
+            "type": "binary_comparison_operator",
+            "column": { "type": "column", "name": "clientId", "path": [] },
+            "operator": "_eq",
+            "value": { "type": "scalar", "value": "gcs" }
+          },
+          {
+            "type": "binary_comparison_operator",
+            "column": { "type": "column", "name": "bucket", "path": [] },
+            "operator": "_eq",
+            "value": { "type": "scalar", "value": "gcs-bucket" }
+          }
+        ]
+      }
+    }
+  },
+  "collection": "storageDeletedObjects",
+  "collection_relationships": {},
   "query": {
     "fields": {
       "__value": {
@@ -91,6 +126,14 @@
                       "column": "copy",
                       "fields": {
                         "fields": {
+                          "completionTime": {
+                            "column": "completionTime",
+                            "type": "column"
+                          },
+                          "id": {
+                            "column": "id",
+                            "type": "column"
+                          },
                           "progress": {
                             "column": "progress",
                             "type": "column"
@@ -112,6 +155,10 @@
                       },
                       "type": "column"
                     },
+                    "creationTime": {
+                      "column": "creationTime",
+                      "type": "column"
+                    },
                     "customerProvidedKeySha256": {
                       "column": "customerProvidedKeySha256",
                       "type": "column"
@@ -126,6 +173,10 @@
                     },
                     "destinationSnapshot": {
                       "column": "destinationSnapshot",
+                      "type": "column"
+                    },
+                    "etag": {
+                      "column": "etag",
                       "type": "column"
                     },
                     "expiration": {
@@ -195,6 +246,10 @@
                     },
                     "lastAccessTime": {
                       "column": "lastAccessTime",
+                      "type": "column"
+                    },
+                    "lastModified": {
+                      "column": "lastModified",
                       "type": "column"
                     },
                     "leaseDuration": {
@@ -353,38 +408,5 @@
         "type": "column"
       }
     }
-  },
-  "arguments": {
-    "clientId": { "type": "literal", "value": "azblob-connstr" },
-    "recursive": { "type": "literal", "value": true },
-    "maxResults": { "type": "literal", "value": 1 },
-    "startAfter": { "type": "literal", "value": "public/hello.txt" },
-    "where": {
-      "type": "literal",
-      "value": {
-        "type": "and",
-        "expressions": [
-          {
-            "type": "binary_comparison_operator",
-            "column": { "type": "column", "name": "clientId", "path": [] },
-            "operator": "_eq",
-            "value": { "type": "scalar", "value": "azblob-connstr" }
-          },
-          {
-            "type": "binary_comparison_operator",
-            "column": { "type": "column", "name": "bucket", "path": [] },
-            "operator": "_eq",
-            "value": { "type": "scalar", "value": "azblob-bucket-test" }
-          },
-          {
-            "type": "binary_comparison_operator",
-            "column": { "type": "column", "name": "object", "path": [] },
-            "operator": "_starts_with",
-            "value": { "type": "scalar", "value": "public" }
-          }
-        ]
-      }
-    }
-  },
-  "collection_relationships": {}
+  }
 }

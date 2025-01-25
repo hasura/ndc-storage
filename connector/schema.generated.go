@@ -440,6 +440,9 @@ func GetConnectorSchema() *schema.SchemaResponse {
 					"governanceBypass": schema.ObjectField{
 						Type: schema.NewNullableType(schema.NewNamedType("Boolean")).Encode(),
 					},
+					"softDelete": schema.ObjectField{
+						Type: schema.NewNullableType(schema.NewNamedType("Boolean")).Encode(),
+					},
 					"versionId": schema.ObjectField{
 						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
 					},
@@ -763,23 +766,8 @@ func GetConnectorSchema() *schema.SchemaResponse {
 					"contentType": schema.ObjectField{
 						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
 					},
-					"copyCompletionTime": schema.ObjectField{
-						Type: schema.NewNullableType(schema.NewNamedType("TimestampTZ")).Encode(),
-					},
-					"copyId": schema.ObjectField{
-						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
-					},
-					"copyProgress": schema.ObjectField{
-						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
-					},
-					"copySource": schema.ObjectField{
-						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
-					},
-					"copyStatus": schema.ObjectField{
-						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
-					},
-					"copyStatusDescription": schema.ObjectField{
-						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
+					"copy": schema.ObjectField{
+						Type: schema.NewNullableType(schema.NewNamedType("StorageObjectCopyInfo")).Encode(),
 					},
 					"creationTime": schema.ObjectField{
 						Type: schema.NewNullableType(schema.NewNamedType("TimestampTZ")).Encode(),
@@ -840,6 +828,9 @@ func GetConnectorSchema() *schema.SchemaResponse {
 					},
 					"legalHold": schema.ObjectField{
 						Type: schema.NewNullableType(schema.NewNamedType("Boolean")).Encode(),
+					},
+					"mediaLink": schema.ObjectField{
+						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
 					},
 					"metadata": schema.ObjectField{
 						Type: schema.NewNullableType(schema.NewNamedType("JSON")).Encode(),
@@ -923,6 +914,29 @@ func GetConnectorSchema() *schema.SchemaResponse {
 					},
 				},
 			},
+			"StorageObjectCopyInfo": schema.ObjectType{
+				Description: toPtr("holds the copy information if the object was copied from another object."),
+				Fields: schema.ObjectTypeFields{
+					"completionTime": schema.ObjectField{
+						Type: schema.NewNullableType(schema.NewNamedType("TimestampTZ")).Encode(),
+					},
+					"id": schema.ObjectField{
+						Type: schema.NewNamedType("String").Encode(),
+					},
+					"progress": schema.ObjectField{
+						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
+					},
+					"source": schema.ObjectField{
+						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
+					},
+					"status": schema.ObjectField{
+						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
+					},
+					"statusDescription": schema.ObjectField{
+						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
+					},
+				},
+			},
 			"StorageObjectListResults": schema.ObjectType{
 				Description: toPtr("hold the paginated results of the storage object list."),
 				Fields: schema.ObjectTypeFields{
@@ -1001,9 +1015,6 @@ func GetConnectorSchema() *schema.SchemaResponse {
 					},
 					"hasNextPage": schema.ObjectField{
 						Type: schema.NewNamedType("Boolean").Encode(),
-					},
-					"nextCursor": schema.ObjectField{
-						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
 					},
 				},
 			},
@@ -1214,6 +1225,25 @@ func GetConnectorSchema() *schema.SchemaResponse {
 					},
 					"where": {
 						Type: schema.NewNullableType(schema.NewPredicateType("StorageBucketFilter")).Encode(),
+					},
+				},
+			},
+			{
+				Name:        "storageDeletedObjects",
+				Description: toPtr("list deleted objects in a bucket."),
+				ResultType:  schema.NewNamedType("StorageObjectListResults").Encode(),
+				Arguments: map[string]schema.ArgumentInfo{
+					"maxResults": {
+						Type: schema.NewNullableType(schema.NewNamedType("Int32")).Encode(),
+					},
+					"recursive": {
+						Type: schema.NewNullableType(schema.NewNamedType("Boolean")).Encode(),
+					},
+					"startAfter": {
+						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
+					},
+					"where": {
+						Type: schema.NewNullableType(schema.NewPredicateType("StorageObjectFilter")).Encode(),
 					},
 				},
 			},
@@ -1438,6 +1468,9 @@ func GetConnectorSchema() *schema.SchemaResponse {
 					"object": {
 						Type: schema.NewNamedType("String").Encode(),
 					},
+					"softDelete": {
+						Type: schema.NewNullableType(schema.NewNamedType("Boolean")).Encode(),
+					},
 					"versionId": {
 						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
 					},
@@ -1470,6 +1503,25 @@ func GetConnectorSchema() *schema.SchemaResponse {
 						Type: schema.NewNamedType("Boolean").Encode(),
 					},
 					"startAfter": {
+						Type: schema.NewNamedType("String").Encode(),
+					},
+					"where": {
+						Type: schema.NewNullableType(schema.NewPredicateType("StorageObjectFilter")).Encode(),
+					},
+				},
+			},
+			{
+				Name:        "restoreStorageObject",
+				Description: toPtr("restore a soft-deleted object."),
+				ResultType:  schema.NewNamedType("Boolean").Encode(),
+				Arguments: map[string]schema.ArgumentInfo{
+					"bucket": {
+						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
+					},
+					"clientId": {
+						Type: schema.NewNullableType(schema.NewNamedType("StorageClientID")).Encode(),
+					},
+					"object": {
 						Type: schema.NewNamedType("String").Encode(),
 					},
 					"where": {

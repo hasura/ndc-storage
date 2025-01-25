@@ -3,6 +3,7 @@
     "rows": [
       {
         "__value": {
+          "accessTierChangeTime": null,
           "accessTierInferred": null,
           "acl": [
             {
@@ -27,29 +28,25 @@
           "contentLanguage": "en-US",
           "contentMd5": "KZ0tkTzqqDd9IiRNs5cjyg==",
           "contentType": "text/plain",
-          "copyCompletionTime": null,
-          "copyId": null,
-          "copyProgress": null,
-          "copySource": null,
-          "copyStatus": null,
-          "copyStatusDescription": null,
+          "copy": null,
           "customerProvidedKeySha256": null,
           "deleted": null,
+          "deletedTime": null,
           "destinationSnapshot": null,
-          "encryptionScope": null,
+          "etag": "KZ0tkTzqqDd9IiRNs5cjyg==",
           "expiration": null,
           "expirationRuleId": null,
           "expires": null,
           "grant": [],
           "group": null,
-          "immutabilityPolicyMode": null,
-          "immutabilityPolicyUntilDate": null,
           "incrementalCopy": null,
-          "lastAccessTime": null,
+          "isLatest": null,
+          "kmsKeyName": null,
           "leaseDuration": null,
           "leaseState": null,
           "leaseStatus": null,
           "legalHold": false,
+          "mediaLink": "http://0.0.0.0:4443/download/storage/v1/b/gcs-bucket/o/public%2Fhello.txt?alt=media",
           "metadata": {
             "Foo": "gcp-baz",
             "UserID": "3"
@@ -64,6 +61,8 @@
           "replicationStatus": null,
           "resourceType": null,
           "restore": null,
+          "retentionMode": null,
+          "retentionUntilDate": null,
           "sealed": null,
           "serverEncrypted": null,
           "size": 10,

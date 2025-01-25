@@ -83,28 +83,37 @@
                       "column": "contentType",
                       "type": "column"
                     },
-                    "copyCompletionTime": {
-                      "column": "copyCompletionTime",
-                      "type": "column"
-                    },
-                    "copyId": {
-                      "column": "copyId",
-                      "type": "column"
-                    },
-                    "copyProgress": {
-                      "column": "copyProgress",
-                      "type": "column"
-                    },
-                    "copySource": {
-                      "column": "copySource",
-                      "type": "column"
-                    },
-                    "copyStatus": {
-                      "column": "copyStatus",
-                      "type": "column"
-                    },
-                    "copyStatusDescription": {
-                      "column": "copyStatusDescription",
+                    "copy": {
+                      "column": "copy",
+                      "fields": {
+                        "fields": {
+                          "completionTime": {
+                            "column": "completionTime",
+                            "type": "column"
+                          },
+                          "id": {
+                            "column": "id",
+                            "type": "column"
+                          },
+                          "progress": {
+                            "column": "progress",
+                            "type": "column"
+                          },
+                          "source": {
+                            "column": "source",
+                            "type": "column"
+                          },
+                          "status": {
+                            "column": "status",
+                            "type": "column"
+                          },
+                          "statusDescription": {
+                            "column": "statusDescription",
+                            "type": "column"
+                          }
+                        },
+                        "type": "object"
+                      },
                       "type": "column"
                     },
                     "customerProvidedKeySha256": {
@@ -121,10 +130,6 @@
                     },
                     "destinationSnapshot": {
                       "column": "destinationSnapshot",
-                      "type": "column"
-                    },
-                    "encryptionScope": {
-                      "column": "encryptionScope",
                       "type": "column"
                     },
                     "expiration": {
@@ -180,16 +185,20 @@
                       "column": "group",
                       "type": "column"
                     },
-                    "immutabilityPolicyMode": {
-                      "column": "immutabilityPolicyMode",
-                      "type": "column"
-                    },
-                    "immutabilityPolicyUntilDate": {
-                      "column": "immutabilityPolicyUntilDate",
-                      "type": "column"
-                    },
                     "incrementalCopy": {
                       "column": "incrementalCopy",
+                      "type": "column"
+                    },
+                    "isLatest": {
+                      "column": "isLatest",
+                      "type": "column"
+                    },
+                    "kmsKeyName": {
+                      "column": "kmsKeyName",
+                      "type": "column"
+                    },
+                    "lastAccessTime": {
+                      "column": "lastAccessTime",
                       "type": "column"
                     },
                     "leaseDuration": {
@@ -206,6 +215,10 @@
                     },
                     "legalHold": {
                       "column": "legalHold",
+                      "type": "column"
+                    },
+                    "mediaLink": {
+                      "column": "mediaLink",
                       "type": "column"
                     },
                     "metadata": {
@@ -235,6 +248,10 @@
                     },
                     "permissions": {
                       "column": "permissions",
+                      "type": "column"
+                    },
+                    "rawMetadata": {
+                      "column": "rawMetadata",
                       "type": "column"
                     },
                     "rehydratePriority": {
@@ -274,6 +291,14 @@
                       },
                       "type": "column"
                     },
+                    "retentionMode": {
+                      "column": "retentionMode",
+                      "type": "column"
+                    },
+                    "retentionUntilDate": {
+                      "column": "retentionUntilDate",
+                      "type": "column"
+                    },
                     "sealed": {
                       "column": "sealed",
                       "type": "column"
@@ -290,16 +315,16 @@
                       "column": "storageClass",
                       "type": "column"
                     },
-                    "rawMetadata": {
-                      "column": "rawMetadata",
-                      "type": "column"
-                    },
                     "tagCount": {
                       "column": "tagCount",
                       "type": "column"
                     },
                     "tags": {
                       "column": "tags",
+                      "type": "column"
+                    },
+                    "versionId": {
+                      "column": "versionId",
                       "type": "column"
                     }
                   },
@@ -319,10 +344,6 @@
                   },
                   "hasNextPage": {
                     "column": "hasNextPage",
-                    "type": "column"
-                  },
-                  "nextCursor": {
-                    "column": "nextCursor",
                     "type": "column"
                   }
                 },

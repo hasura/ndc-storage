@@ -493,10 +493,6 @@
                   "hasNextPage": {
                     "column": "hasNextPage",
                     "type": "column"
-                  },
-                  "nextCursor": {
-                    "column": "nextCursor",
-                    "type": "column"
                   }
                 },
                 "type": "object"
