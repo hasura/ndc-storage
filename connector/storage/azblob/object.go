@@ -210,7 +210,7 @@ func (c *Client) ListDeletedObjects(ctx context.Context, bucketName string, opts
 		if maxResults > 0 && count >= maxResults {
 			if pager.More() {
 				pageInfo.HasNextPage = true
-				pageInfo.Cursor = resp.Marker
+				pageInfo.Cursor = resp.NextMarker
 			}
 
 			break
