@@ -104,11 +104,11 @@ query DownloadObjectText {
 | Service              | Pagination |
 | -------------------- | ---------- |
 | AWS S3               | ❌         |
+| Google Cloud Storage | ✅         |
+| Azure Blob Storage   | ✅         |
 | MinIO                | ❌         |
-| Google Cloud Storage | ❌         |
 | Cloudflare R2        | ❌         |
 | DigitalOcean Spaces  | ❌         |
-| Azure Blob Storage   | ✅         |
 
 ```graphql
 query ListObjects {
