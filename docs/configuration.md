@@ -150,7 +150,7 @@ You must use the `s3` client instead. [Generate HMAC key](https://cloud.google.c
 
 ```yaml
 clients:
-  - type: gcs
+  - type: s3
     defaultBucket:
       env: DEFAULT_BUCKET
     authentication:
@@ -159,6 +159,17 @@ clients:
         env: ACCESS_KEY_ID
       secretAccessKey:
         env: SECRET_ACCESS_KEY
+```
+
+##### Anonymous
+
+Use this authentication if the client accesses public buckets and objects only.
+
+```yaml
+clients:
+  - type: gcs
+    authentication:
+      type: anonymous
 ```
 
 ### Examples
