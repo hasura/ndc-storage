@@ -18,8 +18,8 @@ type Manager struct {
 	clients []Client
 }
 
-// NewManager creates a storage client manager instace.
-func NewManager(ctx context.Context, configs []ClientConfig, logger *slog.Logger) (*Manager, error) {
+// NewManager creates a storage client manager instance.
+func NewManager(ctx context.Context, configs []ClientConfig, logger *slog.Logger, version string) (*Manager, error) {
 	if len(configs) == 0 {
 		return nil, errors.New("failed to initialize storage clients: config is empty")
 	}
@@ -29,7 +29,7 @@ func NewManager(ctx context.Context, configs []ClientConfig, logger *slog.Logger
 	}
 
 	for i, config := range configs {
-		baseConfig, client, err := config.toStorageClient(ctx, logger)
+		baseConfig, client, err := config.toStorageClient(ctx, logger, version)
 		if err != nil {
 			return nil, fmt.Errorf("failed to initialize storage client %d: %w", i, err)
 		}

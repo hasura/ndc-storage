@@ -128,87 +128,87 @@ definition:
 kind: ScalarType
 version: v1
 definition:
-  name: BucketName
+  name: StorageBucketName
   graphql:
-    typeName: BucketName
+    typeName: StorageBucketName
 
 ---
 kind: BooleanExpressionType
 version: v1
 definition:
-  name: BucketNameBoolExp
+  name: StorageBucketNameBoolExp
   operand:
     scalar:
-      type: BucketName
+      type: StorageBucketName
       comparisonOperators:
         - name: _eq
-          argumentType: BucketName!
+          argumentType: StorageBucketName!
       dataConnectorOperatorMapping:
         - dataConnectorName: storage
-          dataConnectorScalarType: BucketName
+          dataConnectorScalarType: StorageBucketName
           operatorMapping: {}
   logicalOperators:
     enable: true
   isNull:
     enable: true
   graphql:
-    typeName: BucketNameBoolExp
+    typeName: StorageBucketNameBoolExp
 
 ---
 kind: DataConnectorScalarRepresentation
 version: v1
 definition:
   dataConnectorName: storage
-  dataConnectorScalarType: BucketName
-  representation: BucketName
+  dataConnectorScalarType: StorageBucketName
+  representation: StorageBucketName
   graphql:
-    comparisonExpressionTypeName: BucketNameComparisonExp
+    comparisonExpressionTypeName: StorageBucketNameComparisonExp
 
 ---
 kind: ScalarType
 version: v1
 definition:
-  name: ObjectPath
+  name: StorageStringFilter
   graphql:
-    typeName: ObjectPath
+    typeName: StorageStringFilter
 
 ---
 kind: BooleanExpressionType
 version: v1
 definition:
-  name: ObjectPathBoolExp
+  name: StorageStringFilterBoolExp
   operand:
     scalar:
-      type: ObjectPath
+      type: StorageStringFilter
       comparisonOperators:
         - name: _contains
-          argumentType: ObjectPath!
+          argumentType: StorageStringFilter!
         - name: _eq
-          argumentType: ObjectPath!
+          argumentType: StorageStringFilter!
         - name: _icontains
-          argumentType: ObjectPath!
+          argumentType: StorageStringFilter!
         - name: _starts_with
-          argumentType: ObjectPath!
+          argumentType: StorageStringFilter!
       dataConnectorOperatorMapping:
         - dataConnectorName: storage
-          dataConnectorScalarType: ObjectPath
+          dataConnectorScalarType: StorageStringFilter
           operatorMapping: {}
   logicalOperators:
     enable: true
   isNull:
     enable: true
   graphql:
-    typeName: ObjectPathBoolExp
+    typeName: StorageStringFilterBoolExp
 
 ---
 kind: DataConnectorScalarRepresentation
 version: v1
 definition:
   dataConnectorName: storage
-  dataConnectorScalarType: ObjectPath
-  representation: ObjectPath
+  dataConnectorScalarType: StorageStringFilter
+  representation: StorageStringFilter
   graphql:
-    comparisonExpressionTypeName: ObjectPathComparisonExp
+    comparisonExpressionTypeName: StorageStringFilterComparisonExp
 
 ---
 kind: ScalarType
@@ -257,6 +257,82 @@ definition:
   representation: Boolean
   graphql:
     comparisonExpressionTypeName: BooleanComparisonExp
+
+---
+kind: ScalarType
+version: v1
+definition:
+  name: TimestampTz
+  graphql:
+    typeName: TimestampTz
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: TimestampTzBoolExp
+  operand:
+    scalar:
+      type: TimestampTz
+      comparisonOperators: []
+      dataConnectorOperatorMapping:
+        - dataConnectorName: storage
+          dataConnectorScalarType: TimestampTZ
+          operatorMapping: {}
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: TimestampTzBoolExp
+
+---
+kind: DataConnectorScalarRepresentation
+version: v1
+definition:
+  dataConnectorName: storage
+  dataConnectorScalarType: TimestampTZ
+  representation: TimestampTz
+  graphql:
+    comparisonExpressionTypeName: TimestampTzComparisonExp
+
+---
+kind: ScalarType
+version: v1
+definition:
+  name: Duration
+  graphql:
+    typeName: Duration
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: DurationBoolExp
+  operand:
+    scalar:
+      type: Duration
+      comparisonOperators: []
+      dataConnectorOperatorMapping:
+        - dataConnectorName: storage
+          dataConnectorScalarType: Duration
+          operatorMapping: {}
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: DurationBoolExp
+
+---
+kind: DataConnectorScalarRepresentation
+version: v1
+definition:
+  dataConnectorName: storage
+  dataConnectorScalarType: Duration
+  representation: Duration
+  graphql:
+    comparisonExpressionTypeName: DurationComparisonExp
 
 ---
 kind: ScalarType
@@ -338,120 +414,6 @@ definition:
 kind: ScalarType
 version: v1
 definition:
-  name: StorageReplicationRuleStatus
-  graphql:
-    typeName: StorageReplicationRuleStatus
-
----
-kind: BooleanExpressionType
-version: v1
-definition:
-  name: StorageReplicationRuleStatusBoolExp
-  operand:
-    scalar:
-      type: StorageReplicationRuleStatus
-      comparisonOperators: []
-      dataConnectorOperatorMapping:
-        - dataConnectorName: storage
-          dataConnectorScalarType: StorageReplicationRuleStatus
-          operatorMapping: {}
-  logicalOperators:
-    enable: true
-  isNull:
-    enable: true
-  graphql:
-    typeName: StorageReplicationRuleStatusBoolExp
-
----
-kind: DataConnectorScalarRepresentation
-version: v1
-definition:
-  dataConnectorName: storage
-  dataConnectorScalarType: StorageReplicationRuleStatus
-  representation: StorageReplicationRuleStatus
-  graphql:
-    comparisonExpressionTypeName: StorageReplicationRuleStatusComparisonExp
-
----
-kind: ScalarType
-version: v1
-definition:
-  name: TimestampTz
-  graphql:
-    typeName: TimestampTz
-
----
-kind: BooleanExpressionType
-version: v1
-definition:
-  name: TimestampTzBoolExp
-  operand:
-    scalar:
-      type: TimestampTz
-      comparisonOperators: []
-      dataConnectorOperatorMapping:
-        - dataConnectorName: storage
-          dataConnectorScalarType: TimestampTZ
-          operatorMapping: {}
-  logicalOperators:
-    enable: true
-  isNull:
-    enable: true
-  graphql:
-    typeName: TimestampTzBoolExp
-
----
-kind: DataConnectorScalarRepresentation
-version: v1
-definition:
-  dataConnectorName: storage
-  dataConnectorScalarType: TimestampTZ
-  representation: TimestampTz
-  graphql:
-    comparisonExpressionTypeName: TimestampTzComparisonExp
-
----
-kind: ScalarType
-version: v1
-definition:
-  name: StorageObjectReplicationStatus
-  graphql:
-    typeName: StorageObjectReplicationStatus
-
----
-kind: BooleanExpressionType
-version: v1
-definition:
-  name: StorageObjectReplicationStatusBoolExp
-  operand:
-    scalar:
-      type: StorageObjectReplicationStatus
-      comparisonOperators: []
-      dataConnectorOperatorMapping:
-        - dataConnectorName: storage
-          dataConnectorScalarType: StorageObjectReplicationStatus
-          operatorMapping: {}
-  logicalOperators:
-    enable: true
-  isNull:
-    enable: true
-  graphql:
-    typeName: StorageObjectReplicationStatusBoolExp
-
----
-kind: DataConnectorScalarRepresentation
-version: v1
-definition:
-  dataConnectorName: storage
-  dataConnectorScalarType: StorageObjectReplicationStatus
-  representation: StorageObjectReplicationStatus
-  graphql:
-    comparisonExpressionTypeName: StorageObjectReplicationStatusComparisonExp
-
----
-kind: ScalarType
-version: v1
-definition:
   name: StorageRetentionMode
   graphql:
     typeName: StorageRetentionMode
@@ -528,39 +490,77 @@ definition:
 kind: ScalarType
 version: v1
 definition:
-  name: Duration
+  name: GoogleStorageRpo
   graphql:
-    typeName: Duration
+    typeName: GoogleStorageRpo
 
 ---
 kind: BooleanExpressionType
 version: v1
 definition:
-  name: DurationBoolExp
+  name: GoogleStorageRpoBoolExp
   operand:
     scalar:
-      type: Duration
+      type: GoogleStorageRpo
       comparisonOperators: []
       dataConnectorOperatorMapping:
         - dataConnectorName: storage
-          dataConnectorScalarType: Duration
+          dataConnectorScalarType: GoogleStorageRPO
           operatorMapping: {}
   logicalOperators:
     enable: true
   isNull:
     enable: true
   graphql:
-    typeName: DurationBoolExp
+    typeName: GoogleStorageRpoBoolExp
 
 ---
 kind: DataConnectorScalarRepresentation
 version: v1
 definition:
   dataConnectorName: storage
-  dataConnectorScalarType: Duration
-  representation: Duration
+  dataConnectorScalarType: GoogleStorageRPO
+  representation: GoogleStorageRpo
   graphql:
-    comparisonExpressionTypeName: DurationComparisonExp
+    comparisonExpressionTypeName: GoogleStorageRpoComparisonExp
+
+---
+kind: ScalarType
+version: v1
+definition:
+  name: StorageObjectReplicationStatus
+  graphql:
+    typeName: StorageObjectReplicationStatus
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: StorageObjectReplicationStatusBoolExp
+  operand:
+    scalar:
+      type: StorageObjectReplicationStatus
+      comparisonOperators: []
+      dataConnectorOperatorMapping:
+        - dataConnectorName: storage
+          dataConnectorScalarType: StorageObjectReplicationStatus
+          operatorMapping: {}
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: StorageObjectReplicationStatusBoolExp
+
+---
+kind: DataConnectorScalarRepresentation
+version: v1
+definition:
+  dataConnectorName: storage
+  dataConnectorScalarType: StorageObjectReplicationStatus
+  representation: StorageObjectReplicationStatus
+  graphql:
+    comparisonExpressionTypeName: StorageObjectReplicationStatusComparisonExp
 
 ---
 kind: ScalarType

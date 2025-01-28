@@ -1,0 +1,15 @@
+[
+  {
+    "rows": [
+      {
+        "__value": {
+          "objects": [],
+          "pageInfo": {
+            "cursor": null,
+            "hasNextPage": false
+          }
+        }
+      }
+    ]
+  }
+]

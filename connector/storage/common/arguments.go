@@ -9,8 +9,18 @@ import (
 
 // ListStorageBucketArguments represent the input arguments for the ListBuckets methods.
 type ListStorageBucketArguments struct {
-	// The storage client ID.
-	ClientID *StorageClientID `json:"clientId,omitempty"`
+	// The maximum number of objects requested per batch.
+	MaxResults int `json:"maxResults,omitempty"`
+	// StartAfter start listing lexically at this object onwards.
+	StartAfter string            `json:"startAfter,omitempty"`
+	Where      schema.Expression `json:"where"                ndc:"predicate=StorageBucketFilter"`
+}
+
+// StorageBucketArguments represent the common input arguments for bucket-related methods.
+type GetStorageBucketArguments struct {
+	StorageBucketArguments
+
+	Where schema.Expression `json:"where" ndc:"predicate=StorageBucketFilter"`
 }
 
 // StorageBucketArguments represent the common input arguments for bucket-related methods.
@@ -51,16 +61,9 @@ type MakeStorageBucketOptions struct {
 	// Bucket location
 	Region string `json:"region,omitempty"`
 	// Enable object locking
-	ObjectLocking bool `json:"objectLocking,omitempty"`
+	ObjectLock bool `json:"objectLock,omitempty"`
 	// Optional tags
 	Tags map[string]string `json:"tags,omitempty"`
-}
-
-// SetBucketTaggingArguments represent the input arguments for the SetBucketTagging method.
-type SetStorageBucketTaggingArguments struct {
-	StorageBucketArguments
-
-	Tags map[string]string `json:"tags"`
 }
 
 // ListIncompleteUploadsArguments the input arguments of the ListIncompleteUploads method.
@@ -88,7 +91,7 @@ type PresignedGetStorageObjectArguments struct {
 	PresignedGetStorageObjectOptions
 
 	Object string            `json:"object"`
-	Where  schema.Expression `json:"where"  ndc:"predicate=StorageObjectSimple"`
+	Where  schema.Expression `json:"where"  ndc:"predicate=StorageObjectFilter"`
 }
 
 // PresignedGetStorageObjectOptions represent the options for the PresignedGetObject method.
@@ -103,7 +106,7 @@ type PresignedPutStorageObjectArguments struct {
 
 	Object string            `json:"object"`
 	Expiry *scalar.Duration  `json:"expiry"`
-	Where  schema.Expression `json:"where"  ndc:"predicate=StorageObjectSimple"`
+	Where  schema.Expression `json:"where"  ndc:"predicate=StorageObjectFilter"`
 }
 
 // ListStorageObjectsArguments holds all arguments of a list object request.
@@ -117,7 +120,7 @@ type ListStorageObjectsArguments struct {
 	// StartAfter start listing lexically at this object onwards.
 	StartAfter *string `json:"startAfter,omitempty"`
 
-	Where schema.Expression `json:"where" ndc:"predicate=StorageObjectSimple"`
+	Where schema.Expression `json:"where" ndc:"predicate=StorageObjectFilter"`
 }
 
 // StorageObjectIncludeOptions hold options to be included for the object information.
@@ -133,13 +136,14 @@ type StorageObjectIncludeOptions struct {
 	// Include objects metadata in the listing
 	Metadata bool
 
-	Copy                bool
-	Snapshots           bool
-	Deleted             bool
-	LegalHold           bool
-	ImmutabilityPolicy  bool
-	DeletedWithVersions bool
-	Permissions         bool
+	Copy        bool
+	Snapshots   bool
+	LegalHold   bool
+	Retention   bool
+	Permissions bool
+	Lifecycle   bool
+	Encryption  bool
+	ObjectLock  bool
 }
 
 // ListStorageObjectsOptions holds all options of a list object request.
@@ -165,7 +169,7 @@ type GetStorageObjectArguments struct {
 	GetStorageObjectOptions
 
 	Object string            `json:"object"`
-	Where  schema.Expression `json:"where"  ndc:"predicate=StorageObjectSimple"`
+	Where  schema.Expression `json:"where"  ndc:"predicate=StorageObjectFilter"`
 }
 
 // GetStorageObjectOptions are used to specify additional headers or options during GET requests.
@@ -198,19 +202,10 @@ type StorageCopyDestOptions struct {
 	// if no user-metadata is provided, it is copied from source
 	// (when there is only once source object in the compose
 	// request)
-	UserMetadata map[string]string `json:"userMetadata,omitempty"`
-	// UserMetadata is only set to destination if ReplaceMetadata is true
-	// other value is UserMetadata is ignored and we preserve src.UserMetadata
-	// NOTE: if you set this value to true and now metadata is present
-	// in UserMetadata your destination object will not have any metadata
-	// set.
-	ReplaceMetadata bool `json:"replaceMetadata,omitempty"`
+	Metadata map[string]string `json:"metadata,omitempty"`
 
-	// `userTags` is the user defined object tags to be set on destination.
-	// This will be set only if the `replaceTags` field is set to true.
-	// Otherwise this field is ignored
-	UserTags    map[string]string `json:"userTags,omitempty"`
-	ReplaceTags bool              `json:"replaceTags,omitempty"`
+	// `tags` is the user defined object tags to be set on destination.
+	Tags map[string]string `json:"tags,omitempty"`
 
 	// Specifies whether you want to apply a Legal Hold to the copied object.
 	LegalHold *bool `json:"legalHold"`
@@ -247,31 +242,49 @@ type RemoveStorageObjectArguments struct {
 	RemoveStorageObjectOptions
 
 	Object string            `json:"object"`
-	Where  schema.Expression `json:"where"  ndc:"predicate=StorageObjectSimple"`
+	Where  schema.Expression `json:"where"  ndc:"predicate=StorageObjectFilter"`
 }
 
 // RemoveStorageObjectOptions represents options specified by user for RemoveObject call.
 type RemoveStorageObjectOptions struct {
+	SoftDelete       bool   `json:"softDelete,omitempty"`
 	ForceDelete      bool   `json:"forceDelete,omitempty"`
 	GovernanceBypass bool   `json:"governanceBypass,omitempty"`
 	VersionID        string `json:"versionId,omitempty"`
 }
 
-// SetStorageObjectRetentionArguments represents options specified by user for PutObject call.
-type SetStorageObjectRetentionArguments struct {
+// UpdateStorageObjectArguments represents options specified by user for updating object.
+type UpdateStorageObjectArguments struct {
 	StorageBucketArguments
-	SetStorageObjectRetentionOptions
+	UpdateStorageObjectOptions
 
 	Object string            `json:"object"`
-	Where  schema.Expression `json:"where"  ndc:"predicate=StorageObjectSimple"`
+	Where  schema.Expression `json:"where"  ndc:"predicate=StorageObjectFilter"`
+}
+
+// UpdateStorageObjectOptions represents options specified by user for updating object.
+type UpdateStorageObjectOptions struct {
+	VersionID string                            `json:"versionId,omitempty"`
+	Retention *SetStorageObjectRetentionOptions `json:"retention"`
+	LegalHold *bool                             `json:"legalHold"`
+	Metadata  map[string]string                 `json:"metadata,omitempty"`
+	Tags      map[string]string                 `json:"tags,omitempty"`
+}
+
+// IsEmpty checks if all elements in the option object is null.
+func (ubo UpdateStorageObjectOptions) IsEmpty() bool {
+	return ubo.VersionID == "" &&
+		ubo.Tags == nil &&
+		ubo.Retention == nil &&
+		ubo.LegalHold == nil &&
+		ubo.Metadata == nil
 }
 
 // SetStorageObjectRetentionOptions represents options specified by user for PutObject call.
 type SetStorageObjectRetentionOptions struct {
-	GovernanceBypass bool                  `json:"governanceBypass,omitempty"`
 	Mode             *StorageRetentionMode `json:"mode"`
+	GovernanceBypass bool                  `json:"governanceBypass,omitempty"`
 	RetainUntilDate  *time.Time            `json:"retainUntilDate,omitempty"`
-	VersionID        string                `json:"versionId,omitempty"`
 }
 
 // RemoveStorageObjectsArguments represents arguments specified by user for RemoveObjects call.
@@ -279,7 +292,7 @@ type RemoveStorageObjectsArguments struct {
 	StorageBucketArguments
 	RemoveStorageObjectsOptions
 
-	Where schema.Expression `json:"where" ndc:"predicate=StorageObjectSimple"`
+	Where schema.Expression `json:"where" ndc:"predicate=StorageObjectFilter"`
 }
 
 // RemoveStorageObjectsOptions represents options specified by user for RemoveObjects call.
@@ -289,33 +302,24 @@ type RemoveStorageObjectsOptions struct {
 	GovernanceBypass bool `json:"governanceBypass,omitempty"`
 }
 
-// SetStorageObjectLegalHoldArguments represents options specified by user for PutObjectLegalHold call.
-type SetStorageObjectLegalHoldArguments struct {
-	StorageBucketArguments
-	SetStorageObjectLegalHoldOptions
-
-	Object string            `json:"object"`
-	Where  schema.Expression `json:"where"  ndc:"predicate=StorageObjectSimple"`
-}
-
-// SetStorageObjectLegalHoldOptions represents options specified by user for PutObjectLegalHold call.
-type SetStorageObjectLegalHoldOptions struct {
-	VersionID string `json:"versionId,omitempty"`
-	Status    *bool  `json:"status"`
+// PutStorageObjectRetentionOptions represent options of object retention configuration.
+type PutStorageObjectRetentionOptions struct {
+	Mode             StorageRetentionMode `json:"mode"`
+	RetainUntilDate  time.Time            `json:"retainUntilDate"`
+	GovernanceBypass bool                 `json:"governanceBypass,omitempty"`
 }
 
 // PutStorageObjectOptions represents options specified by user for PutObject call.
 type PutStorageObjectOptions struct {
-	UserMetadata       map[string]string     `json:"userMetadata,omitempty"`
-	UserTags           map[string]string     `json:"userTags,omitempty"`
-	ContentType        string                `json:"contentType,omitempty"`
-	ContentEncoding    string                `json:"contentEncoding,omitempty"`
-	ContentDisposition string                `json:"contentDisposition,omitempty"`
-	ContentLanguage    string                `json:"contentLanguage,omitempty"`
-	CacheControl       string                `json:"cacheControl,omitempty"`
-	Expires            *time.Time            `json:"expires,omitempty"`
-	Mode               *StorageRetentionMode `json:"mode,omitempty"`
-	RetainUntilDate    *time.Time            `json:"retainUntilDate,omitempty"`
+	Metadata           map[string]string                 `json:"metadata,omitempty"`
+	Tags               map[string]string                 `json:"tags,omitempty"`
+	ContentType        string                            `json:"contentType,omitempty"`
+	ContentEncoding    string                            `json:"contentEncoding,omitempty"`
+	ContentDisposition string                            `json:"contentDisposition,omitempty"`
+	ContentLanguage    string                            `json:"contentLanguage,omitempty"`
+	CacheControl       string                            `json:"cacheControl,omitempty"`
+	Expires            *time.Time                        `json:"expires,omitempty"`
+	Retention          *PutStorageObjectRetentionOptions `json:"retention,omitempty"`
 	// ServerSideEncryption    *ServerSideEncryptionMethod `json:"serverSideEncryption,omitempty"`
 	NumThreads              uint   `json:"numThreads,omitempty"`
 	StorageClass            string `json:"storageClass,omitempty"`
@@ -344,53 +348,40 @@ type PutStorageObjectOptions struct {
 	ConcurrentStreamParts bool `json:"concurrentStreamParts,omitempty"`
 }
 
-// SetStorageObjectTagsArguments holds an object version id to update tag(s) of a specific object version.
-type SetStorageObjectTagsArguments struct {
-	StorageBucketArguments
-	SetStorageObjectTagsOptions
-
-	Object string            `json:"object"`
-	Where  schema.Expression `json:"where"  ndc:"predicate=StorageObjectSimple"`
-}
-
-// SetStorageObjectTagsOptions holds an object version id to update tag(s) of a specific object version.
-type SetStorageObjectTagsOptions struct {
-	Tags      map[string]string `json:"tags"`
-	VersionID string            `json:"versionId,omitempty"`
-}
-
-// SetBucketNotificationArguments represents input arguments for the SetBucketNotification method.
-type SetBucketNotificationArguments struct {
-	StorageBucketArguments
-	NotificationConfig
-}
-
-// SetStorageBucketLifecycleArguments represents input arguments for the SetBucketLifecycle method.
-type SetStorageBucketLifecycleArguments struct {
-	StorageBucketArguments
-	BucketLifecycleConfiguration
-}
-
-// SetStorageBucketEncryptionArguments represents input arguments for the SetBucketEncryption method.
-type SetStorageBucketEncryptionArguments struct {
-	StorageBucketArguments
-	ServerSideEncryptionConfiguration
-}
-
-// SetStorageObjectLockArguments represents input arguments for the SetStorageObjectLock method.
-type SetStorageObjectLockArguments struct {
-	StorageBucketArguments
-	SetStorageObjectLockConfig
-}
-
-// SetStorageBucketReplicationArguments storage bucket replication arguments.
-type SetStorageBucketReplicationArguments struct {
-	StorageBucketArguments
-	StorageReplicationConfig
-}
-
 // PresignedURLResponse holds the presigned URL and expiry information.
 type PresignedURLResponse struct {
 	URL       string `json:"url"`
 	ExpiredAt string `json:"expiredAt"`
+}
+
+// UpdateBucketArguments hold update options for the bucket.
+type UpdateBucketArguments struct {
+	StorageBucketArguments
+	UpdateStorageBucketOptions
+}
+
+// UpdateStorageBucketOptions hold update options for the bucket.
+type UpdateStorageBucketOptions struct {
+	Tags              map[string]string                  `json:"tags,omitempty"`
+	VersioningEnabled *bool                              `json:"versioningEnabled"`
+	Lifecycle         *ObjectLifecycleConfiguration      `json:"lifecycle"`
+	Encryption        *ServerSideEncryptionConfiguration `json:"encryption"`
+	ObjectLock        *SetStorageObjectLockConfig        `json:"objectLock"`
+}
+
+// IsEmpty checks if all elements in the option object is null.
+func (ubo UpdateStorageBucketOptions) IsEmpty() bool {
+	return ubo.VersioningEnabled == nil &&
+		ubo.Tags == nil &&
+		ubo.Lifecycle == nil &&
+		ubo.Encryption == nil &&
+		ubo.ObjectLock == nil
+}
+
+// RestoreStorageObjectArguments represent arguments specified by user for RestoreObject call.
+type RestoreStorageObjectArguments struct {
+	StorageBucketArguments
+
+	Object string            `json:"object"`
+	Where  schema.Expression `json:"where"  ndc:"predicate=StorageObjectFilter"`
 }

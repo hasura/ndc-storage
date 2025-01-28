@@ -2,22 +2,83 @@
   {
     "rows": [
       {
-        "__value": [
-          {
-            "name": "minio-bucket-empty",
-            "tags": null
-          },
-          {
-            "name": "minio-bucket-lock",
-            "tags": null
-          },
-          {
-            "name": "minio-bucket-test",
-            "tags": {
-              "Foo": "bar"
+        "__value": {
+          "buckets": [
+            {
+              "autoclass": null,
+              "cors": [],
+              "customPlacementConfig": null,
+              "defaultEventBasedHold": null,
+              "encryption": null,
+              "etag": null,
+              "hierarchicalNamespace": null,
+              "lifecycle": null,
+              "locationType": null,
+              "logging": null,
+              "name": "minio-bucket-empty",
+              "objectLock": null,
+              "region": null,
+              "requesterPays": null,
+              "rpo": null,
+              "softDeletePolicy": null,
+              "storageClass": null,
+              "tags": null,
+              "lastModified": null,
+              "versioning": null,
+              "website": null
+            },
+            {
+              "autoclass": null,
+              "cors": [],
+              "customPlacementConfig": null,
+              "defaultEventBasedHold": null,
+              "encryption": null,
+              "etag": null,
+              "hierarchicalNamespace": null,
+              "lifecycle": null,
+              "locationType": null,
+              "logging": null,
+              "name": "minio-bucket-lock",
+              "objectLock": null,
+              "region": null,
+              "requesterPays": null,
+              "rpo": null,
+              "softDeletePolicy": null,
+              "storageClass": null,
+              "tags": null,
+              "lastModified": null,
+              "versioning": null,
+              "website": null
+            },
+            {
+              "autoclass": null,
+              "cors": [],
+              "customPlacementConfig": null,
+              "defaultEventBasedHold": null,
+              "encryption": null,
+              "etag": null,
+              "hierarchicalNamespace": null,
+              "lifecycle": null,
+              "locationType": null,
+              "logging": null,
+              "name": "minio-bucket-test",
+              "objectLock": null,
+              "region": null,
+              "requesterPays": null,
+              "rpo": null,
+              "softDeletePolicy": null,
+              "storageClass": null,
+              "tags": null,
+              "lastModified": null,
+              "versioning": null,
+              "website": null
             }
+          ],
+          "pageInfo": {
+            "cursor": null,
+            "hasNextPage": false
           }
-        ]
+        }
       }
     ]
   }

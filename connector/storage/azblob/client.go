@@ -5,14 +5,16 @@ import (
 	"log/slog"
 
 	"github.com/Azure/azure-sdk-for-go/sdk/storage/azblob"
+	"github.com/hasura/ndc-sdk-go/utils"
 	"github.com/hasura/ndc-storage/connector/storage/common"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/trace"
 )
 
-// Client prepresents a Minio client wrapper.
+// Client represents a Minio client wrapper.
 type Client struct {
-	client *azblob.Client
+	client  *azblob.Client
+	isDebug bool
 }
 
 var _ common.StorageClient = &Client{}
@@ -25,13 +27,21 @@ func New(ctx context.Context, cfg *ClientConfig, logger *slog.Logger) (*Client, 
 	}
 
 	return &Client{
-		client: client,
+		client:  client,
+		isDebug: utils.IsDebug(logger),
 	}, nil
 }
 
 func (c *Client) startOtelSpan(ctx context.Context, name string, bucketName string) (context.Context, trace.Span) {
 	spanKind := trace.SpanKindClient
+	if c.isDebug {
+		spanKind = trace.SpanKindInternal
+	}
 
+	return c.startOtelSpanWithKind(ctx, spanKind, name, bucketName)
+}
+
+func (c *Client) startOtelSpanWithKind(ctx context.Context, spanKind trace.SpanKind, name string, bucketName string) (context.Context, trace.Span) {
 	ctx, span := tracer.Start(ctx, name, trace.WithSpanKind(spanKind))
 	span.SetAttributes(
 		common.NewDBSystemAttribute(),

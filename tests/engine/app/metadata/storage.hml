@@ -17,13 +17,6 @@ definition:
             type: boolean
           aggregate_functions: {}
           comparison_operators: {}
-        BucketName:
-          representation:
-            type: string
-          aggregate_functions: {}
-          comparison_operators:
-            _eq:
-              type: equal
         Bytes:
           representation:
             type: bytes
@@ -53,6 +46,14 @@ definition:
             type: json
           aggregate_functions: {}
           comparison_operators: {}
+        GoogleStorageRPO:
+          representation:
+            type: enum
+            one_of:
+              - DEFAULT
+              - ASYNC_TURBO
+          aggregate_functions: {}
+          comparison_operators: {}
         Int32:
           representation:
             type: int32
@@ -68,28 +69,13 @@ definition:
             type: json
           aggregate_functions: {}
           comparison_operators: {}
-        ObjectPath:
+        StorageBucketName:
           representation:
             type: string
           aggregate_functions: {}
           comparison_operators:
-            _contains:
-              type: custom
-              argument_type:
-                type: named
-                name: ObjectPath
             _eq:
               type: equal
-            _icontains:
-              type: custom
-              argument_type:
-                type: named
-                name: ObjectPath
-            _starts_with:
-              type: custom
-              argument_type:
-                type: named
-                name: ObjectPath
         StorageClientID:
           representation:
             type: enum
@@ -98,6 +84,8 @@ definition:
               - s3
               - azblob
               - azblob-connstr
+              - gcs
+              - gcs-cred
           aggregate_functions: {}
           comparison_operators:
             _eq:
@@ -112,20 +100,14 @@ definition:
               - REPLICA
           aggregate_functions: {}
           comparison_operators: {}
-        StorageReplicationRuleStatus:
-          representation:
-            type: enum
-            one_of:
-              - Enabled
-              - Disabled
-          aggregate_functions: {}
-          comparison_operators: {}
         StorageRetentionMode:
           representation:
             type: enum
             one_of:
               - Locked
               - Unlocked
+              - Mutable
+              - Delete
           aggregate_functions: {}
           comparison_operators: {}
         StorageRetentionValidityUnit:
@@ -136,6 +118,28 @@ definition:
               - YEARS
           aggregate_functions: {}
           comparison_operators: {}
+        StorageStringFilter:
+          representation:
+            type: string
+          aggregate_functions: {}
+          comparison_operators:
+            _contains:
+              type: custom
+              argument_type:
+                type: named
+                name: StorageStringFilter
+            _eq:
+              type: equal
+            _icontains:
+              type: custom
+              argument_type:
+                type: named
+                name: StorageStringFilter
+            _starts_with:
+              type: custom
+              argument_type:
+                type: named
+                name: StorageStringFilter
         String:
           representation:
             type: string
@@ -147,112 +151,88 @@ definition:
           aggregate_functions: {}
           comparison_operators: {}
       object_types:
-        AbortIncompleteMultipartUpload:
-          description: structure, not supported yet on MinIO
+        BucketAutoclass:
           fields:
-            daysAfterInitiation:
+            enabled:
               type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: Int32
-        BucketLifecycleConfiguration:
-          description: is a collection of lifecycle Rule objects.
+                type: named
+                name: Boolean
+            terminalStorageClass:
+              type:
+                type: named
+                name: String
+            terminalStorageClassUpdateTime:
+              type:
+                type: named
+                name: TimestampTZ
+            toggleTime:
+              type:
+                type: named
+                name: TimestampTZ
+        BucketCors:
+          description: is the bucket's Cross-Origin Resource Sharing (CORS) configuration.
           fields:
-            rules:
+            maxAge:
+              type:
+                type: named
+                name: Duration
+            methods:
               type:
                 type: array
                 element_type:
                   type: named
-                  name: BucketLifecycleRule
-        BucketLifecycleRule:
-          description: represents a single rule in lifecycle configuration
+                  name: String
+            origins:
+              type:
+                type: array
+                element_type:
+                  type: named
+                  name: String
+            responseHeaders:
+              type:
+                type: array
+                element_type:
+                  type: named
+                  name: String
+        BucketHierarchicalNamespace:
           fields:
-            abortIncompleteMultipartUpload:
+            enabled:
               type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: AbortIncompleteMultipartUpload
-            allVersionsExpiration:
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: LifecycleAllVersionsExpiration
-            delMarkerExpiration:
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: LifecycleDelMarkerExpiration
-            expiration:
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: LifecycleExpiration
-            filter:
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: LifecycleFilter
-            id:
+                type: named
+                name: Boolean
+        BucketLogging:
+          description: holds the bucket's logging configuration, which defines the destination bucket and optional name prefix for the current bucket's logs.
+          fields:
+            logBucket:
               type:
                 type: named
                 name: String
-            noncurrentVersionExpiration:
+            logObjectPrefix:
               type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: LifecycleNoncurrentVersionExpiration
-            noncurrentVersionTransition:
+                type: named
+                name: String
+        BucketWebsite:
+          description: holds the bucket's website configuration, controlling how the service behaves when accessing bucket contents as a web site. See https://cloud.google.com/storage/docs/static-website for more information.
+          fields:
+            mainPageSuffix:
               type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: LifecycleNoncurrentVersionTransition
-            prefix:
+                type: named
+                name: String
+            notFoundPage:
               type:
                 type: nullable
                 underlying_type:
                   type: named
                   name: String
-            status:
+        CustomPlacementConfig:
+          description: holds the bucket's custom placement configuration for Custom Dual Regions. See https://cloud.google.com/storage/docs/locations#location-dr for more information.
+          fields:
+            DataLocations:
               type:
-                type: nullable
-                underlying_type:
+                type: array
+                element_type:
                   type: named
                   name: String
-            transition:
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: LifecycleTransition
-        DeleteMarkerReplication:
-          description: whether delete markers are replicated - https://docs.aws.amazon.com/AmazonS3/latest/dev/replication-add-config.html
-          fields:
-            status:
-              type:
-                type: named
-                name: StorageReplicationRuleStatus
-        DeleteReplication:
-          description: whether versioned deletes are replicated. This is a MinIO specific extension
-          fields:
-            status:
-              type:
-                type: named
-                name: StorageReplicationRuleStatus
-        ExistingObjectReplication:
-          description: whether existing object replication is enabled
-          fields:
-            status:
-              type:
-                type: named
-                name: StorageReplicationRuleStatus
         GetStorageObjectOptions:
           description: are used to specify additional headers or options during GET requests.
           fields:
@@ -275,176 +255,6 @@ definition:
                   type: named
                   name: JSON
             versionId:
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: String
-        LifecycleAllVersionsExpiration:
-          description: represents AllVersionsExpiration actions element in an ILM policy
-          fields:
-            days:
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: Int32
-            deleteMarker:
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: Boolean
-        LifecycleDelMarkerExpiration:
-          description: represents DelMarkerExpiration actions element in an ILM policy
-          fields:
-            days:
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: Int32
-        LifecycleExpiration:
-          description: expiration details of lifecycle configuration
-          fields:
-            date:
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: Date
-            days:
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: Int32
-            expiredObjectAllVersions:
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: Boolean
-            expiredObjectDeleteMarker:
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: Boolean
-        LifecycleFilter:
-          description: will be used in selecting rule(s) for lifecycle configuration
-          fields:
-            and:
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: LifecycleFilterAnd
-            objectSizeGreaterThan:
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: Int64
-            objectSizeLessThan:
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: Int64
-            prefix:
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: String
-            tag:
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: StorageTag
-        LifecycleFilterAnd:
-          description: the And Rule for LifecycleTag, to be used in LifecycleRuleFilter
-          fields:
-            objectSizeGreaterThan:
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: Int64
-            objectSizeLessThan:
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: Int64
-            prefix:
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: String
-            tags:
-              type:
-                type: nullable
-                underlying_type:
-                  type: array
-                  element_type:
-                    type: named
-                    name: StorageTag
-        LifecycleNoncurrentVersionExpiration:
-          description: '- Specifies when noncurrent object versions expire. Upon expiration, server permanently deletes the noncurrent object versions. Set this lifecycle configuration action on a bucket that has versioning enabled (or suspended) to request server delete noncurrent object versions at a specific period in the object''s lifetime.'
-          fields:
-            newerNoncurrentVersions:
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: Int32
-            noncurrentDays:
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: Int32
-        LifecycleNoncurrentVersionTransition:
-          description: sets this action to request server to transition noncurrent object versions to different set storage classes at a specific period in the object's lifetime.
-          fields:
-            newerNoncurrentVersions:
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: Int32
-            noncurrentDays:
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: Int32
-            storageClass:
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: String
-        LifecycleTransition:
-          description: transition details of lifecycle configuration
-          fields:
-            date:
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: Date
-            days:
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: Int32
-            storageClass:
               type:
                 type: nullable
                 underlying_type:
@@ -489,7 +299,7 @@ definition:
               type:
                 type: named
                 name: String
-            objectLocking:
+            objectLock:
               type:
                 type: nullable
                 underlying_type:
@@ -507,178 +317,246 @@ definition:
                 underlying_type:
                   type: named
                   name: JSON
-        NotificationCommonConfig:
-          description: '- represents one single notification configuration such as topic, queue or lambda configuration.'
+        ObjectAbortIncompleteMultipartUpload:
           fields:
-            arn:
+            daysAfterInitiation:
               type:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: String
-            event:
+                  name: Int32
+        ObjectLifecycleAllVersionsExpiration:
+          description: represents AllVersionsExpiration actions element in an ILM policy
+          fields:
+            days:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Int32
+            deleteMarker:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+        ObjectLifecycleConfiguration:
+          description: is a collection of lifecycle Rule objects.
+          fields:
+            rules:
               type:
                 type: array
                 element_type:
                   type: named
-                  name: String
-            filter:
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: NotificationFilter
-            id:
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: String
-        NotificationConfig:
-          description: the struct that represents a notification configration object.
+                  name: ObjectLifecycleRule
+        ObjectLifecycleDelMarkerExpiration:
           fields:
-            cloudFunctionConfigurations:
+            days:
               type:
-                type: array
-                element_type:
+                type: nullable
+                underlying_type:
                   type: named
-                  name: NotificationLambdaConfig
-            queueConfigurations:
-              type:
-                type: array
-                element_type:
-                  type: named
-                  name: NotificationQueueConfig
-            topicConfigurations:
-              type:
-                type: array
-                element_type:
-                  type: named
-                  name: NotificationTopicConfig
-        NotificationFilter:
-          description: '- a tag in the notification xml structure which carries suffix/prefix filters'
+                  name: Int32
+        ObjectLifecycleExpiration:
+          description: expiration details of lifecycle configuration
           fields:
-            s3Key:
+            date:
               type:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: NotificationS3Key
-        NotificationFilterRule:
-          description: child of S3Key, a tag in the notification xml which carries suffix/prefix filters
+                  name: Date
+            days:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Int32
+            expiredObjectAllVersions:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            expiredObjectDeleteMarker:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+        ObjectLifecycleFilter:
+          description: will be used in selecting rule(s) for lifecycle configuration
           fields:
-            name:
-              type:
-                type: named
-                name: String
-            value:
-              type:
-                type: named
-                name: String
-        NotificationLambdaConfig:
-          description: carries one single cloudfunction notification configuration
-          fields:
-            arn:
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: String
-            cloudFunction:
-              type:
-                type: named
-                name: String
-            event:
-              type:
-                type: array
-                element_type:
-                  type: named
-                  name: String
-            filter:
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: NotificationFilter
-            id:
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: String
-        NotificationQueueConfig:
-          description: carries one single queue notification configuration
-          fields:
-            arn:
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: String
-            event:
-              type:
-                type: array
-                element_type:
-                  type: named
-                  name: String
-            filter:
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: NotificationFilter
-            id:
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: String
-            queue:
-              type:
-                type: named
-                name: String
-        NotificationS3Key:
-          description: child of Filter, a tag in the notification xml which carries suffix/prefix filters
-          fields:
-            filterRule:
+            matchesPrefix:
               type:
                 type: nullable
                 underlying_type:
                   type: array
                   element_type:
                     type: named
-                    name: NotificationFilterRule
-        NotificationTopicConfig:
-          description: carries one single topic notification configuration
+                    name: String
+            matchesStorageClasses:
+              type:
+                type: nullable
+                underlying_type:
+                  type: array
+                  element_type:
+                    type: named
+                    name: String
+            matchesSuffix:
+              type:
+                type: nullable
+                underlying_type:
+                  type: array
+                  element_type:
+                    type: named
+                    name: String
+            objectSizeGreaterThan:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Int64
+            objectSizeLessThan:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Int64
+            tags:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: JSON
+        ObjectLifecycleNoncurrentVersionExpiration:
+          description: '- Specifies when noncurrent object versions expire. Upon expiration, server permanently deletes the noncurrent object versions. Set this lifecycle configuration action on a bucket that has versioning enabled (or suspended) to request server delete noncurrent object versions at a specific period in the object''s lifetime.'
           fields:
-            arn:
+            newerNoncurrentVersions:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Int32
+            noncurrentDays:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Int32
+        ObjectLifecycleNoncurrentVersionTransition:
+          description: sets this action to request server to transition noncurrent object versions to different set storage classes at a specific period in the object's lifetime.
+          fields:
+            newerNoncurrentVersions:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Int32
+            noncurrentDays:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Int32
+            storageClass:
               type:
                 type: nullable
                 underlying_type:
                   type: named
                   name: String
-            event:
+        ObjectLifecycleRule:
+          description: represents a single rule in lifecycle configuration
+          fields:
+            abortIncompleteMultipartUpload:
               type:
-                type: array
-                element_type:
+                type: nullable
+                underlying_type:
                   type: named
-                  name: String
+                  name: ObjectAbortIncompleteMultipartUpload
+            allVersionsExpiration:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: ObjectLifecycleAllVersionsExpiration
+            delMarkerExpiration:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: ObjectLifecycleDelMarkerExpiration
+            enabled:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            expiration:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: ObjectLifecycleExpiration
             filter:
               type:
                 type: nullable
                 underlying_type:
-                  type: named
-                  name: NotificationFilter
+                  type: array
+                  element_type:
+                    type: named
+                    name: ObjectLifecycleFilter
             id:
               type:
                 type: nullable
                 underlying_type:
                   type: named
                   name: String
-            topic:
+            noncurrentVersionExpiration:
               type:
-                type: named
-                name: String
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: ObjectLifecycleNoncurrentVersionExpiration
+            noncurrentVersionTransition:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: ObjectLifecycleNoncurrentVersionTransition
+            prefix:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
+            transition:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: ObjectLifecycleTransition
+        ObjectLifecycleTransition:
+          description: transition details of lifecycle configuration
+          fields:
+            date:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Date
+            days:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Int32
+            storageClass:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
         PresignedGetStorageObjectOptions:
           description: represent the options for the PresignedGetObject method.
           fields:
@@ -735,7 +613,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: predicate
-                  object_type_name: StorageObjectSimple
+                  object_type_name: StorageObjectFilter
         PutStorageObjectOptions:
           description: represents options specified by user for PutObject call.
           fields:
@@ -811,12 +689,12 @@ definition:
                 underlying_type:
                   type: named
                   name: Boolean
-            mode:
+            metadata:
               type:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: StorageRetentionMode
+                  name: JSON
             numThreads:
               type:
                 type: nullable
@@ -829,12 +707,12 @@ definition:
                 underlying_type:
                   type: named
                   name: Int64
-            retainUntilDate:
+            retention:
               type:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: TimestampTZ
+                  name: PutStorageObjectRetentionOptions
             sendContentMd5:
               type:
                 type: nullable
@@ -847,13 +725,7 @@ definition:
                 underlying_type:
                   type: named
                   name: String
-            userMetadata:
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: JSON
-            userTags:
+            tags:
               type:
                 type: nullable
                 underlying_type:
@@ -865,6 +737,23 @@ definition:
                 underlying_type:
                   type: named
                   name: String
+        PutStorageObjectRetentionOptions:
+          description: represent options of object retention configuration.
+          fields:
+            governanceBypass:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            mode:
+              type:
+                type: named
+                name: StorageRetentionMode
+            retainUntilDate:
+              type:
+                type: named
+                name: TimestampTZ
         RemoveStorageObjectError:
           description: the container of Multi Delete S3 API error.
           fields:
@@ -892,6 +781,12 @@ definition:
                   type: named
                   name: Boolean
             governanceBypass:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            softDelete:
               type:
                 type: nullable
                 underlying_type:
@@ -928,39 +823,16 @@ definition:
               type:
                 type: named
                 name: String
-        ReplicaModifications:
-          description: specifies if replica modification sync is enabled
-          fields:
-            status:
-              type:
-                type: named
-                name: StorageReplicationRuleStatus
         ServerSideEncryptionConfiguration:
           description: is the default encryption configuration structure.
           fields:
-            rules:
-              type:
-                type: array
-                element_type:
-                  type: named
-                  name: ServerSideEncryptionRule
-        ServerSideEncryptionRule:
-          description: rule layer encapsulates default encryption configuration
-          fields:
-            apply:
-              type:
-                type: named
-                name: StorageApplySSEByDefault
-        SetStorageObjectLegalHoldOptions:
-          description: represents options specified by user for PutObjectLegalHold call.
-          fields:
-            status:
+            kmsMasterKeyId:
               type:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: Boolean
-            versionId:
+                  name: String
+            sseAlgorithm:
               type:
                 type: nullable
                 underlying_type:
@@ -1008,47 +880,141 @@ definition:
                 underlying_type:
                   type: named
                   name: TimestampTZ
-            versionId:
+        StorageBucket:
+          description: the container for bucket metadata.
+          fields:
+            autoclass:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: BucketAutoclass
+            cors:
+              type:
+                type: nullable
+                underlying_type:
+                  type: array
+                  element_type:
+                    type: named
+                    name: BucketCors
+            creationTime:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: TimestampTZ
+            customPlacementConfig:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: CustomPlacementConfig
+            defaultEventBasedHold:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            encryption:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: ServerSideEncryptionConfiguration
+            etag:
               type:
                 type: nullable
                 underlying_type:
                   type: named
                   name: String
-        SetStorageObjectTagsOptions:
-          description: holds an object version id to update tag(s) of a specific object version.
-          fields:
-            tags:
+            hierarchicalNamespace:
               type:
-                type: named
-                name: JSON
-            versionId:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: BucketHierarchicalNamespace
+            lastModified:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: TimestampTZ
+            lifecycle:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: ObjectLifecycleConfiguration
+            locationType:
               type:
                 type: nullable
                 underlying_type:
                   type: named
                   name: String
-        SourceSelectionCriteria:
-          description: specifies additional source selection criteria in ReplicationConfiguration.
-          fields:
-            replicaModifications:
+            logging:
               type:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: ReplicaModifications
-        StorageApplySSEByDefault:
-          description: defines default encryption configuration, KMS or SSE. To activate KMS, SSEAlgoritm needs to be set to `aws:kms“. Minio currently does not support Kms.
-          fields:
-            kmsMasterKeyId:
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: String
-            sseAlgorithm:
+                  name: BucketLogging
+            name:
               type:
                 type: named
                 name: String
+            objectLock:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: StorageObjectLockConfig
+            region:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
+            requesterPays:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            rpo:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: GoogleStorageRPO
+            softDeletePolicy:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: StorageObjectSoftDeletePolicy
+            storageClass:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
+            tags:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: JSON
+            versioning:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: StorageBucketVersioningConfiguration
+            website:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: BucketWebsite
         StorageBucketArguments:
           description: represent the common input arguments for bucket-related methods.
           fields:
@@ -1064,26 +1030,36 @@ definition:
                 underlying_type:
                   type: named
                   name: StorageClientID
-        StorageBucketInfo:
-          description: container for bucket metadata.
+        StorageBucketFilter:
           fields:
-            creationDate:
+            bucket:
               type:
                 type: named
-                name: TimestampTZ
-            name:
+                name: StorageStringFilter
+            clientId:
               type:
                 type: named
-                name: String
-            tags:
+                name: StorageClientID
+        StorageBucketListResults:
+          description: hold the paginated results of the storage bucket list.
+          fields:
+            buckets:
               type:
-                type: nullable
-                underlying_type:
+                type: array
+                element_type:
                   type: named
-                  name: JSON
+                  name: StorageBucket
+            pageInfo:
+              type:
+                type: named
+                name: StoragePaginationInfo
         StorageBucketVersioningConfiguration:
           description: is the versioning configuration structure
           fields:
+            enabled:
+              type:
+                type: named
+                name: Boolean
             excludeFolders:
               type:
                 type: nullable
@@ -1104,12 +1080,6 @@ definition:
                 underlying_type:
                   type: named
                   name: String
-            status:
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: String
         StorageCopyDestOptions:
           description: represents options specified by user for CopyObject/ComposeObject APIs.
           fields:
@@ -1125,6 +1095,12 @@ definition:
                 underlying_type:
                   type: named
                   name: Boolean
+            metadata:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: JSON
             mode:
               type:
                 type: nullable
@@ -1135,18 +1111,6 @@ definition:
               type:
                 type: named
                 name: String
-            replaceMetadata:
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: Boolean
-            replaceTags:
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: Boolean
             retainUntilDate:
               type:
                 type: nullable
@@ -1159,13 +1123,7 @@ definition:
                 underlying_type:
                   type: named
                   name: Int64
-            userMetadata:
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: JSON
-            userTags:
+            tags:
               type:
                 type: nullable
                 underlying_type:
@@ -1288,7 +1246,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: String
+                  name: JSON
             archiveStatus:
               type:
                 type: nullable
@@ -1381,42 +1339,12 @@ definition:
                 underlying_type:
                   type: named
                   name: String
-            copyCompletionTime:
+            copy:
               type:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: TimestampTZ
-            copyId:
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: String
-            copyProgress:
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: String
-            copySource:
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: String
-            copyStatus:
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: String
-            copyStatusDescription:
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: String
+                  name: StorageObjectCopyInfo
             creationTime:
               type:
                 type: nullable
@@ -1442,12 +1370,6 @@ definition:
                   type: named
                   name: TimestampTZ
             destinationSnapshot:
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: String
-            encryptionScope:
               type:
                 type: nullable
                 underlying_type:
@@ -1491,18 +1413,6 @@ definition:
                 underlying_type:
                   type: named
                   name: String
-            immutabilityPolicyMode:
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: String
-            immutabilityPolicyUntilDate:
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: TimestampTZ
             incrementalCopy:
               type:
                 type: nullable
@@ -1515,6 +1425,12 @@ definition:
                 underlying_type:
                   type: named
                   name: Boolean
+            kmsKeyName:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
             lastAccessTime:
               type:
                 type: nullable
@@ -1549,6 +1465,12 @@ definition:
                 underlying_type:
                   type: named
                   name: Boolean
+            mediaLink:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
             metadata:
               type:
                 type: nullable
@@ -1571,6 +1493,12 @@ definition:
                 underlying_type:
                   type: named
                   name: String
+            rawMetadata:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: JSON
             rehydratePriority:
               type:
                 type: nullable
@@ -1607,6 +1535,18 @@ definition:
                 underlying_type:
                   type: named
                   name: StorageRestoreInfo
+            retentionMode:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
+            retentionUntilDate:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: TimestampTZ
             sealed:
               type:
                 type: nullable
@@ -1631,19 +1571,13 @@ definition:
                 underlying_type:
                   type: named
                   name: String
-            userMetadata:
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: JSON
-            userTagCount:
+            tagCount:
               type:
                 type: nullable
                 underlying_type:
                   type: named
                   name: Int32
-            userTags:
+            tags:
               type:
                 type: nullable
                 underlying_type:
@@ -1688,6 +1622,57 @@ definition:
                 underlying_type:
                   type: named
                   name: String
+        StorageObjectCopyInfo:
+          description: holds the copy information if the object was copied from another object.
+          fields:
+            completionTime:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: TimestampTZ
+            id:
+              type:
+                type: named
+                name: String
+            progress:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
+            source:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
+            status:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
+            statusDescription:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
+        StorageObjectFilter:
+          fields:
+            bucket:
+              type:
+                type: named
+                name: StorageBucketName
+            clientId:
+              type:
+                type: named
+                name: StorageClientID
+            object:
+              type:
+                type: named
+                name: StorageStringFilter
         StorageObjectListResults:
           description: hold the paginated results of the storage object list.
           fields:
@@ -1700,19 +1685,20 @@ definition:
             pageInfo:
               type:
                 type: named
-                name: StorageObjectPaginationInfo
+                name: StoragePaginationInfo
         StorageObjectLockConfig:
+          description: represents the object lock configuration in given bucket
           fields:
+            enabled:
+              type:
+                type: named
+                name: Boolean
             mode:
               type:
                 type: nullable
                 underlying_type:
                   type: named
                   name: StorageRetentionMode
-            objectLock:
-              type:
-                type: named
-                name: String
             unit:
               type:
                 type: nullable
@@ -1758,39 +1744,17 @@ definition:
                 underlying_type:
                   type: named
                   name: String
-        StorageObjectPaginationInfo:
-          description: holds the pagination information.
+        StorageObjectSoftDeletePolicy:
+          description: contains the bucket's soft delete policy, which defines the period of time that soft-deleted objects will be retained, and cannot be permanently deleted.
           fields:
-            cursor:
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: String
-            hasNextPage:
+            effectiveTime:
               type:
                 type: named
-                name: Boolean
-            nextCursor:
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: String
-        StorageObjectSimple:
-          fields:
-            bucket:
+                name: TimestampTZ
+            retentionDuration:
               type:
                 type: named
-                name: BucketName
-            clientId:
-              type:
-                type: named
-                name: StorageClientID
-            object:
-              type:
-                type: named
-                name: ObjectPath
+                name: Duration
         StorageOwner:
           description: name.
           fields:
@@ -1806,122 +1770,19 @@ definition:
                 underlying_type:
                   type: named
                   name: String
-        StorageReplicationConfig:
-          description: replication configuration specified in https://docs.aws.amazon.com/AmazonS3/latest/dev/replication-add-config.html
+        StoragePaginationInfo:
+          description: holds the pagination information.
           fields:
-            role:
+            cursor:
               type:
                 type: nullable
                 underlying_type:
                   type: named
                   name: String
-            rules:
-              type:
-                type: array
-                element_type:
-                  type: named
-                  name: StorageReplicationRule
-        StorageReplicationDestination:
-          fields:
-            bucket:
+            hasNextPage:
               type:
                 type: named
-                name: String
-            storageClass:
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: String
-        StorageReplicationFilter:
-          description: a filter for a replication configuration Rule.
-          fields:
-            and:
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: StorageReplicationFilterAnd
-            rrefix:
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: String
-            tag:
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: StorageTag
-        StorageReplicationFilterAnd:
-          description: '- a tag to combine a prefix and multiple tags for replication configuration rule.'
-          fields:
-            rrefix:
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: String
-            tag:
-              type:
-                type: nullable
-                underlying_type:
-                  type: array
-                  element_type:
-                    type: named
-                    name: StorageTag
-        StorageReplicationRule:
-          description: a rule for replication configuration.
-          fields:
-            deleteMarkerReplication:
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: DeleteMarkerReplication
-            deleteReplication:
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: DeleteReplication
-            destination:
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: StorageReplicationDestination
-            existingObjectReplication:
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: ExistingObjectReplication
-            filter:
-              type:
-                type: named
-                name: StorageReplicationFilter
-            id:
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: String
-            priority:
-              type:
-                type: named
-                name: Int32
-            sourceSelectionCriteria:
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: SourceSelectionCriteria
-            status:
-              type:
-                type: named
-                name: StorageReplicationRuleStatus
+                name: Boolean
         StorageRestoreInfo:
           description: contains information of the restore operation of an archived object.
           fields:
@@ -1935,21 +1796,6 @@ definition:
               type:
                 type: named
                 name: Boolean
-        StorageTag:
-          description: structure key/value pair representing an object tag to apply configuration
-          fields:
-            key:
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: String
-            value:
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: String
         StorageUploadInfo:
           description: represents the information of the uploaded object.
           fields:
@@ -2043,6 +1889,72 @@ definition:
                 underlying_type:
                   type: named
                   name: String
+        UpdateStorageBucketOptions:
+          description: hold update options for the bucket.
+          fields:
+            encryption:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: ServerSideEncryptionConfiguration
+            lifecycle:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: ObjectLifecycleConfiguration
+            objectLock:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: SetStorageObjectLockConfig
+            tags:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: JSON
+            versioningEnabled:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+        UpdateStorageObjectOptions:
+          description: represents options specified by user for updating object.
+          fields:
+            legalHold:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            metadata:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: JSON
+            retention:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: SetStorageObjectRetentionOptions
+            tags:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: JSON
+            versionId:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
       collections: []
       functions:
         - name: downloadStorageObject
@@ -2093,7 +2005,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: predicate
-                  object_type_name: StorageObjectSimple
+                  object_type_name: StorageObjectFilter
           result_type:
             type: nullable
             underlying_type:
@@ -2147,14 +2059,14 @@ definition:
                 type: nullable
                 underlying_type:
                   type: predicate
-                  object_type_name: StorageObjectSimple
+                  object_type_name: StorageObjectFilter
           result_type:
             type: nullable
             underlying_type:
               type: named
               name: String
-        - name: storageBucketEncryption
-          description: gets default encryption configuration set on a bucket.
+        - name: storageBucket
+          description: gets a bucket by name.
           arguments:
             bucket:
               type:
@@ -2172,7 +2084,7 @@ definition:
             type: nullable
             underlying_type:
               type: named
-              name: ServerSideEncryptionConfiguration
+              name: StorageBucket
         - name: storageBucketExists
           description: checks if a bucket exists.
           arguments:
@@ -2191,117 +2103,60 @@ definition:
           result_type:
             type: named
             name: Boolean
-        - name: storageBucketLifecycle
-          description: gets lifecycle on a bucket or a prefix.
-          arguments:
-            bucket:
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: String
-            clientId:
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: StorageClientID
-          result_type:
-            type: nullable
-            underlying_type:
-              type: named
-              name: BucketLifecycleConfiguration
-        - name: storageBucketNotification
-          description: gets notification configuration on a bucket.
-          arguments:
-            bucket:
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: String
-            clientId:
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: StorageClientID
-          result_type:
-            type: nullable
-            underlying_type:
-              type: named
-              name: NotificationConfig
-        - name: storageBucketPolicy
-          description: gets access permissions on a bucket or a prefix.
-          arguments:
-            bucket:
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: String
-            clientId:
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: StorageClientID
-          result_type:
-            type: named
-            name: String
-        - name: storageBucketReplication
-          arguments:
-            bucket:
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: String
-            clientId:
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: StorageClientID
-          result_type:
-            type: nullable
-            underlying_type:
-              type: named
-              name: StorageReplicationConfig
-        - name: storageBucketVersioning
-          description: gets versioning configuration set on a bucket.
-          arguments:
-            bucket:
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: String
-            clientId:
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: StorageClientID
-          result_type:
-            type: nullable
-            underlying_type:
-              type: named
-              name: StorageBucketVersioningConfiguration
         - name: storageBuckets
           description: list all buckets.
           arguments:
-            clientId:
+            maxResults:
               type:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: StorageClientID
+                  name: Int32
+            startAfter:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
+            where:
+              type:
+                type: nullable
+                underlying_type:
+                  type: predicate
+                  object_type_name: StorageBucketFilter
           result_type:
-            type: array
-            element_type:
-              type: named
-              name: StorageBucketInfo
+            type: named
+            name: StorageBucketListResults
+        - name: storageDeletedObjects
+          description: list deleted objects in a bucket.
+          arguments:
+            maxResults:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Int32
+            recursive:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            startAfter:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
+            where:
+              type:
+                type: nullable
+                underlying_type:
+                  type: predicate
+                  object_type_name: StorageObjectFilter
+          result_type:
+            type: named
+            name: StorageObjectListResults
         - name: storageIncompleteUploads
           description: list partially uploaded objects in a bucket.
           arguments:
@@ -2380,32 +2235,12 @@ definition:
                 type: nullable
                 underlying_type:
                   type: predicate
-                  object_type_name: StorageObjectSimple
+                  object_type_name: StorageObjectFilter
           result_type:
             type: nullable
             underlying_type:
               type: named
               name: StorageObject
-        - name: storageObjectLockConfig
-          description: gets object lock configuration of given bucket.
-          arguments:
-            bucket:
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: String
-            clientId:
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: StorageClientID
-          result_type:
-            type: nullable
-            underlying_type:
-              type: named
-              name: StorageObjectLockConfig
         - name: storageObjects
           description: lists objects in a bucket.
           arguments:
@@ -2432,7 +2267,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: predicate
-                  object_type_name: StorageObjectSimple
+                  object_type_name: StorageObjectFilter
           result_type:
             type: named
             name: StorageObjectListResults
@@ -2472,7 +2307,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: predicate
-                  object_type_name: StorageObjectSimple
+                  object_type_name: StorageObjectFilter
           result_type:
             type: nullable
             underlying_type:
@@ -2508,7 +2343,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: predicate
-                  object_type_name: StorageObjectSimple
+                  object_type_name: StorageObjectFilter
           result_type:
             type: nullable
             underlying_type:
@@ -2570,7 +2405,7 @@ definition:
               type:
                 type: named
                 name: String
-            objectLocking:
+            objectLock:
               type:
                 type: nullable
                 underlying_type:
@@ -2588,24 +2423,6 @@ definition:
                 underlying_type:
                   type: named
                   name: JSON
-          result_type:
-            type: named
-            name: Boolean
-        - name: enableStorageBucketVersioning
-          description: enables bucket versioning support.
-          arguments:
-            bucket:
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: String
-            clientId:
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: StorageClientID
           result_type:
             type: named
             name: Boolean
@@ -2633,23 +2450,6 @@ definition:
             name: Boolean
         - name: removeStorageBucket
           description: removes a bucket, bucket should be empty to be successfully removed.
-          arguments:
-            bucket:
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: String
-            clientId:
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: StorageClientID
-          result_type:
-            type: named
-            name: Boolean
-        - name: removeStorageBucketReplication
           arguments:
             bucket:
               type:
@@ -2697,6 +2497,12 @@ definition:
               type:
                 type: named
                 name: String
+            softDelete:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
             versionId:
               type:
                 type: nullable
@@ -2708,7 +2514,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: predicate
-                  object_type_name: StorageObjectSimple
+                  object_type_name: StorageObjectFilter
           result_type:
             type: named
             name: Boolean
@@ -2754,150 +2560,14 @@ definition:
                 type: nullable
                 underlying_type:
                   type: predicate
-                  object_type_name: StorageObjectSimple
+                  object_type_name: StorageObjectFilter
           result_type:
             type: array
             element_type:
               type: named
               name: RemoveStorageObjectError
-        - name: setStorageBucketEncryption
-          description: sets default encryption configuration on a bucket.
-          arguments:
-            bucket:
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: String
-            clientId:
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: StorageClientID
-            rules:
-              type:
-                type: array
-                element_type:
-                  type: named
-                  name: ServerSideEncryptionRule
-          result_type:
-            type: named
-            name: Boolean
-        - name: setStorageBucketLifecycle
-          description: sets lifecycle on bucket or an object prefix.
-          arguments:
-            bucket:
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: String
-            clientId:
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: StorageClientID
-            rules:
-              type:
-                type: array
-                element_type:
-                  type: named
-                  name: BucketLifecycleRule
-          result_type:
-            type: named
-            name: Boolean
-        - name: setStorageBucketNotification
-          description: sets a new notification configuration on a bucket.
-          arguments:
-            bucket:
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: String
-            clientId:
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: StorageClientID
-            cloudFunctionConfigurations:
-              type:
-                type: array
-                element_type:
-                  type: named
-                  name: NotificationLambdaConfig
-            queueConfigurations:
-              type:
-                type: array
-                element_type:
-                  type: named
-                  name: NotificationQueueConfig
-            topicConfigurations:
-              type:
-                type: array
-                element_type:
-                  type: named
-                  name: NotificationTopicConfig
-          result_type:
-            type: named
-            name: Boolean
-        - name: setStorageBucketReplication
-          description: sets replication configuration on a bucket. Role can be obtained by first defining the replication target on MinIO to associate the source and destination buckets for replication with the replication endpoint.
-          arguments:
-            bucket:
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: String
-            clientId:
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: StorageClientID
-            role:
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: String
-            rules:
-              type:
-                type: array
-                element_type:
-                  type: named
-                  name: StorageReplicationRule
-          result_type:
-            type: named
-            name: Boolean
-        - name: setStorageBucketTags
-          description: sets tags to a bucket.
-          arguments:
-            bucket:
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: String
-            clientId:
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: StorageClientID
-            tags:
-              type:
-                type: named
-                name: JSON
-          result_type:
-            type: named
-            name: Boolean
-        - name: setStorageObjectLegalHold
-          description: applies legal-hold onto an object.
+        - name: restoreStorageObject
+          description: restore a soft-deleted object.
           arguments:
             bucket:
               type:
@@ -2915,28 +2585,65 @@ definition:
               type:
                 type: named
                 name: String
-            status:
+            where:
+              type:
+                type: nullable
+                underlying_type:
+                  type: predicate
+                  object_type_name: StorageObjectFilter
+          result_type:
+            type: named
+            name: Boolean
+        - name: updateStorageBucket
+          description: updates the bucket's configuration.
+          arguments:
+            bucket:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
+            clientId:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: StorageClientID
+            encryption:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: ServerSideEncryptionConfiguration
+            lifecycle:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: ObjectLifecycleConfiguration
+            objectLock:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: SetStorageObjectLockConfig
+            tags:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: JSON
+            versioningEnabled:
               type:
                 type: nullable
                 underlying_type:
                   type: named
                   name: Boolean
-            versionId:
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: String
-            where:
-              type:
-                type: nullable
-                underlying_type:
-                  type: predicate
-                  object_type_name: StorageObjectSimple
           result_type:
             type: named
             name: Boolean
-        - name: setStorageObjectLockConfig
+        - name: updateStorageObject
+          description: updates the object's configuration.
           arguments:
             bucket:
               type:
@@ -2950,102 +2657,34 @@ definition:
                 underlying_type:
                   type: named
                   name: StorageClientID
-            mode:
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: StorageRetentionMode
-            unit:
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: StorageRetentionValidityUnit
-            validity:
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: Int32
-          result_type:
-            type: named
-            name: Boolean
-        - name: setStorageObjectRetention
-          description: applies object retention lock onto an object.
-          arguments:
-            bucket:
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: String
-            clientId:
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: StorageClientID
-            governanceBypass:
+            legalHold:
               type:
                 type: nullable
                 underlying_type:
                   type: named
                   name: Boolean
-            mode:
+            metadata:
               type:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: StorageRetentionMode
+                  name: JSON
             object:
               type:
                 type: named
                 name: String
-            retainUntilDate:
+            retention:
               type:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: TimestampTZ
-            versionId:
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: String
-            where:
-              type:
-                type: nullable
-                underlying_type:
-                  type: predicate
-                  object_type_name: StorageObjectSimple
-          result_type:
-            type: named
-            name: Boolean
-        - name: setStorageObjectTags
-          description: sets new object Tags to the given object, replaces/overwrites any existing tags.
-          arguments:
-            bucket:
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: String
-            clientId:
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: StorageClientID
-            object:
-              type:
-                type: named
-                name: String
+                  name: SetStorageObjectRetentionOptions
             tags:
               type:
-                type: named
-                name: JSON
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: JSON
             versionId:
               type:
                 type: nullable
@@ -3057,25 +2696,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: predicate
-                  object_type_name: StorageObjectSimple
-          result_type:
-            type: named
-            name: Boolean
-        - name: suspendStorageBucketVersioning
-          description: disables bucket versioning support.
-          arguments:
-            bucket:
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: String
-            clientId:
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: StorageClientID
+                  object_type_name: StorageObjectFilter
           result_type:
             type: named
             name: Boolean
@@ -3113,7 +2734,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: predicate
-                  object_type_name: StorageObjectSimple
+                  object_type_name: StorageObjectFilter
           result_type:
             type: named
             name: StorageUploadInfo
@@ -3151,7 +2772,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: predicate
-                  object_type_name: StorageObjectSimple
+                  object_type_name: StorageObjectFilter
           result_type:
             type: named
             name: StorageUploadInfo

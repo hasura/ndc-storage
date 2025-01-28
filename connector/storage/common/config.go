@@ -114,10 +114,6 @@ func (bcc BaseClientConfig) GetJSONSchema(providerTypes []any) *jsonschema.Schem
 		Description: "Endpoint of the storage server. Required for other S3 compatible services such as MinIO, Cloudflare R2, DigitalOcean Spaces, etc...",
 		Ref:         envStringRef,
 	})
-	properties.Set("publicHost", &jsonschema.Schema{
-		Description: "The public host to be used for presigned URL generation",
-		Ref:         envStringRef,
-	})
 	properties.Set("maxRetries", &jsonschema.Schema{
 		Description: "Maximum number of retry times",
 		Type:        "integer",

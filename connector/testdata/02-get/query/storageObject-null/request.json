@@ -41,8 +41,36 @@
         "column": "__value",
         "fields": {
           "fields": {
+            "accessTierChangeTime": {
+              "column": "accessTierChangeTime",
+              "type": "column"
+            },
+            "accessTierInferred": {
+              "column": "accessTierInferred",
+              "type": "column"
+            },
+            "acl": {
+              "column": "acl",
+              "type": "column"
+            },
+            "archiveStatus": {
+              "column": "archiveStatus",
+              "type": "column"
+            },
+            "blobSequenceNumber": {
+              "column": "blobSequenceNumber",
+              "type": "column"
+            },
+            "blobType": {
+              "column": "blobType",
+              "type": "column"
+            },
             "bucket": {
               "column": "bucket",
+              "type": "column"
+            },
+            "cacheControl": {
+              "column": "cacheControl",
               "type": "column"
             },
             "checksumCrc32": {
@@ -69,8 +97,73 @@
               "column": "clientId",
               "type": "column"
             },
+            "contentDisposition": {
+              "column": "contentDisposition",
+              "type": "column"
+            },
+            "contentEncoding": {
+              "column": "contentEncoding",
+              "type": "column"
+            },
+            "contentLanguage": {
+              "column": "contentLanguage",
+              "type": "column"
+            },
+            "contentMd5": {
+              "column": "contentMd5",
+              "type": "column"
+            },
             "contentType": {
               "column": "contentType",
+              "type": "column"
+            },
+            "copy": {
+              "column": "copy",
+              "fields": {
+                "fields": {
+                  "completionTime": {
+                    "column": "completionTime",
+                    "type": "column"
+                  },
+                  "id": {
+                    "column": "id",
+                    "type": "column"
+                  },
+                  "progress": {
+                    "column": "progress",
+                    "type": "column"
+                  },
+                  "source": {
+                    "column": "source",
+                    "type": "column"
+                  },
+                  "status": {
+                    "column": "status",
+                    "type": "column"
+                  },
+                  "statusDescription": {
+                    "column": "statusDescription",
+                    "type": "column"
+                  }
+                },
+                "type": "object"
+              },
+              "type": "column"
+            },
+            "customerProvidedKeySha256": {
+              "column": "customerProvidedKeySha256",
+              "type": "column"
+            },
+            "deleted": {
+              "column": "deleted",
+              "type": "column"
+            },
+            "deletedTime": {
+              "column": "deletedTime",
+              "type": "column"
+            },
+            "destinationSnapshot": {
+              "column": "destinationSnapshot",
               "type": "column"
             },
             "etag": {
@@ -126,12 +219,40 @@
               },
               "type": "column"
             },
-            "deleted": {
-              "column": "deleted",
+            "group": {
+              "column": "group",
+              "type": "column"
+            },
+            "incrementalCopy": {
+              "column": "incrementalCopy",
               "type": "column"
             },
             "isLatest": {
               "column": "isLatest",
+              "type": "column"
+            },
+            "kmsKeyName": {
+              "column": "kmsKeyName",
+              "type": "column"
+            },
+            "leaseDuration": {
+              "column": "leaseDuration",
+              "type": "column"
+            },
+            "leaseState": {
+              "column": "leaseState",
+              "type": "column"
+            },
+            "leaseStatus": {
+              "column": "leaseStatus",
+              "type": "column"
+            },
+            "legalHold": {
+              "column": "legalHold",
+              "type": "column"
+            },
+            "mediaLink": {
+              "column": "mediaLink",
               "type": "column"
             },
             "metadata": {
@@ -159,12 +280,32 @@
               },
               "type": "column"
             },
+            "permissions": {
+              "column": "permissions",
+              "type": "column"
+            },
+            "rawMetadata": {
+              "column": "rawMetadata",
+              "type": "column"
+            },
+            "rehydratePriority": {
+              "column": "rehydratePriority",
+              "type": "column"
+            },
+            "remainingRetentionDays": {
+              "column": "remainingRetentionDays",
+              "type": "column"
+            },
             "replicationReady": {
               "column": "replicationReady",
               "type": "column"
             },
             "replicationStatus": {
               "column": "replicationStatus",
+              "type": "column"
+            },
+            "resourceType": {
+              "column": "resourceType",
               "type": "column"
             },
             "restore": {
@@ -184,6 +325,22 @@
               },
               "type": "column"
             },
+            "retentionMode": {
+              "column": "retentionMode",
+              "type": "column"
+            },
+            "retentionUntilDate": {
+              "column": "retentionUntilDate",
+              "type": "column"
+            },
+            "sealed": {
+              "column": "sealed",
+              "type": "column"
+            },
+            "serverEncrypted": {
+              "column": "serverEncrypted",
+              "type": "column"
+            },
             "size": {
               "column": "size",
               "type": "column"
@@ -192,16 +349,16 @@
               "column": "storageClass",
               "type": "column"
             },
-            "userMetadata": {
-              "column": "userMetadata",
+            "tagCount": {
+              "column": "tagCount",
               "type": "column"
             },
-            "userTagCount": {
-              "column": "userTagCount",
+            "tags": {
+              "column": "tags",
               "type": "column"
             },
-            "userTags": {
-              "column": "userTags",
+            "versionId": {
+              "column": "versionId",
               "type": "column"
             }
           },

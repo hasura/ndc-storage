@@ -10,6 +10,7 @@ import (
 	"github.com/hasura/ndc-storage/connector/storage/common"
 	"github.com/minio/minio-go/v7"
 	"github.com/minio/minio-go/v7/pkg/notification"
+	"github.com/minio/minio-go/v7/pkg/sse"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/trace"
 )
@@ -71,9 +72,9 @@ func serializeObjectInfo(obj minio.ObjectInfo, fromList bool) common.StorageObje
 		LastModified:          obj.LastModified,
 		Size:                  &obj.Size,
 		Metadata:              map[string]string{},
-		UserMetadata:          map[string]string{},
-		UserTags:              obj.UserTags,
-		UserTagCount:          obj.UserTagCount,
+		RawMetadata:           map[string]string{},
+		Tags:                  obj.UserTags,
+		TagCount:              obj.UserTagCount,
 		Grant:                 grants,
 		IsLatest:              &obj.IsLatest,
 		Deleted:               &obj.IsDeleteMarker,
@@ -81,15 +82,17 @@ func serializeObjectInfo(obj minio.ObjectInfo, fromList bool) common.StorageObje
 		StorageObjectChecksum: checksum,
 	}
 
+	if object.TagCount == 0 {
+		object.TagCount = len(object.Tags)
+	}
+
 	if fromList {
-		object.Metadata = obj.UserMetadata
+		object.RawMetadata = obj.UserMetadata
 
 		for key, value := range obj.UserMetadata {
 			lowerKey := strings.ToLower(key)
 			if strings.HasPrefix(lowerKey, userMetadataHeaderPrefix) {
-				object.UserMetadata[key[len(userMetadataHeaderPrefix):]] = value
-
-				continue
+				object.Metadata[key[len(userMetadataHeaderPrefix):]] = value
 			}
 
 			switch lowerKey {
@@ -106,7 +109,7 @@ func serializeObjectInfo(obj minio.ObjectInfo, fromList bool) common.StorageObje
 			}
 		}
 	} else {
-		object.UserMetadata = obj.UserMetadata
+		object.Metadata = obj.UserMetadata
 
 		for key, values := range obj.Metadata {
 			if len(values) == 0 {
@@ -114,7 +117,7 @@ func serializeObjectInfo(obj minio.ObjectInfo, fromList bool) common.StorageObje
 			}
 
 			value := strings.Join(values, ", ")
-			object.Metadata[key] = value
+			object.RawMetadata[key] = value
 
 			switch strings.ToLower(key) {
 			case common.HeaderContentType:
@@ -342,10 +345,10 @@ func convertCopyDestOptions(dst common.StorageCopyDestOptions) *minio.CopyDestOp
 	destOptions := minio.CopyDestOptions{
 		Bucket:          dst.Bucket,
 		Object:          dst.Object,
-		UserMetadata:    dst.UserMetadata,
-		ReplaceMetadata: dst.ReplaceMetadata,
-		UserTags:        dst.UserTags,
-		ReplaceTags:     dst.ReplaceTags,
+		UserMetadata:    dst.Metadata,
+		ReplaceMetadata: dst.Metadata != nil,
+		UserTags:        dst.Tags,
+		ReplaceTags:     dst.Tags != nil,
 		Size:            dst.Size,
 		LegalHold:       validateLegalHoldStatus(dst.LegalHold),
 	}
@@ -624,6 +627,45 @@ func serializeErrorResponse(err error) *schema.ConnectorError {
 	return schema.UnprocessableContentError(err.Error(), nil)
 }
 
+func evalNotFoundError(err error, notFoundCode string) *schema.ConnectorError {
+	var errResponse minio.ErrorResponse
+	if !errors.As(err, &errResponse) {
+		errRespPtr := &errResponse
+		if errors.As(err, &errRespPtr) {
+			errResponse = *errRespPtr
+		}
+	}
+
+	if errResponse.Code == notFoundCode {
+		return nil
+	}
+
+	if errResponse.StatusCode > 0 {
+		return evalMinioErrorResponse(errResponse)
+	}
+
+	return schema.UnprocessableContentError(err.Error(), nil)
+}
+
 func isStringNull(input string) bool {
 	return input == "" || input == "null"
+}
+
+func validateBucketEncryptionConfiguration(input common.ServerSideEncryptionConfiguration) *sse.Configuration {
+	if input.SSEAlgorithm == "AES256" {
+		return sse.NewConfigurationSSES3()
+	}
+
+	return sse.NewConfigurationSSEKMS(input.KmsMasterKeyID)
+}
+
+func serializeBucketEncryptionConfiguration(input *sse.Configuration) *common.ServerSideEncryptionConfiguration {
+	if input == nil || len(input.Rules) == 0 {
+		return nil
+	}
+
+	return &common.ServerSideEncryptionConfiguration{
+		KmsMasterKeyID: input.Rules[0].Apply.KmsMasterKeyID,
+		SSEAlgorithm:   input.Rules[0].Apply.SSEAlgorithm,
+	}
 }

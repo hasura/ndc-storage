@@ -17,13 +17,12 @@ var tracer = connector.NewTracer("connector/storage/azblob")
 
 var errNotSupported = schema.NotSupportedError("Azure Blob Storage doesn't support this method", nil)
 
-func serializeObjectInfo(item *container.BlobItem) common.StorageObject { //nolint:funlen
+func serializeObjectInfo(item *container.BlobItem) common.StorageObject { //nolint:funlen,cyclop
 	object := common.StorageObject{
-		Metadata:     make(map[string]string),
-		UserMetadata: make(map[string]string),
-		IsLatest:     item.IsCurrentVersion,
-		Deleted:      item.Deleted,
-		VersionID:    item.VersionID,
+		Metadata:  make(map[string]string),
+		IsLatest:  item.IsCurrentVersion,
+		Deleted:   item.Deleted,
+		VersionID: item.VersionID,
 	}
 
 	if item.Name != nil {
@@ -31,14 +30,14 @@ func serializeObjectInfo(item *container.BlobItem) common.StorageObject { //noli
 	}
 
 	if item.BlobTags != nil && len(item.BlobTags.BlobTagSet) > 0 {
-		object.UserTags = make(map[string]string)
+		object.Tags = make(map[string]string)
 
 		for _, bt := range item.BlobTags.BlobTagSet {
 			if bt.Key == nil || bt.Value == nil {
 				continue
 			}
 
-			object.UserTags[*bt.Key] = *bt.Value
+			object.Tags[*bt.Key] = *bt.Value
 		}
 	}
 
@@ -79,7 +78,9 @@ func serializeObjectInfo(item *container.BlobItem) common.StorageObject { //noli
 	}
 
 	if item.Properties.TagCount != nil {
-		object.UserTagCount = int(*item.Properties.TagCount)
+		object.TagCount = int(*item.Properties.TagCount)
+	} else {
+		object.TagCount = len(object.Tags)
 	}
 
 	if item.Properties.ExpiresOn != nil {
@@ -103,21 +104,27 @@ func serializeObjectInfo(item *container.BlobItem) common.StorageObject { //noli
 	object.ArchiveStatus = (*string)(item.Properties.ArchiveStatus)
 	object.BlobSequenceNumber = item.Properties.BlobSequenceNumber
 	object.BlobType = (*string)(item.Properties.BlobType)
-	object.CopyCompletionTime = item.Properties.CopyCompletionTime
-	object.CopyID = item.Properties.CopyID
-	object.CopyProgress = item.Properties.CopyProgress
-	object.CopySource = item.Properties.CopySource
-	object.CopyStatus = (*string)(item.Properties.CopyStatus)
-	object.CopyStatusDescription = item.Properties.CopyStatusDescription
+
+	if item.Properties.CopyID != nil {
+		object.Copy = &common.StorageObjectCopyInfo{
+			CompletionTime:    item.Properties.CopyCompletionTime,
+			ID:                *item.Properties.CopyID,
+			Progress:          item.Properties.CopyProgress,
+			Source:            item.Properties.CopySource,
+			Status:            (*string)(item.Properties.CopyStatus),
+			StatusDescription: item.Properties.CopyStatusDescription,
+		}
+	}
+
 	object.CreationTime = item.Properties.CreationTime
 	object.DeletedTime = item.Properties.DeletedTime
 	object.CustomerProvidedKeySHA256 = item.Properties.CustomerProvidedKeySHA256
 	object.DestinationSnapshot = item.Properties.DestinationSnapshot
 	object.ServerEncrypted = item.Properties.ServerEncrypted
-	object.EncryptionScope = item.Properties.EncryptionScope
+	object.KMSKeyName = item.Properties.EncryptionScope
 	object.Group = item.Properties.Group
-	object.ImmutabilityPolicyUntilDate = item.Properties.ImmutabilityPolicyExpiresOn
-	object.ImmutabilityPolicyMode = (*string)(item.Properties.ImmutabilityPolicyMode)
+	object.RetentionUntilDate = item.Properties.ImmutabilityPolicyExpiresOn
+	object.RetentionMode = (*string)(item.Properties.ImmutabilityPolicyMode)
 	object.IncrementalCopy = item.Properties.IncrementalCopy
 	object.IsSealed = item.Properties.IsSealed
 	object.LastAccessTime = item.Properties.LastAccessedOn

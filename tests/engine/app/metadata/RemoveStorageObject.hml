@@ -15,10 +15,12 @@ definition:
       type: Boolean
     - name: object
       type: String!
+    - name: softDelete
+      type: Boolean
     - name: versionId
       type: String
     - name: where
-      type: StorageObjectSimpleBoolExp
+      type: StorageObjectFilterBoolExp
   source:
     dataConnectorName: storage
     dataConnectorCommand:

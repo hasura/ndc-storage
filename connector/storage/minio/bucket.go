@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"net/http"
+	"strings"
 
 	"github.com/hasura/ndc-sdk-go/schema"
 	"github.com/hasura/ndc-storage/connector/storage/common"
@@ -12,6 +13,7 @@ import (
 	"github.com/minio/minio-go/v7/pkg/tags"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/codes"
+	"go.opentelemetry.io/otel/trace"
 	"golang.org/x/sync/errgroup"
 )
 
@@ -22,7 +24,7 @@ func (mc *Client) MakeBucket(ctx context.Context, args *common.MakeStorageBucket
 
 	err := mc.client.MakeBucket(ctx, args.Name, minio.MakeBucketOptions{
 		Region:        args.Region,
-		ObjectLocking: args.ObjectLocking,
+		ObjectLocking: args.ObjectLock,
 	})
 	if err != nil {
 		span.SetStatus(codes.Error, err.Error())
@@ -44,7 +46,7 @@ func (mc *Client) MakeBucket(ctx context.Context, args *common.MakeStorageBucket
 }
 
 // ListBuckets lists all buckets.
-func (mc *Client) ListBuckets(ctx context.Context, options common.BucketOptions) ([]common.StorageBucketInfo, error) {
+func (mc *Client) ListBuckets(ctx context.Context, options *common.ListStorageBucketsOptions, predicate func(string) bool) (*common.StorageBucketListResults, error) {
 	ctx, span := mc.startOtelSpan(ctx, "ListBuckets", "")
 	defer span.End()
 
@@ -56,12 +58,37 @@ func (mc *Client) ListBuckets(ctx context.Context, options common.BucketOptions)
 		return nil, serializeErrorResponse(err)
 	}
 
+	var filteredBuckets []minio.BucketInfo
+
+	if options.Prefix == "" && predicate == nil {
+		filteredBuckets = bucketInfos
+	} else {
+		for _, info := range bucketInfos {
+			if (options.Prefix != "" && !strings.HasPrefix(info.Name, options.Prefix)) ||
+				(predicate != nil && !predicate(info.Name)) {
+				continue
+			}
+
+			filteredBuckets = append(filteredBuckets, info)
+		}
+	}
+
 	span.SetAttributes(attribute.Int("storage.bucket_count", len(bucketInfos)))
-	results := make([]common.StorageBucketInfo, len(bucketInfos))
+
+	if len(bucketInfos) == 0 {
+		return &common.StorageBucketListResults{
+			Buckets: []common.StorageBucket{},
+		}, nil
+	}
+
+	results := make([]common.StorageBucket, len(filteredBuckets))
 
 	if options.NumThreads <= 1 {
-		for i, item := range bucketInfos {
-			bucket, err := mc.populateBucket(ctx, item, options)
+		for i, item := range filteredBuckets {
+			bucket, err := mc.populateBucket(ctx, item, common.BucketOptions{
+				NumThreads: options.NumThreads,
+				Include:    options.Include,
+			})
 			if err != nil {
 				span.SetStatus(codes.Error, err.Error())
 				span.RecordError(err)
@@ -72,7 +99,9 @@ func (mc *Client) ListBuckets(ctx context.Context, options common.BucketOptions)
 			results[i] = bucket
 		}
 
-		return results, nil
+		return &common.StorageBucketListResults{
+			Buckets: results,
+		}, nil
 	}
 
 	eg := errgroup.Group{}
@@ -80,7 +109,10 @@ func (mc *Client) ListBuckets(ctx context.Context, options common.BucketOptions)
 
 	populateFunc := func(item minio.BucketInfo, index int) {
 		eg.Go(func() error {
-			bucket, err := mc.populateBucket(ctx, item, options)
+			bucket, err := mc.populateBucket(ctx, item, common.BucketOptions{
+				NumThreads: options.NumThreads,
+				Include:    options.Include,
+			})
 			if err != nil {
 				return err
 			}
@@ -91,7 +123,7 @@ func (mc *Client) ListBuckets(ctx context.Context, options common.BucketOptions)
 		})
 	}
 
-	for i, item := range bucketInfos {
+	for i, item := range filteredBuckets {
 		populateFunc(item, i)
 	}
 
@@ -102,11 +134,13 @@ func (mc *Client) ListBuckets(ctx context.Context, options common.BucketOptions)
 		return nil, err
 	}
 
-	return results, nil
+	return &common.StorageBucketListResults{
+		Buckets: results,
+	}, nil
 }
 
 // GetBucket gets a bucket by name.
-func (mc *Client) GetBucket(ctx context.Context, name string, options common.BucketOptions) (*common.StorageBucketInfo, error) {
+func (mc *Client) GetBucket(ctx context.Context, name string, options common.BucketOptions) (*common.StorageBucket, error) {
 	ctx, span := mc.startOtelSpan(ctx, "GetBucket", "")
 	defer span.End()
 
@@ -169,6 +203,50 @@ func (mc *Client) RemoveBucket(ctx context.Context, bucketName string) error {
 	}
 
 	return nil
+}
+
+// UpdateBucket updates configurations for the bucket.
+func (mc *Client) UpdateBucket(ctx context.Context, bucketName string, opts common.UpdateStorageBucketOptions) error {
+	ctx, span := mc.startOtelSpanWithKind(ctx, trace.SpanKindInternal, "UpdateBucket", bucketName)
+	defer span.End()
+
+	if opts.Tags != nil {
+		if err := mc.SetBucketTagging(ctx, bucketName, opts.Tags); err != nil {
+			return err
+		}
+	}
+
+	if opts.VersioningEnabled != nil {
+		if *opts.VersioningEnabled {
+			if err := mc.EnableVersioning(ctx, bucketName); err != nil {
+				return err
+			}
+		} else if err := mc.SuspendVersioning(ctx, bucketName); err != nil {
+			return err
+		}
+	}
+
+	if opts.Lifecycle != nil {
+		if err := mc.SetBucketLifecycle(ctx, bucketName, *opts.Lifecycle); err != nil {
+			return err
+		}
+	}
+
+	if opts.ObjectLock != nil {
+		if err := mc.SetObjectLockConfig(ctx, bucketName, *opts.ObjectLock); err != nil {
+			return err
+		}
+	}
+
+	if opts.Encryption == nil {
+		return nil
+	}
+
+	if opts.Encryption.IsEmpty() {
+		return mc.RemoveBucketEncryption(ctx, bucketName)
+	}
+
+	return mc.SetBucketEncryption(ctx, bucketName, *opts.Encryption)
 }
 
 // GetBucketTagging gets tags of a bucket.
@@ -337,12 +415,9 @@ func (mc *Client) GetBucketVersioning(ctx context.Context, bucketName string) (*
 	}
 
 	result := &common.StorageBucketVersioningConfiguration{
+		Enabled:          rawResult.Enabled(),
 		ExcludedPrefixes: make([]string, len(rawResult.ExcludedPrefixes)),
 		ExcludeFolders:   &rawResult.ExcludeFolders,
-	}
-
-	if rawResult.Status != "" {
-		result.Status = &rawResult.Status
 	}
 
 	if rawResult.MFADelete != "" {
@@ -439,6 +514,59 @@ func (mc *Client) RemoveBucketReplication(ctx context.Context, bucketName string
 	return nil
 }
 
+// SetBucketEncryption sets default encryption configuration on a bucket.
+func (mc *Client) SetBucketEncryption(ctx context.Context, bucketName string, input common.ServerSideEncryptionConfiguration) error {
+	ctx, span := mc.startOtelSpan(ctx, "SetBucketEncryption", bucketName)
+	defer span.End()
+
+	err := mc.client.SetBucketEncryption(ctx, bucketName, validateBucketEncryptionConfiguration(input))
+	if err != nil {
+		span.SetStatus(codes.Error, err.Error())
+		span.RecordError(err)
+
+		return serializeErrorResponse(err)
+	}
+
+	return nil
+}
+
+// GetBucketEncryption gets default encryption configuration set on a bucket.
+func (mc *Client) GetBucketEncryption(ctx context.Context, bucketName string) (*common.ServerSideEncryptionConfiguration, error) {
+	ctx, span := mc.startOtelSpan(ctx, "GetBucketEncryption", bucketName)
+	defer span.End()
+
+	rawResult, err := mc.client.GetBucketEncryption(ctx, bucketName)
+	if err != nil {
+		respError := evalNotFoundError(err, "ServerSideEncryptionConfigurationNotFoundError")
+		if respError == nil {
+			return nil, nil
+		}
+
+		span.SetStatus(codes.Error, err.Error())
+		span.RecordError(err)
+
+		return nil, respError
+	}
+
+	return serializeBucketEncryptionConfiguration(rawResult), nil
+}
+
+// RemoveBucketEncryption remove default encryption configuration set on a bucket.
+func (mc *Client) RemoveBucketEncryption(ctx context.Context, bucketName string) error {
+	ctx, span := mc.startOtelSpan(ctx, "RemoveBucketEncryption", bucketName)
+	defer span.End()
+
+	err := mc.client.RemoveBucketEncryption(ctx, bucketName)
+	if err != nil {
+		span.SetStatus(codes.Error, err.Error())
+		span.RecordError(err)
+
+		return serializeErrorResponse(err)
+	}
+
+	return nil
+}
+
 func validateBucketReplicationConfig(input common.StorageReplicationConfig) replication.Config {
 	result := replication.Config{
 		Rules: make([]replication.Rule, len(input.Rules)),
@@ -502,13 +630,12 @@ func validateBucketReplicationFilter(input common.StorageReplicationFilter) repl
 		result.Prefix = *input.Prefix
 	}
 
-	if input.Tag != nil {
-		if input.Tag.Key != nil {
-			result.Tag.Key = *input.Tag.Key
-		}
+	if len(input.Tag) > 0 {
+		for key, value := range input.Tag {
+			result.Tag.Key = key
+			result.Tag.Value = value
 
-		if input.Tag.Value != nil {
-			result.Tag.Value = *input.Tag.Value
+			break
 		}
 	}
 
@@ -517,19 +644,13 @@ func validateBucketReplicationFilter(input common.StorageReplicationFilter) repl
 			result.And.Prefix = *input.Prefix
 		}
 
-		result.And.Tags = make([]replication.Tag, len(input.And.Tags))
-
-		for i, tag := range input.And.Tags {
-			t := replication.Tag{}
-			if tag.Key != nil {
-				t.Key = *tag.Key
+		for key, value := range input.And.Tags {
+			t := replication.Tag{
+				Key:   key,
+				Value: value,
 			}
 
-			if tag.Value != nil {
-				t.Value = *tag.Value
-			}
-
-			result.And.Tags[i] = t
+			result.And.Tags = append(result.And.Tags, t)
 		}
 	}
 
@@ -595,14 +716,8 @@ func serializeBucketReplicationRule(item replication.Rule) common.StorageReplica
 	}
 
 	if item.Filter.Tag.Key != "" || item.Filter.Tag.Value != "" {
-		rule.Filter.Tag = &common.StorageTag{}
-
-		if item.Filter.Tag.Key != "" {
-			rule.Filter.Tag.Key = &item.Filter.Tag.Key
-		}
-
-		if item.Filter.Tag.Value != "" {
-			rule.Filter.Tag.Value = &item.Filter.Tag.Value
+		rule.Filter.Tag = map[string]string{
+			item.Filter.Tag.Key: item.Filter.Tag.Value,
 		}
 	}
 
@@ -612,38 +727,65 @@ func serializeBucketReplicationRule(item replication.Rule) common.StorageReplica
 			rule.Filter.And.Prefix = &item.Filter.Prefix
 		}
 
-		rule.Filter.And.Tags = make([]common.StorageTag, len(item.Filter.And.Tags))
+		rule.Filter.And.Tags = make(map[string]string)
 
-		for i, tag := range item.Filter.And.Tags {
-			t := common.StorageTag{}
-			if tag.Key != "" {
-				t.Key = &tag.Key
-			}
-
-			if tag.Value != "" {
-				t.Value = &tag.Value
-			}
-
-			rule.Filter.And.Tags[i] = t
+		for _, tag := range item.Filter.And.Tags {
+			rule.Filter.And.Tags[tag.Key] = tag.Value
 		}
 	}
 
 	return rule
 }
 
-func (mc *Client) populateBucket(ctx context.Context, item minio.BucketInfo, options common.BucketOptions) (common.StorageBucketInfo, error) {
-	bucket := common.StorageBucketInfo{
+func (mc *Client) populateBucket(ctx context.Context, item minio.BucketInfo, options common.BucketOptions) (common.StorageBucket, error) {
+	bucket := common.StorageBucket{
 		Name:         item.Name,
-		CreationDate: item.CreationDate,
+		CreationTime: &item.CreationDate,
 	}
 
-	if options.IncludeTags {
+	if options.Include.Tags {
 		tags, err := mc.GetBucketTagging(ctx, item.Name)
 		if err != nil {
 			return bucket, err
 		}
 
 		bucket.Tags = tags
+	}
+
+	if options.Include.Versioning {
+		versioning, err := mc.GetBucketVersioning(ctx, bucket.Name)
+		if err != nil {
+			return bucket, err
+		}
+
+		bucket.Versioning = versioning
+	}
+
+	if options.Include.Lifecycle {
+		lc, err := mc.GetBucketLifecycle(ctx, bucket.Name)
+		if err != nil {
+			return bucket, err
+		}
+
+		bucket.Lifecycle = lc
+	}
+
+	if options.Include.Encryption {
+		encryption, err := mc.GetBucketEncryption(ctx, bucket.Name)
+		if err != nil {
+			return bucket, err
+		}
+
+		bucket.Encryption = encryption
+	}
+
+	if options.Include.ObjectLock {
+		lock, err := mc.GetObjectLockConfig(ctx, bucket.Name)
+		if err != nil {
+			return bucket, err
+		}
+
+		bucket.ObjectLock = lock
 	}
 
 	return bucket, nil

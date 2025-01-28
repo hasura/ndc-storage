@@ -1,0 +1,17 @@
+{
+  "collection_relationships": {},
+  "operations": [
+    {
+      "type": "procedure",
+      "name": "createStorageBucket",
+      "arguments": {
+        "clientId": "gcs",
+        "name": "gcs-bucket",
+        "objectLock": true,
+        "tags": {
+          "provider": "gcp"
+        }
+      }
+    }
+  ]
+}

@@ -8,13 +8,11 @@
         "dest": {
           "bucket": "minio-bucket-test",
           "object": "public/workd2.txt",
-          "replaceMetadata": false,
-          "replaceTags": true,
           "size": 8502136105187820186,
-          "userMetadata": {
+          "metadata": {
             "UserID": "2"
           },
-          "userTags": {
+          "tags": {
             "Copy": "true"
           }
         },

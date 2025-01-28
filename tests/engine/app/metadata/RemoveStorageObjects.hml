@@ -53,7 +53,7 @@ definition:
     - name: startAfter
       type: String!
     - name: where
-      type: StorageObjectSimpleBoolExp
+      type: StorageObjectFilterBoolExp
   source:
     dataConnectorName: storage
     dataConnectorCommand:

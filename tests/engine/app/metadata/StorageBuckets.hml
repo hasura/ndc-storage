@@ -2,44 +2,125 @@
 kind: ObjectType
 version: v1
 definition:
-  name: StorageBucketInfo
-  description: container for bucket metadata.
+  name: StorageBucketFilter
   fields:
-    - name: creationDate
-      type: TimestampTz!
-    - name: name
-      type: String!
-    - name: tags
-      type: Json
+    - name: bucket
+      type: StorageStringFilter!
+    - name: clientId
+      type: StorageClientId!
   graphql:
-    typeName: StorageBucketInfo
-    inputTypeName: StorageBucketInfoInput
+    typeName: StorageBucketFilter
+    inputTypeName: StorageBucketFilterInput
   dataConnectorTypeMapping:
     - dataConnectorName: storage
-      dataConnectorObjectType: StorageBucketInfo
+      dataConnectorObjectType: StorageBucketFilter
 
 ---
 kind: TypePermissions
 version: v1
 definition:
-  typeName: StorageBucketInfo
+  typeName: StorageBucketFilter
   permissions:
     - role: admin
       output:
         allowedFields:
-          - creationDate
-          - name
-          - tags
+          - bucket
+          - clientId
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: StorageBucketFilterBoolExp
+  operand:
+    object:
+      type: StorageBucketFilter
+      comparableFields:
+        - fieldName: bucket
+          booleanExpressionType: StorageStringFilterBoolExp
+        - fieldName: clientId
+          booleanExpressionType: StorageClientIdBoolExp
+      comparableRelationships: []
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: StorageBucketFilterBoolExp
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: StoragePaginationInfo
+  description: holds the pagination information.
+  fields:
+    - name: cursor
+      type: String
+    - name: hasNextPage
+      type: Boolean!
+  graphql:
+    typeName: StoragePaginationInfo
+    inputTypeName: StoragePaginationInfoInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: storage
+      dataConnectorObjectType: StoragePaginationInfo
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: StoragePaginationInfo
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - cursor
+          - hasNextPage
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: StorageBucketListResults
+  description: hold the paginated results of the storage bucket list.
+  fields:
+    - name: buckets
+      type: "[StorageBucket!]!"
+    - name: pageInfo
+      type: StoragePaginationInfo!
+  graphql:
+    typeName: StorageBucketListResults
+    inputTypeName: StorageBucketListResultsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: storage
+      dataConnectorObjectType: StorageBucketListResults
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: StorageBucketListResults
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - buckets
+          - pageInfo
 
 ---
 kind: Command
 version: v1
 definition:
   name: StorageBuckets
-  outputType: "[StorageBucketInfo!]!"
+  outputType: StorageBucketListResults!
   arguments:
-    - name: clientId
-      type: StorageClientId
+    - name: maxResults
+      type: Int32
+    - name: startAfter
+      type: String
+    - name: where
+      type: StorageBucketFilterBoolExp
   source:
     dataConnectorName: storage
     dataConnectorCommand:

@@ -9,7 +9,6 @@ import (
 )
 
 func TestConnector(t *testing.T) {
-
 	azureBlobEndpoint := "http://local.hasura.dev:10000"
 	azureAccountName := "local"
 	azureAccountKey := "Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw=="
@@ -27,6 +26,10 @@ func TestConnector(t *testing.T) {
 	t.Setenv("AZURE_STORAGE_ACCOUNT_NAME", azureAccountName)
 	t.Setenv("AZURE_STORAGE_ACCOUNT_KEY", azureAccountKey)
 	t.Setenv("AZURE_STORAGE_CONNECTION_STRING", fmt.Sprintf("DefaultEndpointsProtocol=http;AccountName=%s;AccountKey=%s;BlobEndpoint=%s", azureAccountName, azureAccountKey, azureBlobEndpoint))
+	t.Setenv("GOOGLE_STORAGE_DEFAULT_BUCKET", "gcp-bucket")
+	t.Setenv("GOOGLE_PROJECT_ID", "test-local-project")
+	t.Setenv("GOOGLE_STORAGE_ENDPOINT", "http://localhost:10010/storage/v1/")
+	t.Setenv("GOOGLE_STORAGE_CREDENTIALS_FILE", "../tests/certs/service_account.json")
 
 	for _, dir := range []string{"01-setup", "02-get", "03-cleanup"} {
 		ndctest.TestConnector(t, &Connector{}, ndctest.TestConnectorOptions{

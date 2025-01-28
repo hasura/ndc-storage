@@ -1,67 +1,4 @@
 ---
-kind: ObjectType
-version: v1
-definition:
-  name: StorageObjectPaginationInfo
-  description: holds the pagination information.
-  fields:
-    - name: cursor
-      type: String
-    - name: hasNextPage
-      type: Boolean!
-    - name: nextCursor
-      type: String
-  graphql:
-    typeName: StorageObjectPaginationInfo
-    inputTypeName: StorageObjectPaginationInfoInput
-  dataConnectorTypeMapping:
-    - dataConnectorName: storage
-      dataConnectorObjectType: StorageObjectPaginationInfo
-
----
-kind: TypePermissions
-version: v1
-definition:
-  typeName: StorageObjectPaginationInfo
-  permissions:
-    - role: admin
-      output:
-        allowedFields:
-          - cursor
-          - hasNextPage
-          - nextCursor
-
----
-kind: ObjectType
-version: v1
-definition:
-  name: StorageObjectListResults
-  description: hold the paginated results of the storage object list.
-  fields:
-    - name: objects
-      type: "[StorageObject!]!"
-    - name: pageInfo
-      type: StorageObjectPaginationInfo!
-  graphql:
-    typeName: StorageObjectListResults
-    inputTypeName: StorageObjectListResultsInput
-  dataConnectorTypeMapping:
-    - dataConnectorName: storage
-      dataConnectorObjectType: StorageObjectListResults
-
----
-kind: TypePermissions
-version: v1
-definition:
-  typeName: StorageObjectListResults
-  permissions:
-    - role: admin
-      output:
-        allowedFields:
-          - objects
-          - pageInfo
-
----
 kind: Command
 version: v1
 definition:
@@ -75,7 +12,7 @@ definition:
     - name: startAfter
       type: String
     - name: where
-      type: StorageObjectSimpleBoolExp
+      type: StorageObjectFilterBoolExp
   source:
     dataConnectorName: storage
     dataConnectorCommand:
@@ -93,3 +30,4 @@ definition:
   permissions:
     - role: admin
       allowExecution: true
+

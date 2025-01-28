@@ -31,7 +31,7 @@ type ClientConfig struct {
 func (cc ClientConfig) JSONSchema() *jsonschema.Schema {
 	envStringRef := "#/$defs/EnvString"
 
-	result := cc.BaseClientConfig.GetJSONSchema([]any{common.S3, common.GoogleStorage})
+	result := cc.BaseClientConfig.GetJSONSchema([]any{common.S3})
 	result.Required = append(result.Required, "authentication")
 
 	result.Properties.Set("region", &jsonschema.Schema{
@@ -40,6 +40,10 @@ func (cc ClientConfig) JSONSchema() *jsonschema.Schema {
 			{Type: "null"},
 			{Ref: envStringRef},
 		},
+	})
+	result.Properties.Set("publicHost", &jsonschema.Schema{
+		Description: "The public host to be used for presigned URL generation",
+		Ref:         envStringRef,
 	})
 	result.Properties.Set("authentication", cc.Authentication.JSONSchema())
 	result.Properties.Set("trailingHeaders", &jsonschema.Schema{
@@ -173,7 +177,7 @@ func (at AuthType) Validate() error {
 	return err
 }
 
-// AuthCredentials represent the authentication credentials infomartion.
+// AuthCredentials represent the authentication credentials information.
 type AuthCredentials struct {
 	// The authentication type
 	Type AuthType `json:"type" mapstructure:"type" yaml:"type"`

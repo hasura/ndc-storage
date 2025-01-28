@@ -14,7 +14,7 @@ definition:
     - name: object
       type: String!
     - name: where
-      type: StorageObjectSimpleBoolExp
+      type: StorageObjectFilterBoolExp
   source:
     dataConnectorName: storage
     dataConnectorCommand:

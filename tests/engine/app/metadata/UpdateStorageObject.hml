@@ -1,0 +1,76 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: SetStorageObjectRetentionOptions
+  description: represents options specified by user for PutObject call.
+  fields:
+    - name: governanceBypass
+      type: Boolean
+    - name: mode
+      type: StorageRetentionMode
+    - name: retainUntilDate
+      type: TimestampTz
+  graphql:
+    typeName: SetStorageObjectRetentionOptions
+    inputTypeName: SetStorageObjectRetentionOptionsInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: storage
+      dataConnectorObjectType: SetStorageObjectRetentionOptions
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: SetStorageObjectRetentionOptions
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - governanceBypass
+          - mode
+          - retainUntilDate
+
+---
+kind: Command
+version: v1
+definition:
+  name: UpdateStorageObject
+  outputType: Boolean!
+  arguments:
+    - name: bucket
+      type: String
+    - name: clientId
+      type: StorageClientId
+    - name: legalHold
+      type: Boolean
+    - name: metadata
+      type: Json
+    - name: object
+      type: String!
+    - name: retention
+      type: SetStorageObjectRetentionOptions
+    - name: tags
+      type: Json
+    - name: versionId
+      type: String
+    - name: where
+      type: StorageObjectFilterBoolExp
+  source:
+    dataConnectorName: storage
+    dataConnectorCommand:
+      procedure: updateStorageObject
+  graphql:
+    rootFieldName: updateStorageObject
+    rootFieldKind: Mutation
+  description: updates the object's configuration.
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: UpdateStorageObject
+  permissions:
+    - role: admin
+      allowExecution: true
+

@@ -103,12 +103,12 @@ query DownloadObjectText {
 
 | Service              | Pagination |
 | -------------------- | ---------- |
-| AWS S3               | ❌        |
-| MinIO                | ❌        |
-| Google Cloud Storage | ❌        |
-| Cloudflare R2        | ❌        |
-| DigitalOcean Spaces  | ❌        |
+| AWS S3               | ❌         |
+| Google Cloud Storage | ✅         |
 | Azure Blob Storage   | ✅         |
+| MinIO                | ❌         |
+| Cloudflare R2        | ❌         |
+| DigitalOcean Spaces  | ❌         |
 
 ```graphql
 query ListObjects {
@@ -116,7 +116,6 @@ query ListObjects {
     pageInfo {
       cursor
       hasNextPage
-      nextCursor
     }
     objects {
       clientId
@@ -126,9 +125,8 @@ query ListObjects {
       serverEncrypted
       size
       storageClass
-      userMetadata
-      userTagCount
-      userTags
+      tagCount
+      tags
       cacheControl
       checksumCrc32
       checksumCrc64Nvme

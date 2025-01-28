@@ -16,7 +16,7 @@ definition:
     - name: options
       type: PutStorageObjectOptions
     - name: where
-      type: StorageObjectSimpleBoolExp
+      type: StorageObjectFilterBoolExp
   source:
     dataConnectorName: storage
     dataConnectorCommand:

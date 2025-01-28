@@ -22,8 +22,8 @@ const (
 
 const (
 	ScalarStorageClientID = "StorageClientID"
-	ScalarBucketName      = "BucketName"
-	ScalarObjectPath      = "ObjectPath"
+	ScalarBucketName      = "StorageBucketName"
+	ScalarStringFilter    = "StorageStringFilter"
 )
 
 var checksumColumnNames = []string{"checksumCrc32", "checksumCrc32C", "checksumCrc64Nvme", "checksumSha1", "checksumSha256"}
@@ -39,7 +39,17 @@ func GetConnectorSchema(clientIDs []string) *schema.SchemaResponse {
 	return &schema.SchemaResponse{
 		Collections: []schema.CollectionInfo{},
 		ObjectTypes: schema.SchemaResponseObjectTypes{
-			"StorageObjectSimple": schema.ObjectType{
+			"StorageBucketFilter": schema.ObjectType{
+				Fields: schema.ObjectTypeFields{
+					StorageObjectColumnClientID: schema.ObjectField{
+						Type: schema.NewNamedType(ScalarStorageClientID).Encode(),
+					},
+					StorageObjectColumnBucket: schema.ObjectField{
+						Type: schema.NewNamedType(ScalarStringFilter).Encode(),
+					},
+				},
+			},
+			"StorageObjectFilter": schema.ObjectType{
 				Fields: schema.ObjectTypeFields{
 					StorageObjectColumnClientID: schema.ObjectField{
 						Type: schema.NewNamedType(ScalarStorageClientID).Encode(),
@@ -48,7 +58,7 @@ func GetConnectorSchema(clientIDs []string) *schema.SchemaResponse {
 						Type: schema.NewNamedType(ScalarBucketName).Encode(),
 					},
 					StorageObjectColumnObject: schema.ObjectField{
-						Type: schema.NewNamedType(ScalarObjectPath).Encode(),
+						Type: schema.NewNamedType(ScalarStringFilter).Encode(),
 					},
 				},
 			},
@@ -61,13 +71,13 @@ func GetConnectorSchema(clientIDs []string) *schema.SchemaResponse {
 				},
 				Representation: schema.NewTypeRepresentationString().Encode(),
 			},
-			ScalarObjectPath: schema.ScalarType{
+			ScalarStringFilter: schema.ScalarType{
 				AggregateFunctions: schema.ScalarTypeAggregateFunctions{},
 				ComparisonOperators: map[string]schema.ComparisonOperatorDefinition{
 					OperatorEqual:               schema.NewComparisonOperatorEqual().Encode(),
-					OperatorStartsWith:          schema.NewComparisonOperatorCustom(schema.NewNamedType(ScalarObjectPath)).Encode(),
-					OperatorContains:            schema.NewComparisonOperatorCustom(schema.NewNamedType(ScalarObjectPath)).Encode(),
-					OperatorInsensitiveContains: schema.NewComparisonOperatorCustom(schema.NewNamedType(ScalarObjectPath)).Encode(),
+					OperatorStartsWith:          schema.NewComparisonOperatorCustom(schema.NewNamedType(ScalarStringFilter)).Encode(),
+					OperatorContains:            schema.NewComparisonOperatorCustom(schema.NewNamedType(ScalarStringFilter)).Encode(),
+					OperatorInsensitiveContains: schema.NewComparisonOperatorCustom(schema.NewNamedType(ScalarStringFilter)).Encode(),
 				},
 				Representation: schema.NewTypeRepresentationString().Encode(),
 			},

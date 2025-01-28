@@ -20,6 +20,7 @@ import (
 	"github.com/hasura/ndc-storage/connector/storage/common"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/codes"
+	"go.opentelemetry.io/otel/trace"
 )
 
 // ListObjects list objects in a bucket.
@@ -34,11 +35,11 @@ func (c *Client) ListObjects(ctx context.Context, bucketName string, opts *commo
 			Tags:                opts.Include.Tags,
 			Copy:                opts.Include.Copy,
 			Snapshots:           opts.Include.Snapshots,
-			Deleted:             opts.Include.Deleted,
 			LegalHold:           opts.Include.LegalHold,
-			ImmutabilityPolicy:  opts.Include.ImmutabilityPolicy,
-			DeletedWithVersions: opts.Include.DeletedWithVersions,
+			ImmutabilityPolicy:  opts.Include.Retention,
 			Permissions:         opts.Include.Permissions,
+			Deleted:             false,
+			DeletedWithVersions: false,
 			UncommittedBlobs:    false,
 		},
 	}
@@ -59,7 +60,7 @@ func (c *Client) ListObjects(ctx context.Context, bucketName string, opts *commo
 	var count int32
 	objects := make([]common.StorageObject, 0)
 	pager := c.client.NewListBlobsFlatPager(bucketName, options)
-	pageInfo := common.StorageObjectPaginationInfo{}
+	pageInfo := common.StoragePaginationInfo{}
 
 	for pager.More() {
 		resp, err := pager.NextPage(ctx)
@@ -82,11 +83,7 @@ func (c *Client) ListObjects(ctx context.Context, bucketName string, opts *commo
 		if maxResults > 0 && count >= maxResults {
 			if pager.More() {
 				pageInfo.HasNextPage = true
-				pageInfo.NextCursor = resp.NextMarker
-			}
-
-			if resp.Marker != nil && *resp.Marker != "" {
-				pageInfo.Cursor = resp.Marker
+				pageInfo.Cursor = resp.NextMarker
 			}
 
 			break
@@ -156,6 +153,80 @@ func (c *Client) ListIncompleteUploads(ctx context.Context, bucketName string, a
 	return objects, nil
 }
 
+// ListDeletedObjects list soft-deleted objects in a bucket.
+func (c *Client) ListDeletedObjects(ctx context.Context, bucketName string, opts *common.ListStorageObjectsOptions, predicate func(string) bool) (*common.StorageObjectListResults, error) {
+	ctx, span := c.startOtelSpan(ctx, "ListDeletedObjects", bucketName)
+	defer span.End()
+
+	options := &container.ListBlobsFlatOptions{
+		Include: container.ListBlobsInclude{
+			Versions:            opts.Include.Versions,
+			Metadata:            opts.Include.Metadata,
+			Tags:                opts.Include.Tags,
+			Copy:                opts.Include.Copy,
+			Snapshots:           opts.Include.Snapshots,
+			LegalHold:           opts.Include.LegalHold,
+			ImmutabilityPolicy:  opts.Include.Retention,
+			Permissions:         opts.Include.Permissions,
+			Deleted:             true,
+			DeletedWithVersions: true,
+			UncommittedBlobs:    false,
+		},
+	}
+
+	if opts.Prefix != "" {
+		options.Prefix = &opts.Prefix
+	}
+
+	maxResults := int32(opts.MaxResults)
+
+	if opts.StartAfter != "" {
+		options.Marker = &opts.StartAfter
+	}
+
+	var count int32
+	objects := make([]common.StorageObject, 0)
+	pager := c.client.NewListBlobsFlatPager(bucketName, options)
+	pageInfo := common.StoragePaginationInfo{}
+
+	for pager.More() {
+		resp, err := pager.NextPage(ctx)
+		if err != nil {
+			span.SetStatus(codes.Error, err.Error())
+			span.RecordError(err)
+
+			return nil, serializeErrorResponse(err)
+		}
+
+		for _, item := range resp.Segment.BlobItems {
+			if item.Name == nil || item.Deleted == nil || !*item.Deleted || (predicate != nil && !predicate(*item.Name)) {
+				continue
+			}
+
+			objects = append(objects, serializeObjectInfo(item))
+			count++
+		}
+
+		if maxResults > 0 && count >= maxResults {
+			if pager.More() {
+				pageInfo.HasNextPage = true
+				pageInfo.Cursor = resp.NextMarker
+			}
+
+			break
+		}
+	}
+
+	span.SetAttributes(attribute.Int("storage.object_count", int(count)))
+
+	results := &common.StorageObjectListResults{
+		Objects:  objects,
+		PageInfo: pageInfo,
+	}
+
+	return results, nil
+}
+
 // RemoveIncompleteUpload removes a partially uploaded object.
 func (c *Client) RemoveIncompleteUpload(ctx context.Context, bucketName string, objectName string) error {
 	return c.removeObject(ctx, "RemoveIncompleteUpload", bucketName, objectName, common.RemoveStorageObjectOptions{})
@@ -192,7 +263,7 @@ func (c *Client) PutObject(ctx context.Context, bucketName string, objectName st
 
 	uploadOptions := &azblob.UploadStreamOptions{
 		HTTPHeaders: &blob.HTTPHeaders{},
-		Tags:        opts.UserTags,
+		Tags:        opts.Tags,
 		Metadata:    map[string]*string{},
 		Concurrency: int(opts.NumThreads),
 		BlockSize:   int64(opts.PartSize),
@@ -207,7 +278,7 @@ func (c *Client) PutObject(ctx context.Context, bucketName string, objectName st
 		uploadOptions.AccessTier = &accessTier
 	}
 
-	for key, value := range opts.UserMetadata {
+	for key, value := range opts.Metadata {
 		if value != "" {
 			uploadOptions.Metadata[key] = &value
 		}
@@ -252,6 +323,19 @@ func (c *Client) PutObject(ctx context.Context, bucketName string, objectName st
 		return nil, serializeErrorResponse(err)
 	}
 
+	if opts.Retention != nil && opts.Retention.Mode == common.StorageRetentionModeLocked {
+		err := c.SetObjectRetention(ctx, bucketName, objectName, "", common.SetStorageObjectRetentionOptions{
+			Mode:            &opts.Retention.Mode,
+			RetainUntilDate: &opts.Retention.RetainUntilDate,
+		})
+		if err != nil {
+			span.SetStatus(codes.Error, err.Error())
+			span.RecordError(err)
+
+			return nil, err
+		}
+	}
+
 	result := serializeUploadObjectInfo(resp)
 	result.Name = objectName
 
@@ -276,12 +360,12 @@ func (c *Client) CopyObject(ctx context.Context, dest common.StorageCopyDestOpti
 	blobClient := c.client.ServiceClient().NewContainerClient(dest.Bucket).NewBlobClient(dest.Object)
 
 	options := &blob.CopyFromURLOptions{
-		BlobTags:  dest.UserTags,
+		BlobTags:  dest.Tags,
 		Metadata:  make(map[string]*string),
 		LegalHold: dest.LegalHold,
 	}
 
-	for key, value := range dest.UserMetadata {
+	for key, value := range dest.Metadata {
 		if value != "" {
 			options.Metadata[key] = &value
 		}
@@ -456,8 +540,60 @@ func (c *Client) RemoveObjects(ctx context.Context, bucketName string, opts *com
 	return errs
 }
 
+// UpdateObject updates object configurations.
+func (c *Client) UpdateObject(ctx context.Context, bucketName string, objectName string, opts common.UpdateStorageObjectOptions) error {
+	ctx, span := c.startOtelSpanWithKind(ctx, trace.SpanKindInternal, "UpdateObject", bucketName)
+	defer span.End()
+
+	span.SetAttributes(attribute.String("storage.key", objectName))
+
+	if opts.VersionID != "" {
+		span.SetAttributes(attribute.String("storage.options.version", opts.VersionID))
+	}
+
+	if opts.LegalHold != nil {
+		if err := c.SetObjectLegalHold(ctx, bucketName, objectName, opts.VersionID, *opts.LegalHold); err != nil {
+			return err
+		}
+	}
+
+	if opts.Tags != nil {
+		if err := c.SetObjectTags(ctx, bucketName, objectName, opts.VersionID, opts.Tags); err != nil {
+			return err
+		}
+	}
+
+	if opts.Retention != nil {
+		if err := c.SetObjectRetention(ctx, bucketName, objectName, opts.VersionID, *opts.Retention); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+// RestoreObject restores an object with some specified options.
+func (c *Client) RestoreObject(ctx context.Context, bucketName string, objectName string) error {
+	ctx, span := c.startOtelSpan(ctx, "RestoreObject", bucketName)
+	defer span.End()
+
+	span.SetAttributes(attribute.String("storage.key", objectName))
+
+	blobClient := c.client.ServiceClient().NewContainerClient(bucketName).NewBlobClient(objectName)
+
+	_, err := blobClient.Undelete(ctx, nil)
+	if err != nil {
+		span.SetStatus(codes.Error, err.Error())
+		span.RecordError(err)
+
+		return serializeErrorResponse(err)
+	}
+
+	return nil
+}
+
 // SetObjectRetention applies object retention lock onto an object.
-func (c *Client) SetObjectRetention(ctx context.Context, bucketName string, objectName string, opts common.SetStorageObjectRetentionOptions) error {
+func (c *Client) SetObjectRetention(ctx context.Context, bucketName string, objectName, versionID string, opts common.SetStorageObjectRetentionOptions) error {
 	ctx, span := c.startOtelSpan(ctx, "SetObjectRetention", bucketName)
 	defer span.End()
 
@@ -465,8 +601,8 @@ func (c *Client) SetObjectRetention(ctx context.Context, bucketName string, obje
 		attribute.String("storage.key", objectName),
 	)
 
-	if opts.VersionID != "" {
-		span.SetAttributes(attribute.String("storage.options.version", opts.VersionID))
+	if versionID != "" {
+		span.SetAttributes(attribute.String("storage.options.version", versionID))
 	}
 
 	client := c.client.ServiceClient().NewContainerClient(bucketName).NewBlobClient(objectName)
@@ -498,11 +634,10 @@ func (c *Client) SetObjectRetention(ctx context.Context, bucketName string, obje
 }
 
 // SetObjectLegalHold applies legal-hold onto an object.
-func (c *Client) SetObjectLegalHold(ctx context.Context, bucketName string, objectName string, options common.SetStorageObjectLegalHoldOptions) error {
+func (c *Client) SetObjectLegalHold(ctx context.Context, bucketName string, objectName, versionID string, status bool) error {
 	ctx, span := c.startOtelSpan(ctx, "SetObjectTags", bucketName)
 	defer span.End()
 
-	status := options.Status != nil && *options.Status
 	span.SetAttributes(
 		attribute.String("storage.key", objectName),
 		attribute.Bool("storage.options.status", status),
@@ -522,22 +657,22 @@ func (c *Client) SetObjectLegalHold(ctx context.Context, bucketName string, obje
 }
 
 // PutObjectTagging sets new object Tags to the given object, replaces/overwrites any existing tags.
-func (c *Client) SetObjectTags(ctx context.Context, bucketName string, objectName string, options common.SetStorageObjectTagsOptions) error {
+func (c *Client) SetObjectTags(ctx context.Context, bucketName string, objectName, versionID string, tags map[string]string) error {
 	ctx, span := c.startOtelSpan(ctx, "SetObjectTags", bucketName)
 	defer span.End()
 
 	opts := &blob.SetTagsOptions{
-		VersionID: &options.VersionID,
+		VersionID: &versionID,
 	}
 
-	if options.VersionID != "" {
-		span.SetAttributes(attribute.String("storage.options.version", options.VersionID))
-		opts.VersionID = &options.VersionID
+	if versionID != "" {
+		span.SetAttributes(attribute.String("storage.options.version", versionID))
+		opts.VersionID = &versionID
 	}
 
 	client := c.client.ServiceClient().NewContainerClient(bucketName).NewBlobClient(objectName)
 
-	_, err := client.SetTags(ctx, options.Tags, opts)
+	_, err := client.SetTags(ctx, tags, opts)
 	if err != nil {
 		span.SetStatus(codes.Error, err.Error())
 		span.RecordError(err)
@@ -592,14 +727,4 @@ func (c *Client) presignedObject(ctx context.Context, method, bucketName, object
 	}
 
 	return result, nil
-}
-
-// Set object lock configuration in given bucket. mode, validity and unit are either all set or all nil.
-func (c *Client) SetObjectLockConfig(ctx context.Context, bucketname string, opts common.SetStorageObjectLockConfig) error {
-	return errNotSupported
-}
-
-// Get object lock configuration of given bucket.
-func (c *Client) GetObjectLockConfig(ctx context.Context, bucketName string) (*common.StorageObjectLockConfig, error) {
-	return nil, errNotSupported
 }

@@ -3,6 +3,7 @@ package functions
 import (
 	"context"
 
+	"github.com/hasura/ndc-sdk-go/schema"
 	"github.com/hasura/ndc-sdk-go/utils"
 	"github.com/hasura/ndc-storage/connector/functions/internal"
 	"github.com/hasura/ndc-storage/connector/storage/common"
@@ -19,16 +20,68 @@ func ProcedureCreateStorageBucket(ctx context.Context, state *types.State, args 
 }
 
 // FunctionStorageBuckets list all buckets.
-func FunctionStorageBuckets(ctx context.Context, state *types.State, args *common.ListStorageBucketArguments) ([]common.StorageBucketInfo, error) {
-	request := internal.ObjectPredicate{}
+func FunctionStorageBuckets(ctx context.Context, state *types.State, args *common.ListStorageBucketArguments) (common.StorageBucketListResults, error) {
+	if args.MaxResults <= 0 {
+		return common.StorageBucketListResults{}, schema.UnprocessableContentError("maxResults must be larger than 0", nil)
+	}
+
+	request, err := internal.EvalObjectPredicate(common.StorageBucketArguments{}, "", args.Where, types.QueryVariablesFromContext(ctx))
+	if err != nil {
+		return common.StorageBucketListResults{}, err
+	}
+
+	if !request.IsValid {
+		return common.StorageBucketListResults{
+			Buckets: []common.StorageBucket{},
+		}, nil
+	}
+
+	if err := request.EvalSelection(utils.CommandSelectionFieldFromContext(ctx)); err != nil {
+		return common.StorageBucketListResults{}, err
+	}
+
+	predicate := request.BucketPredicate.CheckPostPredicate
+	if !request.BucketPredicate.HasPostPredicate() {
+		predicate = nil
+	}
+
+	result, err := state.Storage.ListBuckets(ctx, request.ClientID, &common.ListStorageBucketsOptions{
+		Prefix:     request.BucketPredicate.GetPrefix(),
+		MaxResults: args.MaxResults,
+		StartAfter: args.StartAfter,
+		Include: common.BucketIncludeOptions{
+			Tags:       request.Include.Tags,
+			Versioning: request.Include.Versions,
+			Lifecycle:  request.Include.Lifecycle,
+			Encryption: request.Include.Encryption,
+			ObjectLock: request.Include.ObjectLock,
+		},
+		NumThreads: state.Concurrency.Query,
+	}, predicate)
+	if err != nil {
+		return common.StorageBucketListResults{}, err
+	}
+
+	return *result, nil
+}
+
+// FunctionStorageBucket gets a bucket by name.
+func FunctionStorageBucket(ctx context.Context, state *types.State, args *common.StorageBucketArguments) (*common.StorageBucket, error) {
+	request := internal.PredicateEvaluator{}
 
 	if err := request.EvalSelection(utils.CommandSelectionFieldFromContext(ctx)); err != nil {
 		return nil, err
 	}
 
-	return state.Storage.ListBuckets(ctx, args.ClientID, common.BucketOptions{
-		IncludeTags: request.Include.Tags,
-		NumThreads:  state.Concurrency.Query,
+	return state.Storage.GetBucket(ctx, args, common.BucketOptions{
+		Include: common.BucketIncludeOptions{
+			Tags:       request.Include.Tags,
+			Versioning: request.Include.Versions,
+			Lifecycle:  request.Include.Lifecycle,
+			Encryption: request.Include.Encryption,
+			ObjectLock: request.Include.ObjectLock,
+		},
+		NumThreads: state.Concurrency.Query,
 	})
 }
 
@@ -46,120 +99,9 @@ func ProcedureRemoveStorageBucket(ctx context.Context, state *types.State, args 
 	return true, nil
 }
 
-// ProcedureSetStorageBucketTags sets tags to a bucket.
-func ProcedureSetStorageBucketTags(ctx context.Context, state *types.State, args *common.SetStorageBucketTaggingArguments) (bool, error) {
-	if err := state.Storage.SetBucketTagging(ctx, args); err != nil {
-		return false, err
-	}
-
-	return true, nil
-}
-
-// FunctionStorageBucketPolicy gets access permissions on a bucket or a prefix.
-func FunctionStorageBucketPolicy(ctx context.Context, state *types.State, args *common.StorageBucketArguments) (string, error) {
-	return state.Storage.GetBucketPolicy(ctx, args)
-}
-
-// FunctionStorageBucketNotification gets notification configuration on a bucket.
-func FunctionStorageBucketNotification(ctx context.Context, state *types.State, args *common.StorageBucketArguments) (*common.NotificationConfig, error) {
-	return state.Storage.GetBucketNotification(ctx, args)
-}
-
-// ProcedureSetStorageBucketNotification sets a new notification configuration on a bucket.
-func ProcedureSetStorageBucketNotification(ctx context.Context, state *types.State, args *common.SetBucketNotificationArguments) (bool, error) {
-	if err := state.Storage.SetBucketNotification(ctx, args); err != nil {
-		return false, err
-	}
-
-	return true, nil
-}
-
-// ProcedureSetStorageBucketLifecycle sets lifecycle on bucket or an object prefix.
-func ProcedureSetStorageBucketLifecycle(ctx context.Context, state *types.State, args *common.SetStorageBucketLifecycleArguments) (bool, error) {
-	err := state.Storage.SetBucketLifecycle(ctx, args)
-	if err != nil {
-		return false, err
-	}
-
-	return true, nil
-}
-
-// FunctionStorageBucketLifecycle gets lifecycle on a bucket or a prefix.
-func FunctionStorageBucketLifecycle(ctx context.Context, state *types.State, args *common.StorageBucketArguments) (*common.BucketLifecycleConfiguration, error) {
-	return state.Storage.GetBucketLifecycle(ctx, args)
-}
-
-// ProcedureSetStorageBucketEncryption sets default encryption configuration on a bucket.
-func ProcedureSetStorageBucketEncryption(ctx context.Context, state *types.State, args *common.SetStorageBucketEncryptionArguments) (bool, error) {
-	err := state.Storage.SetBucketEncryption(ctx, args)
-	if err != nil {
-		return false, err
-	}
-
-	return true, nil
-}
-
-// FunctionStorageBucketEncryption gets default encryption configuration set on a bucket.
-func FunctionStorageBucketEncryption(ctx context.Context, state *types.State, args *common.StorageBucketArguments) (*common.ServerSideEncryptionConfiguration, error) {
-	return state.Storage.GetBucketEncryption(ctx, args)
-}
-
-// ProcedureSetObjectLockConfig sets object lock configuration in given bucket. mode, validity and unit are either all set or all nil.
-func ProcedureSetStorageObjectLockConfig(ctx context.Context, state *types.State, args *common.SetStorageObjectLockArguments) (bool, error) {
-	err := state.Storage.SetObjectLockConfig(ctx, args)
-	if err != nil {
-		return false, err
-	}
-
-	return true, nil
-}
-
-// FunctionStorageObjectLockConfig gets object lock configuration of given bucket.
-func FunctionStorageObjectLockConfig(ctx context.Context, state *types.State, args *common.StorageBucketArguments) (*common.StorageObjectLockConfig, error) {
-	return state.Storage.GetObjectLockConfig(ctx, args)
-}
-
-// ProcedureEnableStorageBucketVersioning enables bucket versioning support.
-func ProcedureEnableStorageBucketVersioning(ctx context.Context, state *types.State, args *common.StorageBucketArguments) (bool, error) {
-	if err := state.Storage.EnableVersioning(ctx, args); err != nil {
-		return false, err
-	}
-
-	return true, nil
-}
-
-// ProcedureSuspendStorageBucketVersioning disables bucket versioning support.
-func ProcedureSuspendStorageBucketVersioning(ctx context.Context, state *types.State, args *common.StorageBucketArguments) (bool, error) {
-	if err := state.Storage.SuspendVersioning(ctx, args); err != nil {
-		return false, err
-	}
-
-	return true, nil
-}
-
-// FunctionStorageBucketVersioning gets versioning configuration set on a bucket.
-func FunctionStorageBucketVersioning(ctx context.Context, state *types.State, args *common.StorageBucketArguments) (*common.StorageBucketVersioningConfiguration, error) {
-	return state.Storage.GetBucketVersioning(ctx, args)
-}
-
-// ProcedureSetStorageBucketReplication sets replication configuration on a bucket. Role can be obtained by first defining the replication target on MinIO
-// to associate the source and destination buckets for replication with the replication endpoint.
-func ProcedureSetStorageBucketReplication(ctx context.Context, state *types.State, args *common.SetStorageBucketReplicationArguments) (bool, error) {
-	if err := state.Storage.SetBucketReplication(ctx, args); err != nil {
-		return false, err
-	}
-
-	return true, nil
-}
-
-// FunctionGetBucketReplication gets current replication config on a bucket.
-func FunctionStorageBucketReplication(ctx context.Context, state *types.State, args *common.StorageBucketArguments) (*common.StorageReplicationConfig, error) {
-	return state.Storage.GetBucketReplication(ctx, args)
-}
-
-// RemoveBucketReplication removes replication configuration on a bucket.
-func ProcedureRemoveStorageBucketReplication(ctx context.Context, state *types.State, args *common.StorageBucketArguments) (bool, error) {
-	if err := state.Storage.RemoveBucketReplication(ctx, args); err != nil {
+// ProcedureUpdateStorageBucket updates the bucket's configuration.
+func ProcedureUpdateStorageBucket(ctx context.Context, state *types.State, args *common.UpdateBucketArguments) (bool, error) {
+	if err := state.Storage.UpdateBucket(ctx, args); err != nil {
 		return false, err
 	}
 

@@ -27,7 +27,7 @@ http_wait() {
   exit 1
 }
 
-docker compose up -d --build minio s3mock azurite ndc-storage
+docker compose up -d --build minio s3mock azurite gcp-storage-emulator ndc-storage
 http_wait http://localhost:8080/health
 http_wait http://localhost:9000/minio/health/live
 
