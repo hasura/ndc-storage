@@ -116,7 +116,6 @@ query ListObjects {
     pageInfo {
       cursor
       hasNextPage
-      nextCursor
     }
     objects {
       clientId
