@@ -61,10 +61,9 @@ type OtherConfig struct {
 	Authentication AuthCredentials `json:"authentication" mapstructure:"authentication" yaml:"authentication"`
 }
 
-func (cc ClientConfig) toClientOptions(ctx context.Context, logger *slog.Logger, version string) ([]option.ClientOption, error) {
+func (cc ClientConfig) toClientOptions(ctx context.Context, logger *slog.Logger) ([]option.ClientOption, error) {
 	opts := []option.ClientOption{
 		option.WithLogger(logger),
-		option.WithUserAgent(fmt.Sprintf("hasura/ndc-storage (%s)", version)),
 	}
 
 	cred, err := cc.Authentication.toCredentials()

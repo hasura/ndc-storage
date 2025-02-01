@@ -85,7 +85,7 @@ func (j *ListIncompleteUploadsOptions) FromValue(input map[string]any) error {
 // FromValue decodes values from map
 func (j *ListStorageBucketArguments) FromValue(input map[string]any) error {
 	var err error
-	j.MaxResults, err = utils.GetIntDefault[int](input, "maxResults")
+	j.MaxResults, err = utils.GetNullableInt[int](input, "maxResults")
 	if err != nil {
 		return err
 	}
@@ -540,6 +540,7 @@ func (j StorageBucket) ToMap() map[string]any {
 	if j.Autoclass != nil {
 		r["autoclass"] = (*j.Autoclass)
 	}
+	r["clientId"] = j.ClientID
 	j_CORS := make([]any, len(j.CORS))
 	for i, j_CORS_v := range j.CORS {
 		j_CORS[i] = j_CORS_v

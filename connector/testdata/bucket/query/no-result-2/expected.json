@@ -1,0 +1,12 @@
+[
+  {
+    "rows": [
+      {
+        "__value": {
+          "buckets": [],
+          "pageInfo": { "cursor": null, "hasNextPage": false }
+        }
+      }
+    ]
+  }
+]

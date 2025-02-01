@@ -1,0 +1,101 @@
+{
+  "collection": "storageObjects",
+  "query": {
+    "fields": {
+      "__value": {
+        "column": "__value",
+        "fields": {
+          "fields": {
+            "objects": {
+              "column": "objects",
+              "fields": {
+                "fields": {
+                  "fields": {
+                    "clientId": {
+                      "column": "clientId",
+                      "type": "column"
+                    },
+                    "bucket": {
+                      "column": "bucket",
+                      "type": "column"
+                    },
+                    "name": {
+                      "column": "name",
+                      "type": "column"
+                    },
+                    "size": {
+                      "column": "size",
+                      "type": "column"
+                    },
+                    "storageClass": {
+                      "column": "storageClass",
+                      "type": "column"
+                    }
+                  },
+                  "type": "object"
+                },
+                "type": "array"
+              },
+              "type": "column"
+            },
+            "pageInfo": {
+              "column": "pageInfo",
+              "fields": {
+                "fields": {
+                  "cursor": {
+                    "column": "cursor",
+                    "type": "column"
+                  },
+                  "hasNextPage": {
+                    "column": "hasNextPage",
+                    "type": "column"
+                  }
+                },
+                "type": "object"
+              },
+              "type": "column"
+            }
+          },
+          "type": "object"
+        },
+        "type": "column"
+      }
+    }
+  },
+  "arguments": {
+    "recursive": { "type": "literal", "value": true },
+    "maxResults": { "type": "literal", "value": 3 },
+    "startAfter": {
+      "type": "literal",
+      "value": "movies/1990s/movies.json"
+    },
+    "where": {
+      "type": "literal",
+      "value": {
+        "type": "and",
+        "expressions": [
+          {
+            "type": "binary_comparison_operator",
+            "column": { "type": "column", "name": "clientId", "path": [] },
+            "operator": "_eq",
+            "value": { "type": "variable", "name": "$clientId" }
+          },
+          {
+            "type": "binary_comparison_operator",
+            "column": { "type": "column", "name": "bucket", "path": [] },
+            "operator": "_eq",
+            "value": { "type": "scalar", "value": "dummy-bucket-0" }
+          },
+          {
+            "type": "binary_comparison_operator",
+            "column": { "type": "column", "name": "object", "path": [] },
+            "operator": "_starts_with",
+            "value": { "type": "scalar", "value": "movies" }
+          }
+        ]
+      }
+    }
+  },
+  "variables": [{ "$clientId": "not-found" }],
+  "collection_relationships": {}
+}

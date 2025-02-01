@@ -25,23 +25,19 @@ import (
 
 // ListObjects list objects in a bucket.
 func (c *Client) ListObjects(ctx context.Context, bucketName string, opts *common.ListStorageObjectsOptions, predicate func(string) bool) (*common.StorageObjectListResults, error) {
+	if opts.Recursive {
+		return c.listFlatObjects(ctx, bucketName, opts, predicate)
+	}
+
+	return c.listHierarchyObjects(ctx, bucketName, opts, predicate)
+}
+
+func (c *Client) listFlatObjects(ctx context.Context, bucketName string, opts *common.ListStorageObjectsOptions, predicate func(string) bool) (*common.StorageObjectListResults, error) {
 	ctx, span := c.startOtelSpan(ctx, "ListObjects", bucketName)
 	defer span.End()
 
 	options := &container.ListBlobsFlatOptions{
-		Include: container.ListBlobsInclude{
-			Versions:            opts.Include.Versions,
-			Metadata:            opts.Include.Metadata,
-			Tags:                opts.Include.Tags,
-			Copy:                opts.Include.Copy,
-			Snapshots:           opts.Include.Snapshots,
-			LegalHold:           opts.Include.LegalHold,
-			ImmutabilityPolicy:  opts.Include.Retention,
-			Permissions:         opts.Include.Permissions,
-			Deleted:             false,
-			DeletedWithVersions: false,
-			UncommittedBlobs:    false,
-		},
+		Include: makeListBlobsInclude(opts.Include),
 	}
 
 	if opts.Prefix != "" {
@@ -62,6 +58,7 @@ func (c *Client) ListObjects(ctx context.Context, bucketName string, opts *commo
 	pager := c.client.NewListBlobsFlatPager(bucketName, options)
 	pageInfo := common.StoragePaginationInfo{}
 
+L:
 	for pager.More() {
 		resp, err := pager.NextPage(ctx)
 		if err != nil {
@@ -71,22 +68,110 @@ func (c *Client) ListObjects(ctx context.Context, bucketName string, opts *commo
 			return nil, serializeErrorResponse(err)
 		}
 
-		for _, item := range resp.Segment.BlobItems {
+		for i, item := range resp.Segment.BlobItems {
 			if item.Name == nil || (predicate != nil && !predicate(*item.Name)) {
 				continue
 			}
 
-			objects = append(objects, serializeObjectInfo(item))
+			object := serializeObjectInfo(item)
+			objects = append(objects, object)
 			count++
+
+			if maxResults > 0 && count >= maxResults {
+				if i < len(resp.Segment.BlobItems)-1 || pager.More() {
+					pageInfo.HasNextPage = true
+					pageInfo.Cursor = &object.Name
+				}
+
+				break L
+			}
+		}
+	}
+
+	span.SetAttributes(attribute.Int("storage.object_count", int(count)))
+
+	results := &common.StorageObjectListResults{
+		Objects:  objects,
+		PageInfo: pageInfo,
+	}
+
+	return results, nil
+}
+
+func (c *Client) listHierarchyObjects(ctx context.Context, bucketName string, opts *common.ListStorageObjectsOptions, predicate func(string) bool) (*common.StorageObjectListResults, error) { //nolint:gocognit,cyclop
+	ctx, span := c.startOtelSpan(ctx, "ListObjects", bucketName)
+	defer span.End()
+
+	options := &container.ListBlobsHierarchyOptions{
+		Include: makeListBlobsInclude(opts.Include),
+	}
+
+	if opts.Prefix != "" {
+		options.Prefix = &opts.Prefix
+	}
+
+	maxResults := int32(opts.MaxResults)
+	if opts.MaxResults > 0 && predicate == nil {
+		options.MaxResults = &maxResults
+	}
+
+	if opts.StartAfter != "" {
+		options.Marker = &opts.StartAfter
+	}
+
+	var count int32
+	objects := make([]common.StorageObject, 0)
+	pager := c.client.ServiceClient().NewContainerClient(bucketName).NewListBlobsHierarchyPager("/", options)
+	pageInfo := common.StoragePaginationInfo{}
+
+L:
+	for pager.More() {
+		resp, err := pager.NextPage(ctx)
+		if err != nil {
+			span.SetStatus(codes.Error, err.Error())
+			span.RecordError(err)
+
+			return nil, serializeErrorResponse(err)
 		}
 
-		if maxResults > 0 && count >= maxResults {
-			if pager.More() {
-				pageInfo.HasNextPage = true
-				pageInfo.Cursor = resp.NextMarker
+		for i, item := range resp.Segment.BlobPrefixes {
+			if item.Name == nil || (predicate != nil && !predicate(*item.Name)) {
+				continue
 			}
 
-			break
+			object := common.StorageObject{
+				Name: *item.Name,
+			}
+			objects = append(objects, object)
+			count++
+
+			if maxResults > 0 && count >= maxResults {
+				if i < len(resp.Segment.BlobPrefixes)-1 || len(resp.Segment.BlobItems) > 0 || pager.More() {
+					pageInfo.HasNextPage = true
+					pageInfo.Cursor = &object.Name
+				}
+
+				break L
+			}
+		}
+
+		for i, item := range resp.Segment.BlobItems {
+			if item.Name == nil || (predicate != nil && !predicate(*item.Name)) {
+				continue
+			}
+
+			object := serializeObjectInfo(item)
+			objects = append(objects, object)
+			count++
+
+			if maxResults > 0 && count >= maxResults {
+				if i < len(resp.Segment.BlobItems)-1 || pager.More() {
+					pageInfo.HasNextPage = true
+					pageInfo.Cursor = &object.Name
+				}
+
+				break L
+			}
 		}
 	}
 

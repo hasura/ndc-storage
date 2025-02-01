@@ -16,7 +16,9 @@ import (
 func (m *Manager) ListObjects(ctx context.Context, bucketInfo common.StorageBucketArguments, opts *common.ListStorageObjectsOptions, predicate func(string) bool) (*common.StorageObjectListResults, error) {
 	client, bucketName, err := m.GetClientAndBucket(bucketInfo.ClientID, bucketInfo.Bucket)
 	if err != nil {
-		return nil, err
+		return &common.StorageObjectListResults{ //nolint:nilerr
+			Objects: []common.StorageObject{},
+		}, nil
 	}
 
 	results, err := client.ListObjects(ctx, bucketName, opts, predicate)

@@ -10,7 +10,7 @@ import (
 // ListStorageBucketArguments represent the input arguments for the ListBuckets methods.
 type ListStorageBucketArguments struct {
 	// The maximum number of objects requested per batch.
-	MaxResults int `json:"maxResults,omitempty"`
+	MaxResults *int `json:"maxResults"`
 	// StartAfter start listing lexically at this object onwards.
 	StartAfter string            `json:"startAfter,omitempty"`
 	Where      schema.Expression `json:"where"                ndc:"predicate=StorageBucketFilter"`
@@ -143,7 +143,13 @@ type StorageObjectIncludeOptions struct {
 	Permissions bool
 	Lifecycle   bool
 	Encryption  bool
-	ObjectLock  bool
+}
+
+// IsEmpty checks if all include options are empty
+func (soi StorageObjectIncludeOptions) IsEmpty() bool {
+	return !soi.Checksum && !soi.Tags && !soi.Versions && !soi.Metadata &&
+		!soi.Copy && !soi.Snapshots && !soi.LegalHold && !soi.Retention && !soi.Permissions &&
+		!soi.Lifecycle && !soi.Encryption
 }
 
 // ListStorageObjectsOptions holds all options of a list object request.

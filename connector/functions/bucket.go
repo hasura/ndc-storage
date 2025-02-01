@@ -21,7 +21,7 @@ func ProcedureCreateStorageBucket(ctx context.Context, state *types.State, args 
 
 // FunctionStorageBuckets list all buckets.
 func FunctionStorageBuckets(ctx context.Context, state *types.State, args *common.ListStorageBucketArguments) (common.StorageBucketListResults, error) {
-	if args.MaxResults <= 0 {
+	if args.MaxResults != nil && *args.MaxResults <= 0 {
 		return common.StorageBucketListResults{}, schema.UnprocessableContentError("maxResults must be larger than 0", nil)
 	}
 
@@ -54,7 +54,7 @@ func FunctionStorageBuckets(ctx context.Context, state *types.State, args *commo
 			Versioning: request.Include.Versions,
 			Lifecycle:  request.Include.Lifecycle,
 			Encryption: request.Include.Encryption,
-			ObjectLock: request.Include.ObjectLock,
+			ObjectLock: request.IncludeObjectLock,
 		},
 		NumThreads: state.Concurrency.Query,
 	}, predicate)
@@ -79,7 +79,7 @@ func FunctionStorageBucket(ctx context.Context, state *types.State, args *common
 			Versioning: request.Include.Versions,
 			Lifecycle:  request.Include.Lifecycle,
 			Encryption: request.Include.Encryption,
-			ObjectLock: request.Include.ObjectLock,
+			ObjectLock: request.IncludeObjectLock,
 		},
 		NumThreads: state.Concurrency.Query,
 	})

@@ -1,0 +1,53 @@
+[
+  {
+    "rows": [
+      {
+        "__value": {
+          "buckets": [
+            {
+              "clientId": "minio",
+              "name": "dummy-bucket-9",
+              "storageClass": null,
+              "tags": null
+            }
+          ],
+          "pageInfo": { "cursor": null, "hasNextPage": false }
+        }
+      }
+    ]
+  },
+  {
+    "rows": [
+      {
+        "__value": {
+          "buckets": [
+            {
+              "clientId": "azblob",
+              "name": "dummy-bucket-9",
+              "storageClass": null,
+              "tags": null
+            }
+          ],
+          "pageInfo": { "cursor": null, "hasNextPage": false }
+        }
+      }
+    ]
+  },
+  {
+    "rows": [
+      {
+        "__value": {
+          "buckets": [
+            {
+              "clientId": "gcs",
+              "name": "dummy-bucket-9",
+              "storageClass": "STANDARD",
+              "tags": null
+            }
+          ],
+          "pageInfo": { "cursor": null, "hasNextPage": false }
+        }
+      }
+    ]
+  }
+]

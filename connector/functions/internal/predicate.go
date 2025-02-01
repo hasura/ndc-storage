@@ -12,9 +12,10 @@ import (
 
 // PredicateEvaluator the structured predicate result which is evaluated from the raw expression.
 type PredicateEvaluator struct {
-	ClientID *common.StorageClientID
-	IsValid  bool
-	Include  common.StorageObjectIncludeOptions
+	ClientID          *common.StorageClientID
+	IsValid           bool
+	Include           common.StorageObjectIncludeOptions
+	IncludeObjectLock bool
 
 	variables           map[string]any
 	BucketPredicate     StringFilterPredicate
@@ -137,7 +138,7 @@ func (pe *PredicateEvaluator) EvalSelection(selection schema.NestedField) error 
 		}
 
 		if _, ok := expr.Fields["objectLock"]; ok {
-			pe.Include.ObjectLock = true
+			pe.IncludeObjectLock = true
 		}
 	}
 

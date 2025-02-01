@@ -722,6 +722,8 @@ definition:
       type: StorageBucketVersioningConfiguration
     - name: website
       type: BucketWebsite
+    - name: clientId
+      type: String!
   graphql:
     typeName: StorageBucket
     inputTypeName: StorageBucketInput
@@ -760,6 +762,7 @@ definition:
           - tags
           - versioning
           - website
+          - clientId
 
 ---
 kind: Command

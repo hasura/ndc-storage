@@ -1,0 +1,131 @@
+package connector
+
+import (
+	"bytes"
+	"encoding/json"
+	"fmt"
+	"io"
+	"net/http"
+	"path/filepath"
+	"testing"
+
+	"github.com/hasura/ndc-sdk-go/ndctest"
+	"github.com/hasura/ndc-sdk-go/schema"
+	"gotest.tools/v3/assert"
+)
+
+func TestConnectorQueries(t *testing.T) {
+	connectorHost := "http://localhost:8080"
+	clientIDs := []string{"minio", "azblob", "gcs"}
+
+	for _, cid := range clientIDs {
+		t.Run("create_bucket_"+cid, func(t *testing.T) {
+			procedureRequest := schema.MutationRequest{
+				CollectionRelationships: schema.MutationRequestCollectionRelationships{},
+				Operations:              []schema.MutationOperation{},
+			}
+
+			for i := range 10 {
+				procedureRequest.Operations = append(procedureRequest.Operations, schema.MutationOperation{
+					Type: schema.MutationOperationProcedure,
+					Name: "createStorageBucket",
+					Arguments: []byte(fmt.Sprintf(`{
+					"clientId": "%s",
+					"name": "dummy-bucket-%d"
+				}`, cid, i)),
+				})
+			}
+
+			rawBody, err := json.Marshal(procedureRequest)
+			assert.NilError(t, err)
+
+			resp, err := http.DefaultClient.Post(connectorHost+"/mutation", "application/json", bytes.NewReader(rawBody))
+			assert.NilError(t, err)
+			assert.Equal(t, http.StatusOK, resp.StatusCode)
+		})
+	}
+
+	objectFixtures := map[string]string{
+		"movies/1900s/movies.json": "https://raw.githubusercontent.com/prust/wikipedia-movie-data/refs/heads/master/movies-1900s.json",
+		"movies/1910s/movies.json": "https://raw.githubusercontent.com/prust/wikipedia-movie-data/refs/heads/master/movies-1910s.json",
+		"movies/1920s/movies.json": "https://raw.githubusercontent.com/prust/wikipedia-movie-data/refs/heads/master/movies-1920s.json",
+		"movies/1930s/movies.json": "https://raw.githubusercontent.com/prust/wikipedia-movie-data/refs/heads/master/movies-1930s.json",
+		"movies/1940s/movies.json": "https://raw.githubusercontent.com/prust/wikipedia-movie-data/refs/heads/master/movies-1940s.json",
+		"movies/1950s/movies.json": "https://raw.githubusercontent.com/prust/wikipedia-movie-data/refs/heads/master/movies-1950s.json",
+		"movies/1960s/movies.json": "https://raw.githubusercontent.com/prust/wikipedia-movie-data/refs/heads/master/movies-1960s.json",
+		"movies/1970s/movies.json": "https://raw.githubusercontent.com/prust/wikipedia-movie-data/refs/heads/master/movies-1970s.json",
+		"movies/1980s/movies.json": "https://raw.githubusercontent.com/prust/wikipedia-movie-data/refs/heads/master/movies-1980s.json",
+		"movies/1990s/movies.json": "https://raw.githubusercontent.com/prust/wikipedia-movie-data/refs/heads/master/movies-1990s.json",
+		"movies/2000s/movies.json": "https://raw.githubusercontent.com/prust/wikipedia-movie-data/refs/heads/master/movies-2000s.json",
+	}
+
+	for key, value := range objectFixtures {
+		resp, err := http.DefaultClient.Get(value)
+		assert.NilError(t, err)
+		assert.Equal(t, http.StatusOK, resp.StatusCode)
+
+		rawBody, err := io.ReadAll(resp.Body)
+		assert.NilError(t, err)
+		resp.Body.Close()
+
+		for _, cid := range clientIDs {
+			t.Run(fmt.Sprintf("upload_object_%s/%s", cid, key), func(t *testing.T) {
+				arguments := map[string]any{
+					"clientId": cid,
+					"bucket":   "dummy-bucket-0",
+					"data":     string(rawBody),
+					"object":   key,
+					"options": map[string]any{
+						"cacheControl":       "max-age=100",
+						"contentDisposition": "attachment",
+						"contentLanguage":    "en-US",
+						"contentType":        "application/json",
+						"expires":            "2099-01-01T00:00:00Z",
+						"sendContentMd5":     true,
+						"metadata": map[string]any{
+							"Foo": "Baz",
+						},
+						"tags": map[string]any{
+							"category": "movie",
+						},
+					},
+				}
+
+				rawArguments, err := json.Marshal(arguments)
+				assert.NilError(t, err)
+
+				procedureRequest := schema.MutationRequest{
+					CollectionRelationships: schema.MutationRequestCollectionRelationships{},
+					Operations: []schema.MutationOperation{
+						{
+							Type:      schema.MutationOperationProcedure,
+							Name:      "uploadStorageObjectText",
+							Arguments: rawArguments,
+							Fields: schema.NewNestedObject(map[string]schema.FieldEncoder{
+								"name": schema.NewColumnField("name", nil),
+								"size": schema.NewColumnField("size", nil),
+							}).Encode(),
+						},
+					},
+				}
+
+				uploadBytes, err := json.Marshal(procedureRequest)
+				assert.NilError(t, err)
+
+				resp, err = http.DefaultClient.Post(connectorHost+"/mutation", "application/json", bytes.NewReader(uploadBytes))
+				assert.NilError(t, err)
+				resp.Body.Close()
+				assert.Equal(t, http.StatusOK, resp.StatusCode)
+			})
+		}
+	}
+
+	setConnectorTestEnv(t)
+
+	for _, dir := range []string{"bucket", "object"} {
+		ndctest.TestConnector(t, &Connector{}, ndctest.TestConnectorOptions{
+			Configuration: "../tests/configuration",
+			TestDataDir:   filepath.Join("testdata", dir),
+		})
+	}
+}

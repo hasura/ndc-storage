@@ -47,6 +47,16 @@ clients:
     defaultPresignedExpiry: "1h"
     allowedBuckets:
       - azblob-bucket-test
+      - dummy-bucket-0
+      - dummy-bucket-1
+      - dummy-bucket-2
+      - dummy-bucket-3
+      - dummy-bucket-4
+      - dummy-bucket-5
+      - dummy-bucket-6
+      - dummy-bucket-7
+      - dummy-bucket-8
+      - dummy-bucket-9
   - id: azblob-connstr
     type: azblob
     defaultBucket:

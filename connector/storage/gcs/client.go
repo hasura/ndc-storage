@@ -27,7 +27,7 @@ type Client struct {
 var _ common.StorageClient = &Client{}
 
 // New creates a new Minio client.
-func New(ctx context.Context, config *ClientConfig, logger *slog.Logger, version string) (*Client, error) {
+func New(ctx context.Context, config *ClientConfig, logger *slog.Logger) (*Client, error) {
 	publicHost, err := config.ValidatePublicHost()
 	if err != nil {
 		return nil, err
@@ -42,7 +42,7 @@ func New(ctx context.Context, config *ClientConfig, logger *slog.Logger, version
 		return nil, errRequireProjectID
 	}
 
-	opts, err := config.toClientOptions(ctx, logger, version)
+	opts, err := config.toClientOptions(ctx, logger)
 	if err != nil {
 		return nil, err
 	}

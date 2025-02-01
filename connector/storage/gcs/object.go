@@ -34,6 +34,7 @@ func (c *Client) ListObjects(ctx context.Context, bucketName string, opts *commo
 	q := c.validateListObjectsOptions(span, opts, false)
 	pager := c.client.Bucket(bucketName).Objects(ctx, q)
 	pageInfo := common.StoragePaginationInfo{}
+	started := opts.StartAfter == ""
 
 	for {
 		object, err := pager.Next()
@@ -48,6 +49,12 @@ func (c *Client) ListObjects(ctx context.Context, bucketName string, opts *commo
 			return nil, serializeErrorResponse(err)
 		}
 
+		if !started {
+			started = object.Name == opts.StartAfter
+
+			continue
+		}
+
 		var cursor *string
 		pi := pager.PageInfo()
 
@@ -59,13 +66,19 @@ func (c *Client) ListObjects(ctx context.Context, bucketName string, opts *commo
 			result := serializeObjectInfo(object)
 			objects = append(objects, result)
 			count++
-		}
 
-		if maxResults > 0 && count >= maxResults {
-			pageInfo.HasNextPage = pi.Remaining() > 0
-			pageInfo.Cursor = cursor
+			if maxResults > 0 && count >= maxResults {
+				if pi.Remaining() > 0 {
+					pageInfo.HasNextPage = true
+					pageInfo.Cursor = cursor
 
-			break
+					if pageInfo.Cursor == nil {
+						pageInfo.Cursor = &result.Name
+					}
+				}
+
+				break
+			}
 		}
 	}
 

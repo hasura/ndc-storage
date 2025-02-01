@@ -43,7 +43,7 @@ func serializeGrant(grant minio.Grant) common.StorageGrant {
 	return g
 }
 
-func serializeObjectInfo(obj minio.ObjectInfo, fromList bool) common.StorageObject { //nolint:funlen,gocognit,gocyclo,cyclop
+func serializeObjectInfo(obj *minio.ObjectInfo, fromList bool) common.StorageObject { //nolint:funlen,gocognit,gocyclo,cyclop
 	grants := make([]common.StorageGrant, len(obj.Grant))
 
 	for i, grant := range obj.Grant {

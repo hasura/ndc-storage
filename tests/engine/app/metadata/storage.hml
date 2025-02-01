@@ -889,6 +889,10 @@ definition:
                 underlying_type:
                   type: named
                   name: BucketAutoclass
+            clientId:
+              type:
+                type: named
+                name: String
             cors:
               type:
                 type: nullable

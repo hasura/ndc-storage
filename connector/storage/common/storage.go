@@ -66,16 +66,16 @@ type StorageClient interface { //nolint:interfacebloat
 // ListStorageBucketsOptions holds all options of a list bucket request.
 type ListStorageBucketsOptions struct {
 	// Only list objects with the prefix
-	Prefix string `json:"prefix"`
+	Prefix string
 	// The maximum number of objects requested per
 	// batch, advanced use-case not useful for most
 	// applications
-	MaxResults int `json:"maxResults"`
+	MaxResults *int
 	// StartAfter start listing lexically at this object onwards.
-	StartAfter string `json:"startAfter"`
+	StartAfter string
 	// Options to be included for the object information.
-	Include    BucketIncludeOptions `json:"-"`
-	NumThreads int                  `json:"-"`
+	Include    BucketIncludeOptions
+	NumThreads int
 }
 
 // BucketIncludeOptions contain include options for getting bucket information.
@@ -85,11 +85,6 @@ type BucketIncludeOptions struct {
 	Lifecycle  bool
 	Encryption bool
 	ObjectLock bool
-}
-
-// IsEmpty checks if all include options are false
-func (bio BucketIncludeOptions) IsEmpty() bool {
-	return !bio.Tags && !bio.Versioning && !bio.Lifecycle && !bio.Encryption && !bio.ObjectLock
 }
 
 // BucketOptions hold options to get bucket information.
@@ -107,6 +102,8 @@ type StorageBucketListResults struct {
 
 // StorageBucket the container for bucket metadata.
 type StorageBucket struct {
+	// Client ID
+	ClientID string `json:"clientId"`
 	// The name of the bucket.
 	Name string `json:"name"`
 	// Bucket tags or metadata.
@@ -611,11 +608,6 @@ type ObjectLifecycleTransition struct {
 	Date         *scalar.Date `json:"date"`
 	StorageClass *string      `json:"storageClass"`
 	Days         *int         `json:"days"`
-}
-
-// IsEmpty checks if all properties of the object are empty.
-func (fe ObjectLifecycleTransition) IsEmpty() bool {
-	return fe.StorageClass == nil && fe.Date == nil && fe.Days == nil
 }
 
 // LifecycleDelMarkerExpiration represents DelMarkerExpiration actions element in an ILM policy

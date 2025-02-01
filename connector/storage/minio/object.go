@@ -21,7 +21,7 @@ import (
 )
 
 // ListObjects list objects in a bucket.
-func (mc *Client) ListObjects(ctx context.Context, bucketName string, opts *common.ListStorageObjectsOptions, predicate func(string) bool) (*common.StorageObjectListResults, error) {
+func (mc *Client) ListObjects(ctx context.Context, bucketName string, opts *common.ListStorageObjectsOptions, predicate func(string) bool) (*common.StorageObjectListResults, error) { //nolint:funlen
 	ctx, span := mc.startOtelSpan(ctx, "ListObjects", bucketName)
 	defer span.End()
 
@@ -33,9 +33,8 @@ func (mc *Client) ListObjects(ctx context.Context, bucketName string, opts *comm
 		opts.MaxResults = 0
 	}
 
-	var count int
 	objChan := mc.client.ListObjects(ctx, bucketName, mc.validateListObjectsOptions(span, opts))
-	objects := make([]common.StorageObject, 0)
+	minioObjects := []minio.ObjectInfo{}
 
 	for obj := range objChan {
 		if obj.Err != nil {
@@ -49,28 +48,48 @@ func (mc *Client) ListObjects(ctx context.Context, bucketName string, opts *comm
 			continue
 		}
 
-		if predicate == nil || (maxResults > 0 && count < maxResults) {
-			object := serializeObjectInfo(obj, true)
-			object.Bucket = bucketName
-
-			objects = append(objects, object)
-			count++
-		}
+		minioObjects = append(minioObjects, obj)
 	}
 
-	span.SetAttributes(attribute.Int("storage.object_count", count))
+	if len(minioObjects) == 0 {
+		span.SetAttributes(attribute.Int("storage.object_count", 0))
 
-	if len(objects) == 0 || !opts.Include.LegalHold {
 		return &common.StorageObjectListResults{
-			Objects: objects,
+			Objects: []common.StorageObject{},
+		}, nil
+	}
+
+	maxLength := len(minioObjects)
+	pageInfo := common.StoragePaginationInfo{}
+
+	if maxResults > 0 && maxResults < maxLength {
+		maxLength = maxResults
+		pageInfo.HasNextPage = true
+		pageInfo.Cursor = &minioObjects[maxLength-1].Key
+	}
+
+	objects := make([]common.StorageObject, maxLength)
+
+	for i := range maxLength {
+		object := serializeObjectInfo(&minioObjects[i], true)
+		object.Bucket = bucketName
+
+		objects[i] = object
+	}
+
+	span.SetAttributes(attribute.Int("storage.object_count", maxLength))
+
+	if opts.Include.IsEmpty() {
+		return &common.StorageObjectListResults{
+			Objects:  objects,
+			PageInfo: pageInfo,
 		}, nil
 	}
 
 	if opts.NumThreads <= 1 {
 		for i, object := range objects {
-			lhStatus, err := mc.GetObjectLegalHold(ctx, bucketName, object.Name, object.VersionID)
+			err := mc.populateObject(ctx, &object, opts.Include)
 			if err == nil {
-				object.LegalHold = &lhStatus
 				objects[i] = object
 			}
 		}
@@ -87,12 +106,10 @@ func (mc *Client) ListObjects(ctx context.Context, bucketName string, opts *comm
 
 	lhFunc := func(obj common.StorageObject, index int) {
 		eg.Go(func() error {
-			lhStatus, err := mc.GetObjectLegalHold(ctx, bucketName, obj.Name, obj.VersionID)
+			err := mc.populateObject(ctx, &obj, opts.Include)
 			if err == nil {
-				obj.LegalHold = &lhStatus
+				results[index] = obj
 			}
-
-			results[index] = obj
 
 			return nil
 		})
@@ -103,12 +120,13 @@ func (mc *Client) ListObjects(ctx context.Context, bucketName string, opts *comm
 	}
 
 	if err := eg.Wait(); err != nil {
-		logger.Error("failed to fetch legal holds for objects: " + err.Error())
+		logger.Error("failed to include object data: " + err.Error())
 		span.AddEvent("fetch_legal_holds_error", trace.WithAttributes(attribute.String("error", err.Error())))
 	}
 
 	return &common.StorageObjectListResults{
-		Objects: objects,
+		Objects:  objects,
+		PageInfo: pageInfo,
 	}, nil
 }
 
@@ -350,28 +368,12 @@ func (mc *Client) StatObject(ctx context.Context, bucketName, objectName string,
 		return nil, serializeErrorResponse(err)
 	}
 
-	result := serializeObjectInfo(object, false)
+	result := serializeObjectInfo(&object, false)
 	result.Bucket = bucketName
 
-	if opts.Include.Tags {
-		userTags, err := mc.GetObjectTags(ctx, bucketName, objectName, opts.VersionID)
-		if err != nil {
-			return nil, err
-		}
-
-		result.Tags = userTags
-	}
-
-	if opts.Include.LegalHold {
-		var versionID *string
-		if object.VersionID != "" {
-			versionID = &object.VersionID
-		}
-
-		lhStatus, err := mc.GetObjectLegalHold(ctx, bucketName, object.Key, versionID)
-		if err == nil {
-			result.LegalHold = &lhStatus
-		}
+	err = mc.populateObject(ctx, &result, opts.Include)
+	if err != nil {
+		return nil, err
 	}
 
 	common.SetObjectInfoSpanAttributes(span, &result)
@@ -839,4 +841,24 @@ func (mc *Client) GetObjectLockConfig(ctx context.Context, bucketName string) (*
 	}
 
 	return result, nil
+}
+
+func (mc *Client) populateObject(ctx context.Context, result *common.StorageObject, include common.StorageObjectIncludeOptions) error {
+	if include.Tags {
+		userTags, err := mc.GetObjectTags(ctx, result.Bucket, result.Name, result.VersionID)
+		if err != nil {
+			return err
+		}
+
+		result.Tags = userTags
+	}
+
+	if include.LegalHold {
+		lhStatus, err := mc.GetObjectLegalHold(ctx, result.Bucket, result.Name, result.VersionID)
+		if err == nil {
+			result.LegalHold = &lhStatus
+		}
+	}
+
+	return nil
 }

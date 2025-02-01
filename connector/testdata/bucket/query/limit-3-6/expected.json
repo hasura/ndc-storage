@@ -1,0 +1,89 @@
+[
+  {
+    "rows": [
+      {
+        "__value": {
+          "buckets": [
+            {
+              "clientId": "minio",
+              "name": "dummy-bucket-3",
+              "storageClass": null,
+              "tags": null
+            },
+            {
+              "clientId": "minio",
+              "name": "dummy-bucket-4",
+              "storageClass": null,
+              "tags": null
+            },
+            {
+              "clientId": "minio",
+              "name": "dummy-bucket-5",
+              "storageClass": null,
+              "tags": null
+            }
+          ],
+          "pageInfo": { "cursor": "dummy-bucket-5", "hasNextPage": true }
+        }
+      }
+    ]
+  },
+  {
+    "rows": [
+      {
+        "__value": {
+          "buckets": [
+            {
+              "clientId": "azblob",
+              "name": "dummy-bucket-3",
+              "storageClass": null,
+              "tags": null
+            },
+            {
+              "clientId": "azblob",
+              "name": "dummy-bucket-4",
+              "storageClass": null,
+              "tags": null
+            },
+            {
+              "clientId": "azblob",
+              "name": "dummy-bucket-5",
+              "storageClass": null,
+              "tags": null
+            }
+          ],
+          "pageInfo": { "cursor": "dummy-bucket-5", "hasNextPage": true }
+        }
+      }
+    ]
+  },
+  {
+    "rows": [
+      {
+        "__value": {
+          "buckets": [
+            {
+              "clientId": "gcs",
+              "name": "dummy-bucket-3",
+              "storageClass": "STANDARD",
+              "tags": null
+            },
+            {
+              "clientId": "gcs",
+              "name": "dummy-bucket-4",
+              "storageClass": "STANDARD",
+              "tags": null
+            },
+            {
+              "clientId": "gcs",
+              "name": "dummy-bucket-5",
+              "storageClass": "STANDARD",
+              "tags": null
+            }
+          ],
+          "pageInfo": { "cursor": "dummy-bucket-5", "hasNextPage": true }
+        }
+      }
+    ]
+  }
+]

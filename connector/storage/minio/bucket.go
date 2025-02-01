@@ -58,21 +58,7 @@ func (mc *Client) ListBuckets(ctx context.Context, options *common.ListStorageBu
 		return nil, serializeErrorResponse(err)
 	}
 
-	var filteredBuckets []minio.BucketInfo
-
-	if options.Prefix == "" && predicate == nil {
-		filteredBuckets = bucketInfos
-	} else {
-		for _, info := range bucketInfos {
-			if (options.Prefix != "" && !strings.HasPrefix(info.Name, options.Prefix)) ||
-				(predicate != nil && !predicate(info.Name)) {
-				continue
-			}
-
-			filteredBuckets = append(filteredBuckets, info)
-		}
-	}
-
+	filteredBuckets, pageInfo := filterBuckets(bucketInfos, options, predicate)
 	span.SetAttributes(attribute.Int("storage.bucket_count", len(bucketInfos)))
 
 	if len(bucketInfos) == 0 {
@@ -100,7 +86,8 @@ func (mc *Client) ListBuckets(ctx context.Context, options *common.ListStorageBu
 		}
 
 		return &common.StorageBucketListResults{
-			Buckets: results,
+			Buckets:  results,
+			PageInfo: pageInfo,
 		}, nil
 	}
 
@@ -135,7 +122,8 @@ func (mc *Client) ListBuckets(ctx context.Context, options *common.ListStorageBu
 	}
 
 	return &common.StorageBucketListResults{
-		Buckets: results,
+		Buckets:  results,
+		PageInfo: pageInfo,
 	}, nil
 }
 
@@ -789,4 +777,44 @@ func (mc *Client) populateBucket(ctx context.Context, item minio.BucketInfo, opt
 	}
 
 	return bucket, nil
+}
+
+func filterBuckets(bucketInfos []minio.BucketInfo, options *common.ListStorageBucketsOptions, predicate func(string) bool) ([]minio.BucketInfo, common.StoragePaginationInfo) {
+	pageInfo := common.StoragePaginationInfo{}
+
+	if len(bucketInfos) == 0 || (options.Prefix == "" && predicate == nil && options.MaxResults == nil && options.StartAfter == "") {
+		return bucketInfos, pageInfo
+	}
+
+	var count int
+	filteredBuckets := make([]minio.BucketInfo, 0)
+	started := options.StartAfter == ""
+	bucketLength := len(bucketInfos)
+
+	for i, info := range bucketInfos {
+		if !started {
+			started = options.StartAfter == info.Name
+
+			continue
+		}
+
+		if (options.Prefix != "" && !strings.HasPrefix(info.Name, options.Prefix)) ||
+			(predicate != nil && !predicate(info.Name)) {
+			continue
+		}
+
+		filteredBuckets = append(filteredBuckets, info)
+		count++
+
+		if options.MaxResults != nil && count >= *options.MaxResults {
+			if i < bucketLength-1 {
+				pageInfo.HasNextPage = true
+				pageInfo.Cursor = &info.Name
+			}
+
+			break
+		}
+	}
+
+	return filteredBuckets, pageInfo
 }

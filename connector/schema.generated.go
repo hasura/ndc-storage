@@ -513,6 +513,9 @@ func GetConnectorSchema() *schema.SchemaResponse {
 					"autoclass": schema.ObjectField{
 						Type: schema.NewNullableType(schema.NewNamedType("BucketAutoclass")).Encode(),
 					},
+					"clientId": schema.ObjectField{
+						Type: schema.NewNamedType("String").Encode(),
+					},
 					"cors": schema.ObjectField{
 						Type: schema.NewNullableType(schema.NewArrayType(schema.NewNamedType("BucketCors"))).Encode(),
 					},

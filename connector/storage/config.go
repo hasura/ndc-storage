@@ -96,7 +96,7 @@ func (cc ClientConfig) Validate() error {
 	return errors.New("unsupported storage client: " + string(baseConfig.Type))
 }
 
-func (cc ClientConfig) toStorageClient(ctx context.Context, logger *slog.Logger, version string) (*common.BaseClientConfig, common.StorageClient, error) {
+func (cc ClientConfig) toStorageClient(ctx context.Context, logger *slog.Logger) (*common.BaseClientConfig, common.StorageClient, error) {
 	if len(cc) == 0 {
 		return nil, nil, errConfigEmpty
 	}
@@ -133,7 +133,7 @@ func (cc ClientConfig) toStorageClient(ctx context.Context, logger *slog.Logger,
 			return nil, nil, err
 		}
 
-		client, err := gcs.New(ctx, &gcsConfig, logger, version)
+		client, err := gcs.New(ctx, &gcsConfig, logger)
 
 		return &baseConfig, client, err
 	case common.AzureBlobStore:
