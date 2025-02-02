@@ -7,10 +7,6 @@
     "prefix": {
       "type": "literal",
       "value": ""
-    },
-    "recursive": {
-      "type": "literal",
-      "value": true
     }
   },
   "collection": "storageIncompleteUploads",

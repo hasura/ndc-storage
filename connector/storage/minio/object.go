@@ -135,12 +135,9 @@ func (mc *Client) ListIncompleteUploads(ctx context.Context, bucketName string, 
 	ctx, span := mc.startOtelSpan(ctx, "ListIncompleteUploads", bucketName)
 	defer span.End()
 
-	span.SetAttributes(
-		attribute.String("storage.object_prefix", args.Prefix),
-		attribute.Bool("storage.options.recursive", args.Recursive),
-	)
+	span.SetAttributes(attribute.String("storage.object_prefix", args.Prefix))
 
-	objChan := mc.client.ListIncompleteUploads(ctx, bucketName, args.Prefix, args.Recursive)
+	objChan := mc.client.ListIncompleteUploads(ctx, bucketName, args.Prefix, true)
 	objects := make([]common.StorageObjectMultipartInfo, 0)
 
 	for obj := range objChan {

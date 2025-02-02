@@ -30,6 +30,10 @@
                     "storageClass": {
                       "column": "storageClass",
                       "type": "column"
+                    },
+                    "isDirectory": {
+                      "column": "isDirectory",
+                      "type": "column"
                     }
                   },
                   "type": "object"
@@ -63,7 +67,7 @@
     }
   },
   "arguments": {
-    "recursive": { "type": "literal", "value": false },
+    "hierarchy": { "type": "literal", "value": true },
     "maxResults": { "type": "literal", "value": 3 },
     "where": {
       "type": "literal",

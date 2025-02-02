@@ -63,7 +63,7 @@
     }
   },
   "arguments": {
-    "recursive": { "type": "literal", "value": true },
+    "hierarchy": { "type": "literal", "value": false },
     "maxResults": { "type": "literal", "value": 3 },
     "where": {
       "type": "literal",

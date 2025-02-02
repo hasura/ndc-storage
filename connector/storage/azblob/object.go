@@ -8,6 +8,7 @@ import (
 	"io"
 	"slices"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore"
@@ -25,11 +26,11 @@ import (
 
 // ListObjects list objects in a bucket.
 func (c *Client) ListObjects(ctx context.Context, bucketName string, opts *common.ListStorageObjectsOptions, predicate func(string) bool) (*common.StorageObjectListResults, error) {
-	if opts.Recursive {
-		return c.listFlatObjects(ctx, bucketName, opts, predicate)
+	if opts.Hierarchy {
+		return c.listHierarchyObjects(ctx, bucketName, opts, predicate)
 	}
 
-	return c.listHierarchyObjects(ctx, bucketName, opts, predicate)
+	return c.listFlatObjects(ctx, bucketName, opts, predicate)
 }
 
 func (c *Client) listFlatObjects(ctx context.Context, bucketName string, opts *common.ListStorageObjectsOptions, predicate func(string) bool) (*common.StorageObjectListResults, error) {
@@ -110,16 +111,22 @@ func (c *Client) listHierarchyObjects(ctx context.Context, bucketName string, op
 		options.Prefix = &opts.Prefix
 	}
 
-	maxResults := int32(opts.MaxResults)
+	maxResults := opts.MaxResults
+
 	if opts.MaxResults > 0 && predicate == nil {
-		options.MaxResults = &maxResults
+		mr := int32(opts.MaxResults)
+		options.MaxResults = &mr
+
+		if opts.StartAfter != "" {
+			*options.MaxResults += 1
+		}
 	}
 
 	if opts.StartAfter != "" {
 		options.Marker = &opts.StartAfter
 	}
 
-	var count int32
+	var count int
 	objects := make([]common.StorageObject, 0)
 	pager := c.client.ServiceClient().NewContainerClient(bucketName).NewListBlobsHierarchyPager("/", options)
 	pageInfo := common.StoragePaginationInfo{}
@@ -135,12 +142,14 @@ L:
 		}
 
 		for i, item := range resp.Segment.BlobPrefixes {
-			if item.Name == nil || (predicate != nil && !predicate(*item.Name)) {
+			// azure does not returns results after the marker. We should ignore the start result.
+			if item.Name == nil || (opts.StartAfter != "" && strings.TrimRight(*item.Name, "/") == strings.TrimRight(opts.StartAfter, "/")) || (predicate != nil && !predicate(*item.Name)) {
 				continue
 			}
 
 			object := common.StorageObject{
-				Name: *item.Name,
+				Name:        *item.Name,
+				IsDirectory: true,
 			}
 			objects = append(objects, object)
 			count++

@@ -9,6 +9,10 @@ import (
 
 // ListStorageBucketArguments represent the input arguments for the ListBuckets methods.
 type ListStorageBucketArguments struct {
+	// The storage client ID.
+	ClientID *StorageClientID `json:"clientId,omitempty"`
+	// Returns list of bucket with the prefix.
+	Prefix string `json:"prefix,omitempty"`
 	// The maximum number of objects requested per batch.
 	MaxResults *int `json:"maxResults"`
 	// StartAfter start listing lexically at this object onwards.
@@ -74,8 +78,7 @@ type ListIncompleteUploadsArguments struct {
 
 // ListIncompleteUploadsOptions the input arguments of the ListIncompleteUploads method.
 type ListIncompleteUploadsOptions struct {
-	Prefix    string `json:"prefix"`
-	Recursive bool   `json:"recursive,omitempty"`
+	Prefix string `json:"prefix,omitempty"`
 }
 
 // RemoveIncompleteUploadArguments represent the input arguments for the RemoveIncompleteUpload method.
@@ -111,11 +114,14 @@ type PresignedPutStorageObjectArguments struct {
 
 // ListStorageObjectsArguments holds all arguments of a list object request.
 type ListStorageObjectsArguments struct {
-	// Ignore '/' delimiter
-	Recursive bool `json:"recursive,omitempty"`
-	// The maximum number of objects requested per
-	// batch, advanced use-case not useful for most
-	// applications
+	StorageBucketArguments
+
+	// Returns the list of objects with the prefix.
+	Prefix string `json:"prefix,omitempty"`
+	// Returns objects in the hierarchical order.
+	Hierarchy bool `json:"hierarchy,omitempty"`
+	// The maximum number of objects requested per batch,
+	// advanced use-case not useful for most applications.
 	MaxResults *int `json:"maxResults"`
 	// StartAfter start listing lexically at this object onwards.
 	StartAfter *string `json:"startAfter,omitempty"`
@@ -155,18 +161,18 @@ func (soi StorageObjectIncludeOptions) IsEmpty() bool {
 // ListStorageObjectsOptions holds all options of a list object request.
 type ListStorageObjectsOptions struct {
 	// Only list objects with the prefix
-	Prefix string `json:"prefix"`
-	// Ignore '/' delimiter
-	Recursive bool `json:"recursive"`
+	Prefix string
+	// Returns objects in the hierarchical order.
+	Hierarchy bool
 	// The maximum number of objects requested per
 	// batch, advanced use-case not useful for most
 	// applications
-	MaxResults int `json:"maxResults"`
+	MaxResults int
 	// StartAfter start listing lexically at this object onwards.
-	StartAfter string `json:"startAfter"`
+	StartAfter string
 	// Options to be included for the object information.
-	Include    StorageObjectIncludeOptions `json:"-"`
-	NumThreads int                         `json:"-"`
+	Include    StorageObjectIncludeOptions
+	NumThreads int
 }
 
 // GetStorageObjectArguments are used to specify additional headers or options during GET requests.
@@ -296,16 +302,16 @@ type SetStorageObjectRetentionOptions struct {
 // RemoveStorageObjectsArguments represents arguments specified by user for RemoveObjects call.
 type RemoveStorageObjectsArguments struct {
 	StorageBucketArguments
-	RemoveStorageObjectsOptions
+	ListStorageObjectsArguments
 
-	Where schema.Expression `json:"where" ndc:"predicate=StorageObjectFilter"`
+	GovernanceBypass bool `json:"governanceBypass,omitempty"`
 }
 
 // RemoveStorageObjectsOptions represents options specified by user for RemoveObjects call.
 type RemoveStorageObjectsOptions struct {
 	ListStorageObjectsOptions
 
-	GovernanceBypass bool `json:"governanceBypass,omitempty"`
+	GovernanceBypass bool
 }
 
 // PutStorageObjectRetentionOptions represent options of object retention configuration.

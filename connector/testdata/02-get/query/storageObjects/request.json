@@ -359,7 +359,6 @@
     }
   },
   "arguments": {
-    "recursive": { "type": "literal", "value": true },
     "where": {
       "type": "literal",
       "value": {

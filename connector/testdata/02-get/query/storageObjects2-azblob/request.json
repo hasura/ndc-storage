@@ -356,7 +356,6 @@
   },
   "arguments": {
     "clientId": { "type": "literal", "value": "azblob-connstr" },
-    "recursive": { "type": "literal", "value": true },
     "maxResults": { "type": "literal", "value": 1 },
     "startAfter": { "type": "literal", "value": "public/hello.txt" },
     "where": {

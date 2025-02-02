@@ -63,7 +63,6 @@
     }
   },
   "arguments": {
-    "recursive": { "type": "literal", "value": true },
     "maxResults": { "type": "literal", "value": 3 },
     "startAfter": {
       "type": "literal",

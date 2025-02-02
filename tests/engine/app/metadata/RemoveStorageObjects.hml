@@ -44,16 +44,16 @@ definition:
       type: StorageClientId
     - name: governanceBypass
       type: Boolean
+    - name: hierarchy
+      type: Boolean
     - name: maxResults
-      type: Int32!
-    - name: prefix
-      type: String!
-    - name: recursive
-      type: Boolean!
+      type: Int32
     - name: startAfter
-      type: String!
+      type: String
     - name: where
       type: StorageObjectFilterBoolExp
+    - name: prefix
+      type: String
   source:
     dataConnectorName: storage
     dataConnectorCommand:
@@ -73,4 +73,13 @@ definition:
   permissions:
     - role: admin
       allowExecution: true
+      argumentPresets:
+        - argument: where
+          value:
+            booleanExpression:
+              fieldComparison:
+                field: object
+                operator: _contains
+                value:
+                  literal: public
 

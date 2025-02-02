@@ -338,6 +338,7 @@ type StorageObject struct {
 	ContentLanguage    *string    `json:"contentLanguage,omitempty"`
 	CacheControl       *string    `json:"cacheControl,omitempty"`
 	Expires            *time.Time `json:"expires"` // The date and time at which the object is no longer able to be cached.
+	IsDirectory        bool       `json:"isDirectory"`
 
 	// Collection of additional metadata on the object.
 	// In MinIO and S3, x-amz-meta-* headers stripped "x-amz-meta-" prefix containing the first value.

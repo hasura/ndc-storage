@@ -22,8 +22,39 @@ type PredicateEvaluator struct {
 	ObjectNamePredicate StringFilterPredicate
 }
 
-// EvalObjectPredicate evaluates the predicate condition of the query request.
-func EvalObjectPredicate(bucketInfo common.StorageBucketArguments, objectName string, predicate schema.Expression, variables map[string]any) (*PredicateEvaluator, error) {
+// EvalBucketPredicate evaluates the predicate bucket condition of the query request.
+func EvalBucketPredicate(clientID *common.StorageClientID, prefix string, predicate schema.Expression, variables map[string]any) (*PredicateEvaluator, error) {
+	result := &PredicateEvaluator{
+		ClientID:  clientID,
+		Include:   common.StorageObjectIncludeOptions{},
+		variables: variables,
+	}
+
+	if prefix != "" {
+		result.BucketPredicate.Pre = &StringComparisonOperator{
+			Value:    prefix,
+			Operator: OperatorStartsWith,
+		}
+	}
+
+	if len(predicate) > 0 {
+		ok, err := result.evalQueryPredicate(predicate)
+		if err != nil {
+			return nil, err
+		}
+
+		if !ok {
+			return result, nil
+		}
+	}
+
+	result.IsValid = true
+
+	return result, nil
+}
+
+// EvalObjectPredicate evaluates the predicate object condition of the query request.
+func EvalObjectPredicate(bucketInfo common.StorageBucketArguments, preOperator *StringComparisonOperator, predicate schema.Expression, variables map[string]any) (*PredicateEvaluator, error) {
 	result := &PredicateEvaluator{
 		ClientID:  bucketInfo.ClientID,
 		Include:   common.StorageObjectIncludeOptions{},
@@ -37,10 +68,10 @@ func EvalObjectPredicate(bucketInfo common.StorageBucketArguments, objectName st
 		}
 	}
 
-	if objectName != "" {
+	if preOperator != nil {
 		result.ObjectNamePredicate.Pre = &StringComparisonOperator{
-			Value:    normalizeObjectName(objectName),
-			Operator: OperatorEqual,
+			Value:    normalizeObjectName(preOperator.Value),
+			Operator: preOperator.Operator,
 		}
 	}
 

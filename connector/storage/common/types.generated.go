@@ -71,11 +71,7 @@ func (j *ListIncompleteUploadsArguments) FromValue(input map[string]any) error {
 // FromValue decodes values from map
 func (j *ListIncompleteUploadsOptions) FromValue(input map[string]any) error {
 	var err error
-	j.Prefix, err = utils.GetString(input, "prefix")
-	if err != nil {
-		return err
-	}
-	j.Recursive, err = utils.GetBooleanDefault(input, "recursive")
+	j.Prefix, err = utils.GetStringDefault(input, "prefix")
 	if err != nil {
 		return err
 	}
@@ -85,7 +81,15 @@ func (j *ListIncompleteUploadsOptions) FromValue(input map[string]any) error {
 // FromValue decodes values from map
 func (j *ListStorageBucketArguments) FromValue(input map[string]any) error {
 	var err error
+	j.ClientID, err = utils.DecodeNullableObjectValue[StorageClientID](input, "clientId")
+	if err != nil {
+		return err
+	}
 	j.MaxResults, err = utils.GetNullableInt[int](input, "maxResults")
+	if err != nil {
+		return err
+	}
+	j.Prefix, err = utils.GetStringDefault(input, "prefix")
 	if err != nil {
 		return err
 	}
@@ -103,11 +107,19 @@ func (j *ListStorageBucketArguments) FromValue(input map[string]any) error {
 // FromValue decodes values from map
 func (j *ListStorageObjectsArguments) FromValue(input map[string]any) error {
 	var err error
+	j.StorageBucketArguments, err = utils.DecodeObject[StorageBucketArguments](input)
+	if err != nil {
+		return err
+	}
+	j.Hierarchy, err = utils.GetBooleanDefault(input, "hierarchy")
+	if err != nil {
+		return err
+	}
 	j.MaxResults, err = utils.GetNullableInt[int](input, "maxResults")
 	if err != nil {
 		return err
 	}
-	j.Recursive, err = utils.GetBooleanDefault(input, "recursive")
+	j.Prefix, err = utils.GetStringDefault(input, "prefix")
 	if err != nil {
 		return err
 	}
@@ -265,18 +277,21 @@ func (j GetStorageObjectOptions) ToMap() map[string]any {
 func (j ListIncompleteUploadsOptions) ToMap() map[string]any {
 	r := make(map[string]any)
 	r["prefix"] = j.Prefix
-	r["recursive"] = j.Recursive
 
 	return r
 }
 
 // ToMap encodes the struct to a value map
-func (j ListStorageObjectsOptions) ToMap() map[string]any {
+func (j ListStorageObjectsArguments) ToMap() map[string]any {
 	r := make(map[string]any)
+	r = utils.MergeMap(r, j.StorageBucketArguments.ToMap())
+	r["hierarchy"] = j.Hierarchy
 	r["maxResults"] = j.MaxResults
 	r["prefix"] = j.Prefix
-	r["recursive"] = j.Recursive
 	r["startAfter"] = j.StartAfter
+	if j.Where != nil {
+		r["where"] = j.Where
+	}
 
 	return r
 }
@@ -497,15 +512,6 @@ func (j RemoveStorageObjectOptions) ToMap() map[string]any {
 }
 
 // ToMap encodes the struct to a value map
-func (j RemoveStorageObjectsOptions) ToMap() map[string]any {
-	r := make(map[string]any)
-	r = utils.MergeMap(r, j.ListStorageObjectsOptions.ToMap())
-	r["governanceBypass"] = j.GovernanceBypass
-
-	return r
-}
-
-// ToMap encodes the struct to a value map
 func (j ServerSideEncryptionConfiguration) ToMap() map[string]any {
 	r := make(map[string]any)
 	r["kmsMasterKeyId"] = j.KmsMasterKeyID
@@ -711,6 +717,7 @@ func (j StorageObject) ToMap() map[string]any {
 	r["grant"] = j_Grant
 	r["group"] = j.Group
 	r["incrementalCopy"] = j.IncrementalCopy
+	r["isDirectory"] = j.IsDirectory
 	r["isLatest"] = j.IsLatest
 	r["kmsKeyName"] = j.KMSKeyName
 	r["lastAccessTime"] = j.LastAccessTime

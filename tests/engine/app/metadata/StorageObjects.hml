@@ -5,14 +5,20 @@ definition:
   name: StorageObjects
   outputType: StorageObjectListResults!
   arguments:
+    - name: hierarchy
+      type: Boolean
     - name: maxResults
       type: Int32
-    - name: recursive
-      type: Boolean
     - name: startAfter
       type: String
     - name: where
       type: StorageObjectFilterBoolExp
+    - name: bucket
+      type: String
+    - name: clientId
+      type: StorageClientId
+    - name: prefix
+      type: String
   source:
     dataConnectorName: storage
     dataConnectorCommand:

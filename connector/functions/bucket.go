@@ -25,7 +25,7 @@ func FunctionStorageBuckets(ctx context.Context, state *types.State, args *commo
 		return common.StorageBucketListResults{}, schema.UnprocessableContentError("maxResults must be larger than 0", nil)
 	}
 
-	request, err := internal.EvalObjectPredicate(common.StorageBucketArguments{}, "", args.Where, types.QueryVariablesFromContext(ctx))
+	request, err := internal.EvalBucketPredicate(args.ClientID, args.Prefix, args.Where, types.QueryVariablesFromContext(ctx))
 	if err != nil {
 		return common.StorageBucketListResults{}, err
 	}

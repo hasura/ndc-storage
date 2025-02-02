@@ -11,6 +11,7 @@ import (
 	"net/url"
 	"path/filepath"
 	"strconv"
+	"strings"
 	"time"
 
 	"cloud.google.com/go/storage"
@@ -50,7 +51,7 @@ func (c *Client) ListObjects(ctx context.Context, bucketName string, opts *commo
 		}
 
 		if !started {
-			started = object.Name == opts.StartAfter
+			started = object.Name == opts.StartAfter || strings.TrimRight(object.Prefix, "/") == strings.TrimRight(opts.StartAfter, "/")
 
 			continue
 		}
@@ -62,8 +63,8 @@ func (c *Client) ListObjects(ctx context.Context, bucketName string, opts *commo
 			cursor = &pi.Token
 		}
 
-		if predicate == nil || predicate(object.Name) {
-			result := serializeObjectInfo(object)
+		result := serializeObjectInfo(object)
+		if predicate == nil || predicate(result.Name) {
 			objects = append(objects, result)
 			count++
 
