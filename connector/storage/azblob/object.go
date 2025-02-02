@@ -184,7 +184,7 @@ L:
 		}
 	}
 
-	span.SetAttributes(attribute.Int("storage.object_count", int(count)))
+	span.SetAttributes(attribute.Int("storage.object_count", count))
 
 	results := &common.StorageObjectListResults{
 		Objects:  objects,
