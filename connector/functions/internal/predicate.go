@@ -3,7 +3,6 @@ package internal
 import (
 	"errors"
 	"fmt"
-	"slices"
 	"strings"
 
 	"github.com/hasura/ndc-sdk-go/schema"
@@ -214,9 +213,19 @@ func (pe *PredicateEvaluator) evalQueryPredicate(expression schema.Expression) (
 		case StorageObjectColumnClientID:
 			return pe.evalPredicateClientID(expr)
 		case StorageObjectColumnBucket:
-			return pe.evalStringFilter(&pe.BucketPredicate, expr)
+			ok, err := pe.evalStringFilter(&pe.BucketPredicate, expr)
+			if err != nil {
+				return false, fmt.Errorf("%s: %w", StorageObjectColumnBucket, err)
+			}
+
+			return ok, nil
 		case StorageObjectColumnObject:
-			return pe.evalStringFilter(&pe.ObjectNamePredicate, expr)
+			ok, err := pe.evalStringFilter(&pe.ObjectNamePredicate, expr)
+			if err != nil {
+				return false, fmt.Errorf("%s: %w", StorageObjectColumnObject, err)
+			}
+
+			return ok, nil
 		default:
 			return false, errors.New("unsupported predicate on column " + expr.Column.Name)
 		}
@@ -264,13 +273,9 @@ func (pe *PredicateEvaluator) evalPredicateClientID(expr *schema.ExpressionBinar
 }
 
 func (pe *PredicateEvaluator) evalStringFilter(predicate *StringFilterPredicate, expr *schema.ExpressionBinaryComparisonOperator) (bool, error) { //nolint:gocognit,cyclop
-	if !slices.Contains([]string{OperatorStartsWith, OperatorEqual}, expr.Operator) {
-		return false, fmt.Errorf("unsupported operator `%s` for string filter expression", expr.Operator)
-	}
-
 	value, err := getComparisonValueString(expr.Value, pe.variables)
 	if err != nil {
-		return false, fmt.Errorf("bucket: %w", err)
+		return false, err
 	}
 
 	if value == nil {
@@ -353,6 +358,8 @@ func (pe *PredicateEvaluator) evalStringFilter(predicate *StringFilterPredicate,
 		case OperatorEqual:
 			return strings.Contains(strings.ToLower(predicate.Pre.Value), strings.ToLower(valueStr)), nil
 		}
+	default:
+		return false, fmt.Errorf("unsupported operator `%s` for string filter expression", expr.Operator)
 	}
 
 	return true, nil

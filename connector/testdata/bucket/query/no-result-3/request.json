@@ -4,13 +4,13 @@
       "type": "literal",
       "value": 3
     },
+    "prefix": {
+      "type": "literal",
+      "value": "abcxyz"
+    },
     "startAfter": {
       "type": "literal",
       "value": null
-    },
-    "prefix": {
-      "type": "literal",
-      "value": "dummy"
     },
     "where": {
       "type": "literal",
@@ -45,10 +45,6 @@
               "fields": {
                 "fields": {
                   "fields": {
-                    "clientId": {
-                      "column": "clientId",
-                      "type": "column"
-                    },
                     "name": {
                       "column": "name",
                       "type": "column"

@@ -63,10 +63,15 @@
     }
   },
   "arguments": {
-    "hierarchy": { "type": "literal", "value": false },
     "maxResults": { "type": "literal", "value": 3 },
-    "bucket": { "type": "literal", "value": "dummy-bucket-0" },
-    "prefix": { "type": "literal", "value": "movies" },
+    "startAfter": {
+      "type": "literal",
+      "value": "movies/1990s/movies.json"
+    },
+    "prefix": {
+      "type": "literal",
+      "value": "not-found"
+    },
     "where": {
       "type": "literal",
       "value": {
@@ -77,6 +82,12 @@
             "column": { "type": "column", "name": "clientId", "path": [] },
             "operator": "_eq",
             "value": { "type": "variable", "name": "$clientId" }
+          },
+          {
+            "type": "binary_comparison_operator",
+            "column": { "type": "column", "name": "bucket", "path": [] },
+            "operator": "_eq",
+            "value": { "type": "scalar", "value": "dummy-bucket-0" }
           }
         ]
       }

@@ -2,19 +2,29 @@ package connector
 
 import (
 	"fmt"
+	"log/slog"
+	"os"
 	"path/filepath"
 	"testing"
 
+	"github.com/hasura/ndc-sdk-go/connector"
 	"github.com/hasura/ndc-sdk-go/ndctest"
 )
 
 func TestConnector(t *testing.T) {
 	setConnectorTestEnv(t)
 
+	logger := slog.New(slog.NewJSONHandler(os.Stderr, &slog.HandlerOptions{
+		Level: slog.LevelDebug,
+	}))
+
 	for _, dir := range []string{"01-setup", "02-get", "03-cleanup"} {
 		ndctest.TestConnector(t, &Connector{}, ndctest.TestConnectorOptions{
 			Configuration: "../tests/configuration",
 			TestDataDir:   filepath.Join("testdata", dir),
+			ServerOptions: []connector.ServeOption{
+				connector.WithLogger(logger),
+			},
 		})
 	}
 }
