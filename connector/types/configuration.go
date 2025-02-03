@@ -33,8 +33,8 @@ func (c Configuration) Validate() error {
 		}
 	}
 
-	if c.Runtime.MaxDownloadSizeMB <= 0 {
-		return errors.New("maxDownloadSizeMB must be larger than 0")
+	if c.Runtime.MaxDownloadSizeMBs <= 0 {
+		return errors.New("maxDownloadSizeMBs must be larger than 0")
 	}
 
 	return nil

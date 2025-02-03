@@ -78,11 +78,11 @@ func (m *Manager) GetObject(ctx context.Context, bucketInfo common.StorageBucket
 	}
 
 	if objectStat.IsDirectory {
-		return nil, schema.UnprocessableContentError(fmt.Sprintf("cannot download directory: %s", objectName), nil)
+		return nil, schema.UnprocessableContentError("cannot download directory: "+objectName, nil)
 	}
 
-	if objectStat.Size == nil || *objectStat.Size >= (m.runtime.MaxDownloadSizeMB*1024*1024) {
-		return nil, schema.UnprocessableContentError(fmt.Sprintf("file size >= %d MB is not allowed to be downloaded directly. Please use presignedGetObject function for large files", m.runtime.MaxDownloadSizeMB), nil)
+	if objectStat.Size == nil || *objectStat.Size >= (m.runtime.MaxDownloadSizeMBs*1024*1024) {
+		return nil, schema.UnprocessableContentError(fmt.Sprintf("file size >= %d MB is not allowed to be downloaded directly. Please use presignedGetObject function for large files", m.runtime.MaxDownloadSizeMBs), nil)
 	}
 
 	return client.GetObject(ctx, bucketName, objectName, opts)

@@ -17,7 +17,7 @@ import (
 type RuntimeSettings struct {
 	// Maximum size in MB of the object is allowed to download content in the GraphQL response
 	// to avoid memory leaks. Pre-signed URLs are recommended for large files.
-	MaxDownloadSizeMB int64 `json:"maxDownloadSizeMB" jsonschema:"min=1,default=20" yaml:"maxDownloadSizeMB"`
+	MaxDownloadSizeMBs int64 `json:"maxDownloadSizeMBs" jsonschema:"min=1,default=20" yaml:"maxDownloadSizeMBs"`
 }
 
 // Manager represents the high-level client that manages internal clients and configurations.

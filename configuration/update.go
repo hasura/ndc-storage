@@ -64,7 +64,7 @@ var defaultConfiguration = types.Configuration{
 		Mutation: 1,
 	},
 	Runtime: storage.RuntimeSettings{
-		MaxDownloadSizeMB: 20,
+		MaxDownloadSizeMBs: 20,
 	},
 	Clients: []storage.ClientConfig{
 		{

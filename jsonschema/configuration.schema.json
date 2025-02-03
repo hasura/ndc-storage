@@ -485,7 +485,7 @@
     },
     "RuntimeSettings": {
       "properties": {
-        "maxDownloadSizeMB": {
+        "maxDownloadSizeMBs": {
           "type": "integer",
           "default": 20
         }
@@ -493,7 +493,7 @@
       "additionalProperties": false,
       "type": "object",
       "required": [
-        "maxDownloadSizeMB"
+        "maxDownloadSizeMBs"
       ]
     }
   }

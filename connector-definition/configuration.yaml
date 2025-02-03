@@ -20,3 +20,5 @@ clients:
 concurrency:
   query: 5
   mutation: 3
+runtime:
+  maxDownloadSizeMBs: 10
