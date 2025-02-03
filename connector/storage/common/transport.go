@@ -92,7 +92,7 @@ func (mrt debugRoundTripper) RoundTrip(req *http.Request) (*http.Response, error
 	if err != nil {
 		span.SetStatus(codes.Error, err.Error())
 		span.RecordError(err)
-		slog.Debug("failed to execute the request: %s"+err.Error(), logAttrs...)
+		slog.Debug("failed to execute the request: "+err.Error(), logAttrs...)
 
 		return resp, err
 	}

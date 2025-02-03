@@ -121,6 +121,10 @@ definition:
       type: String
     - name: where
       type: StorageBucketFilterBoolExp
+    - name: clientId
+      type: StorageClientId
+    - name: prefix
+      type: String
   source:
     dataConnectorName: storage
     dataConnectorCommand:

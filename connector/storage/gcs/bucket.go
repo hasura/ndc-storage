@@ -3,6 +3,7 @@ package gcs
 import (
 	"context"
 	"errors"
+	"strings"
 
 	"cloud.google.com/go/storage"
 	"github.com/hasura/ndc-sdk-go/schema"
@@ -48,10 +49,15 @@ func (c *Client) ListBuckets(ctx context.Context, options *common.ListStorageBuc
 	pager := c.client.Buckets(ctx, c.projectID)
 	pager.Prefix = options.Prefix
 
-	var count int
+	var count, maxResults int
 	var results []common.StorageBucket
-	maxResults := options.MaxResults
 	pageInfo := common.StoragePaginationInfo{}
+
+	if options.MaxResults != nil {
+		maxResults = *options.MaxResults
+	}
+
+	started := options.StartAfter == ""
 
 	for {
 		bucket, err := pager.Next()
@@ -66,6 +72,12 @@ func (c *Client) ListBuckets(ctx context.Context, options *common.ListStorageBuc
 			return nil, serializeErrorResponse(err)
 		}
 
+		if !started {
+			started = options.StartAfter == bucket.Name
+
+			continue
+		}
+
 		var cursor *string
 		pi := pager.PageInfo()
 
@@ -73,15 +85,21 @@ func (c *Client) ListBuckets(ctx context.Context, options *common.ListStorageBuc
 			cursor = &pi.Token
 		}
 
-		if predicate == nil || predicate(bucket.Name) {
-			result := serializeBucketInfo(bucket)
-			results = append(results, result)
-			count++
+		if (options.Prefix != "" && !strings.HasPrefix(bucket.Name, options.Prefix)) || (predicate != nil && !predicate(bucket.Name)) {
+			continue
 		}
+
+		result := serializeBucketInfo(bucket)
+		results = append(results, result)
+		count++
 
 		if maxResults > 0 && count >= maxResults {
 			pageInfo.HasNextPage = pi.Remaining() > 0
 			pageInfo.Cursor = cursor
+
+			if pageInfo.Cursor == nil {
+				pageInfo.Cursor = &bucket.Name
+			}
 
 			break
 		}

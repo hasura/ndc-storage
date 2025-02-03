@@ -3,7 +3,6 @@ package storage
 import (
 	"context"
 
-	"github.com/hasura/ndc-sdk-go/schema"
 	"github.com/hasura/ndc-storage/connector/storage/common"
 )
 
@@ -37,10 +36,21 @@ func (m *Manager) UpdateBucket(ctx context.Context, args *common.UpdateBucketArg
 func (m *Manager) ListBuckets(ctx context.Context, clientID *common.StorageClientID, options *common.ListStorageBucketsOptions, predicate func(string) bool) (*common.StorageBucketListResults, error) {
 	client, ok := m.GetClient(clientID)
 	if !ok {
-		return nil, schema.InternalServerError("client not found", nil)
+		return &common.StorageBucketListResults{
+			Buckets: []common.StorageBucket{},
+		}, nil
 	}
 
-	return client.ListBuckets(ctx, options, predicate)
+	results, err := client.ListBuckets(ctx, options, predicate)
+	if err != nil {
+		return nil, err
+	}
+
+	for i := range results.Buckets {
+		results.Buckets[i].ClientID = string(client.id)
+	}
+
+	return results, nil
 }
 
 // GetBucket gets bucket by name.
@@ -50,7 +60,14 @@ func (m *Manager) GetBucket(ctx context.Context, bucketInfo *common.StorageBucke
 		return nil, err
 	}
 
-	return client.GetBucket(ctx, bucketName, options)
+	result, err := client.GetBucket(ctx, bucketName, options)
+	if err != nil {
+		return nil, err
+	}
+
+	result.ClientID = string(client.id)
+
+	return result, nil
 }
 
 // BucketExists checks if a bucket exists.

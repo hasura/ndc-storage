@@ -56,9 +56,12 @@ func (c *Client) ListBuckets(ctx context.Context, options *common.ListStorageBuc
 		opts.Prefix = &options.Prefix
 	}
 
-	maxResults := int32(options.MaxResults)
-	if options.MaxResults > 0 && predicate == nil {
+	var maxResults int32
+	if options.MaxResults != nil && *options.MaxResults > 0 && predicate == nil {
+		maxResults = int32(*options.MaxResults)
 		opts.MaxResults = &maxResults
+
+		span.SetAttributes(attribute.Int("storage.options.max_results", int(maxResults)))
 	}
 
 	if options.StartAfter != "" {
@@ -71,6 +74,7 @@ func (c *Client) ListBuckets(ctx context.Context, options *common.ListStorageBuc
 	var results []common.StorageBucket
 	pageInfo := common.StoragePaginationInfo{}
 
+L:
 	for pager.More() {
 		resp, err := pager.NextPage(ctx)
 		if err != nil {
@@ -80,7 +84,7 @@ func (c *Client) ListBuckets(ctx context.Context, options *common.ListStorageBuc
 			return nil, serializeErrorResponse(err)
 		}
 
-		for _, container := range resp.ContainerItems {
+		for i, container := range resp.ContainerItems {
 			if container.Name == nil || (predicate != nil && !predicate(*container.Name)) {
 				continue
 			}
@@ -136,16 +140,12 @@ func (c *Client) ListBuckets(ctx context.Context, options *common.ListStorageBuc
 			count++
 
 			if maxResults > 0 && count >= maxResults {
-				if pager.More() {
+				if i < len(resp.ContainerItems)-1 || pager.More() {
 					pageInfo.HasNextPage = true
-					pageInfo.Cursor = resp.NextMarker
+					pageInfo.Cursor = &result.Name
 				}
 
-				if resp.Marker != nil && *resp.Marker != "" {
-					pageInfo.Cursor = resp.Marker
-				}
-
-				break
+				break L
 			}
 		}
 	}

@@ -680,6 +680,8 @@ definition:
   fields:
     - name: autoclass
       type: BucketAutoclass
+    - name: clientId
+      type: String!
     - name: cors
       type: "[BucketCors!]"
     - name: creationTime
@@ -739,6 +741,7 @@ definition:
       output:
         allowedFields:
           - autoclass
+          - clientId
           - cors
           - creationTime
           - customPlacementConfig

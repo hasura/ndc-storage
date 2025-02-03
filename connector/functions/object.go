@@ -68,7 +68,10 @@ func FunctionStorageDeletedObjects(ctx context.Context, state *types.State, args
 
 // FunctionStorageObject fetches metadata of an object.
 func FunctionStorageObject(ctx context.Context, state *types.State, args *common.GetStorageObjectArguments) (*common.StorageObject, error) {
-	request, err := internal.EvalObjectPredicate(args.StorageBucketArguments, args.Object, args.Where, types.QueryVariablesFromContext(ctx))
+	request, err := internal.EvalObjectPredicate(args.StorageBucketArguments, &internal.StringComparisonOperator{
+		Value:    args.Object,
+		Operator: internal.OperatorEqual,
+	}, args.Where, types.QueryVariablesFromContext(ctx))
 	if err != nil {
 		return nil, err
 	}
@@ -124,7 +127,10 @@ func FunctionDownloadStorageObjectText(ctx context.Context, state *types.State, 
 }
 
 func downloadStorageObject(ctx context.Context, state *types.State, args *common.GetStorageObjectArguments) (io.ReadCloser, error) {
-	request, err := internal.EvalObjectPredicate(args.StorageBucketArguments, args.Object, args.Where, types.QueryVariablesFromContext(ctx))
+	request, err := internal.EvalObjectPredicate(args.StorageBucketArguments, &internal.StringComparisonOperator{
+		Value:    args.Object,
+		Operator: internal.OperatorEqual,
+	}, args.Where, types.QueryVariablesFromContext(ctx))
 	if err != nil {
 		return nil, err
 	}
@@ -141,7 +147,10 @@ func downloadStorageObject(ctx context.Context, state *types.State, args *common
 // This presigned URL can have an associated expiration time in seconds after which it is no longer operational.
 // The maximum expiry is 604800 seconds (i.e. 7 days) and minimum is 1 second.
 func FunctionStoragePresignedDownloadUrl(ctx context.Context, state *types.State, args *common.PresignedGetStorageObjectArguments) (*common.PresignedURLResponse, error) {
-	request, err := internal.EvalObjectPredicate(args.StorageBucketArguments, args.Object, args.Where, types.QueryVariablesFromContext(ctx))
+	request, err := internal.EvalObjectPredicate(args.StorageBucketArguments, &internal.StringComparisonOperator{
+		Value:    args.Object,
+		Operator: internal.OperatorEqual,
+	}, args.Where, types.QueryVariablesFromContext(ctx))
 	if err != nil {
 		return nil, err
 	}
@@ -158,7 +167,10 @@ func FunctionStoragePresignedDownloadUrl(ctx context.Context, state *types.State
 // This presigned URL can have an associated expiration time in seconds after which it is no longer operational.
 // The default expiry is set to 7 days.
 func FunctionStoragePresignedUploadUrl(ctx context.Context, state *types.State, args *common.PresignedPutStorageObjectArguments) (*common.PresignedURLResponse, error) {
-	request, err := internal.EvalObjectPredicate(args.StorageBucketArguments, args.Object, args.Where, types.QueryVariablesFromContext(ctx))
+	request, err := internal.EvalObjectPredicate(args.StorageBucketArguments, &internal.StringComparisonOperator{
+		Value:    args.Object,
+		Operator: internal.OperatorEqual,
+	}, args.Where, types.QueryVariablesFromContext(ctx))
 	if err != nil {
 		return nil, err
 	}
@@ -198,7 +210,10 @@ func ProcedureUploadStorageObject(ctx context.Context, state *types.State, args 
 }
 
 func uploadStorageObject(ctx context.Context, state *types.State, args *PutStorageObjectArguments, data []byte) (common.StorageUploadInfo, error) {
-	request, err := internal.EvalObjectPredicate(args.StorageBucketArguments, args.Object, args.Where, types.QueryVariablesFromContext(ctx))
+	request, err := internal.EvalObjectPredicate(args.StorageBucketArguments, &internal.StringComparisonOperator{
+		Value:    args.Object,
+		Operator: internal.OperatorEqual,
+	}, args.Where, types.QueryVariablesFromContext(ctx))
 	if err != nil {
 		return common.StorageUploadInfo{}, err
 	}
@@ -251,7 +266,10 @@ func ProcedureComposeStorageObject(ctx context.Context, state *types.State, args
 
 // ProcedureUpdateStorageObject updates the object's configuration.
 func ProcedureUpdateStorageObject(ctx context.Context, state *types.State, args *common.UpdateStorageObjectArguments) (bool, error) {
-	request, err := internal.EvalObjectPredicate(args.StorageBucketArguments, args.Object, args.Where, types.QueryVariablesFromContext(ctx))
+	request, err := internal.EvalObjectPredicate(args.StorageBucketArguments, &internal.StringComparisonOperator{
+		Value:    args.Object,
+		Operator: internal.OperatorEqual,
+	}, args.Where, types.QueryVariablesFromContext(ctx))
 	if err != nil {
 		return false, err
 	}
@@ -269,7 +287,10 @@ func ProcedureUpdateStorageObject(ctx context.Context, state *types.State, args 
 
 // ProcedureRemoveStorageObject removes an object with some specified options.
 func ProcedureRemoveStorageObject(ctx context.Context, state *types.State, args *common.RemoveStorageObjectArguments) (bool, error) {
-	request, err := internal.EvalObjectPredicate(args.StorageBucketArguments, args.Object, args.Where, types.QueryVariablesFromContext(ctx))
+	request, err := internal.EvalObjectPredicate(args.StorageBucketArguments, &internal.StringComparisonOperator{
+		Value:    args.Object,
+		Operator: internal.OperatorEqual,
+	}, args.Where, types.QueryVariablesFromContext(ctx))
 	if err != nil {
 		return false, err
 	}
@@ -288,27 +309,26 @@ func ProcedureRemoveStorageObject(ctx context.Context, state *types.State, args 
 // ProcedureRemoveStorageObjects remove a list of objects obtained from an input channel. The call sends a delete request to the server up to 1000 objects at a time.
 // The errors observed are sent over the error channel.
 func ProcedureRemoveStorageObjects(ctx context.Context, state *types.State, args *common.RemoveStorageObjectsArguments) ([]common.RemoveStorageObjectError, error) {
-	request, err := internal.EvalObjectPredicate(args.StorageBucketArguments, "", args.Where, types.QueryVariablesFromContext(ctx))
+	request, options, err := evalStorageObjectsArguments(ctx, state, &args.ListStorageObjectsArguments)
 	if err != nil {
-		return nil, err
+		return []common.RemoveStorageObjectError{}, err
 	}
 
 	if !request.IsValid {
-		return nil, nil
+		return []common.RemoveStorageObjectError{}, nil
 	}
 
 	predicate := request.ObjectNamePredicate.CheckPostPredicate
+
 	if !request.ObjectNamePredicate.HasPostPredicate() {
 		predicate = nil
 	}
 
+	options.Hierarchy = false
+
 	return state.Storage.RemoveObjects(ctx, request.GetBucketArguments(), &common.RemoveStorageObjectsOptions{
-		ListStorageObjectsOptions: common.ListStorageObjectsOptions{
-			Prefix:     request.ObjectNamePredicate.GetPrefix(),
-			Recursive:  args.Recursive,
-			StartAfter: args.StartAfter,
-		},
-		GovernanceBypass: args.GovernanceBypass,
+		ListStorageObjectsOptions: *options,
+		GovernanceBypass:          args.GovernanceBypass,
 	}, predicate)
 }
 
@@ -323,7 +343,10 @@ func ProcedureRemoveIncompleteStorageUpload(ctx context.Context, state *types.St
 
 // ProcedureRestoreStorageObject restore a soft-deleted object.
 func ProcedureRestoreStorageObject(ctx context.Context, state *types.State, args *common.RestoreStorageObjectArguments) (bool, error) {
-	request, err := internal.EvalObjectPredicate(args.StorageBucketArguments, args.Object, args.Where, types.QueryVariablesFromContext(ctx))
+	request, err := internal.EvalObjectPredicate(args.StorageBucketArguments, &internal.StringComparisonOperator{
+		Value:    args.Object,
+		Operator: internal.OperatorEqual,
+	}, args.Where, types.QueryVariablesFromContext(ctx))
 	if err != nil {
 		return false, err
 	}
@@ -344,7 +367,10 @@ func evalStorageObjectsArguments(ctx context.Context, state *types.State, args *
 		return nil, nil, schema.UnprocessableContentError("maxResults must be larger than 0", nil)
 	}
 
-	request, err := internal.EvalObjectPredicate(common.StorageBucketArguments{}, "", args.Where, types.QueryVariablesFromContext(ctx))
+	request, err := internal.EvalObjectPredicate(args.StorageBucketArguments, &internal.StringComparisonOperator{
+		Value:    args.Prefix,
+		Operator: internal.OperatorStartsWith,
+	}, args.Where, types.QueryVariablesFromContext(ctx))
 	if err != nil {
 		return nil, nil, err
 	}
@@ -359,7 +385,7 @@ func evalStorageObjectsArguments(ctx context.Context, state *types.State, args *
 
 	options := &common.ListStorageObjectsOptions{
 		Prefix:     request.ObjectNamePredicate.GetPrefix(),
-		Recursive:  args.Recursive,
+		Hierarchy:  args.Hierarchy,
 		Include:    request.Include,
 		NumThreads: state.Concurrency.Query,
 	}

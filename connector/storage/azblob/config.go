@@ -13,11 +13,9 @@ import (
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/policy"
 	"github.com/Azure/azure-sdk-for-go/sdk/azidentity"
 	"github.com/Azure/azure-sdk-for-go/sdk/storage/azblob"
-	"github.com/Azure/azure-sdk-for-go/sdk/tracing/azotel"
 	"github.com/hasura/ndc-sdk-go/utils"
 	"github.com/hasura/ndc-storage/connector/storage/common"
 	"github.com/invopop/jsonschema"
-	"go.opentelemetry.io/otel"
 )
 
 var (
@@ -66,7 +64,6 @@ func (cc ClientConfig) toAzureBlobClient(logger *slog.Logger) (*azblob.Client, e
 				IncludeBody: isDebug,
 			},
 			InsecureAllowCredentialWithHTTP: !useSSL,
-			TracingProvider:                 azotel.NewTracingProvider(otel.GetTracerProvider(), nil),
 			Transport: &http.Client{
 				Transport: transport,
 			},

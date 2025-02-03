@@ -265,33 +265,55 @@ definition:
           fields:
             prefix:
               type:
-                type: named
-                name: String
-            recursive:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
+        ListStorageObjectsArguments:
+          description: holds all arguments of a list object request.
+          fields:
+            bucket:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
+            clientId:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: StorageClientID
+            hierarchy:
               type:
                 type: nullable
                 underlying_type:
                   type: named
                   name: Boolean
-        ListStorageObjectsOptions:
-          description: holds all options of a list object request.
-          fields:
             maxResults:
               type:
-                type: named
-                name: Int32
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Int32
             prefix:
               type:
-                type: named
-                name: String
-            recursive:
-              type:
-                type: named
-                name: Boolean
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
             startAfter:
               type:
-                type: named
-                name: String
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
+            where:
+              type:
+                type: nullable
+                underlying_type:
+                  type: predicate
+                  object_type_name: StorageObjectFilter
         MakeStorageBucketOptions:
           description: holds all options to tweak bucket creation.
           fields:
@@ -798,31 +820,6 @@ definition:
                 underlying_type:
                   type: named
                   name: String
-        RemoveStorageObjectsOptions:
-          description: represents options specified by user for RemoveObjects call.
-          fields:
-            governanceBypass:
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: Boolean
-            maxResults:
-              type:
-                type: named
-                name: Int32
-            prefix:
-              type:
-                type: named
-                name: String
-            recursive:
-              type:
-                type: named
-                name: Boolean
-            startAfter:
-              type:
-                type: named
-                name: String
         ServerSideEncryptionConfiguration:
           description: is the default encryption configuration structure.
           fields:
@@ -889,6 +886,10 @@ definition:
                 underlying_type:
                   type: named
                   name: BucketAutoclass
+            clientId:
+              type:
+                type: named
+                name: String
             cors:
               type:
                 type: nullable
@@ -1419,6 +1420,10 @@ definition:
                 underlying_type:
                   type: named
                   name: Boolean
+            isDirectory:
+              type:
+                type: named
+                name: Boolean
             isLatest:
               type:
                 type: nullable
@@ -2106,12 +2111,24 @@ definition:
         - name: storageBuckets
           description: list all buckets.
           arguments:
+            clientId:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: StorageClientID
             maxResults:
               type:
                 type: nullable
                 underlying_type:
                   type: named
                   name: Int32
+            prefix:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
             startAfter:
               type:
                 type: nullable
@@ -2130,18 +2147,36 @@ definition:
         - name: storageDeletedObjects
           description: list deleted objects in a bucket.
           arguments:
+            bucket:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
+            clientId:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: StorageClientID
+            hierarchy:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
             maxResults:
               type:
                 type: nullable
                 underlying_type:
                   type: named
                   name: Int32
-            recursive:
+            prefix:
               type:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: Boolean
+                  name: String
             startAfter:
               type:
                 type: nullable
@@ -2174,14 +2209,10 @@ definition:
                   name: StorageClientID
             prefix:
               type:
-                type: named
-                name: String
-            recursive:
-              type:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: Boolean
+                  name: String
           result_type:
             type: array
             element_type:
@@ -2244,18 +2275,36 @@ definition:
         - name: storageObjects
           description: lists objects in a bucket.
           arguments:
+            bucket:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
+            clientId:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: StorageClientID
+            hierarchy:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
             maxResults:
               type:
                 type: nullable
                 underlying_type:
                   type: named
                   name: Int32
-            recursive:
+            prefix:
               type:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: Boolean
+                  name: String
             startAfter:
               type:
                 type: nullable
@@ -2539,22 +2588,30 @@ definition:
                 underlying_type:
                   type: named
                   name: Boolean
+            hierarchy:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
             maxResults:
               type:
-                type: named
-                name: Int32
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Int32
             prefix:
               type:
-                type: named
-                name: String
-            recursive:
-              type:
-                type: named
-                name: Boolean
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
             startAfter:
               type:
-                type: named
-                name: String
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
             where:
               type:
                 type: nullable

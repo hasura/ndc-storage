@@ -43,7 +43,7 @@ func serializeGrant(grant minio.Grant) common.StorageGrant {
 	return g
 }
 
-func serializeObjectInfo(obj minio.ObjectInfo, fromList bool) common.StorageObject { //nolint:funlen,gocognit,gocyclo,cyclop
+func serializeObjectInfo(obj *minio.ObjectInfo, fromList bool) common.StorageObject { //nolint:funlen,gocognit,gocyclo,cyclop
 	grants := make([]common.StorageGrant, len(obj.Grant))
 
 	for i, grant := range obj.Grant {
@@ -80,6 +80,7 @@ func serializeObjectInfo(obj minio.ObjectInfo, fromList bool) common.StorageObje
 		Deleted:               &obj.IsDeleteMarker,
 		ReplicationReady:      &obj.ReplicationReady,
 		StorageObjectChecksum: checksum,
+		IsDirectory:           strings.HasSuffix(obj.Key, "/"),
 	}
 
 	if object.TagCount == 0 {
@@ -198,7 +199,7 @@ func (mc *Client) validateListObjectsOptions(span trace.Span, opts *common.ListS
 	}
 
 	span.SetAttributes(
-		attribute.Bool("storage.options.recursive", opts.Recursive),
+		attribute.Bool("storage.options.recursive", !opts.Hierarchy),
 		attribute.Bool("storage.options.with_versions", opts.Include.Versions),
 		attribute.Bool("storage.options.with_metadata", opts.Include.Metadata),
 	)
@@ -219,7 +220,7 @@ func (mc *Client) validateListObjectsOptions(span trace.Span, opts *common.ListS
 		WithVersions: opts.Include.Versions,
 		WithMetadata: opts.Include.Metadata,
 		Prefix:       opts.Prefix,
-		Recursive:    opts.Recursive,
+		Recursive:    !opts.Hierarchy,
 		MaxKeys:      opts.MaxResults,
 		StartAfter:   opts.StartAfter,
 	}

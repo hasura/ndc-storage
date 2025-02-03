@@ -3,7 +3,6 @@ package internal
 import (
 	"errors"
 	"fmt"
-	"slices"
 	"strings"
 
 	"github.com/hasura/ndc-sdk-go/schema"
@@ -12,17 +11,49 @@ import (
 
 // PredicateEvaluator the structured predicate result which is evaluated from the raw expression.
 type PredicateEvaluator struct {
-	ClientID *common.StorageClientID
-	IsValid  bool
-	Include  common.StorageObjectIncludeOptions
+	ClientID          *common.StorageClientID
+	IsValid           bool
+	Include           common.StorageObjectIncludeOptions
+	IncludeObjectLock bool
 
 	variables           map[string]any
 	BucketPredicate     StringFilterPredicate
 	ObjectNamePredicate StringFilterPredicate
 }
 
-// EvalObjectPredicate evaluates the predicate condition of the query request.
-func EvalObjectPredicate(bucketInfo common.StorageBucketArguments, objectName string, predicate schema.Expression, variables map[string]any) (*PredicateEvaluator, error) {
+// EvalBucketPredicate evaluates the predicate bucket condition of the query request.
+func EvalBucketPredicate(clientID *common.StorageClientID, prefix string, predicate schema.Expression, variables map[string]any) (*PredicateEvaluator, error) {
+	result := &PredicateEvaluator{
+		ClientID:  clientID,
+		Include:   common.StorageObjectIncludeOptions{},
+		variables: variables,
+	}
+
+	if prefix != "" {
+		result.BucketPredicate.Pre = &StringComparisonOperator{
+			Value:    prefix,
+			Operator: OperatorStartsWith,
+		}
+	}
+
+	if len(predicate) > 0 {
+		ok, err := result.evalQueryPredicate(predicate)
+		if err != nil {
+			return nil, err
+		}
+
+		if !ok {
+			return result, nil
+		}
+	}
+
+	result.IsValid = true
+
+	return result, nil
+}
+
+// EvalObjectPredicate evaluates the predicate object condition of the query request.
+func EvalObjectPredicate(bucketInfo common.StorageBucketArguments, preOperator *StringComparisonOperator, predicate schema.Expression, variables map[string]any) (*PredicateEvaluator, error) {
 	result := &PredicateEvaluator{
 		ClientID:  bucketInfo.ClientID,
 		Include:   common.StorageObjectIncludeOptions{},
@@ -36,10 +67,10 @@ func EvalObjectPredicate(bucketInfo common.StorageBucketArguments, objectName st
 		}
 	}
 
-	if objectName != "" {
+	if preOperator != nil {
 		result.ObjectNamePredicate.Pre = &StringComparisonOperator{
-			Value:    normalizeObjectName(objectName),
-			Operator: OperatorEqual,
+			Value:    normalizeObjectName(preOperator.Value),
+			Operator: preOperator.Operator,
 		}
 	}
 
@@ -137,7 +168,7 @@ func (pe *PredicateEvaluator) EvalSelection(selection schema.NestedField) error 
 		}
 
 		if _, ok := expr.Fields["objectLock"]; ok {
-			pe.Include.ObjectLock = true
+			pe.IncludeObjectLock = true
 		}
 	}
 
@@ -182,9 +213,19 @@ func (pe *PredicateEvaluator) evalQueryPredicate(expression schema.Expression) (
 		case StorageObjectColumnClientID:
 			return pe.evalPredicateClientID(expr)
 		case StorageObjectColumnBucket:
-			return pe.evalStringFilter(&pe.BucketPredicate, expr)
+			ok, err := pe.evalStringFilter(&pe.BucketPredicate, expr)
+			if err != nil {
+				return false, fmt.Errorf("%s: %w", StorageObjectColumnBucket, err)
+			}
+
+			return ok, nil
 		case StorageObjectColumnObject:
-			return pe.evalStringFilter(&pe.ObjectNamePredicate, expr)
+			ok, err := pe.evalStringFilter(&pe.ObjectNamePredicate, expr)
+			if err != nil {
+				return false, fmt.Errorf("%s: %w", StorageObjectColumnObject, err)
+			}
+
+			return ok, nil
 		default:
 			return false, errors.New("unsupported predicate on column " + expr.Column.Name)
 		}
@@ -232,13 +273,9 @@ func (pe *PredicateEvaluator) evalPredicateClientID(expr *schema.ExpressionBinar
 }
 
 func (pe *PredicateEvaluator) evalStringFilter(predicate *StringFilterPredicate, expr *schema.ExpressionBinaryComparisonOperator) (bool, error) { //nolint:gocognit,cyclop
-	if !slices.Contains([]string{OperatorStartsWith, OperatorEqual}, expr.Operator) {
-		return false, fmt.Errorf("unsupported operator `%s` for string filter expression", expr.Operator)
-	}
-
 	value, err := getComparisonValueString(expr.Value, pe.variables)
 	if err != nil {
-		return false, fmt.Errorf("bucket: %w", err)
+		return false, err
 	}
 
 	if value == nil {
@@ -321,6 +358,8 @@ func (pe *PredicateEvaluator) evalStringFilter(predicate *StringFilterPredicate,
 		case OperatorEqual:
 			return strings.Contains(strings.ToLower(predicate.Pre.Value), strings.ToLower(valueStr)), nil
 		}
+	default:
+		return false, fmt.Errorf("unsupported operator `%s` for string filter expression", expr.Operator)
 	}
 
 	return true, nil

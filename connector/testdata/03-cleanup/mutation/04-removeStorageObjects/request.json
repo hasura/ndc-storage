@@ -5,13 +5,21 @@
       "type": "procedure",
       "name": "removeStorageObjects",
       "arguments": {
-        "bucket": "minio-bucket-test",
         "governanceBypass": false,
         "maxKeys": 385252679,
-        "prefix": "",
-        "recursive": true,
         "withMetadata": true,
-        "withVersions": true
+        "withVersions": true,
+        "where": {
+          "type": "and",
+          "expressions": [
+            {
+              "type": "binary_comparison_operator",
+              "column": { "type": "column", "name": "bucket", "path": [] },
+              "operator": "_eq",
+              "value": { "type": "scalar", "value": "minio-bucket-test" }
+            }
+          ]
+        }
       },
       "fields": {
         "fields": {

@@ -105,27 +105,33 @@ func GetConnectorSchema() *schema.SchemaResponse {
 				Description: toPtr("the input arguments of the ListIncompleteUploads method."),
 				Fields: schema.ObjectTypeFields{
 					"prefix": schema.ObjectField{
-						Type: schema.NewNamedType("String").Encode(),
-					},
-					"recursive": schema.ObjectField{
-						Type: schema.NewNullableType(schema.NewNamedType("Boolean")).Encode(),
+						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
 					},
 				},
 			},
-			"ListStorageObjectsOptions": schema.ObjectType{
-				Description: toPtr("holds all options of a list object request."),
+			"ListStorageObjectsArguments": schema.ObjectType{
+				Description: toPtr("holds all arguments of a list object request."),
 				Fields: schema.ObjectTypeFields{
+					"bucket": schema.ObjectField{
+						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
+					},
+					"clientId": schema.ObjectField{
+						Type: schema.NewNullableType(schema.NewNamedType("StorageClientID")).Encode(),
+					},
+					"hierarchy": schema.ObjectField{
+						Type: schema.NewNullableType(schema.NewNamedType("Boolean")).Encode(),
+					},
 					"maxResults": schema.ObjectField{
-						Type: schema.NewNamedType("Int32").Encode(),
+						Type: schema.NewNullableType(schema.NewNamedType("Int32")).Encode(),
 					},
 					"prefix": schema.ObjectField{
-						Type: schema.NewNamedType("String").Encode(),
-					},
-					"recursive": schema.ObjectField{
-						Type: schema.NewNamedType("Boolean").Encode(),
+						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
 					},
 					"startAfter": schema.ObjectField{
-						Type: schema.NewNamedType("String").Encode(),
+						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
+					},
+					"where": schema.ObjectField{
+						Type: schema.NewNullableType(schema.NewPredicateType("StorageObjectFilter")).Encode(),
 					},
 				},
 			},
@@ -448,26 +454,6 @@ func GetConnectorSchema() *schema.SchemaResponse {
 					},
 				},
 			},
-			"RemoveStorageObjectsOptions": schema.ObjectType{
-				Description: toPtr("represents options specified by user for RemoveObjects call."),
-				Fields: schema.ObjectTypeFields{
-					"governanceBypass": schema.ObjectField{
-						Type: schema.NewNullableType(schema.NewNamedType("Boolean")).Encode(),
-					},
-					"maxResults": schema.ObjectField{
-						Type: schema.NewNamedType("Int32").Encode(),
-					},
-					"prefix": schema.ObjectField{
-						Type: schema.NewNamedType("String").Encode(),
-					},
-					"recursive": schema.ObjectField{
-						Type: schema.NewNamedType("Boolean").Encode(),
-					},
-					"startAfter": schema.ObjectField{
-						Type: schema.NewNamedType("String").Encode(),
-					},
-				},
-			},
 			"ServerSideEncryptionConfiguration": schema.ObjectType{
 				Description: toPtr("is the default encryption configuration structure."),
 				Fields: schema.ObjectTypeFields{
@@ -512,6 +498,9 @@ func GetConnectorSchema() *schema.SchemaResponse {
 				Fields: schema.ObjectTypeFields{
 					"autoclass": schema.ObjectField{
 						Type: schema.NewNullableType(schema.NewNamedType("BucketAutoclass")).Encode(),
+					},
+					"clientId": schema.ObjectField{
+						Type: schema.NewNamedType("String").Encode(),
 					},
 					"cors": schema.ObjectField{
 						Type: schema.NewNullableType(schema.NewArrayType(schema.NewNamedType("BucketCors"))).Encode(),
@@ -804,6 +793,9 @@ func GetConnectorSchema() *schema.SchemaResponse {
 					},
 					"incrementalCopy": schema.ObjectField{
 						Type: schema.NewNullableType(schema.NewNamedType("Boolean")).Encode(),
+					},
+					"isDirectory": schema.ObjectField{
+						Type: schema.NewNamedType("Boolean").Encode(),
 					},
 					"isLatest": schema.ObjectField{
 						Type: schema.NewNullableType(schema.NewNamedType("Boolean")).Encode(),
@@ -1217,8 +1209,14 @@ func GetConnectorSchema() *schema.SchemaResponse {
 				Description: toPtr("list all buckets."),
 				ResultType:  schema.NewNamedType("StorageBucketListResults").Encode(),
 				Arguments: map[string]schema.ArgumentInfo{
+					"clientId": {
+						Type: schema.NewNullableType(schema.NewNamedType("StorageClientID")).Encode(),
+					},
 					"maxResults": {
 						Type: schema.NewNullableType(schema.NewNamedType("Int32")).Encode(),
+					},
+					"prefix": {
+						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
 					},
 					"startAfter": {
 						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
@@ -1233,11 +1231,20 @@ func GetConnectorSchema() *schema.SchemaResponse {
 				Description: toPtr("list deleted objects in a bucket."),
 				ResultType:  schema.NewNamedType("StorageObjectListResults").Encode(),
 				Arguments: map[string]schema.ArgumentInfo{
+					"bucket": {
+						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
+					},
+					"clientId": {
+						Type: schema.NewNullableType(schema.NewNamedType("StorageClientID")).Encode(),
+					},
+					"hierarchy": {
+						Type: schema.NewNullableType(schema.NewNamedType("Boolean")).Encode(),
+					},
 					"maxResults": {
 						Type: schema.NewNullableType(schema.NewNamedType("Int32")).Encode(),
 					},
-					"recursive": {
-						Type: schema.NewNullableType(schema.NewNamedType("Boolean")).Encode(),
+					"prefix": {
+						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
 					},
 					"startAfter": {
 						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
@@ -1259,10 +1266,7 @@ func GetConnectorSchema() *schema.SchemaResponse {
 						Type: schema.NewNullableType(schema.NewNamedType("StorageClientID")).Encode(),
 					},
 					"prefix": {
-						Type: schema.NewNamedType("String").Encode(),
-					},
-					"recursive": {
-						Type: schema.NewNullableType(schema.NewNamedType("Boolean")).Encode(),
+						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
 					},
 				},
 			},
@@ -1302,11 +1306,20 @@ func GetConnectorSchema() *schema.SchemaResponse {
 				Description: toPtr("lists objects in a bucket."),
 				ResultType:  schema.NewNamedType("StorageObjectListResults").Encode(),
 				Arguments: map[string]schema.ArgumentInfo{
+					"bucket": {
+						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
+					},
+					"clientId": {
+						Type: schema.NewNullableType(schema.NewNamedType("StorageClientID")).Encode(),
+					},
+					"hierarchy": {
+						Type: schema.NewNullableType(schema.NewNamedType("Boolean")).Encode(),
+					},
 					"maxResults": {
 						Type: schema.NewNullableType(schema.NewNamedType("Int32")).Encode(),
 					},
-					"recursive": {
-						Type: schema.NewNullableType(schema.NewNamedType("Boolean")).Encode(),
+					"prefix": {
+						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
 					},
 					"startAfter": {
 						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
@@ -1493,17 +1506,17 @@ func GetConnectorSchema() *schema.SchemaResponse {
 					"governanceBypass": {
 						Type: schema.NewNullableType(schema.NewNamedType("Boolean")).Encode(),
 					},
+					"hierarchy": {
+						Type: schema.NewNullableType(schema.NewNamedType("Boolean")).Encode(),
+					},
 					"maxResults": {
-						Type: schema.NewNamedType("Int32").Encode(),
+						Type: schema.NewNullableType(schema.NewNamedType("Int32")).Encode(),
 					},
 					"prefix": {
-						Type: schema.NewNamedType("String").Encode(),
-					},
-					"recursive": {
-						Type: schema.NewNamedType("Boolean").Encode(),
+						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
 					},
 					"startAfter": {
-						Type: schema.NewNamedType("String").Encode(),
+						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
 					},
 					"where": {
 						Type: schema.NewNullableType(schema.NewPredicateType("StorageObjectFilter")).Encode(),

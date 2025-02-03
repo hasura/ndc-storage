@@ -143,7 +143,7 @@ func serializeRetentionPolicy(retentionPolicy *storage.RetentionPolicy) *common.
 	}
 }
 
-func serializeObjectInfo(obj *storage.ObjectAttrs) common.StorageObject {
+func serializeObjectInfo(obj *storage.ObjectAttrs) common.StorageObject { //nolint:cyclop
 	object := common.StorageObject{
 		Bucket:       obj.Bucket,
 		Name:         obj.Name,
@@ -151,8 +151,16 @@ func serializeObjectInfo(obj *storage.ObjectAttrs) common.StorageObject {
 		LastModified: obj.Updated,
 		Size:         &obj.Size,
 		Metadata:     obj.Metadata,
-		StorageClass: &obj.StorageClass,
 		LegalHold:    &obj.TemporaryHold,
+	}
+
+	if obj.Name == "" && obj.Prefix != "" {
+		object.Name = obj.Prefix
+		object.IsDirectory = true
+	}
+
+	if obj.StorageClass != "" {
+		object.StorageClass = &obj.StorageClass
 	}
 
 	if obj.Etag != "" {
@@ -240,7 +248,7 @@ func serializeObjectInfo(obj *storage.ObjectAttrs) common.StorageObject {
 
 func (c *Client) validateListObjectsOptions(span trace.Span, opts *common.ListStorageObjectsOptions, includeDeleted bool) *storage.Query {
 	span.SetAttributes(
-		attribute.Bool("storage.options.recursive", opts.Recursive),
+		attribute.Bool("storage.options.hierarchy", opts.Hierarchy),
 		attribute.Bool("storage.options.with_deleted", includeDeleted),
 		attribute.Bool("storage.options.with_versions", opts.Include.Versions),
 	)
@@ -257,12 +265,18 @@ func (c *Client) validateListObjectsOptions(span trace.Span, opts *common.ListSt
 		span.SetAttributes(attribute.Int("storage.options.max_results", opts.MaxResults))
 	}
 
-	return &storage.Query{
+	result := &storage.Query{
 		Versions:    opts.Include.Versions,
 		Prefix:      opts.Prefix,
 		StartOffset: opts.StartAfter,
 		SoftDeleted: includeDeleted,
 	}
+
+	if opts.Hierarchy {
+		result.Delimiter = "/"
+	}
+
+	return result
 }
 
 func serializeUploadObjectInfo(obj *storage.Writer) common.StorageUploadInfo {

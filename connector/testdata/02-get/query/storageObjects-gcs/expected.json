@@ -75,7 +75,7 @@
             }
           ],
           "pageInfo": {
-            "cursor": null,
+            "cursor": "public/hello.txt",
             "hasNextPage": true
           }
         }

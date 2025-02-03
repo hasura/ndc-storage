@@ -187,3 +187,19 @@ func serializeErrorResponse(err error) *schema.ConnectorError {
 
 	return serializeAzureErrorResponse(respErr)
 }
+
+func makeListBlobsInclude(opts common.StorageObjectIncludeOptions) container.ListBlobsInclude {
+	return container.ListBlobsInclude{
+		Versions:            opts.Versions,
+		Metadata:            opts.Metadata,
+		Tags:                opts.Tags,
+		Copy:                opts.Copy,
+		Snapshots:           opts.Snapshots,
+		LegalHold:           opts.LegalHold,
+		ImmutabilityPolicy:  opts.Retention,
+		Permissions:         opts.Permissions,
+		Deleted:             false,
+		DeletedWithVersions: false,
+		UncommittedBlobs:    false,
+	}
+}

@@ -1,0 +1,89 @@
+{
+  "arguments": {
+    "maxResults": {
+      "type": "literal",
+      "value": 3
+    },
+    "startAfter": {
+      "type": "literal",
+      "value": null
+    },
+    "where": {
+      "type": "literal",
+      "value": {
+        "expressions": [
+          {
+            "column": { "type": "column", "name": "bucket" },
+            "operator": "_starts_with",
+            "type": "binary_comparison_operator",
+            "value": { "type": "scalar", "value": "dummy" }
+          },
+          {
+            "type": "binary_comparison_operator",
+            "column": { "type": "column", "name": "clientId", "path": [] },
+            "operator": "_eq",
+            "value": { "type": "variable", "name": "$clientId" }
+          }
+        ],
+        "type": "and"
+      }
+    }
+  },
+  "variables": [{ "$clientId": "not-found" }],
+  "collection": "storageBuckets",
+  "collection_relationships": {},
+  "query": {
+    "fields": {
+      "__value": {
+        "column": "__value",
+        "fields": {
+          "fields": {
+            "buckets": {
+              "column": "buckets",
+              "fields": {
+                "fields": {
+                  "fields": {
+                    "name": {
+                      "column": "name",
+                      "type": "column"
+                    },
+                    "storageClass": {
+                      "column": "storageClass",
+                      "type": "column"
+                    },
+                    "tags": {
+                      "column": "tags",
+                      "type": "column"
+                    }
+                  },
+                  "type": "object"
+                },
+                "type": "array"
+              },
+              "type": "column"
+            },
+            "pageInfo": {
+              "column": "pageInfo",
+              "fields": {
+                "fields": {
+                  "cursor": {
+                    "column": "cursor",
+                    "type": "column"
+                  },
+                  "hasNextPage": {
+                    "column": "hasNextPage",
+                    "type": "column"
+                  }
+                },
+                "type": "object"
+              },
+              "type": "column"
+            }
+          },
+          "type": "object"
+        },
+        "type": "column"
+      }
+    }
+  }
+}
