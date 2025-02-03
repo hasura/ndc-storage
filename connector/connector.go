@@ -72,7 +72,7 @@ func (c *Connector) ParseConfiguration(ctx context.Context, configurationDir str
 func (c *Connector) TryInitState(ctx context.Context, configuration *types.Configuration, metrics *connector.TelemetryState) (*types.State, error) {
 	logger := connector.GetLogger(ctx)
 
-	manager, err := storage.NewManager(ctx, configuration.Clients, logger)
+	manager, err := storage.NewManager(ctx, configuration.Clients, configuration.Runtime, logger)
 	if err != nil {
 		return nil, err
 	}

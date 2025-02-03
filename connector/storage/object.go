@@ -3,6 +3,7 @@ package storage
 import (
 	"bytes"
 	"context"
+	"fmt"
 	"io"
 	"time"
 
@@ -69,6 +70,19 @@ func (m *Manager) GetObject(ctx context.Context, bucketInfo common.StorageBucket
 	client, bucketName, err := m.GetClientAndBucket(bucketInfo.ClientID, bucketInfo.Bucket)
 	if err != nil {
 		return nil, err
+	}
+
+	objectStat, err := m.statObject(ctx, client, bucketName, objectName, opts)
+	if err != nil || objectStat == nil {
+		return nil, err
+	}
+
+	if objectStat.IsDirectory {
+		return nil, schema.UnprocessableContentError(fmt.Sprintf("cannot download directory: %s", objectName), nil)
+	}
+
+	if objectStat.Size == nil || *objectStat.Size >= (m.runtime.MaxDownloadSizeMB*1024*1024) {
+		return nil, schema.UnprocessableContentError(fmt.Sprintf("file size >= %d MB is not allowed to be downloaded directly. Please use presignedGetObject function for large files", m.runtime.MaxDownloadSizeMB), nil)
 	}
 
 	return client.GetObject(ctx, bucketName, objectName, opts)
@@ -153,6 +167,10 @@ func (m *Manager) StatObject(ctx context.Context, bucketInfo common.StorageBucke
 		return nil, err
 	}
 
+	return m.statObject(ctx, client, bucketName, objectName, opts)
+}
+
+func (m *Manager) statObject(ctx context.Context, client *Client, bucketName, objectName string, opts common.GetStorageObjectOptions) (*common.StorageObject, error) {
 	result, err := client.StatObject(ctx, bucketName, objectName, opts)
 	if err != nil {
 		return nil, err

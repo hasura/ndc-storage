@@ -13,10 +13,12 @@ const (
 
 // Configuration contains required settings for the connector.
 type Configuration struct {
-	// List of storage client configurations and credentials
+	// List of storage client configurations and credentials.
 	Clients []storage.ClientConfig `json:"clients" yaml:"clients"`
-	// Settings for concurrent webhook executions to remote servers
+	// Settings for concurrent webhook executions to remote servers.
 	Concurrency ConcurrencySettings `json:"concurrency,omitempty" yaml:"concurrency,omitempty"`
+	// Common runtime settings for all clients.
+	Runtime storage.RuntimeSettings `json:"runtime" yaml:"runtime"`
 }
 
 // Validate checks if the configuration is valid.
@@ -29,6 +31,10 @@ func (c Configuration) Validate() error {
 		if err := c.Validate(); err != nil {
 			return fmt.Errorf("invalid client configuration at %d: %w", i, err)
 		}
+	}
+
+	if c.Runtime.MaxDownloadSizeMB <= 0 {
+		return errors.New("maxDownloadSizeMB must be larger than 0")
 	}
 
 	return nil

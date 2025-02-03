@@ -1,4 +1,6 @@
 # yaml-language-server: $schema=../../jsonschema/configuration.schema.json
+runtime:
+  maxDownloadSizeMB: 10
 clients:
   - id: minio
     type: s3

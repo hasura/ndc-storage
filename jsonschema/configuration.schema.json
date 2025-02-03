@@ -448,12 +448,16 @@
         },
         "concurrency": {
           "$ref": "#/$defs/ConcurrencySettings"
+        },
+        "runtime": {
+          "$ref": "#/$defs/RuntimeSettings"
         }
       },
       "additionalProperties": false,
       "type": "object",
       "required": [
-        "clients"
+        "clients",
+        "runtime"
       ]
     },
     "EnvString": {
@@ -478,6 +482,19 @@
         }
       },
       "type": "object"
+    },
+    "RuntimeSettings": {
+      "properties": {
+        "maxDownloadSizeMB": {
+          "type": "integer",
+          "default": 20
+        }
+      },
+      "additionalProperties": false,
+      "type": "object",
+      "required": [
+        "maxDownloadSizeMB"
+      ]
     }
   }
 }
