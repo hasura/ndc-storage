@@ -17,7 +17,7 @@ type ListStorageBucketArguments struct {
 	First *int `json:"first"`
 	// After start listing lexically at this bucket onwards.
 	After string            `json:"after,omitempty"`
-	Where schema.Expression `json:"where"                ndc:"predicate=StorageBucketFilter"`
+	Where schema.Expression `json:"where"           ndc:"predicate=StorageBucketFilter"`
 }
 
 // StorageBucketArguments represent the common input arguments for bucket-related methods.
