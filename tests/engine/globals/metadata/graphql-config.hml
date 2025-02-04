@@ -7,8 +7,7 @@ definition:
       fieldName: args
     limitInput:
       fieldName: limit
-    offsetInput:
-      fieldName: offset
+    offsetInput: null
     filterInput:
       fieldName: where
       operatorNames:
@@ -16,16 +15,7 @@ definition:
         or: _or
         not: _not
         isNull: _is_null
-    orderByInput:
-      fieldName: order_by
-      enumDirectionValues:
-        asc: Asc
-        desc: Desc
-      enumTypeNames:
-        - directions:
-            - Asc
-            - Desc
-          typeName: OrderBy
+    orderByInput: null
     aggregate:
       filterInputFieldName: filter_input
       countFieldName: _count

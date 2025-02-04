@@ -81,15 +81,15 @@ func (m *Manager) GetObject(ctx context.Context, bucketInfo common.StorageBucket
 		return nil, schema.UnprocessableContentError("cannot download directory: "+objectName, nil)
 	}
 
-	maxDownloadSize := m.runtime.MaxDownloadSizeMBs * 1024 * 1024
+	maxDownloadSizeMBs := float64(m.runtime.MaxDownloadSizeMBs)
 
 	// encoding the file content to base64 increases the size to 33%
 	if opts.Base64Encoded {
-		maxDownloadSize = maxDownloadSize * 2 / 3
+		maxDownloadSizeMBs = maxDownloadSizeMBs * 2 / 3
 	}
 
-	if objectStat.Size == nil || *objectStat.Size >= maxDownloadSize {
-		return nil, schema.UnprocessableContentError(fmt.Sprintf("file size >= %d MB is not allowed to be downloaded directly. Please use presignedGetObject function for large files", m.runtime.MaxDownloadSizeMBs), nil)
+	if objectStat.Size == nil || *objectStat.Size >= int64(maxDownloadSizeMBs*1024*1024) {
+		return nil, schema.UnprocessableContentError(fmt.Sprintf("file size >= %.2f MB is not allowed to be downloaded directly. Please use presignedGetObject function for large files", maxDownloadSizeMBs), nil)
 	}
 
 	return client.GetObject(ctx, bucketName, objectName, opts)

@@ -172,14 +172,28 @@ func TestMaxDownloadSizeValidation(t *testing.T) {
 	}`, name)
 	}
 
-	for _, name := range []string{"downloadStorageObject", "downloadStorageObjectText"} {
-		t.Run(name, func(t *testing.T) {
-			resp, err := http.DefaultClient.Post(httpServer.URL+"/query", "application/json", strings.NewReader(getQueryBody(name)))
+	testCases := []struct {
+		Name               string
+		MaxDownloadSizeMBs float64
+	}{
+		{
+			Name:               "downloadStorageObject",
+			MaxDownloadSizeMBs: 1.33,
+		},
+		{
+			Name:               "downloadStorageObjectText",
+			MaxDownloadSizeMBs: 2,
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.Name, func(t *testing.T) {
+			resp, err := http.DefaultClient.Post(httpServer.URL+"/query", "application/json", strings.NewReader(getQueryBody(tc.Name)))
 			assert.NilError(t, err)
 			assert.Equal(t, http.StatusUnprocessableEntity, resp.StatusCode)
 			var respBody schema.ErrorResponse
 			assert.NilError(t, json.NewDecoder(resp.Body).Decode(&respBody))
-			assert.Equal(t, respBody.Message, "file size >= 2 MB is not allowed to be downloaded directly. Please use presignedGetObject function for large files")
+			assert.Equal(t, respBody.Message, fmt.Sprintf("file size >= %.2f MB is not allowed to be downloaded directly. Please use presignedGetObject function for large files", tc.MaxDownloadSizeMBs))
 			resp.Body.Close()
 		})
 	}

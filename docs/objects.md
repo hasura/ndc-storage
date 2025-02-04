@@ -105,6 +105,25 @@ query DownloadObjectText {
 
 ### List Objects
 
+#### Filter Arguments
+
+You can use either `clientId`, `bucket`, `prefix` or `where` boolean expression to filter object results. The `where` argument is mainly used for permissions. The filter expression is evaluated twice, before and after fetching the results. Cloud storage APIs usually support filtering by the name prefix only. Other operators (`_contains`, `_icontains`) are filtered from fetched results by pure logic.
+
+```graphql
+query ListObjects {
+  storageObjects(prefix: "hello", where: { object: { _contains: "world" } }) {
+    objects {
+      name
+      # ...
+    }
+  }
+}
+```
+
+#### Pagination
+
+Most of cloud storage services support cursor-based. Offset pagination and sorting aren't supported.
+
 ```graphql
 query ListObjects {
   storageObjects(where: { object: { _starts_with: "hello" } }) {

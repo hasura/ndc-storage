@@ -21,4 +21,4 @@ concurrency:
   query: 5
   mutation: 1
 runtime:
-  maxDownloadSizeMBs: 10
+  maxDownloadSizeMBs: 20
