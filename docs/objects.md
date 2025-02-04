@@ -107,7 +107,7 @@ query DownloadObjectText {
 
 #### Filter Arguments
 
-You can use either `clientId`, `bucket`, `prefix` or `where` boolean expression to filter object results. The `where` argument is mainly used for permissions. The filter expression is evaluated twice, before and after fetching the results. Cloud storage APIs usually support filtering by the name prefix only. Other operators (`_contains`, `_icontains`) are filtered from fetched results by pure logic.
+You can use either `clientId`, `bucket`, `prefix`, or `where` boolean expression to filter object results. The `where` argument is mainly used for permissions. The filter expression is evaluated twice, before and after fetching the results. Cloud storage APIs usually support filtering by the name prefix only. Other operators (`_contains`, `_icontains`) are filtered from fetched results by pure logic.
 
 ```graphql
 query ListObjects {
@@ -122,7 +122,7 @@ query ListObjects {
 
 #### Pagination
 
-Relay style is suitable for objects listing because most of cloud storage services only support cursor-based pagination. The object name is used as the cursor ID.
+Relay style suits object listing because most cloud storage services only support cursor-based pagination. The object name is used as the cursor ID.
 
 ```graphql
 query ListObjects {
