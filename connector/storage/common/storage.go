@@ -429,8 +429,7 @@ type StorageObjectCopyInfo struct {
 
 // StoragePaginationInfo holds the pagination information.
 type StoragePaginationInfo struct {
-	HasNextPage bool    `json:"hasNextPage"`
-	Cursor      *string `json:"cursor"`
+	HasNextPage bool `json:"hasNextPage"`
 }
 
 // StorageObjectListResults hold the paginated results of the storage object list.

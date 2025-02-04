@@ -1,70 +1,8 @@
 {
   "collection": "storageObjects",
-  "query": {
-    "fields": {
-      "__value": {
-        "column": "__value",
-        "fields": {
-          "fields": {
-            "objects": {
-              "column": "objects",
-              "fields": {
-                "fields": {
-                  "fields": {
-                    "clientId": {
-                      "column": "clientId",
-                      "type": "column"
-                    },
-                    "bucket": {
-                      "column": "bucket",
-                      "type": "column"
-                    },
-                    "name": {
-                      "column": "name",
-                      "type": "column"
-                    },
-                    "size": {
-                      "column": "size",
-                      "type": "column"
-                    },
-                    "storageClass": {
-                      "column": "storageClass",
-                      "type": "column"
-                    }
-                  },
-                  "type": "object"
-                },
-                "type": "array"
-              },
-              "type": "column"
-            },
-            "pageInfo": {
-              "column": "pageInfo",
-              "fields": {
-                "fields": {
-                  "cursor": {
-                    "column": "cursor",
-                    "type": "column"
-                  },
-                  "hasNextPage": {
-                    "column": "hasNextPage",
-                    "type": "column"
-                  }
-                },
-                "type": "object"
-              },
-              "type": "column"
-            }
-          },
-          "type": "object"
-        },
-        "type": "column"
-      }
-    }
-  },
   "arguments": {
-    "maxResults": { "type": "literal", "value": 3 },
-    "startAfter": {
+    "first": { "type": "literal", "value": 3 },
+    "after": {
       "type": "literal",
       "value": "movies/1990s/movies.json"
     },
@@ -98,5 +36,84 @@
     { "$clientId": "azblob" },
     { "$clientId": "gcs" }
   ],
-  "collection_relationships": {}
+  "collection_relationships": {},
+  "query": {
+    "fields": {
+      "__value": {
+        "column": "__value",
+        "fields": {
+          "fields": {
+            "edges": {
+              "column": "edges",
+              "fields": {
+                "fields": {
+                  "fields": {
+                    "cursor": {
+                      "column": "cursor",
+                      "type": "column"
+                    },
+                    "node": {
+                      "column": "node",
+                      "fields": {
+                        "fields": {
+                          "bucket": {
+                            "column": "bucket",
+                            "type": "column"
+                          },
+                          "clientId": {
+                            "column": "clientId",
+                            "type": "column"
+                          },
+                          "etag": {
+                            "column": "etag",
+                            "type": "column"
+                          },
+                          "isDirectory": {
+                            "column": "isDirectory",
+                            "type": "column"
+                          },
+                          "name": {
+                            "column": "name",
+                            "type": "column"
+                          },
+                          "size": {
+                            "column": "size",
+                            "type": "column"
+                          },
+                          "storageClass": {
+                            "column": "storageClass",
+                            "type": "column"
+                          }
+                        },
+                        "type": "object"
+                      },
+                      "type": "column"
+                    }
+                  },
+                  "type": "object"
+                },
+                "type": "array"
+              },
+              "type": "column"
+            },
+            "pageInfo": {
+              "column": "pageInfo",
+              "fields": {
+                "fields": {
+                  "hasNextPage": {
+                    "column": "hasNextPage",
+                    "type": "column"
+                  }
+                },
+                "type": "object"
+              },
+              "type": "column"
+            }
+          },
+          "type": "object"
+        },
+        "type": "column"
+      }
+    }
+  }
 }

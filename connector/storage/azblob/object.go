@@ -79,10 +79,7 @@ L:
 			count++
 
 			if maxResults > 0 && count >= maxResults {
-				if i < len(resp.Segment.BlobItems)-1 || pager.More() {
-					pageInfo.HasNextPage = true
-					pageInfo.Cursor = &object.Name
-				}
+				pageInfo.HasNextPage = i < len(resp.Segment.BlobItems)-1 || pager.More()
 
 				break L
 			}
@@ -157,7 +154,6 @@ L:
 			if maxResults > 0 && count >= maxResults {
 				if i < len(resp.Segment.BlobPrefixes)-1 || len(resp.Segment.BlobItems) > 0 || pager.More() {
 					pageInfo.HasNextPage = true
-					pageInfo.Cursor = &object.Name
 				}
 
 				break L
@@ -176,7 +172,6 @@ L:
 			if maxResults > 0 && count >= maxResults {
 				if i < len(resp.Segment.BlobItems)-1 || pager.More() {
 					pageInfo.HasNextPage = true
-					pageInfo.Cursor = &object.Name
 				}
 
 				break L
@@ -304,7 +299,6 @@ func (c *Client) ListDeletedObjects(ctx context.Context, bucketName string, opts
 		if maxResults > 0 && count >= maxResults {
 			if pager.More() {
 				pageInfo.HasNextPage = true
-				pageInfo.Cursor = resp.NextMarker
 			}
 
 			break

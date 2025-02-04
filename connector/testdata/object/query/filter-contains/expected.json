@@ -3,19 +3,20 @@
     "rows": [
       {
         "__value": {
-          "objects": [
+          "edges": [
             {
-              "bucket": "dummy-bucket-0",
-              "clientId": "minio",
-              "name": "movies/2000s/movies.json",
-              "size": 2472795,
-              "storageClass": "STANDARD"
+              "cursor": "movies/2000s/movies.json",
+              "node": {
+                "bucket": "dummy-bucket-0",
+                "clientId": "minio",
+                "isDirectory": false,
+                "name": "movies/2000s/movies.json",
+                "size": 2472795,
+                "storageClass": "STANDARD"
+              }
             }
           ],
-          "pageInfo": {
-            "cursor": null,
-            "hasNextPage": false
-          }
+          "pageInfo": { "hasNextPage": false }
         }
       }
     ]
@@ -24,19 +25,20 @@
     "rows": [
       {
         "__value": {
-          "objects": [
+          "edges": [
             {
-              "bucket": "dummy-bucket-0",
-              "clientId": "azblob",
-              "name": "movies/2000s/movies.json",
-              "size": 2472795,
-              "storageClass": "Hot"
+              "cursor": "movies/2000s/movies.json",
+              "node": {
+                "bucket": "dummy-bucket-0",
+                "clientId": "azblob",
+                "isDirectory": false,
+                "name": "movies/2000s/movies.json",
+                "size": 2472795,
+                "storageClass": "Hot"
+              }
             }
           ],
-          "pageInfo": {
-            "cursor": null,
-            "hasNextPage": false
-          }
+          "pageInfo": { "hasNextPage": false }
         }
       }
     ]
@@ -45,19 +47,20 @@
     "rows": [
       {
         "__value": {
-          "objects": [
+          "edges": [
             {
-              "bucket": "dummy-bucket-0",
-              "clientId": "gcs",
-              "name": "movies/2000s/movies.json",
-              "size": 2472795,
-              "storageClass": "STANDARD"
+              "cursor": "movies/2000s/movies.json",
+              "node": {
+                "bucket": "dummy-bucket-0",
+                "clientId": "gcs",
+                "isDirectory": false,
+                "name": "movies/2000s/movies.json",
+                "size": 2472795,
+                "storageClass": "STANDARD"
+              }
             }
           ],
-          "pageInfo": {
-            "cursor": null,
-            "hasNextPage": false
-          }
+          "pageInfo": { "hasNextPage": false }
         }
       }
     ]

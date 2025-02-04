@@ -52,11 +52,39 @@ definition:
 kind: ObjectType
 version: v1
 definition:
+  name: StorageConnectionEdgeStorageBucket
+  description: the connection information of the relay pagination response.
+  fields:
+    - name: cursor
+      type: String!
+    - name: node
+      type: StorageBucket!
+  graphql:
+    typeName: StorageConnectionEdgeStorageBucket
+    inputTypeName: StorageConnectionEdgeStorageBucketInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: storage
+      dataConnectorObjectType: StorageConnectionEdge_StorageBucket
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: StorageConnectionEdgeStorageBucket
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - cursor
+          - node
+
+---
+kind: ObjectType
+version: v1
+definition:
   name: StoragePaginationInfo
   description: holds the pagination information.
   fields:
-    - name: cursor
-      type: String
     - name: hasNextPage
       type: Boolean!
   graphql:
@@ -75,37 +103,35 @@ definition:
     - role: admin
       output:
         allowedFields:
-          - cursor
           - hasNextPage
 
 ---
 kind: ObjectType
 version: v1
 definition:
-  name: StorageBucketListResults
-  description: hold the paginated results of the storage bucket list.
+  name: StorageConnectionStorageBucket
   fields:
-    - name: buckets
-      type: "[StorageBucket!]!"
+    - name: edges
+      type: "[StorageConnectionEdgeStorageBucket!]!"
     - name: pageInfo
       type: StoragePaginationInfo!
   graphql:
-    typeName: StorageBucketListResults
-    inputTypeName: StorageBucketListResultsInput
+    typeName: StorageConnectionStorageBucket
+    inputTypeName: StorageConnectionStorageBucketInput
   dataConnectorTypeMapping:
     - dataConnectorName: storage
-      dataConnectorObjectType: StorageBucketListResults
+      dataConnectorObjectType: StorageConnection_StorageBucket
 
 ---
 kind: TypePermissions
 version: v1
 definition:
-  typeName: StorageBucketListResults
+  typeName: StorageConnectionStorageBucket
   permissions:
     - role: admin
       output:
         allowedFields:
-          - buckets
+          - edges
           - pageInfo
 
 ---
@@ -113,18 +139,18 @@ kind: Command
 version: v1
 definition:
   name: StorageBuckets
-  outputType: StorageBucketListResults!
+  outputType: StorageConnectionStorageBucket!
   arguments:
-    - name: maxResults
+    - name: after
+      type: String
+    - name: clientId
+      type: StorageClientId
+    - name: first
       type: Int32
-    - name: startAfter
+    - name: prefix
       type: String
     - name: where
       type: StorageBucketFilterBoolExp
-    - name: clientId
-      type: StorageClientId
-    - name: prefix
-      type: String
   source:
     dataConnectorName: storage
     dataConnectorCommand:

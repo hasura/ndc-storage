@@ -3,33 +3,42 @@
     "rows": [
       {
         "__value": {
-          "objects": [
+          "edges": [
             {
-              "bucket": "dummy-bucket-0",
-              "clientId": "minio",
-              "name": "movies/1900s/movies.json",
-              "size": 100041,
-              "storageClass": "STANDARD"
+              "cursor": "movies/1900s/movies.json",
+              "node": {
+                "bucket": "dummy-bucket-0",
+                "clientId": "minio",
+                "isDirectory": false,
+                "name": "movies/1900s/movies.json",
+                "size": 100041,
+                "storageClass": "STANDARD"
+              }
             },
             {
-              "bucket": "dummy-bucket-0",
-              "clientId": "minio",
-              "name": "movies/1910s/movies.json",
-              "size": 2007693,
-              "storageClass": "STANDARD"
+              "cursor": "movies/1910s/movies.json",
+              "node": {
+                "bucket": "dummy-bucket-0",
+                "clientId": "minio",
+                "isDirectory": false,
+                "name": "movies/1910s/movies.json",
+                "size": 2007693,
+                "storageClass": "STANDARD"
+              }
             },
             {
-              "bucket": "dummy-bucket-0",
-              "clientId": "minio",
-              "name": "movies/1920s/movies.json",
-              "size": 3463423,
-              "storageClass": "STANDARD"
+              "cursor": "movies/1920s/movies.json",
+              "node": {
+                "bucket": "dummy-bucket-0",
+                "clientId": "minio",
+                "isDirectory": false,
+                "name": "movies/1920s/movies.json",
+                "size": 3463423,
+                "storageClass": "STANDARD"
+              }
             }
           ],
-          "pageInfo": {
-            "cursor": "movies/1920s/movies.json",
-            "hasNextPage": true
-          }
+          "pageInfo": { "hasNextPage": true }
         }
       }
     ]
@@ -38,33 +47,42 @@
     "rows": [
       {
         "__value": {
-          "objects": [
+          "edges": [
             {
-              "bucket": "dummy-bucket-0",
-              "clientId": "azblob",
-              "name": "movies/1900s/movies.json",
-              "size": 100041,
-              "storageClass": "Hot"
+              "cursor": "movies/1900s/movies.json",
+              "node": {
+                "bucket": "dummy-bucket-0",
+                "clientId": "azblob",
+                "isDirectory": false,
+                "name": "movies/1900s/movies.json",
+                "size": 100041,
+                "storageClass": "Hot"
+              }
             },
             {
-              "bucket": "dummy-bucket-0",
-              "clientId": "azblob",
-              "name": "movies/1910s/movies.json",
-              "size": 2007693,
-              "storageClass": "Hot"
+              "cursor": "movies/1910s/movies.json",
+              "node": {
+                "bucket": "dummy-bucket-0",
+                "clientId": "azblob",
+                "isDirectory": false,
+                "name": "movies/1910s/movies.json",
+                "size": 2007693,
+                "storageClass": "Hot"
+              }
             },
             {
-              "bucket": "dummy-bucket-0",
-              "clientId": "azblob",
-              "name": "movies/1920s/movies.json",
-              "size": 3463423,
-              "storageClass": "Hot"
+              "cursor": "movies/1920s/movies.json",
+              "node": {
+                "bucket": "dummy-bucket-0",
+                "clientId": "azblob",
+                "isDirectory": false,
+                "name": "movies/1920s/movies.json",
+                "size": 3463423,
+                "storageClass": "Hot"
+              }
             }
           ],
-          "pageInfo": {
-            "cursor": "movies/1920s/movies.json",
-            "hasNextPage": true
-          }
+          "pageInfo": { "hasNextPage": true }
         }
       }
     ]
@@ -73,33 +91,42 @@
     "rows": [
       {
         "__value": {
-          "objects": [
+          "edges": [
             {
-              "bucket": "dummy-bucket-0",
-              "clientId": "gcs",
-              "name": "movies/1900s/movies.json",
-              "size": 100041,
-              "storageClass": "STANDARD"
+              "cursor": "movies/1900s/movies.json",
+              "node": {
+                "bucket": "dummy-bucket-0",
+                "clientId": "gcs",
+                "isDirectory": false,
+                "name": "movies/1900s/movies.json",
+                "size": 100041,
+                "storageClass": "STANDARD"
+              }
             },
             {
-              "bucket": "dummy-bucket-0",
-              "clientId": "gcs",
-              "name": "movies/1910s/movies.json",
-              "size": 2007693,
-              "storageClass": "STANDARD"
+              "cursor": "movies/1910s/movies.json",
+              "node": {
+                "bucket": "dummy-bucket-0",
+                "clientId": "gcs",
+                "isDirectory": false,
+                "name": "movies/1910s/movies.json",
+                "size": 2007693,
+                "storageClass": "STANDARD"
+              }
             },
             {
-              "bucket": "dummy-bucket-0",
-              "clientId": "gcs",
-              "name": "movies/1920s/movies.json",
-              "size": 3463423,
-              "storageClass": "STANDARD"
+              "cursor": "movies/1920s/movies.json",
+              "node": {
+                "bucket": "dummy-bucket-0",
+                "clientId": "gcs",
+                "isDirectory": false,
+                "name": "movies/1920s/movies.json",
+                "size": 3463423,
+                "storageClass": "STANDARD"
+              }
             }
           ],
-          "pageInfo": {
-            "cursor": "movies/1920s/movies.json",
-            "hasNextPage": true
-          }
+          "pageInfo": { "hasNextPage": true }
         }
       }
     ]

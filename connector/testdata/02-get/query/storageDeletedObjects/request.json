@@ -1,6 +1,6 @@
 {
   "arguments": {
-    "maxResults": {
+    "first": {
       "type": "literal",
       "value": 10
     },
@@ -8,7 +8,7 @@
       "type": "literal",
       "value": null
     },
-    "startAfter": {
+    "after": {
       "type": "literal",
       "value": null
     }

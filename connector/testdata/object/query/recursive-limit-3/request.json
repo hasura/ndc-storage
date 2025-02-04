@@ -1,70 +1,8 @@
 {
   "collection": "storageObjects",
-  "query": {
-    "fields": {
-      "__value": {
-        "column": "__value",
-        "fields": {
-          "fields": {
-            "objects": {
-              "column": "objects",
-              "fields": {
-                "fields": {
-                  "fields": {
-                    "clientId": {
-                      "column": "clientId",
-                      "type": "column"
-                    },
-                    "bucket": {
-                      "column": "bucket",
-                      "type": "column"
-                    },
-                    "name": {
-                      "column": "name",
-                      "type": "column"
-                    },
-                    "size": {
-                      "column": "size",
-                      "type": "column"
-                    },
-                    "storageClass": {
-                      "column": "storageClass",
-                      "type": "column"
-                    }
-                  },
-                  "type": "object"
-                },
-                "type": "array"
-              },
-              "type": "column"
-            },
-            "pageInfo": {
-              "column": "pageInfo",
-              "fields": {
-                "fields": {
-                  "cursor": {
-                    "column": "cursor",
-                    "type": "column"
-                  },
-                  "hasNextPage": {
-                    "column": "hasNextPage",
-                    "type": "column"
-                  }
-                },
-                "type": "object"
-              },
-              "type": "column"
-            }
-          },
-          "type": "object"
-        },
-        "type": "column"
-      }
-    }
-  },
   "arguments": {
     "hierarchy": { "type": "literal", "value": false },
-    "maxResults": { "type": "literal", "value": 3 },
+    "first": { "type": "literal", "value": 3 },
     "bucket": { "type": "literal", "value": "dummy-bucket-0" },
     "prefix": { "type": "literal", "value": "movies" },
     "where": {
@@ -87,5 +25,80 @@
     { "$clientId": "azblob" },
     { "$clientId": "gcs" }
   ],
-  "collection_relationships": {}
+  "collection_relationships": {},
+  "query": {
+    "fields": {
+      "__value": {
+        "column": "__value",
+        "fields": {
+          "fields": {
+            "edges": {
+              "column": "edges",
+              "fields": {
+                "fields": {
+                  "fields": {
+                    "cursor": {
+                      "column": "cursor",
+                      "type": "column"
+                    },
+                    "node": {
+                      "column": "node",
+                      "fields": {
+                        "fields": {
+                          "bucket": {
+                            "column": "bucket",
+                            "type": "column"
+                          },
+                          "clientId": {
+                            "column": "clientId",
+                            "type": "column"
+                          },
+                          "isDirectory": {
+                            "column": "isDirectory",
+                            "type": "column"
+                          },
+                          "name": {
+                            "column": "name",
+                            "type": "column"
+                          },
+                          "size": {
+                            "column": "size",
+                            "type": "column"
+                          },
+                          "storageClass": {
+                            "column": "storageClass",
+                            "type": "column"
+                          }
+                        },
+                        "type": "object"
+                      },
+                      "type": "column"
+                    }
+                  },
+                  "type": "object"
+                },
+                "type": "array"
+              },
+              "type": "column"
+            },
+            "pageInfo": {
+              "column": "pageInfo",
+              "fields": {
+                "fields": {
+                  "hasNextPage": {
+                    "column": "hasNextPage",
+                    "type": "column"
+                  }
+                },
+                "type": "object"
+              },
+              "type": "column"
+            }
+          },
+          "type": "object"
+        },
+        "type": "column"
+      }
+    }
+  }
 }

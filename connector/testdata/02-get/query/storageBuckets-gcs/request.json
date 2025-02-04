@@ -1,6 +1,6 @@
 {
   "arguments": {
-    "maxResults": {
+    "first": {
       "type": "literal",
       "value": 10
     },
@@ -8,7 +8,7 @@
       "type": "literal",
       "value": null
     },
-    "startAfter": {
+    "after": {
       "type": "literal",
       "value": null
     },
@@ -41,297 +41,67 @@
         "column": "__value",
         "fields": {
           "fields": {
-            "buckets": {
-              "column": "buckets",
+            "edges": {
+              "column": "edges",
               "fields": {
                 "fields": {
                   "fields": {
-                    "autoclass": {
-                      "column": "autoclass",
-                      "fields": {
-                        "fields": {
-                          "enabled": {
-                            "column": "enabled",
-                            "type": "column"
-                          },
-                          "terminalStorageClass": {
-                            "column": "terminalStorageClass",
-                            "type": "column"
-                          },
-                          "terminalStorageClassUpdateTime": {
-                            "column": "terminalStorageClassUpdateTime",
-                            "type": "column"
-                          },
-                          "toggleTime": {
-                            "column": "toggleTime",
-                            "type": "column"
-                          }
-                        },
-                        "type": "object"
-                      },
+                    "cursor": {
+                      "column": "cursor",
                       "type": "column"
                     },
-                    "cors": {
-                      "column": "cors",
+                    "node": {
+                      "column": "node",
                       "fields": {
                         "fields": {
-                          "fields": {
-                            "maxAge": {
-                              "column": "maxAge",
-                              "type": "column"
+                          "autoclass": {
+                            "column": "autoclass",
+                            "fields": {
+                              "fields": {
+                                "enabled": {
+                                  "column": "enabled",
+                                  "type": "column"
+                                },
+                                "terminalStorageClass": {
+                                  "column": "terminalStorageClass",
+                                  "type": "column"
+                                },
+                                "terminalStorageClassUpdateTime": {
+                                  "column": "terminalStorageClassUpdateTime",
+                                  "type": "column"
+                                },
+                                "toggleTime": {
+                                  "column": "toggleTime",
+                                  "type": "column"
+                                }
+                              },
+                              "type": "object"
                             },
-                            "methods": {
-                              "column": "methods",
-                              "type": "column"
-                            },
-                            "origins": {
-                              "column": "origins",
-                              "type": "column"
-                            },
-                            "responseHeaders": {
-                              "column": "responseHeaders",
-                              "type": "column"
-                            }
-                          },
-                          "type": "object"
-                        },
-                        "type": "array"
-                      },
-                      "type": "column"
-                    },
-                    "customPlacementConfig": {
-                      "column": "customPlacementConfig",
-                      "fields": {
-                        "fields": {
-                          "DataLocations": {
-                            "column": "DataLocations",
-                            "type": "column"
-                          }
-                        },
-                        "type": "object"
-                      },
-                      "type": "column"
-                    },
-                    "defaultEventBasedHold": {
-                      "column": "defaultEventBasedHold",
-                      "type": "column"
-                    },
-                    "encryption": {
-                      "column": "encryption",
-                      "fields": {
-                        "fields": {
-                          "kmsMasterKeyId": {
-                            "column": "kmsMasterKeyId",
                             "type": "column"
                           },
-                          "sseAlgorithm": {
-                            "column": "sseAlgorithm",
+                          "clientId": {
+                            "column": "clientId",
                             "type": "column"
-                          }
-                        },
-                        "type": "object"
-                      },
-                      "type": "column"
-                    },
-                    "etag": {
-                      "column": "etag",
-                      "type": "column"
-                    },
-                    "hierarchicalNamespace": {
-                      "column": "hierarchicalNamespace",
-                      "fields": {
-                        "fields": {
-                          "enabled": {
-                            "column": "enabled",
-                            "type": "column"
-                          }
-                        },
-                        "type": "object"
-                      },
-                      "type": "column"
-                    },
-                    "lifecycle": {
-                      "column": "lifecycle",
-                      "fields": {
-                        "fields": {
-                          "rules": {
-                            "column": "rules",
+                          },
+                          "cors": {
+                            "column": "cors",
                             "fields": {
                               "fields": {
                                 "fields": {
-                                  "abortIncompleteMultipartUpload": {
-                                    "column": "abortIncompleteMultipartUpload",
-                                    "fields": {
-                                      "fields": {
-                                        "daysAfterInitiation": {
-                                          "column": "daysAfterInitiation",
-                                          "type": "column"
-                                        }
-                                      },
-                                      "type": "object"
-                                    },
+                                  "maxAge": {
+                                    "column": "maxAge",
                                     "type": "column"
                                   },
-                                  "allVersionsExpiration": {
-                                    "column": "allVersionsExpiration",
-                                    "fields": {
-                                      "fields": {
-                                        "days": {
-                                          "column": "days",
-                                          "type": "column"
-                                        },
-                                        "deleteMarker": {
-                                          "column": "deleteMarker",
-                                          "type": "column"
-                                        }
-                                      },
-                                      "type": "object"
-                                    },
+                                  "methods": {
+                                    "column": "methods",
                                     "type": "column"
                                   },
-                                  "delMarkerExpiration": {
-                                    "column": "delMarkerExpiration",
-                                    "fields": {
-                                      "fields": {
-                                        "days": {
-                                          "column": "days",
-                                          "type": "column"
-                                        }
-                                      },
-                                      "type": "object"
-                                    },
+                                  "origins": {
+                                    "column": "origins",
                                     "type": "column"
                                   },
-                                  "enabled": {
-                                    "column": "enabled",
-                                    "type": "column"
-                                  },
-                                  "expiration": {
-                                    "column": "expiration",
-                                    "fields": {
-                                      "fields": {
-                                        "date": {
-                                          "column": "date",
-                                          "type": "column"
-                                        },
-                                        "days": {
-                                          "column": "days",
-                                          "type": "column"
-                                        },
-                                        "expiredObjectAllVersions": {
-                                          "column": "expiredObjectAllVersions",
-                                          "type": "column"
-                                        },
-                                        "expiredObjectDeleteMarker": {
-                                          "column": "expiredObjectDeleteMarker",
-                                          "type": "column"
-                                        }
-                                      },
-                                      "type": "object"
-                                    },
-                                    "type": "column"
-                                  },
-                                  "filter": {
-                                    "column": "filter",
-                                    "fields": {
-                                      "fields": {
-                                        "fields": {
-                                          "matchesPrefix": {
-                                            "column": "matchesPrefix",
-                                            "type": "column"
-                                          },
-                                          "matchesStorageClasses": {
-                                            "column": "matchesStorageClasses",
-                                            "type": "column"
-                                          },
-                                          "matchesSuffix": {
-                                            "column": "matchesSuffix",
-                                            "type": "column"
-                                          },
-                                          "objectSizeGreaterThan": {
-                                            "column": "objectSizeGreaterThan",
-                                            "type": "column"
-                                          },
-                                          "objectSizeLessThan": {
-                                            "column": "objectSizeLessThan",
-                                            "type": "column"
-                                          },
-                                          "tags": {
-                                            "column": "tags",
-                                            "type": "column"
-                                          }
-                                        },
-                                        "type": "object"
-                                      },
-                                      "type": "array"
-                                    },
-                                    "type": "column"
-                                  },
-                                  "id": {
-                                    "column": "id",
-                                    "type": "column"
-                                  },
-                                  "noncurrentVersionExpiration": {
-                                    "column": "noncurrentVersionExpiration",
-                                    "fields": {
-                                      "fields": {
-                                        "newerNoncurrentVersions": {
-                                          "column": "newerNoncurrentVersions",
-                                          "type": "column"
-                                        },
-                                        "noncurrentDays": {
-                                          "column": "noncurrentDays",
-                                          "type": "column"
-                                        }
-                                      },
-                                      "type": "object"
-                                    },
-                                    "type": "column"
-                                  },
-                                  "noncurrentVersionTransition": {
-                                    "column": "noncurrentVersionTransition",
-                                    "fields": {
-                                      "fields": {
-                                        "newerNoncurrentVersions": {
-                                          "column": "newerNoncurrentVersions",
-                                          "type": "column"
-                                        },
-                                        "noncurrentDays": {
-                                          "column": "noncurrentDays",
-                                          "type": "column"
-                                        },
-                                        "storageClass": {
-                                          "column": "storageClass",
-                                          "type": "column"
-                                        }
-                                      },
-                                      "type": "object"
-                                    },
-                                    "type": "column"
-                                  },
-                                  "prefix": {
-                                    "column": "prefix",
-                                    "type": "column"
-                                  },
-                                  "transition": {
-                                    "column": "transition",
-                                    "fields": {
-                                      "fields": {
-                                        "date": {
-                                          "column": "date",
-                                          "type": "column"
-                                        },
-                                        "days": {
-                                          "column": "days",
-                                          "type": "column"
-                                        },
-                                        "storageClass": {
-                                          "column": "storageClass",
-                                          "type": "column"
-                                        }
-                                      },
-                                      "type": "object"
-                                    },
+                                  "responseHeaders": {
+                                    "column": "responseHeaders",
                                     "type": "column"
                                   }
                                 },
@@ -340,134 +110,381 @@
                               "type": "array"
                             },
                             "type": "column"
-                          }
-                        },
-                        "type": "object"
-                      },
-                      "type": "column"
-                    },
-                    "locationType": {
-                      "column": "locationType",
-                      "type": "column"
-                    },
-                    "logging": {
-                      "column": "logging",
-                      "fields": {
-                        "fields": {
-                          "logBucket": {
-                            "column": "logBucket",
+                          },
+                          "customPlacementConfig": {
+                            "column": "customPlacementConfig",
+                            "fields": {
+                              "fields": {
+                                "DataLocations": {
+                                  "column": "DataLocations",
+                                  "type": "column"
+                                }
+                              },
+                              "type": "object"
+                            },
                             "type": "column"
                           },
-                          "logObjectPrefix": {
-                            "column": "logObjectPrefix",
-                            "type": "column"
-                          }
-                        },
-                        "type": "object"
-                      },
-                      "type": "column"
-                    },
-                    "name": {
-                      "column": "name",
-                      "type": "column"
-                    },
-                    "objectLock": {
-                      "column": "objectLock",
-                      "fields": {
-                        "fields": {
-                          "enabled": {
-                            "column": "enabled",
+                          "defaultEventBasedHold": {
+                            "column": "defaultEventBasedHold",
                             "type": "column"
                           },
-                          "mode": {
-                            "column": "mode",
+                          "encryption": {
+                            "column": "encryption",
+                            "fields": {
+                              "fields": {
+                                "kmsMasterKeyId": {
+                                  "column": "kmsMasterKeyId",
+                                  "type": "column"
+                                },
+                                "sseAlgorithm": {
+                                  "column": "sseAlgorithm",
+                                  "type": "column"
+                                }
+                              },
+                              "type": "object"
+                            },
                             "type": "column"
                           },
-                          "unit": {
-                            "column": "unit",
+                          "etag": {
+                            "column": "etag",
                             "type": "column"
                           },
-                          "validity": {
-                            "column": "validity",
-                            "type": "column"
-                          }
-                        },
-                        "type": "object"
-                      },
-                      "type": "column"
-                    },
-                    "region": {
-                      "column": "region",
-                      "type": "column"
-                    },
-                    "requesterPays": {
-                      "column": "requesterPays",
-                      "type": "column"
-                    },
-                    "rpo": {
-                      "column": "rpo",
-                      "type": "column"
-                    },
-                    "softDeletePolicy": {
-                      "column": "softDeletePolicy",
-                      "fields": {
-                        "fields": {
-                          "effectiveTime": {
-                            "column": "effectiveTime",
+                          "hierarchicalNamespace": {
+                            "column": "hierarchicalNamespace",
+                            "fields": {
+                              "fields": {
+                                "enabled": {
+                                  "column": "enabled",
+                                  "type": "column"
+                                }
+                              },
+                              "type": "object"
+                            },
                             "type": "column"
                           },
-                          "retentionDuration": {
-                            "column": "retentionDuration",
-                            "type": "column"
-                          }
-                        },
-                        "type": "object"
-                      },
-                      "type": "column"
-                    },
-                    "storageClass": {
-                      "column": "storageClass",
-                      "type": "column"
-                    },
-                    "tags": {
-                      "column": "tags",
-                      "type": "column"
-                    },
-                    "versioning": {
-                      "column": "versioning",
-                      "fields": {
-                        "fields": {
-                          "enabled": {
-                            "column": "enabled",
+                          "lifecycle": {
+                            "column": "lifecycle",
+                            "fields": {
+                              "fields": {
+                                "rules": {
+                                  "column": "rules",
+                                  "fields": {
+                                    "fields": {
+                                      "fields": {
+                                        "abortIncompleteMultipartUpload": {
+                                          "column": "abortIncompleteMultipartUpload",
+                                          "fields": {
+                                            "fields": {
+                                              "daysAfterInitiation": {
+                                                "column": "daysAfterInitiation",
+                                                "type": "column"
+                                              }
+                                            },
+                                            "type": "object"
+                                          },
+                                          "type": "column"
+                                        },
+                                        "allVersionsExpiration": {
+                                          "column": "allVersionsExpiration",
+                                          "fields": {
+                                            "fields": {
+                                              "days": {
+                                                "column": "days",
+                                                "type": "column"
+                                              },
+                                              "deleteMarker": {
+                                                "column": "deleteMarker",
+                                                "type": "column"
+                                              }
+                                            },
+                                            "type": "object"
+                                          },
+                                          "type": "column"
+                                        },
+                                        "delMarkerExpiration": {
+                                          "column": "delMarkerExpiration",
+                                          "fields": {
+                                            "fields": {
+                                              "days": {
+                                                "column": "days",
+                                                "type": "column"
+                                              }
+                                            },
+                                            "type": "object"
+                                          },
+                                          "type": "column"
+                                        },
+                                        "enabled": {
+                                          "column": "enabled",
+                                          "type": "column"
+                                        },
+                                        "expiration": {
+                                          "column": "expiration",
+                                          "fields": {
+                                            "fields": {
+                                              "date": {
+                                                "column": "date",
+                                                "type": "column"
+                                              },
+                                              "days": {
+                                                "column": "days",
+                                                "type": "column"
+                                              },
+                                              "expiredObjectAllVersions": {
+                                                "column": "expiredObjectAllVersions",
+                                                "type": "column"
+                                              },
+                                              "expiredObjectDeleteMarker": {
+                                                "column": "expiredObjectDeleteMarker",
+                                                "type": "column"
+                                              }
+                                            },
+                                            "type": "object"
+                                          },
+                                          "type": "column"
+                                        },
+                                        "filter": {
+                                          "column": "filter",
+                                          "fields": {
+                                            "fields": {
+                                              "fields": {
+                                                "matchesPrefix": {
+                                                  "column": "matchesPrefix",
+                                                  "type": "column"
+                                                },
+                                                "matchesStorageClasses": {
+                                                  "column": "matchesStorageClasses",
+                                                  "type": "column"
+                                                },
+                                                "matchesSuffix": {
+                                                  "column": "matchesSuffix",
+                                                  "type": "column"
+                                                },
+                                                "objectSizeGreaterThan": {
+                                                  "column": "objectSizeGreaterThan",
+                                                  "type": "column"
+                                                },
+                                                "objectSizeLessThan": {
+                                                  "column": "objectSizeLessThan",
+                                                  "type": "column"
+                                                },
+                                                "tags": {
+                                                  "column": "tags",
+                                                  "type": "column"
+                                                }
+                                              },
+                                              "type": "object"
+                                            },
+                                            "type": "array"
+                                          },
+                                          "type": "column"
+                                        },
+                                        "id": {
+                                          "column": "id",
+                                          "type": "column"
+                                        },
+                                        "noncurrentVersionExpiration": {
+                                          "column": "noncurrentVersionExpiration",
+                                          "fields": {
+                                            "fields": {
+                                              "newerNoncurrentVersions": {
+                                                "column": "newerNoncurrentVersions",
+                                                "type": "column"
+                                              },
+                                              "noncurrentDays": {
+                                                "column": "noncurrentDays",
+                                                "type": "column"
+                                              }
+                                            },
+                                            "type": "object"
+                                          },
+                                          "type": "column"
+                                        },
+                                        "noncurrentVersionTransition": {
+                                          "column": "noncurrentVersionTransition",
+                                          "fields": {
+                                            "fields": {
+                                              "newerNoncurrentVersions": {
+                                                "column": "newerNoncurrentVersions",
+                                                "type": "column"
+                                              },
+                                              "noncurrentDays": {
+                                                "column": "noncurrentDays",
+                                                "type": "column"
+                                              },
+                                              "storageClass": {
+                                                "column": "storageClass",
+                                                "type": "column"
+                                              }
+                                            },
+                                            "type": "object"
+                                          },
+                                          "type": "column"
+                                        },
+                                        "prefix": {
+                                          "column": "prefix",
+                                          "type": "column"
+                                        },
+                                        "transition": {
+                                          "column": "transition",
+                                          "fields": {
+                                            "fields": {
+                                              "date": {
+                                                "column": "date",
+                                                "type": "column"
+                                              },
+                                              "days": {
+                                                "column": "days",
+                                                "type": "column"
+                                              },
+                                              "storageClass": {
+                                                "column": "storageClass",
+                                                "type": "column"
+                                              }
+                                            },
+                                            "type": "object"
+                                          },
+                                          "type": "column"
+                                        }
+                                      },
+                                      "type": "object"
+                                    },
+                                    "type": "array"
+                                  },
+                                  "type": "column"
+                                }
+                              },
+                              "type": "object"
+                            },
                             "type": "column"
                           },
-                          "excludeFolders": {
-                            "column": "excludeFolders",
+                          "locationType": {
+                            "column": "locationType",
                             "type": "column"
                           },
-                          "excludedPrefixes": {
-                            "column": "excludedPrefixes",
+                          "logging": {
+                            "column": "logging",
+                            "fields": {
+                              "fields": {
+                                "logBucket": {
+                                  "column": "logBucket",
+                                  "type": "column"
+                                },
+                                "logObjectPrefix": {
+                                  "column": "logObjectPrefix",
+                                  "type": "column"
+                                }
+                              },
+                              "type": "object"
+                            },
                             "type": "column"
                           },
-                          "mfaDelete": {
-                            "column": "mfaDelete",
-                            "type": "column"
-                          }
-                        },
-                        "type": "object"
-                      },
-                      "type": "column"
-                    },
-                    "website": {
-                      "column": "website",
-                      "fields": {
-                        "fields": {
-                          "mainPageSuffix": {
-                            "column": "mainPageSuffix",
+                          "name": {
+                            "column": "name",
                             "type": "column"
                           },
-                          "notFoundPage": {
-                            "column": "notFoundPage",
+                          "objectLock": {
+                            "column": "objectLock",
+                            "fields": {
+                              "fields": {
+                                "enabled": {
+                                  "column": "enabled",
+                                  "type": "column"
+                                },
+                                "mode": {
+                                  "column": "mode",
+                                  "type": "column"
+                                },
+                                "unit": {
+                                  "column": "unit",
+                                  "type": "column"
+                                },
+                                "validity": {
+                                  "column": "validity",
+                                  "type": "column"
+                                }
+                              },
+                              "type": "object"
+                            },
+                            "type": "column"
+                          },
+                          "region": {
+                            "column": "region",
+                            "type": "column"
+                          },
+                          "requesterPays": {
+                            "column": "requesterPays",
+                            "type": "column"
+                          },
+                          "rpo": {
+                            "column": "rpo",
+                            "type": "column"
+                          },
+                          "softDeletePolicy": {
+                            "column": "softDeletePolicy",
+                            "fields": {
+                              "fields": {
+                                "effectiveTime": {
+                                  "column": "effectiveTime",
+                                  "type": "column"
+                                },
+                                "retentionDuration": {
+                                  "column": "retentionDuration",
+                                  "type": "column"
+                                }
+                              },
+                              "type": "object"
+                            },
+                            "type": "column"
+                          },
+                          "storageClass": {
+                            "column": "storageClass",
+                            "type": "column"
+                          },
+                          "tags": {
+                            "column": "tags",
+                            "type": "column"
+                          },
+                          "versioning": {
+                            "column": "versioning",
+                            "fields": {
+                              "fields": {
+                                "enabled": {
+                                  "column": "enabled",
+                                  "type": "column"
+                                },
+                                "excludeFolders": {
+                                  "column": "excludeFolders",
+                                  "type": "column"
+                                },
+                                "excludedPrefixes": {
+                                  "column": "excludedPrefixes",
+                                  "type": "column"
+                                },
+                                "mfaDelete": {
+                                  "column": "mfaDelete",
+                                  "type": "column"
+                                }
+                              },
+                              "type": "object"
+                            },
+                            "type": "column"
+                          },
+                          "website": {
+                            "column": "website",
+                            "fields": {
+                              "fields": {
+                                "mainPageSuffix": {
+                                  "column": "mainPageSuffix",
+                                  "type": "column"
+                                },
+                                "notFoundPage": {
+                                  "column": "notFoundPage",
+                                  "type": "column"
+                                }
+                              },
+                              "type": "object"
+                            },
                             "type": "column"
                           }
                         },
@@ -486,10 +503,6 @@
               "column": "pageInfo",
               "fields": {
                 "fields": {
-                  "cursor": {
-                    "column": "cursor",
-                    "type": "column"
-                  },
                   "hasNextPage": {
                     "column": "hasNextPage",
                     "type": "column"

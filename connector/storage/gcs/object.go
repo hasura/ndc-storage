@@ -56,27 +56,13 @@ func (c *Client) ListObjects(ctx context.Context, bucketName string, opts *commo
 			continue
 		}
 
-		var cursor *string
-		pi := pager.PageInfo()
-
-		if pi.Token != "" {
-			cursor = &pi.Token
-		}
-
 		result := serializeObjectInfo(object)
 		if predicate == nil || predicate(result.Name) {
 			objects = append(objects, result)
 			count++
 
 			if maxResults > 0 && count >= maxResults {
-				if pi.Remaining() > 0 {
-					pageInfo.HasNextPage = true
-					pageInfo.Cursor = cursor
-
-					if pageInfo.Cursor == nil {
-						pageInfo.Cursor = &result.Name
-					}
-				}
+				pageInfo.HasNextPage = pager.PageInfo().Remaining() > 0
 
 				break
 			}
@@ -128,16 +114,7 @@ func (c *Client) ListDeletedObjects(ctx context.Context, bucketName string, opts
 			return nil, serializeErrorResponse(err)
 		}
 
-		var cursor *string
-		pi := pager.PageInfo()
-
-		if pi.Token != "" {
-			cursor = &pi.Token
-		}
-
 		if (object.Deleted.IsZero() && object.SoftDeleteTime.IsZero()) || (predicate != nil && !predicate(object.Name)) {
-			pageInfo.Cursor = cursor
-
 			continue
 		}
 
@@ -146,8 +123,7 @@ func (c *Client) ListDeletedObjects(ctx context.Context, bucketName string, opts
 		count++
 
 		if maxResults > 0 && count >= maxResults {
-			pageInfo.HasNextPage = pi.Remaining() > 0
-			pageInfo.Cursor = cursor
+			pageInfo.HasNextPage = pager.PageInfo().Remaining() > 0
 
 			break
 		}

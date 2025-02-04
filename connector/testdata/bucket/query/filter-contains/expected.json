@@ -3,15 +3,19 @@
     "rows": [
       {
         "__value": {
-          "buckets": [
+          "edges": [
             {
-              "clientId": "minio",
-              "name": "dummy-bucket-8",
-              "storageClass": null,
-              "tags": null
+              "cursor": "dummy-bucket-8",
+              "node": {
+                "clientId": "minio",
+                "etag": null,
+                "name": "dummy-bucket-8",
+                "storageClass": null,
+                "tags": null
+              }
             }
           ],
-          "pageInfo": { "cursor": null, "hasNextPage": false }
+          "pageInfo": { "hasNextPage": false }
         }
       }
     ]
@@ -20,15 +24,19 @@
     "rows": [
       {
         "__value": {
-          "buckets": [
+          "edges": [
             {
-              "clientId": "azblob",
-              "name": "dummy-bucket-8",
-              "storageClass": null,
-              "tags": null
+              "cursor": "dummy-bucket-8",
+              "node": {
+                "clientId": "azblob",
+                "etag": null,
+                "name": "dummy-bucket-8",
+                "storageClass": null,
+                "tags": null
+              }
             }
           ],
-          "pageInfo": { "cursor": null, "hasNextPage": false }
+          "pageInfo": { "hasNextPage": false }
         }
       }
     ]
@@ -37,15 +45,19 @@
     "rows": [
       {
         "__value": {
-          "buckets": [
+          "edges": [
             {
-              "clientId": "gcs",
-              "name": "dummy-bucket-8",
-              "storageClass": "STANDARD",
-              "tags": null
+              "cursor": "dummy-bucket-8",
+              "node": {
+                "clientId": "gcs",
+                "etag": "RVRhZw==",
+                "name": "dummy-bucket-8",
+                "storageClass": "STANDARD",
+                "tags": null
+              }
             }
           ],
-          "pageInfo": { "cursor": null, "hasNextPage": false }
+          "pageInfo": { "hasNextPage": false }
         }
       }
     ]

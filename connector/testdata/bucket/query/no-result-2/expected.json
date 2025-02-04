@@ -1,12 +1,7 @@
 [
   {
     "rows": [
-      {
-        "__value": {
-          "buckets": [],
-          "pageInfo": { "cursor": null, "hasNextPage": false }
-        }
-      }
+      { "__value": { "edges": [], "pageInfo": { "hasNextPage": false } } }
     ]
   }
 ]

@@ -20,24 +20,24 @@ func ProcedureCreateStorageBucket(ctx context.Context, state *types.State, args 
 }
 
 // FunctionStorageBuckets list all buckets.
-func FunctionStorageBuckets(ctx context.Context, state *types.State, args *common.ListStorageBucketArguments) (common.StorageBucketListResults, error) {
-	if args.MaxResults != nil && *args.MaxResults <= 0 {
-		return common.StorageBucketListResults{}, schema.UnprocessableContentError("maxResults must be larger than 0", nil)
+func FunctionStorageBuckets(ctx context.Context, state *types.State, args *common.ListStorageBucketArguments) (StorageConnection[common.StorageBucket], error) {
+	if args.First != nil && *args.First <= 0 {
+		return StorageConnection[common.StorageBucket]{}, schema.UnprocessableContentError("$first argument must be larger than 0", nil)
 	}
 
 	request, err := internal.EvalBucketPredicate(args.ClientID, args.Prefix, args.Where, types.QueryVariablesFromContext(ctx))
 	if err != nil {
-		return common.StorageBucketListResults{}, err
+		return StorageConnection[common.StorageBucket]{}, err
 	}
 
 	if !request.IsValid {
-		return common.StorageBucketListResults{
-			Buckets: []common.StorageBucket{},
+		return StorageConnection[common.StorageBucket]{
+			Edges: []StorageConnectionEdge[common.StorageBucket]{},
 		}, nil
 	}
 
 	if err := request.EvalSelection(utils.CommandSelectionFieldFromContext(ctx)); err != nil {
-		return common.StorageBucketListResults{}, err
+		return StorageConnection[common.StorageBucket]{}, err
 	}
 
 	predicate := request.BucketPredicate.CheckPostPredicate
@@ -45,10 +45,10 @@ func FunctionStorageBuckets(ctx context.Context, state *types.State, args *commo
 		predicate = nil
 	}
 
-	result, err := state.Storage.ListBuckets(ctx, request.ClientID, &common.ListStorageBucketsOptions{
+	buckets, err := state.Storage.ListBuckets(ctx, request.ClientID, &common.ListStorageBucketsOptions{
 		Prefix:     request.BucketPredicate.GetPrefix(),
-		MaxResults: args.MaxResults,
-		StartAfter: args.StartAfter,
+		MaxResults: args.First,
+		StartAfter: args.After,
 		Include: common.BucketIncludeOptions{
 			Tags:       request.Include.Tags,
 			Versioning: request.Include.Versions,
@@ -59,10 +59,22 @@ func FunctionStorageBuckets(ctx context.Context, state *types.State, args *commo
 		NumThreads: state.Concurrency.Query,
 	}, predicate)
 	if err != nil {
-		return common.StorageBucketListResults{}, err
+		return StorageConnection[common.StorageBucket]{}, err
 	}
 
-	return *result, nil
+	result := StorageConnection[common.StorageBucket]{
+		Edges:    make([]StorageConnectionEdge[common.StorageBucket], len(buckets.Buckets)),
+		PageInfo: buckets.PageInfo,
+	}
+
+	for i, item := range buckets.Buckets {
+		result.Edges[i] = StorageConnectionEdge[common.StorageBucket]{
+			Node:   item,
+			Cursor: item.Name,
+		}
+	}
+
+	return result, nil
 }
 
 // FunctionStorageBucket gets a bucket by name.

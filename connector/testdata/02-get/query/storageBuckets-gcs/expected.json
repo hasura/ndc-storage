@@ -3,41 +3,40 @@
     "rows": [
       {
         "__value": {
-          "buckets": [
+          "edges": [
             {
-              "autoclass": null,
-              "cors": [],
-              "customPlacementConfig": null,
-              "defaultEventBasedHold": false,
-              "encryption": null,
-              "etag": "RVRhZw==",
-              "hierarchicalNamespace": null,
-              "lifecycle": {
-                "rules": []
-              },
-              "locationType": "region",
-              "logging": null,
-              "name": "gcs-bucket",
-              "objectLock": null,
-              "region": "US-CENTRAL1",
-              "requesterPays": false,
-              "rpo": null,
-              "softDeletePolicy": null,
-              "storageClass": "STANDARD",
-              "tags": null,
-              "versioning": {
-                "enabled": false,
-                "excludeFolders": null,
-                "excludedPrefixes": null,
-                "mfaDelete": null
-              },
-              "website": null
+              "cursor": "gcs-bucket",
+              "node": {
+                "autoclass": null,
+                "clientId": "gcs",
+                "cors": [],
+                "customPlacementConfig": null,
+                "defaultEventBasedHold": false,
+                "encryption": null,
+                "etag": "RVRhZw==",
+                "hierarchicalNamespace": null,
+                "lifecycle": { "rules": [] },
+                "locationType": "region",
+                "logging": null,
+                "name": "gcs-bucket",
+                "objectLock": null,
+                "region": "US-CENTRAL1",
+                "requesterPays": false,
+                "rpo": null,
+                "softDeletePolicy": null,
+                "storageClass": "STANDARD",
+                "tags": null,
+                "versioning": {
+                  "enabled": false,
+                  "excludeFolders": null,
+                  "excludedPrefixes": null,
+                  "mfaDelete": null
+                },
+                "website": null
+              }
             }
           ],
-          "pageInfo": {
-            "cursor": null,
-            "hasNextPage": false
-          }
+          "pageInfo": { "hasNextPage": false }
         }
       }
     ]

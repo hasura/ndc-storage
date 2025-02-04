@@ -140,10 +140,7 @@ L:
 			count++
 
 			if maxResults > 0 && count >= maxResults {
-				if i < len(resp.ContainerItems)-1 || pager.More() {
-					pageInfo.HasNextPage = true
-					pageInfo.Cursor = &result.Name
-				}
+				pageInfo.HasNextPage = i < len(resp.ContainerItems)-1 || pager.More()
 
 				break L
 			}

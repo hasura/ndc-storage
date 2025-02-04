@@ -14,10 +14,10 @@ type ListStorageBucketArguments struct {
 	// Returns list of bucket with the prefix.
 	Prefix string `json:"prefix,omitempty"`
 	// The maximum number of objects requested per batch.
-	MaxResults *int `json:"maxResults"`
-	// StartAfter start listing lexically at this object onwards.
-	StartAfter string            `json:"startAfter,omitempty"`
-	Where      schema.Expression `json:"where"                ndc:"predicate=StorageBucketFilter"`
+	First *int `json:"first"`
+	// After start listing lexically at this bucket onwards.
+	After string            `json:"after,omitempty"`
+	Where schema.Expression `json:"where"           ndc:"predicate=StorageBucketFilter"`
 }
 
 // StorageBucketArguments represent the common input arguments for bucket-related methods.
@@ -120,11 +120,10 @@ type ListStorageObjectsArguments struct {
 	Prefix string `json:"prefix,omitempty"`
 	// Returns objects in the hierarchical order.
 	Hierarchy bool `json:"hierarchy,omitempty"`
-	// The maximum number of objects requested per batch,
-	// advanced use-case not useful for most applications.
-	MaxResults *int `json:"maxResults"`
-	// StartAfter start listing lexically at this object onwards.
-	StartAfter *string `json:"startAfter,omitempty"`
+	// The maximum number of objects requested per batch.
+	First *int `json:"first"`
+	// After start listing lexically at this object onwards.
+	After *string `json:"after,omitempty"`
 
 	Where schema.Expression `json:"where" ndc:"predicate=StorageObjectFilter"`
 }
