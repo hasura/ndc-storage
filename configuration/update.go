@@ -63,6 +63,9 @@ var defaultConfiguration = types.Configuration{
 		Query:    5,
 		Mutation: 1,
 	},
+	Runtime: storage.RuntimeSettings{
+		MaxDownloadSizeMBs: 20,
+	},
 	Clients: []storage.ClientConfig{
 		{
 			"type":          common.S3,

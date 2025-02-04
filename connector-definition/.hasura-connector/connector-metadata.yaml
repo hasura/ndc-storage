@@ -3,9 +3,6 @@ packagingDefinition:
   dockerImage: ghcr.io/hasura/ndc-storage:{{VERSION}}
 documentationPage: https://github.com/hasura/ndc-storage
 supportedEnvironmentVariables:
-  - name: STORAGE_PROVIDER_TYPE
-    description: Storage provider type. Accept one of s3 and gs
-    required: true
   - name: ACCESS_KEY_ID
     description: The access key ID
     required: true

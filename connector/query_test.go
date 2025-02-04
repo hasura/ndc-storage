@@ -7,8 +7,10 @@ import (
 	"io"
 	"net/http"
 	"path/filepath"
+	"strings"
 	"testing"
 
+	"github.com/hasura/ndc-sdk-go/connector"
 	"github.com/hasura/ndc-sdk-go/ndctest"
 	"github.com/hasura/ndc-sdk-go/schema"
 	"gotest.tools/v3/assert"
@@ -128,4 +130,72 @@ func TestConnectorQueries(t *testing.T) {
 			TestDataDir:   filepath.Join("testdata", dir),
 		})
 	}
+}
+
+func TestMaxDownloadSizeValidation(t *testing.T) {
+	setConnectorTestEnv(t)
+
+	server, err := connector.NewServer(&Connector{}, &connector.ServerOptions{
+		Configuration: "../tests/configuration",
+	}, connector.WithoutRecovery())
+	assert.NilError(t, err)
+
+	httpServer := server.BuildTestServer()
+	defer httpServer.Close()
+
+	getQueryBody := func(name string) string {
+		return fmt.Sprintf(`{
+		"arguments": {
+			"clientId": {
+				"type": "literal",
+				"value": "minio"
+			},
+			"bucket": {
+				"type": "literal",
+				"value": "dummy-bucket-0"
+			},
+			"object": {
+				"type": "literal",
+				"value": "movies/2000s/movies.json"
+			}
+		},
+		"collection": "%s",
+		"collection_relationships": {},
+		"query": {
+			"fields": {
+				"__value": {
+					"column": "__value",
+					"type": "column"
+				}
+			}
+		}
+	}`, name)
+	}
+
+	testCases := []struct {
+		Name               string
+		MaxDownloadSizeMBs float64
+	}{
+		{
+			Name:               "downloadStorageObject",
+			MaxDownloadSizeMBs: 1.33,
+		},
+		{
+			Name:               "downloadStorageObjectText",
+			MaxDownloadSizeMBs: 2,
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.Name, func(t *testing.T) {
+			resp, err := http.DefaultClient.Post(httpServer.URL+"/query", "application/json", strings.NewReader(getQueryBody(tc.Name)))
+			assert.NilError(t, err)
+			assert.Equal(t, http.StatusUnprocessableEntity, resp.StatusCode)
+			var respBody schema.ErrorResponse
+			assert.NilError(t, json.NewDecoder(resp.Body).Decode(&respBody))
+			assert.Equal(t, respBody.Message, fmt.Sprintf("file size >= %.2f MB is not allowed to be downloaded directly. Please use presignedGetObject function for large files", tc.MaxDownloadSizeMBs))
+			resp.Body.Close()
+		})
+	}
+
 }

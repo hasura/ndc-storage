@@ -14,17 +14,20 @@ import (
 func TestConnector(t *testing.T) {
 	setConnectorTestEnv(t)
 
-	logger := slog.New(slog.NewJSONHandler(os.Stderr, &slog.HandlerOptions{
-		Level: slog.LevelDebug,
-	}))
+	for i, dir := range []string{"01-setup", "02-get", "03-cleanup"} {
+		var serverOptions []connector.ServeOption
 
-	for _, dir := range []string{"01-setup", "02-get", "03-cleanup"} {
+		if i == 0 {
+			logger := slog.New(slog.NewJSONHandler(os.Stderr, &slog.HandlerOptions{
+				Level: slog.LevelDebug,
+			}))
+			serverOptions = append(serverOptions, connector.WithLogger(logger))
+		}
+
 		ndctest.TestConnector(t, &Connector{}, ndctest.TestConnectorOptions{
 			Configuration: "../tests/configuration",
 			TestDataDir:   filepath.Join("testdata", dir),
-			ServerOptions: []connector.ServeOption{
-				connector.WithLogger(logger),
-			},
+			ServerOptions: serverOptions,
 		})
 	}
 }

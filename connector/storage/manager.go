@@ -13,19 +13,28 @@ import (
 	"github.com/hasura/ndc-storage/connector/storage/common"
 )
 
+// RuntimeSettings hold runtime settings for the connector.
+type RuntimeSettings struct {
+	// Maximum size in MB of the object is allowed to download content in the GraphQL response
+	// to avoid memory leaks. Pre-signed URLs are recommended for large files.
+	MaxDownloadSizeMBs int64 `json:"maxDownloadSizeMBs" jsonschema:"min=1,default=20" yaml:"maxDownloadSizeMBs"`
+}
+
 // Manager represents the high-level client that manages internal clients and configurations.
 type Manager struct {
 	clients []Client
+	runtime RuntimeSettings
 }
 
 // NewManager creates a storage client manager instance.
-func NewManager(ctx context.Context, configs []ClientConfig, logger *slog.Logger) (*Manager, error) {
+func NewManager(ctx context.Context, configs []ClientConfig, runtimeSettings RuntimeSettings, logger *slog.Logger) (*Manager, error) {
 	if len(configs) == 0 {
 		return nil, errors.New("failed to initialize storage clients: config is empty")
 	}
 
 	result := &Manager{
 		clients: make([]Client, len(configs)),
+		runtime: runtimeSettings,
 	}
 
 	for i, config := range configs {
