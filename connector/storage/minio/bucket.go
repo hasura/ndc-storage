@@ -807,10 +807,7 @@ func filterBuckets(bucketInfos []minio.BucketInfo, options *common.ListStorageBu
 		count++
 
 		if options.MaxResults != nil && count >= *options.MaxResults {
-			if i < bucketLength-1 {
-				pageInfo.HasNextPage = true
-				pageInfo.Cursor = &info.Name
-			}
+			pageInfo.HasNextPage = i < bucketLength-1
 
 			break
 		}

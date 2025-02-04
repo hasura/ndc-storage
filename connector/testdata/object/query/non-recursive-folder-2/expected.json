@@ -3,33 +3,42 @@
     "rows": [
       {
         "__value": {
-          "objects": [
+          "edges": [
             {
-              "bucket": "dummy-bucket-0",
-              "clientId": "minio",
-              "isDirectory": true,
-              "name": "movies/1930s/",
-              "size": 0,
-              "storageClass": null
+              "cursor": "movies/1930s/",
+              "node": {
+                "bucket": "dummy-bucket-0",
+                "clientId": "minio",
+                "isDirectory": true,
+                "name": "movies/1930s/",
+                "size": 0,
+                "storageClass": null
+              }
             },
             {
-              "bucket": "dummy-bucket-0",
-              "clientId": "minio",
-              "isDirectory": true,
-              "name": "movies/1940s/",
-              "size": 0,
-              "storageClass": null
+              "cursor": "movies/1940s/",
+              "node": {
+                "bucket": "dummy-bucket-0",
+                "clientId": "minio",
+                "isDirectory": true,
+                "name": "movies/1940s/",
+                "size": 0,
+                "storageClass": null
+              }
             },
             {
-              "bucket": "dummy-bucket-0",
-              "clientId": "minio",
-              "isDirectory": true,
-              "name": "movies/1950s/",
-              "size": 0,
-              "storageClass": null
+              "cursor": "movies/1950s/",
+              "node": {
+                "bucket": "dummy-bucket-0",
+                "clientId": "minio",
+                "isDirectory": true,
+                "name": "movies/1950s/",
+                "size": 0,
+                "storageClass": null
+              }
             }
           ],
-          "pageInfo": { "cursor": "movies/1950s/", "hasNextPage": true }
+          "pageInfo": { "hasNextPage": true }
         }
       }
     ]
@@ -38,33 +47,42 @@
     "rows": [
       {
         "__value": {
-          "objects": [
+          "edges": [
             {
-              "bucket": "dummy-bucket-0",
-              "clientId": "azblob",
-              "isDirectory": true,
-              "name": "movies/1930s/",
-              "size": null,
-              "storageClass": null
+              "cursor": "movies/1930s/",
+              "node": {
+                "bucket": "dummy-bucket-0",
+                "clientId": "azblob",
+                "isDirectory": true,
+                "name": "movies/1930s/",
+                "size": null,
+                "storageClass": null
+              }
             },
             {
-              "bucket": "dummy-bucket-0",
-              "clientId": "azblob",
-              "isDirectory": true,
-              "name": "movies/1940s/",
-              "size": null,
-              "storageClass": null
+              "cursor": "movies/1940s/",
+              "node": {
+                "bucket": "dummy-bucket-0",
+                "clientId": "azblob",
+                "isDirectory": true,
+                "name": "movies/1940s/",
+                "size": null,
+                "storageClass": null
+              }
             },
             {
-              "bucket": "dummy-bucket-0",
-              "clientId": "azblob",
-              "isDirectory": true,
-              "name": "movies/1950s/",
-              "size": null,
-              "storageClass": null
+              "cursor": "movies/1950s/",
+              "node": {
+                "bucket": "dummy-bucket-0",
+                "clientId": "azblob",
+                "isDirectory": true,
+                "name": "movies/1950s/",
+                "size": null,
+                "storageClass": null
+              }
             }
           ],
-          "pageInfo": { "cursor": "movies/1950s/", "hasNextPage": true }
+          "pageInfo": { "hasNextPage": true }
         }
       }
     ]
@@ -73,33 +91,42 @@
     "rows": [
       {
         "__value": {
-          "objects": [
+          "edges": [
             {
-              "bucket": "dummy-bucket-0",
-              "clientId": "gcs",
-              "isDirectory": true,
-              "name": "movies/1930s/",
-              "size": 0,
-              "storageClass": null
+              "cursor": "movies/1930s/",
+              "node": {
+                "bucket": "dummy-bucket-0",
+                "clientId": "gcs",
+                "isDirectory": true,
+                "name": "movies/1930s/",
+                "size": 0,
+                "storageClass": null
+              }
             },
             {
-              "bucket": "dummy-bucket-0",
-              "clientId": "gcs",
-              "isDirectory": true,
-              "name": "movies/1940s/",
-              "size": 0,
-              "storageClass": null
+              "cursor": "movies/1940s/",
+              "node": {
+                "bucket": "dummy-bucket-0",
+                "clientId": "gcs",
+                "isDirectory": true,
+                "name": "movies/1940s/",
+                "size": 0,
+                "storageClass": null
+              }
             },
             {
-              "bucket": "dummy-bucket-0",
-              "clientId": "gcs",
-              "isDirectory": true,
-              "name": "movies/1950s/",
-              "size": 0,
-              "storageClass": null
+              "cursor": "movies/1950s/",
+              "node": {
+                "bucket": "dummy-bucket-0",
+                "clientId": "gcs",
+                "isDirectory": true,
+                "name": "movies/1950s/",
+                "size": 0,
+                "storageClass": null
+              }
             }
           ],
-          "pageInfo": { "cursor": "movies/1950s/", "hasNextPage": true }
+          "pageInfo": { "hasNextPage": true }
         }
       }
     ]

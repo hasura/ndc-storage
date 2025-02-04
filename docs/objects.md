@@ -122,43 +122,45 @@ query ListObjects {
 
 #### Pagination
 
-Most of cloud storage services support cursor-based. Offset pagination and sorting aren't supported.
+Relay style is suitable for objects listing because most of cloud storage services only support cursor-based pagination. The object name is used as the cursor ID.
 
 ```graphql
 query ListObjects {
-  storageObjects(where: { object: { _starts_with: "hello" } }) {
+  storageObjects(after: "hello.txt", first: 3) {
     pageInfo {
-      cursor
       hasNextPage
     }
-    objects {
-      clientId
-      bucket
-      name
-      blobType
-      serverEncrypted
-      size
-      storageClass
-      tagCount
-      tags
-      cacheControl
-      checksumCrc32
-      checksumCrc64Nvme
-      checksumCrc32C
-      checksumSha256
-      checksumSha1
-      contentEncoding
-      contentDisposition
-      contentLanguage
-      contentMd5
-      contentType
-      etag
-      expires
-      isLatest
-      metadata
-      owner {
-        id
+    edges {
+      cursor
+      node {
+        clientId
+        bucket
         name
+        blobType
+        serverEncrypted
+        size
+        storageClass
+        tagCount
+        tags
+        cacheControl
+        checksumCrc32
+        checksumCrc64Nvme
+        checksumCrc32C
+        checksumSha256
+        checksumSha1
+        contentEncoding
+        contentDisposition
+        contentLanguage
+        contentMd5
+        contentType
+        etag
+        expires
+        isLatest
+        metadata
+        owner {
+          id
+          name
+        }
       }
     }
   }

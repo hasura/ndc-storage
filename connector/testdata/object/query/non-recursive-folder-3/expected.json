@@ -3,17 +3,20 @@
     "rows": [
       {
         "__value": {
-          "objects": [
+          "edges": [
             {
-              "bucket": "dummy-bucket-0",
-              "clientId": "minio",
-              "isDirectory": true,
-              "name": "movies/2000s/",
-              "size": 0,
-              "storageClass": null
+              "cursor": "movies/2000s/",
+              "node": {
+                "bucket": "dummy-bucket-0",
+                "clientId": "minio",
+                "isDirectory": true,
+                "name": "movies/2000s/",
+                "size": 0,
+                "storageClass": null
+              }
             }
           ],
-          "pageInfo": { "cursor": null, "hasNextPage": false }
+          "pageInfo": { "hasNextPage": false }
         }
       }
     ]
@@ -22,17 +25,20 @@
     "rows": [
       {
         "__value": {
-          "objects": [
+          "edges": [
             {
-              "bucket": "dummy-bucket-0",
-              "clientId": "azblob",
-              "isDirectory": true,
-              "name": "movies/2000s/",
-              "size": null,
-              "storageClass": null
+              "cursor": "movies/2000s/",
+              "node": {
+                "bucket": "dummy-bucket-0",
+                "clientId": "azblob",
+                "isDirectory": true,
+                "name": "movies/2000s/",
+                "size": null,
+                "storageClass": null
+              }
             }
           ],
-          "pageInfo": { "cursor": null, "hasNextPage": false }
+          "pageInfo": { "hasNextPage": false }
         }
       }
     ]
@@ -41,17 +47,20 @@
     "rows": [
       {
         "__value": {
-          "objects": [
+          "edges": [
             {
-              "bucket": "dummy-bucket-0",
-              "clientId": "gcs",
-              "isDirectory": true,
-              "name": "movies/2000s/",
-              "size": 0,
-              "storageClass": null
+              "cursor": "movies/2000s/",
+              "node": {
+                "bucket": "dummy-bucket-0",
+                "clientId": "gcs",
+                "isDirectory": true,
+                "name": "movies/2000s/",
+                "size": 0,
+                "storageClass": null
+              }
             }
           ],
-          "pageInfo": { "cursor": null, "hasNextPage": false }
+          "pageInfo": { "hasNextPage": false }
         }
       }
     ]

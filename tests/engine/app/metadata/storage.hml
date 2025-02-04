@@ -272,6 +272,12 @@ definition:
         ListStorageObjectsArguments:
           description: holds all arguments of a list object request.
           fields:
+            after:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
             bucket:
               type:
                 type: nullable
@@ -284,25 +290,19 @@ definition:
                 underlying_type:
                   type: named
                   name: StorageClientID
+            first:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Int32
             hierarchy:
               type:
                 type: nullable
                 underlying_type:
                   type: named
                   name: Boolean
-            maxResults:
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: Int32
             prefix:
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: String
-            startAfter:
               type:
                 type: nullable
                 underlying_type:
@@ -1041,19 +1041,6 @@ definition:
               type:
                 type: named
                 name: StorageClientID
-        StorageBucketListResults:
-          description: hold the paginated results of the storage bucket list.
-          fields:
-            buckets:
-              type:
-                type: array
-                element_type:
-                  type: named
-                  name: StorageBucket
-            pageInfo:
-              type:
-                type: named
-                name: StoragePaginationInfo
         StorageBucketVersioningConfiguration:
           description: is the versioning configuration structure
           fields:
@@ -1081,6 +1068,52 @@ definition:
                 underlying_type:
                   type: named
                   name: String
+        StorageConnection_StorageBucket:
+          fields:
+            edges:
+              type:
+                type: array
+                element_type:
+                  type: named
+                  name: StorageConnectionEdge_StorageBucket
+            pageInfo:
+              type:
+                type: named
+                name: StoragePaginationInfo
+        StorageConnection_StorageObject:
+          fields:
+            edges:
+              type:
+                type: array
+                element_type:
+                  type: named
+                  name: StorageConnectionEdge_StorageObject
+            pageInfo:
+              type:
+                type: named
+                name: StoragePaginationInfo
+        StorageConnectionEdge_StorageBucket:
+          description: the connection information of the relay pagination response.
+          fields:
+            cursor:
+              type:
+                type: named
+                name: String
+            node:
+              type:
+                type: named
+                name: StorageBucket
+        StorageConnectionEdge_StorageObject:
+          description: the connection information of the relay pagination response.
+          fields:
+            cursor:
+              type:
+                type: named
+                name: String
+            node:
+              type:
+                type: named
+                name: StorageObject
         StorageCopyDestOptions:
           description: represents options specified by user for CopyObject/ComposeObject APIs.
           fields:
@@ -1778,12 +1811,6 @@ definition:
         StoragePaginationInfo:
           description: holds the pagination information.
           fields:
-            cursor:
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: String
             hasNextPage:
               type:
                 type: named
@@ -2111,25 +2138,25 @@ definition:
         - name: storageBuckets
           description: list all buckets.
           arguments:
+            after:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
             clientId:
               type:
                 type: nullable
                 underlying_type:
                   type: named
                   name: StorageClientID
-            maxResults:
+            first:
               type:
                 type: nullable
                 underlying_type:
                   type: named
                   name: Int32
             prefix:
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: String
-            startAfter:
               type:
                 type: nullable
                 underlying_type:
@@ -2143,10 +2170,16 @@ definition:
                   object_type_name: StorageBucketFilter
           result_type:
             type: named
-            name: StorageBucketListResults
+            name: StorageConnection_StorageBucket
         - name: storageDeletedObjects
           description: list deleted objects in a bucket.
           arguments:
+            after:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
             bucket:
               type:
                 type: nullable
@@ -2159,25 +2192,19 @@ definition:
                 underlying_type:
                   type: named
                   name: StorageClientID
+            first:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Int32
             hierarchy:
               type:
                 type: nullable
                 underlying_type:
                   type: named
                   name: Boolean
-            maxResults:
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: Int32
             prefix:
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: String
-            startAfter:
               type:
                 type: nullable
                 underlying_type:
@@ -2275,6 +2302,12 @@ definition:
         - name: storageObjects
           description: lists objects in a bucket.
           arguments:
+            after:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
             bucket:
               type:
                 type: nullable
@@ -2287,25 +2320,19 @@ definition:
                 underlying_type:
                   type: named
                   name: StorageClientID
+            first:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Int32
             hierarchy:
               type:
                 type: nullable
                 underlying_type:
                   type: named
                   name: Boolean
-            maxResults:
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: Int32
             prefix:
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: String
-            startAfter:
               type:
                 type: nullable
                 underlying_type:
@@ -2319,7 +2346,7 @@ definition:
                   object_type_name: StorageObjectFilter
           result_type:
             type: named
-            name: StorageObjectListResults
+            name: StorageConnection_StorageObject
         - name: storagePresignedDownloadUrl
           description: generates a presigned URL for HTTP GET operations. Browsers/Mobile clients may point to this URL to directly download objects even if the bucket is private. This presigned URL can have an associated expiration time in seconds after which it is no longer operational. The maximum expiry is 604800 seconds (i.e. 7 days) and minimum is 1 second.
           arguments:
@@ -2570,6 +2597,12 @@ definition:
         - name: removeStorageObjects
           description: remove a list of objects obtained from an input channel. The call sends a delete request to the server up to 1000 objects at a time. The errors observed are sent over the error channel.
           arguments:
+            after:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
             bucket:
               type:
                 type: nullable
@@ -2582,6 +2615,12 @@ definition:
                 underlying_type:
                   type: named
                   name: StorageClientID
+            first:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Int32
             governanceBypass:
               type:
                 type: nullable
@@ -2594,19 +2633,7 @@ definition:
                 underlying_type:
                   type: named
                   name: Boolean
-            maxResults:
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: Int32
             prefix:
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: String
-            startAfter:
               type:
                 type: nullable
                 underlying_type:

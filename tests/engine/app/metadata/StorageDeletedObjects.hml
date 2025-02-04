@@ -410,20 +410,20 @@ definition:
   name: StorageDeletedObjects
   outputType: StorageObjectListResults!
   arguments:
-    - name: hierarchy
-      type: Boolean
-    - name: maxResults
-      type: Int32
-    - name: startAfter
+    - name: after
       type: String
-    - name: where
-      type: StorageObjectFilterBoolExp
     - name: bucket
       type: String
     - name: clientId
       type: StorageClientId
+    - name: first
+      type: Int32
+    - name: hierarchy
+      type: Boolean
     - name: prefix
       type: String
+    - name: where
+      type: StorageObjectFilterBoolExp
   source:
     dataConnectorName: storage
     dataConnectorCommand:

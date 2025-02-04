@@ -81,19 +81,19 @@ func (j *ListIncompleteUploadsOptions) FromValue(input map[string]any) error {
 // FromValue decodes values from map
 func (j *ListStorageBucketArguments) FromValue(input map[string]any) error {
 	var err error
+	j.After, err = utils.GetStringDefault(input, "after")
+	if err != nil {
+		return err
+	}
 	j.ClientID, err = utils.DecodeNullableObjectValue[StorageClientID](input, "clientId")
 	if err != nil {
 		return err
 	}
-	j.MaxResults, err = utils.GetNullableInt[int](input, "maxResults")
+	j.First, err = utils.GetNullableInt[int](input, "first")
 	if err != nil {
 		return err
 	}
 	j.Prefix, err = utils.GetStringDefault(input, "prefix")
-	if err != nil {
-		return err
-	}
-	j.StartAfter, err = utils.GetStringDefault(input, "startAfter")
 	if err != nil {
 		return err
 	}
@@ -111,19 +111,19 @@ func (j *ListStorageObjectsArguments) FromValue(input map[string]any) error {
 	if err != nil {
 		return err
 	}
+	j.After, err = utils.GetNullableString(input, "after")
+	if err != nil {
+		return err
+	}
+	j.First, err = utils.GetNullableInt[int](input, "first")
+	if err != nil {
+		return err
+	}
 	j.Hierarchy, err = utils.GetBooleanDefault(input, "hierarchy")
 	if err != nil {
 		return err
 	}
-	j.MaxResults, err = utils.GetNullableInt[int](input, "maxResults")
-	if err != nil {
-		return err
-	}
 	j.Prefix, err = utils.GetStringDefault(input, "prefix")
-	if err != nil {
-		return err
-	}
-	j.StartAfter, err = utils.GetNullableString(input, "startAfter")
 	if err != nil {
 		return err
 	}
@@ -285,10 +285,10 @@ func (j ListIncompleteUploadsOptions) ToMap() map[string]any {
 func (j ListStorageObjectsArguments) ToMap() map[string]any {
 	r := make(map[string]any)
 	r = utils.MergeMap(r, j.StorageBucketArguments.ToMap())
+	r["after"] = j.After
+	r["first"] = j.First
 	r["hierarchy"] = j.Hierarchy
-	r["maxResults"] = j.MaxResults
 	r["prefix"] = j.Prefix
-	r["startAfter"] = j.StartAfter
 	if j.Where != nil {
 		r["where"] = j.Where
 	}
@@ -604,19 +604,6 @@ func (j StorageBucketArguments) ToMap() map[string]any {
 }
 
 // ToMap encodes the struct to a value map
-func (j StorageBucketListResults) ToMap() map[string]any {
-	r := make(map[string]any)
-	j_Buckets := make([]any, len(j.Buckets))
-	for i, j_Buckets_v := range j.Buckets {
-		j_Buckets[i] = j_Buckets_v
-	}
-	r["buckets"] = j_Buckets
-	r["pageInfo"] = j.PageInfo
-
-	return r
-}
-
-// ToMap encodes the struct to a value map
 func (j StorageBucketVersioningConfiguration) ToMap() map[string]any {
 	r := make(map[string]any)
 	r["enabled"] = j.Enabled
@@ -835,7 +822,6 @@ func (j StorageOwner) ToMap() map[string]any {
 // ToMap encodes the struct to a value map
 func (j StoragePaginationInfo) ToMap() map[string]any {
 	r := make(map[string]any)
-	r["cursor"] = j.Cursor
 	r["hasNextPage"] = j.HasNextPage
 
 	return r

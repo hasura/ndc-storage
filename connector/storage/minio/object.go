@@ -65,7 +65,6 @@ func (mc *Client) ListObjects(ctx context.Context, bucketName string, opts *comm
 	if maxResults > 0 && maxResults < maxLength {
 		maxLength = maxResults
 		pageInfo.HasNextPage = true
-		pageInfo.Cursor = &minioObjects[maxLength-1].Key
 	}
 
 	objects := make([]common.StorageObject, maxLength)

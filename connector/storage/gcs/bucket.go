@@ -78,13 +78,6 @@ func (c *Client) ListBuckets(ctx context.Context, options *common.ListStorageBuc
 			continue
 		}
 
-		var cursor *string
-		pi := pager.PageInfo()
-
-		if pi.Token != "" {
-			cursor = &pi.Token
-		}
-
 		if (options.Prefix != "" && !strings.HasPrefix(bucket.Name, options.Prefix)) || (predicate != nil && !predicate(bucket.Name)) {
 			continue
 		}
@@ -94,12 +87,7 @@ func (c *Client) ListBuckets(ctx context.Context, options *common.ListStorageBuc
 		count++
 
 		if maxResults > 0 && count >= maxResults {
-			pageInfo.HasNextPage = pi.Remaining() > 0
-			pageInfo.Cursor = cursor
-
-			if pageInfo.Cursor == nil {
-				pageInfo.Cursor = &bucket.Name
-			}
+			pageInfo.HasNextPage = pager.PageInfo().Remaining() > 0
 
 			break
 		}

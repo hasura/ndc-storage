@@ -1,6 +1,6 @@
 {
   "arguments": {
-    "maxResults": { "type": "literal", "value": 1 },
+    "first": { "type": "literal", "value": 1 },
     "where": {
       "type": "literal",
       "value": {

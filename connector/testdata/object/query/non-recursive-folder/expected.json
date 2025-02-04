@@ -3,33 +3,42 @@
     "rows": [
       {
         "__value": {
-          "objects": [
+          "edges": [
             {
-              "bucket": "dummy-bucket-0",
-              "clientId": "minio",
-              "isDirectory": true,
-              "name": "movies/1900s/",
-              "size": 0,
-              "storageClass": null
+              "cursor": "movies/1900s/",
+              "node": {
+                "bucket": "dummy-bucket-0",
+                "clientId": "minio",
+                "isDirectory": true,
+                "name": "movies/1900s/",
+                "size": 0,
+                "storageClass": null
+              }
             },
             {
-              "bucket": "dummy-bucket-0",
-              "clientId": "minio",
-              "isDirectory": true,
-              "name": "movies/1910s/",
-              "size": 0,
-              "storageClass": null
+              "cursor": "movies/1910s/",
+              "node": {
+                "bucket": "dummy-bucket-0",
+                "clientId": "minio",
+                "isDirectory": true,
+                "name": "movies/1910s/",
+                "size": 0,
+                "storageClass": null
+              }
             },
             {
-              "bucket": "dummy-bucket-0",
-              "clientId": "minio",
-              "isDirectory": true,
-              "name": "movies/1920s/",
-              "size": 0,
-              "storageClass": null
+              "cursor": "movies/1920s/",
+              "node": {
+                "bucket": "dummy-bucket-0",
+                "clientId": "minio",
+                "isDirectory": true,
+                "name": "movies/1920s/",
+                "size": 0,
+                "storageClass": null
+              }
             }
           ],
-          "pageInfo": { "cursor": "movies/1920s/", "hasNextPage": true }
+          "pageInfo": { "hasNextPage": true }
         }
       }
     ]
@@ -38,33 +47,42 @@
     "rows": [
       {
         "__value": {
-          "objects": [
+          "edges": [
             {
-              "bucket": "dummy-bucket-0",
-              "clientId": "azblob",
-              "isDirectory": true,
-              "name": "movies/1900s/",
-              "size": null,
-              "storageClass": null
+              "cursor": "movies/1900s/",
+              "node": {
+                "bucket": "dummy-bucket-0",
+                "clientId": "azblob",
+                "isDirectory": true,
+                "name": "movies/1900s/",
+                "size": null,
+                "storageClass": null
+              }
             },
             {
-              "bucket": "dummy-bucket-0",
-              "clientId": "azblob",
-              "isDirectory": true,
-              "name": "movies/1910s/",
-              "size": null,
-              "storageClass": null
+              "cursor": "movies/1910s/",
+              "node": {
+                "bucket": "dummy-bucket-0",
+                "clientId": "azblob",
+                "isDirectory": true,
+                "name": "movies/1910s/",
+                "size": null,
+                "storageClass": null
+              }
             },
             {
-              "bucket": "dummy-bucket-0",
-              "clientId": "azblob",
-              "isDirectory": true,
-              "name": "movies/1920s/",
-              "size": null,
-              "storageClass": null
+              "cursor": "movies/1920s/",
+              "node": {
+                "bucket": "dummy-bucket-0",
+                "clientId": "azblob",
+                "isDirectory": true,
+                "name": "movies/1920s/",
+                "size": null,
+                "storageClass": null
+              }
             }
           ],
-          "pageInfo": { "cursor": "movies/1920s/", "hasNextPage": true }
+          "pageInfo": { "hasNextPage": true }
         }
       }
     ]
@@ -73,33 +91,42 @@
     "rows": [
       {
         "__value": {
-          "objects": [
+          "edges": [
             {
-              "bucket": "dummy-bucket-0",
-              "clientId": "gcs",
-              "isDirectory": true,
-              "name": "movies/1900s/",
-              "size": 0,
-              "storageClass": null
+              "cursor": "movies/1900s/",
+              "node": {
+                "bucket": "dummy-bucket-0",
+                "clientId": "gcs",
+                "isDirectory": true,
+                "name": "movies/1900s/",
+                "size": 0,
+                "storageClass": null
+              }
             },
             {
-              "bucket": "dummy-bucket-0",
-              "clientId": "gcs",
-              "isDirectory": true,
-              "name": "movies/1910s/",
-              "size": 0,
-              "storageClass": null
+              "cursor": "movies/1910s/",
+              "node": {
+                "bucket": "dummy-bucket-0",
+                "clientId": "gcs",
+                "isDirectory": true,
+                "name": "movies/1910s/",
+                "size": 0,
+                "storageClass": null
+              }
             },
             {
-              "bucket": "dummy-bucket-0",
-              "clientId": "gcs",
-              "isDirectory": true,
-              "name": "movies/1920s/",
-              "size": 0,
-              "storageClass": null
+              "cursor": "movies/1920s/",
+              "node": {
+                "bucket": "dummy-bucket-0",
+                "clientId": "gcs",
+                "isDirectory": true,
+                "name": "movies/1920s/",
+                "size": 0,
+                "storageClass": null
+              }
             }
           ],
-          "pageInfo": { "cursor": "movies/1920s/", "hasNextPage": true }
+          "pageInfo": { "hasNextPage": true }
         }
       }
     ]

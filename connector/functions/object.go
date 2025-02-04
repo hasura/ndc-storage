@@ -13,15 +13,15 @@ import (
 )
 
 // FunctionStorageObjects lists objects in a bucket.
-func FunctionStorageObjects(ctx context.Context, state *types.State, args *common.ListStorageObjectsArguments) (common.StorageObjectListResults, error) {
+func FunctionStorageObjects(ctx context.Context, state *types.State, args *common.ListStorageObjectsArguments) (StorageConnection[common.StorageObject], error) {
 	request, options, err := evalStorageObjectsArguments(ctx, state, args)
 	if err != nil {
-		return common.StorageObjectListResults{}, err
+		return StorageConnection[common.StorageObject]{}, err
 	}
 
 	if !request.IsValid {
-		return common.StorageObjectListResults{
-			Objects: []common.StorageObject{},
+		return StorageConnection[common.StorageObject]{
+			Edges: []StorageConnectionEdge[common.StorageObject]{},
 		}, nil
 	}
 
@@ -33,10 +33,22 @@ func FunctionStorageObjects(ctx context.Context, state *types.State, args *commo
 
 	objects, err := state.Storage.ListObjects(ctx, request.GetBucketArguments(), options, predicate)
 	if err != nil {
-		return common.StorageObjectListResults{}, err
+		return StorageConnection[common.StorageObject]{}, err
 	}
 
-	return *objects, nil
+	result := StorageConnection[common.StorageObject]{
+		Edges:    make([]StorageConnectionEdge[common.StorageObject], len(objects.Objects)),
+		PageInfo: objects.PageInfo,
+	}
+
+	for i, item := range objects.Objects {
+		result.Edges[i] = StorageConnectionEdge[common.StorageObject]{
+			Node:   item,
+			Cursor: item.Name,
+		}
+	}
+
+	return result, nil
 }
 
 // FunctionStorageDeletedObjects list deleted objects in a bucket.
@@ -365,8 +377,8 @@ func ProcedureRestoreStorageObject(ctx context.Context, state *types.State, args
 }
 
 func evalStorageObjectsArguments(ctx context.Context, state *types.State, args *common.ListStorageObjectsArguments) (*internal.PredicateEvaluator, *common.ListStorageObjectsOptions, error) {
-	if args.MaxResults != nil && *args.MaxResults <= 0 {
-		return nil, nil, schema.UnprocessableContentError("maxResults must be larger than 0", nil)
+	if args.First != nil && *args.First <= 0 {
+		return nil, nil, schema.UnprocessableContentError("$first argument must be larger than 0", nil)
 	}
 
 	request, err := internal.EvalObjectPredicate(args.StorageBucketArguments, &internal.StringComparisonOperator{
@@ -392,12 +404,12 @@ func evalStorageObjectsArguments(ctx context.Context, state *types.State, args *
 		NumThreads: state.Concurrency.Query,
 	}
 
-	if args.MaxResults != nil {
-		options.MaxResults = *args.MaxResults
+	if args.First != nil {
+		options.MaxResults = *args.First
 	}
 
-	if args.StartAfter != nil {
-		options.StartAfter = *args.StartAfter
+	if args.After != nil {
+		options.StartAfter = *args.After
 	}
 
 	return request, options, nil
