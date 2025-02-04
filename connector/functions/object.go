@@ -92,6 +92,8 @@ func FunctionStorageObject(ctx context.Context, state *types.State, args *common
 
 // FunctionDownloadStorageObject returns a stream of the object data. Most of the common errors occur when reading the stream.
 func FunctionDownloadStorageObject(ctx context.Context, state *types.State, args *common.GetStorageObjectArguments) (*scalar.Bytes, error) {
+	args.Base64Encoded = true
+
 	reader, err := downloadStorageObject(ctx, state, args)
 	if err != nil {
 		return nil, err

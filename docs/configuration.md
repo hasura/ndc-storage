@@ -221,3 +221,16 @@ You must configure the endpoint URL along with [Access Key ID and Secret Access 
 #### DigitalOcean Spaces
 
 See [Spaces API Reference Documentation](https://docs.digitalocean.com/reference/api/spaces-api/).
+
+## Runtime Settings
+
+| Name                 | Description                                                               | Default |
+| -------------------- | ------------------------------------------------------------------------- | ------- |
+| `maxDownloadSizeMBs` | Limit the max download size in MBs for `downloadStorageObject*` functions | `10`    |
+
+## Concurrency Settings
+
+| Name       | Description                                                                   | Default |
+| ---------- | ----------------------------------------------------------------------------- | ------- |
+| `query`    | Max number of concurrent threads when fetching remote relationships in query  | `5`     |
+| `mutation` | Max number of concurrent commands if the mutation request has many operations | `1`     |

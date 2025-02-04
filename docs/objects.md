@@ -68,6 +68,10 @@ query GetSignedDownloadURL {
 
 The response is a base64-encode string. The client must decode the string to get the raw content.
 
+> [!NOTE]
+> The connector limits the maximum download size via the `runtime.maxDownloadSizeMBs` setting to avoid memory leaks. The GraphQL engine on Hasura Cloud also limits the max response size from connectors. The acceptable file size should be 30 MB in maximum.
+> Note that the file content is encoded to base64 string so the response is 33% increased. If the maximum download size is 30 MB the actual allowed size is 20 MB only.
+
 ```gql
 query DownloadObject {
   downloadStorageObject(object: "hello.txt")
@@ -84,6 +88,9 @@ query DownloadObject {
 
 Use the `downloadStorageObjectText` query if you are confident that the object content is plain text.
 
+> [!NOTE]
+> The connector limits the maximum download size via the `runtime.maxDownloadSizeMBs` setting to avoid memory leaks. The GraphQL engine on Hasura Cloud also limits the max response size from connectors. The acceptable file size should be 30 MB in maximum.
+
 ```gql
 query DownloadObjectText {
   downloadStorageObjectText(object: "hello.txt")
@@ -97,18 +104,6 @@ query DownloadObjectText {
 ```
 
 ### List Objects
-
-> [!NOTE]
-> The pagination information is optional. It depends on whether the storage provider's API supports this feature. The pagination method is cursor-based.
-
-| Service              | Pagination |
-| -------------------- | ---------- |
-| AWS S3               | ❌         |
-| Google Cloud Storage | ✅         |
-| Azure Blob Storage   | ✅         |
-| MinIO                | ❌         |
-| Cloudflare R2        | ❌         |
-| DigitalOcean Spaces  | ❌         |
 
 ```graphql
 query ListObjects {

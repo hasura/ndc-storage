@@ -192,7 +192,8 @@ type GetStorageObjectOptions struct {
 	VersionID  *string `json:"versionId"`
 	PartNumber *int    `json:"partNumber"`
 	// Options to be included for the object information.
-	Include StorageObjectIncludeOptions `json:"-"`
+	Include       StorageObjectIncludeOptions `json:"-"`
+	Base64Encoded bool                        `json:"-"`
 }
 
 // StorageCopyDestOptions represents options specified by user for CopyObject/ComposeObject APIs.

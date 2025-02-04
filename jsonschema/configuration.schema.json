@@ -424,7 +424,7 @@
       "properties": {
         "query": {
           "type": "integer",
-          "default": 10
+          "default": 5
         },
         "mutation": {
           "type": "integer",

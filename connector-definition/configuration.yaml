@@ -19,6 +19,6 @@ clients:
     allowedBuckets: []
 concurrency:
   query: 5
-  mutation: 3
+  mutation: 1
 runtime:
   maxDownloadSizeMBs: 10

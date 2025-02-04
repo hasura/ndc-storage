@@ -43,7 +43,7 @@ func (c Configuration) Validate() error {
 // ConcurrencySettings represent settings for concurrent webhook executions to remote servers.
 type ConcurrencySettings struct {
 	// Maximum number of concurrent executions if there are many query variables.
-	Query int `json:"query" jsonschema:"min=1,default=10" yaml:"query"`
+	Query int `json:"query" jsonschema:"min=1,default=5" yaml:"query"`
 	// Maximum number of concurrent executions if there are many mutation operations.
 	Mutation int `json:"mutation" jsonschema:"min=1,default=1" yaml:"mutation"`
 }
