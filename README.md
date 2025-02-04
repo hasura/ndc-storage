@@ -21,9 +21,9 @@ This connector is built using the [Go Data Connector SDK](https://github.com/has
 
 ## Get Started
 
-Follow the [Quick Start Guide](https://hasura.io/docs/3.0/getting-started/overview/) in Hasura DDN docs. At the `Connect to data` step, choose the `hasura/storage` data connector from the dropdown and follow the interactive prompts to set required environment variables.
+Follow the [Quick Start Guide](https://hasura.io/docs/3.0/getting-started/overview/) in Hasura DDN docs. At the `Connect to data` step, choose the `hasura/storage` data connector from the dropdown and follow the interactive prompts to set the required environment variables.
 
-AWS S3 environment variables are default settings in the interactive prompt. If you want to use other storage providers you need to manually configure the configuration.yaml files and add required environment variable mappings to the subgraph definition.
+AWS S3 environment variables are the default settings in the interactive prompt. If you want to use other storage providers you need to manually configure the `configuration.yaml` file and add the required environment variable mappings to the subgraph definition.
 
 ## Documentation
 
