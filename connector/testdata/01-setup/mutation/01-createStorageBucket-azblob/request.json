@@ -8,9 +8,21 @@
         "clientId": "azblob",
         "name": "azblob-bucket-test",
         "objectLock": true,
-        "tags": {
-          "provider": "azure"
-        }
+        "tags": [
+          {
+            "key": "provider",
+            "value": "azure"
+          }
+        ]
+      },
+      "fields": {
+        "fields": {
+          "success": {
+            "column": "success",
+            "type": "column"
+          }
+        },
+        "type": "object"
       }
     }
   ]

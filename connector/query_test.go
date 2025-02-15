@@ -84,11 +84,17 @@ func TestConnectorQueries(t *testing.T) {
 						"contentType":        "application/json",
 						"expires":            "2099-01-01T00:00:00Z",
 						"sendContentMd5":     true,
-						"metadata": map[string]any{
-							"Foo": "Baz",
+						"metadata": []map[string]any{
+							{
+								"key":   "Foo",
+								"value": "Bar",
+							},
 						},
-						"tags": map[string]any{
-							"category": "movie",
+						"tags": []map[string]any{
+							{
+								"key":   "category",
+								"value": "movie",
+							},
 						},
 					},
 				}

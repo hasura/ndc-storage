@@ -6,7 +6,7 @@ definition:
   description: holds the presigned URL and expiry information.
   fields:
     - name: expiredAt
-      type: String!
+      type: TimestampTz!
     - name: url
       type: String!
   graphql:
@@ -40,13 +40,11 @@ definition:
     - name: clientId
       type: StorageClientId
     - name: expiry
-      type: Duration
+      type: DurationString
     - name: object
       type: String!
     - name: requestParams
-      type: Json
-    - name: where
-      type: StorageObjectFilterBoolExp
+      type: "[StorageKeyValue!]"
   source:
     dataConnectorName: storage
     dataConnectorCommand:

@@ -10,6 +10,15 @@
         "forceDelete": true,
         "governanceBypass": true,
         "object": "public/hello.txt"
+      },
+      "fields": {
+        "fields": {
+          "success": {
+            "column": "success",
+            "type": "column"
+          }
+        },
+        "type": "object"
       }
     }
   ]

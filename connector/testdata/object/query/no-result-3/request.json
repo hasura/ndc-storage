@@ -1,5 +1,5 @@
 {
-  "collection": "storageObjects",
+  "collection": "storageObjectConnections",
   "arguments": {
     "first": { "type": "literal", "value": 3 },
     "after": {

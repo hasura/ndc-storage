@@ -71,9 +71,7 @@ func serializeObjectInfo(obj *minio.ObjectInfo, fromList bool) common.StorageObj
 		Name:                  obj.Key,
 		LastModified:          obj.LastModified,
 		Size:                  &obj.Size,
-		Metadata:              map[string]string{},
-		RawMetadata:           map[string]string{},
-		Tags:                  obj.UserTags,
+		Tags:                  common.StringMapToKeyValues(obj.UserTags),
 		TagCount:              obj.UserTagCount,
 		Grant:                 grants,
 		IsLatest:              &obj.IsLatest,
@@ -88,12 +86,15 @@ func serializeObjectInfo(obj *minio.ObjectInfo, fromList bool) common.StorageObj
 	}
 
 	if fromList {
-		object.RawMetadata = obj.UserMetadata
+		object.RawMetadata = common.StringMapToKeyValues(obj.UserMetadata)
 
 		for key, value := range obj.UserMetadata {
 			lowerKey := strings.ToLower(key)
 			if strings.HasPrefix(lowerKey, userMetadataHeaderPrefix) {
-				object.Metadata[key[len(userMetadataHeaderPrefix):]] = value
+				object.Metadata = append(object.Metadata, common.StorageKeyValue{
+					Key:   key[len(userMetadataHeaderPrefix):],
+					Value: value,
+				})
 			}
 
 			switch lowerKey {
@@ -110,7 +111,7 @@ func serializeObjectInfo(obj *minio.ObjectInfo, fromList bool) common.StorageObj
 			}
 		}
 	} else {
-		object.Metadata = obj.UserMetadata
+		object.Metadata = common.StringMapToKeyValues(obj.UserMetadata)
 
 		for key, values := range obj.Metadata {
 			if len(values) == 0 {
@@ -118,7 +119,10 @@ func serializeObjectInfo(obj *minio.ObjectInfo, fromList bool) common.StorageObj
 			}
 
 			value := strings.Join(values, ", ")
-			object.RawMetadata[key] = value
+			object.RawMetadata = append(object.RawMetadata, common.StorageKeyValue{
+				Key:   key,
+				Value: value,
+			})
 
 			switch strings.ToLower(key) {
 			case common.HeaderContentType:
@@ -298,19 +302,17 @@ func serializeGetObjectOptions(span trace.Span, opts common.GetStorageObjectOpti
 		span.SetAttributes(attribute.Int("storage.part_number", options.PartNumber))
 	}
 
-	for key, value := range opts.Headers {
-		span.SetAttributes(attribute.StringSlice("http.request.header."+key, []string{value}))
-		options.Set(key, value)
+	for _, item := range opts.Headers {
+		span.SetAttributes(attribute.StringSlice("http.request.header."+item.Key, []string{item.Value}))
+		options.Set(item.Key, item.Value)
 	}
 
 	if len(opts.RequestParams) > 0 {
 		q := url.Values{}
 
-		for key, values := range opts.RequestParams {
-			for _, value := range values {
-				options.AddReqParam(key, value)
-				q.Add(key, value)
-			}
+		for _, item := range opts.RequestParams {
+			options.AddReqParam(item.Key, item.Value)
+			q.Add(item.Key, item.Value)
 		}
 
 		span.SetAttributes(attribute.String("url.query", q.Encode()))
@@ -346,9 +348,9 @@ func convertCopyDestOptions(dst common.StorageCopyDestOptions) *minio.CopyDestOp
 	destOptions := minio.CopyDestOptions{
 		Bucket:          dst.Bucket,
 		Object:          dst.Object,
-		UserMetadata:    dst.Metadata,
+		UserMetadata:    common.KeyValuesToStringMap(dst.Metadata),
 		ReplaceMetadata: dst.Metadata != nil,
-		UserTags:        dst.Tags,
+		UserTags:        common.KeyValuesToStringMap(dst.Tags),
 		ReplaceTags:     dst.Tags != nil,
 		Size:            dst.Size,
 		LegalHold:       validateLegalHoldStatus(dst.LegalHold),

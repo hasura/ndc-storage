@@ -35,6 +35,15 @@
     "fields": {
       "__value": {
         "column": "__value",
+        "fields": {
+          "fields": {
+            "data": {
+              "column": "data",
+              "type": "column"
+            }
+          },
+          "type": "object"
+        },
         "type": "column"
       }
     }

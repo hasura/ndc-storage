@@ -10,17 +10,15 @@ definition:
     - name: clientId
       type: StorageClientId
     - name: headers
-      type: Json
+      type: "[StorageKeyValue!]"
     - name: object
       type: String!
     - name: partNumber
       type: Int32
     - name: requestParams
-      type: Json
+      type: "[StorageKeyValue!]"
     - name: versionId
       type: String
-    - name: where
-      type: StorageObjectFilterBoolExp
   source:
     dataConnectorName: storage
     dataConnectorCommand:

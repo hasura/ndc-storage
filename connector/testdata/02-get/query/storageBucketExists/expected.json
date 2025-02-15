@@ -2,7 +2,9 @@
   {
     "rows": [
       {
-        "__value": true
+        "__value": {
+          "exists": true
+        }
       }
     ]
   }

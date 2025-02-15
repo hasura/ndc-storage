@@ -19,7 +19,7 @@ definition:
           comparison_operators: {}
         Bytes:
           representation:
-            type: bytes
+            type: string
           aggregate_functions: {}
           comparison_operators: {}
         ChecksumType:
@@ -41,9 +41,9 @@ definition:
             type: date
           aggregate_functions: {}
           comparison_operators: {}
-        Duration:
+        DurationString:
           representation:
-            type: json
+            type: string
           aggregate_functions: {}
           comparison_operators: {}
         GoogleStorageRPO:
@@ -175,7 +175,7 @@ definition:
             maxAge:
               type:
                 type: named
-                name: Duration
+                name: DurationString
             methods:
               type:
                 type: array
@@ -233,6 +233,31 @@ definition:
                 element_type:
                   type: named
                   name: String
+        DownloadStorageObjectResponse:
+          description: represents the object data response in base64-encode string format.
+          fields:
+            data:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Bytes
+        DownloadStorageObjectTextResponse:
+          description: represents the object data response in string format.
+          fields:
+            data:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
+        ExistsResponse:
+          description: represents a common existing response structure.
+          fields:
+            exists:
+              type:
+                type: named
+                name: Boolean
         GetStorageObjectOptions:
           description: are used to specify additional headers or options during GET requests.
           fields:
@@ -240,8 +265,10 @@ definition:
               type:
                 type: nullable
                 underlying_type:
-                  type: named
-                  name: JSON
+                  type: array
+                  element_type:
+                    type: named
+                    name: StorageKeyValue
             partNumber:
               type:
                 type: nullable
@@ -252,8 +279,10 @@ definition:
               type:
                 type: nullable
                 underlying_type:
-                  type: named
-                  name: JSON
+                  type: array
+                  element_type:
+                    type: named
+                    name: StorageKeyValue
             versionId:
               type:
                 type: nullable
@@ -337,8 +366,10 @@ definition:
               type:
                 type: nullable
                 underlying_type:
-                  type: named
-                  name: JSON
+                  type: array
+                  element_type:
+                    type: named
+                    name: StorageKeyValue
         ObjectAbortIncompleteMultipartUpload:
           fields:
             daysAfterInitiation:
@@ -449,8 +480,10 @@ definition:
               type:
                 type: nullable
                 underlying_type:
-                  type: named
-                  name: JSON
+                  type: array
+                  element_type:
+                    type: named
+                    name: StorageKeyValue
         ObjectLifecycleNoncurrentVersionExpiration:
           description: '- Specifies when noncurrent object versions expire. Upon expiration, server permanently deletes the noncurrent object versions. Set this lifecycle configuration action on a bucket that has versioning enabled (or suspended) to request server delete noncurrent object versions at a specific period in the object''s lifetime.'
           fields:
@@ -587,20 +620,22 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: Duration
+                  name: DurationString
             requestParams:
               type:
                 type: nullable
                 underlying_type:
-                  type: named
-                  name: JSON
+                  type: array
+                  element_type:
+                    type: named
+                    name: StorageKeyValue
         PresignedURLResponse:
           description: holds the presigned URL and expiry information.
           fields:
             expiredAt:
               type:
                 type: named
-                name: String
+                name: TimestampTZ
             url:
               type:
                 type: named
@@ -715,8 +750,10 @@ definition:
               type:
                 type: nullable
                 underlying_type:
-                  type: named
-                  name: JSON
+                  type: array
+                  element_type:
+                    type: named
+                    name: StorageKeyValue
             numThreads:
               type:
                 type: nullable
@@ -751,8 +788,10 @@ definition:
               type:
                 type: nullable
                 underlying_type:
-                  type: named
-                  name: JSON
+                  type: array
+                  element_type:
+                    type: named
+                    name: StorageKeyValue
             websiteRedirectLocation:
               type:
                 type: nullable
@@ -889,7 +928,7 @@ definition:
             clientId:
               type:
                 type: named
-                name: String
+                name: StorageClientID
             cors:
               type:
                 type: nullable
@@ -1002,8 +1041,10 @@ definition:
               type:
                 type: nullable
                 underlying_type:
-                  type: named
-                  name: JSON
+                  type: array
+                  element_type:
+                    type: named
+                    name: StorageKeyValue
             versioning:
               type:
                 type: nullable
@@ -1133,8 +1174,10 @@ definition:
               type:
                 type: nullable
                 underlying_type:
-                  type: named
-                  name: JSON
+                  type: array
+                  element_type:
+                    type: named
+                    name: StorageKeyValue
             mode:
               type:
                 type: nullable
@@ -1161,8 +1204,10 @@ definition:
               type:
                 type: nullable
                 underlying_type:
-                  type: named
-                  name: JSON
+                  type: array
+                  element_type:
+                    type: named
+                    name: StorageKeyValue
         StorageCopySrcOptions:
           description: represents a source object to be copied, using server-side copying APIs.
           fields:
@@ -1260,6 +1305,17 @@ definition:
                 underlying_type:
                   type: named
                   name: String
+        StorageKeyValue:
+          description: represent a key-value string pair
+          fields:
+            key:
+              type:
+                type: named
+                name: String
+            value:
+              type:
+                type: named
+                name: String
         StorageObject:
           description: container for object metadata.
           fields:
@@ -1302,7 +1358,7 @@ definition:
             bucket:
               type:
                 type: named
-                name: String
+                name: StorageBucketName
             cacheControl:
               type:
                 type: nullable
@@ -1342,7 +1398,7 @@ definition:
             clientId:
               type:
                 type: named
-                name: String
+                name: StorageClientID
             contentDisposition:
               type:
                 type: nullable
@@ -1513,8 +1569,10 @@ definition:
               type:
                 type: nullable
                 underlying_type:
-                  type: named
-                  name: JSON
+                  type: array
+                  element_type:
+                    type: named
+                    name: StorageKeyValue
             name:
               type:
                 type: named
@@ -1535,8 +1593,10 @@ definition:
               type:
                 type: nullable
                 underlying_type:
-                  type: named
-                  name: JSON
+                  type: array
+                  element_type:
+                    type: named
+                    name: StorageKeyValue
             rehydratePriority:
               type:
                 type: nullable
@@ -1619,8 +1679,10 @@ definition:
               type:
                 type: nullable
                 underlying_type:
-                  type: named
-                  name: JSON
+                  type: array
+                  element_type:
+                    type: named
+                    name: StorageKeyValue
             versionId:
               type:
                 type: nullable
@@ -1792,7 +1854,7 @@ definition:
             retentionDuration:
               type:
                 type: named
-                name: Duration
+                name: DurationString
         StorageOwner:
           description: name.
           fields:
@@ -1921,6 +1983,13 @@ definition:
                 underlying_type:
                   type: named
                   name: String
+        SuccessResponse:
+          description: represents a common successful response structure.
+          fields:
+            success:
+              type:
+                type: named
+                name: Boolean
         UpdateStorageBucketOptions:
           description: hold update options for the bucket.
           fields:
@@ -1946,8 +2015,10 @@ definition:
               type:
                 type: nullable
                 underlying_type:
-                  type: named
-                  name: JSON
+                  type: array
+                  element_type:
+                    type: named
+                    name: StorageKeyValue
             versioningEnabled:
               type:
                 type: nullable
@@ -1967,8 +2038,10 @@ definition:
               type:
                 type: nullable
                 underlying_type:
-                  type: named
-                  name: JSON
+                  type: array
+                  element_type:
+                    type: named
+                    name: StorageKeyValue
             retention:
               type:
                 type: nullable
@@ -1979,15 +2052,47 @@ definition:
               type:
                 type: nullable
                 underlying_type:
-                  type: named
-                  name: JSON
+                  type: array
+                  element_type:
+                    type: named
+                    name: StorageKeyValue
             versionId:
               type:
                 type: nullable
                 underlying_type:
                   type: named
                   name: String
-      collections: []
+      collections:
+        - name: storageBuckets
+          description: List storage buckets
+          arguments:
+            after:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
+          type: StorageBucket
+          uniqueness_constraints: {}
+          foreign_keys: {}
+        - name: storageObjects
+          description: List storage objects
+          arguments:
+            after:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
+            hierarchy:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+          type: StorageObject
+          uniqueness_constraints: {}
+          foreign_keys: {}
       functions:
         - name: downloadStorageObject
           description: returns a stream of the object data. Most of the common errors occur when reading the stream.
@@ -2008,8 +2113,10 @@ definition:
               type:
                 type: nullable
                 underlying_type:
-                  type: named
-                  name: JSON
+                  type: array
+                  element_type:
+                    type: named
+                    name: StorageKeyValue
             object:
               type:
                 type: named
@@ -2024,25 +2131,19 @@ definition:
               type:
                 type: nullable
                 underlying_type:
-                  type: named
-                  name: JSON
+                  type: array
+                  element_type:
+                    type: named
+                    name: StorageKeyValue
             versionId:
               type:
                 type: nullable
                 underlying_type:
                   type: named
                   name: String
-            where:
-              type:
-                type: nullable
-                underlying_type:
-                  type: predicate
-                  object_type_name: StorageObjectFilter
           result_type:
-            type: nullable
-            underlying_type:
-              type: named
-              name: Bytes
+            type: named
+            name: DownloadStorageObjectResponse
         - name: downloadStorageObjectText
           description: returns the object content in plain text. Use this function only if you know exactly the file as an text file.
           arguments:
@@ -2062,8 +2163,10 @@ definition:
               type:
                 type: nullable
                 underlying_type:
-                  type: named
-                  name: JSON
+                  type: array
+                  element_type:
+                    type: named
+                    name: StorageKeyValue
             object:
               type:
                 type: named
@@ -2078,25 +2181,19 @@ definition:
               type:
                 type: nullable
                 underlying_type:
-                  type: named
-                  name: JSON
+                  type: array
+                  element_type:
+                    type: named
+                    name: StorageKeyValue
             versionId:
               type:
                 type: nullable
                 underlying_type:
                   type: named
                   name: String
-            where:
-              type:
-                type: nullable
-                underlying_type:
-                  type: predicate
-                  object_type_name: StorageObjectFilter
           result_type:
-            type: nullable
-            underlying_type:
-              type: named
-              name: String
+            type: named
+            name: DownloadStorageObjectTextResponse
         - name: storageBucket
           description: gets a bucket by name.
           arguments:
@@ -2117,26 +2214,8 @@ definition:
             underlying_type:
               type: named
               name: StorageBucket
-        - name: storageBucketExists
-          description: checks if a bucket exists.
-          arguments:
-            bucket:
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: String
-            clientId:
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: StorageClientID
-          result_type:
-            type: named
-            name: Boolean
-        - name: storageBuckets
-          description: list all buckets.
+        - name: storageBucketConnections
+          description: list all buckets using the relay style.
           arguments:
             after:
               type:
@@ -2171,6 +2250,24 @@ definition:
           result_type:
             type: named
             name: StorageConnection_StorageBucket
+        - name: storageBucketExists
+          description: checks if a bucket exists.
+          arguments:
+            bucket:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
+            clientId:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: StorageClientID
+          result_type:
+            type: named
+            name: ExistsResponse
         - name: storageDeletedObjects
           description: list deleted objects in a bucket.
           arguments:
@@ -2210,12 +2307,6 @@ definition:
                 underlying_type:
                   type: named
                   name: String
-            where:
-              type:
-                type: nullable
-                underlying_type:
-                  type: predicate
-                  object_type_name: StorageObjectFilter
           result_type:
             type: named
             name: StorageObjectListResults
@@ -2264,8 +2355,10 @@ definition:
               type:
                 type: nullable
                 underlying_type:
-                  type: named
-                  name: JSON
+                  type: array
+                  element_type:
+                    type: named
+                    name: StorageKeyValue
             object:
               type:
                 type: named
@@ -2280,27 +2373,23 @@ definition:
               type:
                 type: nullable
                 underlying_type:
-                  type: named
-                  name: JSON
+                  type: array
+                  element_type:
+                    type: named
+                    name: StorageKeyValue
             versionId:
               type:
                 type: nullable
                 underlying_type:
                   type: named
                   name: String
-            where:
-              type:
-                type: nullable
-                underlying_type:
-                  type: predicate
-                  object_type_name: StorageObjectFilter
           result_type:
             type: nullable
             underlying_type:
               type: named
               name: StorageObject
-        - name: storageObjects
-          description: lists objects in a bucket.
+        - name: storageObjectConnections
+          description: lists objects in a bucket using the relay style.
           arguments:
             after:
               type:
@@ -2367,7 +2456,7 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: Duration
+                  name: DurationString
             object:
               type:
                 type: named
@@ -2376,14 +2465,10 @@ definition:
               type:
                 type: nullable
                 underlying_type:
-                  type: named
-                  name: JSON
-            where:
-              type:
-                type: nullable
-                underlying_type:
-                  type: predicate
-                  object_type_name: StorageObjectFilter
+                  type: array
+                  element_type:
+                    type: named
+                    name: StorageKeyValue
           result_type:
             type: nullable
             underlying_type:
@@ -2409,17 +2494,11 @@ definition:
                 type: nullable
                 underlying_type:
                   type: named
-                  name: Duration
+                  name: DurationString
             object:
               type:
                 type: named
                 name: String
-            where:
-              type:
-                type: nullable
-                underlying_type:
-                  type: predicate
-                  object_type_name: StorageObjectFilter
           result_type:
             type: nullable
             underlying_type:
@@ -2497,11 +2576,13 @@ definition:
               type:
                 type: nullable
                 underlying_type:
-                  type: named
-                  name: JSON
+                  type: array
+                  element_type:
+                    type: named
+                    name: StorageKeyValue
           result_type:
             type: named
-            name: Boolean
+            name: SuccessResponse
         - name: removeIncompleteStorageUpload
           description: removes a partially uploaded object.
           arguments:
@@ -2523,7 +2604,7 @@ definition:
                 name: String
           result_type:
             type: named
-            name: Boolean
+            name: SuccessResponse
         - name: removeStorageBucket
           description: removes a bucket, bucket should be empty to be successfully removed.
           arguments:
@@ -2541,7 +2622,7 @@ definition:
                   name: StorageClientID
           result_type:
             type: named
-            name: Boolean
+            name: SuccessResponse
         - name: removeStorageObject
           description: removes an object with some specified options.
           arguments:
@@ -2585,15 +2666,9 @@ definition:
                 underlying_type:
                   type: named
                   name: String
-            where:
-              type:
-                type: nullable
-                underlying_type:
-                  type: predicate
-                  object_type_name: StorageObjectFilter
           result_type:
             type: named
-            name: Boolean
+            name: SuccessResponse
         - name: removeStorageObjects
           description: remove a list of objects obtained from an input channel. The call sends a delete request to the server up to 1000 objects at a time. The errors observed are sent over the error channel.
           arguments:
@@ -2639,12 +2714,6 @@ definition:
                 underlying_type:
                   type: named
                   name: String
-            where:
-              type:
-                type: nullable
-                underlying_type:
-                  type: predicate
-                  object_type_name: StorageObjectFilter
           result_type:
             type: array
             element_type:
@@ -2669,15 +2738,9 @@ definition:
               type:
                 type: named
                 name: String
-            where:
-              type:
-                type: nullable
-                underlying_type:
-                  type: predicate
-                  object_type_name: StorageObjectFilter
           result_type:
             type: named
-            name: Boolean
+            name: SuccessResponse
         - name: updateStorageBucket
           description: updates the bucket's configuration.
           arguments:
@@ -2715,8 +2778,10 @@ definition:
               type:
                 type: nullable
                 underlying_type:
-                  type: named
-                  name: JSON
+                  type: array
+                  element_type:
+                    type: named
+                    name: StorageKeyValue
             versioningEnabled:
               type:
                 type: nullable
@@ -2725,7 +2790,7 @@ definition:
                   name: Boolean
           result_type:
             type: named
-            name: Boolean
+            name: SuccessResponse
         - name: updateStorageObject
           description: updates the object's configuration.
           arguments:
@@ -2751,8 +2816,10 @@ definition:
               type:
                 type: nullable
                 underlying_type:
-                  type: named
-                  name: JSON
+                  type: array
+                  element_type:
+                    type: named
+                    name: StorageKeyValue
             object:
               type:
                 type: named
@@ -2767,23 +2834,19 @@ definition:
               type:
                 type: nullable
                 underlying_type:
-                  type: named
-                  name: JSON
+                  type: array
+                  element_type:
+                    type: named
+                    name: StorageKeyValue
             versionId:
               type:
                 type: nullable
                 underlying_type:
                   type: named
                   name: String
-            where:
-              type:
-                type: nullable
-                underlying_type:
-                  type: predicate
-                  object_type_name: StorageObjectFilter
           result_type:
             type: named
-            name: Boolean
+            name: SuccessResponse
         - name: uploadStorageObject
           description: uploads object that are less than 128MiB in a single PUT operation. For objects that are greater than 128MiB in size, PutObject seamlessly uploads the object as parts of 128MiB or more depending on the actual file size. The max upload size for an object is 5TB.
           arguments:
@@ -2813,12 +2876,6 @@ definition:
                 underlying_type:
                   type: named
                   name: PutStorageObjectOptions
-            where:
-              type:
-                type: nullable
-                underlying_type:
-                  type: predicate
-                  object_type_name: StorageObjectFilter
           result_type:
             type: named
             name: StorageUploadInfo
@@ -2851,12 +2908,6 @@ definition:
                 underlying_type:
                   type: named
                   name: PutStorageObjectOptions
-            where:
-              type:
-                type: nullable
-                underlying_type:
-                  type: predicate
-                  object_type_name: StorageObjectFilter
           result_type:
             type: named
             name: StorageUploadInfo

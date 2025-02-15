@@ -15,8 +15,6 @@ definition:
       type: String!
     - name: options
       type: PutStorageObjectOptions
-    - name: where
-      type: StorageObjectFilterBoolExp
   source:
     dataConnectorName: storage
     dataConnectorCommand:

@@ -11,6 +11,15 @@
           "Foo": "baz",
           "UserID": "3"
         }
+      },
+      "fields": {
+        "fields": {
+          "success": {
+            "column": "success",
+            "type": "column"
+          }
+        },
+        "type": "object"
       }
     }
   ]

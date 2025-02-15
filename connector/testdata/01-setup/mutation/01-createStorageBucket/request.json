@@ -9,9 +9,21 @@
         "name": "minio-bucket-test",
         "objectLock": false,
         "region": "us-east-1",
-        "tags": {
-          "UserID": "1"
-        }
+        "tags": [
+          {
+            "key": "UserID",
+            "value": "1"
+          }
+        ]
+      },
+      "fields": {
+        "fields": {
+          "success": {
+            "column": "success",
+            "type": "column"
+          }
+        },
+        "type": "object"
       }
     }
   ]

@@ -52,8 +52,6 @@ definition:
       type: Boolean
     - name: prefix
       type: String
-    - name: where
-      type: StorageObjectFilterBoolExp
   source:
     dataConnectorName: storage
     dataConnectorCommand:

@@ -351,7 +351,7 @@ func (c *Client) PutObject(ctx context.Context, bucketName string, objectName st
 
 	uploadOptions := &azblob.UploadStreamOptions{
 		HTTPHeaders: &blob.HTTPHeaders{},
-		Tags:        opts.Tags,
+		Tags:        common.KeyValuesToStringMap(opts.Tags),
 		Metadata:    map[string]*string{},
 		Concurrency: int(opts.NumThreads),
 		BlockSize:   int64(opts.PartSize),
@@ -366,10 +366,8 @@ func (c *Client) PutObject(ctx context.Context, bucketName string, objectName st
 		uploadOptions.AccessTier = &accessTier
 	}
 
-	for key, value := range opts.Metadata {
-		if value != "" {
-			uploadOptions.Metadata[key] = &value
-		}
+	for _, item := range opts.Metadata {
+		uploadOptions.Metadata[item.Key] = &item.Value
 	}
 
 	if opts.CacheControl != "" {
@@ -448,15 +446,13 @@ func (c *Client) CopyObject(ctx context.Context, dest common.StorageCopyDestOpti
 	blobClient := c.client.ServiceClient().NewContainerClient(dest.Bucket).NewBlobClient(dest.Object)
 
 	options := &blob.CopyFromURLOptions{
-		BlobTags:  dest.Tags,
+		BlobTags:  common.KeyValuesToStringMap(dest.Tags),
 		Metadata:  make(map[string]*string),
 		LegalHold: dest.LegalHold,
 	}
 
-	for key, value := range dest.Metadata {
-		if value != "" {
-			options.Metadata[key] = &value
-		}
+	for _, item := range dest.Metadata {
+		options.Metadata[item.Key] = &item.Value
 	}
 
 	resp, err := blobClient.CopyFromURL(ctx, srcURL, options)
@@ -646,7 +642,7 @@ func (c *Client) UpdateObject(ctx context.Context, bucketName string, objectName
 	}
 
 	if opts.Tags != nil {
-		if err := c.SetObjectTags(ctx, bucketName, objectName, opts.VersionID, opts.Tags); err != nil {
+		if err := c.SetObjectTags(ctx, bucketName, objectName, opts.VersionID, common.KeyValuesToStringMap(*opts.Tags)); err != nil {
 			return err
 		}
 	}

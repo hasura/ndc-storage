@@ -177,7 +177,7 @@ func (c *Client) PutObject(ctx context.Context, bucketName string, objectName st
 
 	w := c.client.Bucket(bucketName).Object(objectName).NewWriter(ctx)
 	w.ChunkSize = chunkSize
-	w.Metadata = opts.Metadata
+	w.Metadata = common.KeyValuesToStringMap(opts.Metadata)
 	w.CacheControl = opts.CacheControl
 	w.ContentDisposition = opts.ContentDisposition
 	w.ContentEncoding = opts.ContentEncoding
@@ -442,7 +442,7 @@ func (c *Client) UpdateObject(ctx context.Context, bucketName string, objectName
 	}
 
 	if opts.Metadata != nil {
-		updateAttrs.Metadata = opts.Metadata
+		updateAttrs.Metadata = common.KeyValuesToStringMap(*opts.Metadata)
 	}
 
 	_, err := handle.Update(ctx, updateAttrs)
@@ -487,14 +487,7 @@ func (c *Client) presignObject(ctx context.Context, method string, bucketName st
 	_, span := c.startOtelSpan(ctx, method+" PresignedObject", bucketName)
 	defer span.End()
 
-	reqParams := url.Values{}
-
-	for key, params := range opts.RequestParams {
-		for _, param := range params {
-			reqParams.Add(key, param)
-		}
-	}
-
+	reqParams := url.Values(common.KeyValuesToHeaders(opts.RequestParams))
 	span.SetAttributes(
 		attribute.String("storage.key", objectName),
 		attribute.String("url.query", reqParams.Encode()),
@@ -533,6 +526,6 @@ func (c *Client) presignObject(ctx context.Context, method string, bucketName st
 // This presigned URL can have an associated expiration time in seconds after which it is no longer operational. The default expiry is set to 7 days.
 func (c *Client) PresignedPutObject(ctx context.Context, bucketName string, objectName string, expiry time.Duration) (string, error) {
 	return c.presignObject(ctx, http.MethodPut, bucketName, objectName, common.PresignedGetStorageObjectOptions{
-		Expiry: &scalar.Duration{Duration: expiry},
+		Expiry: &scalar.DurationString{Duration: expiry},
 	})
 }

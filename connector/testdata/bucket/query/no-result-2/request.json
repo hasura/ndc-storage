@@ -30,7 +30,7 @@
     }
   },
   "variables": [{ "$clientId": "not-found" }],
-  "collection": "storageBuckets",
+  "collection": "storageBucketConnections",
   "collection_relationships": {},
   "query": {
     "fields": {
@@ -69,6 +69,22 @@
                           },
                           "tags": {
                             "column": "tags",
+                            "fields": {
+                              "fields": {
+                                "fields": {
+                                  "key": {
+                                    "column": "key",
+                                    "type": "column"
+                                  },
+                                  "value": {
+                                    "column": "value",
+                                    "type": "column"
+                                  }
+                                },
+                                "type": "object"
+                              },
+                              "type": "array"
+                            },
                             "type": "column"
                           }
                         },

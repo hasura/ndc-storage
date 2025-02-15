@@ -8,6 +8,15 @@
         "bucket": "minio-bucket-test",
         "object": "a9cSGZGzM2",
         "tags": {}
+      },
+      "fields": {
+        "fields": {
+          "success": {
+            "column": "success",
+            "type": "column"
+          }
+        },
+        "type": "object"
       }
     }
   ]

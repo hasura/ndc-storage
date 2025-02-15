@@ -25,7 +25,7 @@ var errNotSupported = schema.NotSupportedError("Google Cloud Storage doesn't sup
 func serializeBucketInfo(bucket *storage.BucketAttrs) common.StorageBucket {
 	result := common.StorageBucket{
 		Name:                  bucket.Name,
-		Tags:                  bucket.Labels,
+		Tags:                  common.StringMapToKeyValues(bucket.Labels),
 		CORS:                  make([]common.BucketCors, len(bucket.CORS)),
 		CreationTime:          &bucket.Created,
 		LastModified:          &bucket.Updated,
@@ -62,7 +62,7 @@ func serializeBucketInfo(bucket *storage.BucketAttrs) common.StorageBucket {
 
 	for i, cors := range bucket.CORS {
 		result.CORS[i] = common.BucketCors{
-			MaxAge:          scalar.NewDuration(cors.MaxAge),
+			MaxAge:          scalar.NewDurationString(cors.MaxAge),
 			Methods:         cors.Methods,
 			Origins:         cors.Origins,
 			ResponseHeaders: cors.ResponseHeaders,
@@ -96,7 +96,7 @@ func serializeBucketInfo(bucket *storage.BucketAttrs) common.StorageBucket {
 	if bucket.SoftDeletePolicy != nil {
 		result.SoftDeletePolicy = &common.StorageObjectSoftDeletePolicy{
 			EffectiveTime:     bucket.SoftDeletePolicy.EffectiveTime,
-			RetentionDuration: scalar.NewDuration(bucket.SoftDeletePolicy.RetentionDuration),
+			RetentionDuration: scalar.NewDurationString(bucket.SoftDeletePolicy.RetentionDuration),
 		}
 	}
 
@@ -150,7 +150,7 @@ func serializeObjectInfo(obj *storage.ObjectAttrs) common.StorageObject { //noli
 		CreationTime: &obj.Created,
 		LastModified: obj.Updated,
 		Size:         &obj.Size,
-		Metadata:     obj.Metadata,
+		Metadata:     common.StringMapToKeyValues(obj.Metadata),
 		LegalHold:    &obj.TemporaryHold,
 	}
 

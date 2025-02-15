@@ -9,6 +9,15 @@
         "name": "s3-bucket-test",
         "objectLock": true,
         "region": "us-east-1"
+      },
+      "fields": {
+        "fields": {
+          "success": {
+            "column": "success",
+            "type": "column"
+          }
+        },
+        "type": "object"
       }
     }
   ]

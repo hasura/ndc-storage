@@ -15,7 +15,16 @@ definition:
         or: _or
         not: _not
         isNull: _is_null
-    orderByInput: null
+    orderByInput:
+      fieldName: order_by
+      enumDirectionValues:
+        asc: Asc
+        desc: Desc
+      enumTypeNames:
+        - directions:
+            - Asc
+            - Desc
+          typeName: OrderBy
     aggregate:
       filterInputFieldName: filter_input
       countFieldName: _count

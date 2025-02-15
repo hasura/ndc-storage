@@ -1,5 +1,5 @@
 {
-  "collection": "storageObjects",
+  "collection": "storageObjectConnections",
   "arguments": {
     "hierarchy": { "type": "literal", "value": false },
     "first": { "type": "literal", "value": 3 },

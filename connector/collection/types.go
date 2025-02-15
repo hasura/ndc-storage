@@ -1,11 +1,15 @@
-package internal
+package collection
 
 import (
 	"github.com/hasura/ndc-sdk-go/schema"
+	"github.com/hasura/ndc-sdk-go/utils"
 )
 
 const (
+	CollectionStorageObjects    = "storageObjects"
+	CollectionStorageBuckets    = "storageBuckets"
 	StorageObjectName           = "StorageObject"
+	StorageBucketName           = "StorageBucket"
 	StorageObjectColumnClientID = "clientId"
 	StorageObjectColumnObject   = "object"
 	StorageObjectColumnBucket   = "bucket"
@@ -26,6 +30,11 @@ const (
 	ScalarStringFilter    = "StorageStringFilter"
 )
 
+const (
+	argumentAfter     = "after"
+	argumentHierarchy = "hierarchy"
+)
+
 var checksumColumnNames = []string{"checksumCrc32", "checksumCrc32C", "checksumCrc64Nvme", "checksumSha1", "checksumSha256"}
 
 // StringComparisonOperator represents the explicit comparison expression for string columns.
@@ -37,7 +46,35 @@ type StringComparisonOperator struct {
 // GetConnectorSchema returns connector schema for object collections.
 func GetConnectorSchema(clientIDs []string) *schema.SchemaResponse {
 	return &schema.SchemaResponse{
-		Collections: []schema.CollectionInfo{},
+		Collections: []schema.CollectionInfo{
+			{
+				Name:        CollectionStorageObjects,
+				Description: utils.ToPtr("List storage objects"),
+				Type:        StorageObjectName,
+				Arguments: schema.CollectionInfoArguments{
+					argumentAfter: {
+						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
+					},
+					argumentHierarchy: {
+						Type: schema.NewNullableType(schema.NewNamedType("Boolean")).Encode(),
+					},
+				},
+				UniquenessConstraints: schema.CollectionInfoUniquenessConstraints{},
+				ForeignKeys:           schema.CollectionInfoForeignKeys{},
+			},
+			{
+				Name:        CollectionStorageBuckets,
+				Description: utils.ToPtr("List storage buckets"),
+				Type:        StorageBucketName,
+				Arguments: schema.CollectionInfoArguments{
+					argumentAfter: {
+						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
+					},
+				},
+				UniquenessConstraints: schema.CollectionInfoUniquenessConstraints{},
+				ForeignKeys:           schema.CollectionInfoForeignKeys{},
+			},
+		},
 		ObjectTypes: schema.SchemaResponseObjectTypes{
 			"StorageBucketFilter": schema.ObjectType{
 				Fields: schema.ObjectTypeFields{

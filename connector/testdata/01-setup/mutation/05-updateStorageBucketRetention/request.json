@@ -12,6 +12,15 @@
           "unit": "DAYS",
           "validity": 1
         }
+      },
+      "fields": {
+        "fields": {
+          "success": {
+            "column": "success",
+            "type": "column"
+          }
+        },
+        "type": "object"
       }
     }
   ]

@@ -7,9 +7,9 @@ require (
 	github.com/Azure/azure-sdk-for-go/sdk/azcore v1.17.0
 	github.com/Azure/azure-sdk-for-go/sdk/azidentity v1.8.1
 	github.com/Azure/azure-sdk-for-go/sdk/storage/azblob v1.6.0
-	github.com/alecthomas/kong v1.7.0
+	github.com/alecthomas/kong v1.8.1
 	github.com/go-viper/mapstructure/v2 v2.2.1
-	github.com/hasura/ndc-sdk-go v1.7.1-0.20250203083219-765c8932cef4
+	github.com/hasura/ndc-sdk-go v1.7.1-0.20250214145323-260a6ba510e8
 	github.com/invopop/jsonschema v0.13.0
 	github.com/lmittmann/tint v1.0.7
 	github.com/minio/md5-simd v1.1.2
@@ -19,7 +19,7 @@ require (
 	golang.org/x/sync v0.10.0
 	google.golang.org/api v0.219.0
 	gopkg.in/yaml.v3 v3.0.1
-	gotest.tools/v3 v3.5.1
+	gotest.tools/v3 v3.5.2
 )
 
 require (

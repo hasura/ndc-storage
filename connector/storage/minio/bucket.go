@@ -34,7 +34,7 @@ func (mc *Client) MakeBucket(ctx context.Context, args *common.MakeStorageBucket
 	}
 
 	if len(args.Tags) > 0 {
-		if err := mc.SetBucketTagging(ctx, args.Name, args.Tags); err != nil {
+		if err := mc.SetBucketTagging(ctx, args.Name, common.KeyValuesToStringMap(args.Tags)); err != nil {
 			span.SetStatus(codes.Error, err.Error())
 			span.RecordError(err)
 
@@ -199,7 +199,7 @@ func (mc *Client) UpdateBucket(ctx context.Context, bucketName string, opts comm
 	defer span.End()
 
 	if opts.Tags != nil {
-		if err := mc.SetBucketTagging(ctx, bucketName, opts.Tags); err != nil {
+		if err := mc.SetBucketTagging(ctx, bucketName, common.KeyValuesToStringMap(*opts.Tags)); err != nil {
 			return err
 		}
 	}
@@ -619,9 +619,9 @@ func validateBucketReplicationFilter(input common.StorageReplicationFilter) repl
 	}
 
 	if len(input.Tag) > 0 {
-		for key, value := range input.Tag {
-			result.Tag.Key = key
-			result.Tag.Value = value
+		for _, item := range input.Tag {
+			result.Tag.Key = item.Key
+			result.Tag.Value = item.Value
 
 			break
 		}
@@ -632,10 +632,10 @@ func validateBucketReplicationFilter(input common.StorageReplicationFilter) repl
 			result.And.Prefix = *input.Prefix
 		}
 
-		for key, value := range input.And.Tags {
+		for _, item := range input.And.Tags {
 			t := replication.Tag{
-				Key:   key,
-				Value: value,
+				Key:   item.Key,
+				Value: item.Value,
 			}
 
 			result.And.Tags = append(result.And.Tags, t)
@@ -704,8 +704,11 @@ func serializeBucketReplicationRule(item replication.Rule) common.StorageReplica
 	}
 
 	if item.Filter.Tag.Key != "" || item.Filter.Tag.Value != "" {
-		rule.Filter.Tag = map[string]string{
-			item.Filter.Tag.Key: item.Filter.Tag.Value,
+		rule.Filter.Tag = []common.StorageKeyValue{
+			{
+				Key:   item.Filter.Tag.Key,
+				Value: item.Filter.Tag.Value,
+			},
 		}
 	}
 
@@ -715,10 +718,11 @@ func serializeBucketReplicationRule(item replication.Rule) common.StorageReplica
 			rule.Filter.And.Prefix = &item.Filter.Prefix
 		}
 
-		rule.Filter.And.Tags = make(map[string]string)
-
 		for _, tag := range item.Filter.And.Tags {
-			rule.Filter.And.Tags[tag.Key] = tag.Value
+			rule.Filter.And.Tags = append(rule.Filter.And.Tags, common.StorageKeyValue{
+				Key:   tag.Key,
+				Value: tag.Value,
+			})
 		}
 	}
 
@@ -737,7 +741,7 @@ func (mc *Client) populateBucket(ctx context.Context, item minio.BucketInfo, opt
 			return bucket, err
 		}
 
-		bucket.Tags = tags
+		bucket.Tags = common.StringMapToKeyValues(tags)
 	}
 
 	if options.Include.Versioning {

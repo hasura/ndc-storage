@@ -3,7 +3,7 @@ kind: Command
 version: v1
 definition:
   name: RemoveStorageObject
-  outputType: Boolean!
+  outputType: SuccessResponse!
   arguments:
     - name: bucket
       type: String
@@ -19,8 +19,6 @@ definition:
       type: Boolean
     - name: versionId
       type: String
-    - name: where
-      type: StorageObjectFilterBoolExp
   source:
     dataConnectorName: storage
     dataConnectorCommand:

@@ -7,10 +7,12 @@ import (
 	"log/slog"
 	"os"
 	"path/filepath"
+	"slices"
 
 	"github.com/hasura/ndc-sdk-go/connector"
 	"github.com/hasura/ndc-sdk-go/schema"
 	"github.com/hasura/ndc-sdk-go/utils"
+	"github.com/hasura/ndc-storage/connector/collection"
 	"github.com/hasura/ndc-storage/connector/functions"
 	"github.com/hasura/ndc-storage/connector/storage"
 	"github.com/hasura/ndc-storage/connector/types"
@@ -44,8 +46,7 @@ func (c *Connector) ParseConfiguration(ctx context.Context, configurationDir str
 		Version: "0.1.6",
 		Capabilities: schema.Capabilities{
 			Query: schema.QueryCapabilities{
-				Variables:    schema.LeafCapability{},
-				NestedFields: schema.NestedFieldCapabilities{},
+				Variables: schema.LeafCapability{},
 			},
 			Mutation: schema.MutationCapabilities{},
 		},
@@ -77,10 +78,12 @@ func (c *Connector) TryInitState(ctx context.Context, configuration *types.Confi
 		return nil, err
 	}
 
-	connectorSchema, errs := utils.MergeSchemas(GetConnectorSchema(), functions.GetBaseConnectorSchema(manager.GetClientIDs()))
+	connectorSchema, errs := utils.MergeSchemas(GetConnectorSchema(), collection.GetConnectorSchema(manager.GetClientIDs()))
 	for _, err := range errs {
 		slog.Debug(err.Error())
 	}
+
+	c.evalSchema(connectorSchema)
 
 	schemaBytes, err := json.Marshal(connectorSchema)
 	if err != nil {
@@ -94,6 +97,43 @@ func (c *Connector) TryInitState(ctx context.Context, configuration *types.Confi
 		TelemetryState: metrics,
 		Concurrency:    c.config.Concurrency,
 	}, nil
+}
+
+func (c *Connector) evalSchema(connectorSchema *schema.SchemaResponse) {
+	// override field types of the StorageObject object
+	objectClientID := connectorSchema.ObjectTypes[collection.StorageObjectName].Fields[collection.StorageObjectColumnClientID]
+	objectClientID.Type = schema.NewNamedType(collection.ScalarStorageClientID).Encode()
+	connectorSchema.ObjectTypes[collection.StorageObjectName].Fields[collection.StorageObjectColumnClientID] = objectClientID
+
+	objectBucketField := connectorSchema.ObjectTypes[collection.StorageObjectName].Fields[collection.StorageObjectColumnBucket]
+	objectBucketField.Type = schema.NewNamedType(collection.ScalarBucketName).Encode()
+	connectorSchema.ObjectTypes[collection.StorageObjectName].Fields[collection.StorageObjectColumnBucket] = objectBucketField
+
+	// override field types of the StorageBucket object
+	bucketClientID := connectorSchema.ObjectTypes[collection.StorageBucketName].Fields[collection.StorageObjectColumnClientID]
+	bucketClientID.Type = schema.NewNamedType(collection.ScalarStorageClientID).Encode()
+	connectorSchema.ObjectTypes[collection.StorageBucketName].Fields[collection.StorageObjectColumnClientID] = bucketClientID
+
+	for i, f := range connectorSchema.Functions {
+		if c.config.Generator.PromptQLCompatible && !slices.Contains([]string{"storageBucketConnections", "storageObjectConnections"}, f.Name) {
+			// remove boolean expression arguments in commands
+			delete(f.Arguments, "where")
+			connectorSchema.Functions[i] = f
+		}
+	}
+
+	if c.config.Generator.PromptQLCompatible {
+		// PromptQL doesn't support bytes representation.
+		bytesScalar := schema.NewScalarType()
+		bytesScalar.Representation = schema.NewTypeRepresentationString().Encode()
+		connectorSchema.ScalarTypes["Bytes"] = *bytesScalar
+
+		for i, f := range connectorSchema.Procedures {
+			// remove boolean expression arguments in commands
+			delete(f.Arguments, "where")
+			connectorSchema.Procedures[i] = f
+		}
+	}
 }
 
 // HealthCheck checks the health of the connector.

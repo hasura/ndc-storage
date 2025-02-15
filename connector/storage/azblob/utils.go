@@ -19,7 +19,6 @@ var errNotSupported = schema.NotSupportedError("Azure Blob Storage doesn't suppo
 
 func serializeObjectInfo(item *container.BlobItem) common.StorageObject { //nolint:funlen,cyclop
 	object := common.StorageObject{
-		Metadata:  make(map[string]string),
 		IsLatest:  item.IsCurrentVersion,
 		Deleted:   item.Deleted,
 		VersionID: item.VersionID,
@@ -30,20 +29,24 @@ func serializeObjectInfo(item *container.BlobItem) common.StorageObject { //noli
 	}
 
 	if item.BlobTags != nil && len(item.BlobTags.BlobTagSet) > 0 {
-		object.Tags = make(map[string]string)
-
 		for _, bt := range item.BlobTags.BlobTagSet {
 			if bt.Key == nil || bt.Value == nil {
 				continue
 			}
 
-			object.Tags[*bt.Key] = *bt.Value
+			object.Tags = append(object.Tags, common.StorageKeyValue{
+				Key:   *bt.Key,
+				Value: *bt.Value,
+			})
 		}
 	}
 
 	for key, value := range item.Metadata {
 		if value != nil {
-			object.Metadata[key] = *value
+			object.Metadata = append(object.Metadata, common.StorageKeyValue{
+				Key:   key,
+				Value: *value,
+			})
 		}
 	}
 

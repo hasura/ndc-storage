@@ -9,6 +9,15 @@
         "name": "minio-bucket-lock",
         "objectLock": true,
         "region": "us-east-1"
+      },
+      "fields": {
+        "fields": {
+          "success": {
+            "column": "success",
+            "type": "column"
+          }
+        },
+        "type": "object"
       }
     }
   ]

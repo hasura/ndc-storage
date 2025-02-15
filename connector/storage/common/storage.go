@@ -107,7 +107,7 @@ type StorageBucket struct {
 	// The name of the bucket.
 	Name string `json:"name"`
 	// Bucket tags or metadata.
-	Tags map[string]string `json:"tags,omitempty"`
+	Tags []StorageKeyValue `json:"tags,omitempty"`
 	// The versioning configuration
 	Versioning *StorageBucketVersioningConfiguration `json:"versioning"`
 	// The versioning configuration
@@ -215,7 +215,7 @@ type GoogleStorageRPO string
 type BucketCors struct {
 	// MaxAge is the value to return in the Access-Control-Max-Age
 	// header used in preflight responses.
-	MaxAge scalar.Duration `json:"maxAge"`
+	MaxAge scalar.DurationString `json:"maxAge"`
 
 	// Methods is the list of HTTP methods on which to include CORS response
 	// headers, (GET, OPTIONS, POST, etc) Note: "*" is permitted in the list
@@ -290,7 +290,7 @@ type StorageObjectSoftDeletePolicy struct {
 
 	// RetentionDuration is the amount of time that soft-deleted objects in the
 	// bucket will be retained and cannot be permanently deleted.
-	RetentionDuration scalar.Duration `json:"retentionDuration"`
+	RetentionDuration scalar.DurationString `json:"retentionDuration"`
 }
 
 // StorageOwner name.
@@ -342,13 +342,13 @@ type StorageObject struct {
 
 	// Collection of additional metadata on the object.
 	// In MinIO and S3, x-amz-meta-* headers stripped "x-amz-meta-" prefix containing the first value.
-	Metadata map[string]string `json:"metadata,omitempty"`
+	Metadata []StorageKeyValue `json:"metadata,omitempty"`
 
 	// Raw metadata headers, eg: x-amz-meta-*, content-encoding etc... Only returned by MinIO servers.
-	RawMetadata map[string]string `json:"rawMetadata,omitempty"`
+	RawMetadata []StorageKeyValue `json:"rawMetadata,omitempty"`
 
 	// User tags
-	Tags map[string]string `json:"tags,omitempty"`
+	Tags []StorageKeyValue `json:"tags,omitempty"`
 
 	// The total count value of tags
 	TagCount int `json:"tagCount,omitempty"`
@@ -638,7 +638,7 @@ type ObjectLifecycleFilter struct {
 	MatchesSuffix []string `json:"matchesSuffix,omitempty"`
 
 	// Tags structure key/value pair representing an object tag to apply configuration
-	Tags                  map[string]string `json:"tags,omitempty"`
+	Tags                  []StorageKeyValue `json:"tags,omitempty"`
 	ObjectSizeLessThan    *int64            `json:"objectSizeLessThan,omitempty"`
 	ObjectSizeGreaterThan *int64            `json:"objectSizeGreaterThan,omitempty"`
 }
@@ -761,11 +761,11 @@ type SourceSelectionCriteria struct {
 type StorageReplicationFilter struct {
 	Prefix *string                      `json:"prefix,omitempty"`
 	And    *StorageReplicationFilterAnd `json:"and,omitempty"`
-	Tag    map[string]string            `json:"tag,omitempty"`
+	Tag    []StorageKeyValue            `json:"tag,omitempty"`
 }
 
 // StorageReplicationFilterAnd - a tag to combine a prefix and multiple tags for replication configuration rule.
 type StorageReplicationFilterAnd struct {
 	Prefix *string           `json:"prefix,omitempty"`
-	Tags   map[string]string `json:"tag,omitempty"`
+	Tags   []StorageKeyValue `json:"tag,omitempty"`
 }

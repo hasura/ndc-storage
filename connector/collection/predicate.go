@@ -1,4 +1,4 @@
-package internal
+package collection
 
 import (
 	"errors"
@@ -100,7 +100,7 @@ func (pe PredicateEvaluator) GetBucketArguments() common.StorageBucketArguments 
 	return result
 }
 
-func (pe *PredicateEvaluator) EvalSelection(selection schema.NestedField) error { //nolint:gocognit
+func (pe *PredicateEvaluator) EvalSelection(selection schema.NestedField) error {
 	if len(selection) == 0 {
 		return nil
 	}
@@ -123,56 +123,60 @@ func (pe *PredicateEvaluator) EvalSelection(selection schema.NestedField) error 
 			return pe.EvalSelection(objectsColumn.Fields)
 		}
 
-		for _, key := range []string{"metadata", "rawMetadata"} {
-			if _, ok := expr.Fields[key]; ok {
-				pe.Include.Metadata = true
-
-				break
-			}
-		}
-
-		for _, key := range checksumColumnNames {
-			if _, ok := expr.Fields[key]; ok {
-				pe.Include.Checksum = true
-
-				break
-			}
-		}
-
-		if _, ok := expr.Fields["tags"]; ok {
-			pe.Include.Tags = true
-		}
-
-		if _, ok := expr.Fields["copy"]; ok {
-			pe.Include.Copy = true
-		}
-
-		for _, key := range []string{"versionId", "versioning"} {
-			if _, ok := expr.Fields[key]; ok {
-				pe.Include.Versions = true
-
-				break
-			}
-		}
-
-		if _, legalHoldExists := expr.Fields["legalHold"]; legalHoldExists {
-			pe.Include.LegalHold = true
-		}
-
-		if _, ok := expr.Fields["lifecycle"]; ok {
-			pe.Include.Lifecycle = true
-		}
-
-		if _, ok := expr.Fields["encryption"]; ok {
-			pe.Include.Encryption = true
-		}
-
-		if _, ok := expr.Fields["objectLock"]; ok {
-			pe.IncludeObjectLock = true
-		}
+		pe.evalQuerySelectionFields(expr.Fields)
 	}
 
 	return nil
+}
+
+func (pe *PredicateEvaluator) evalQuerySelectionFields(fields map[string]schema.Field) {
+	for _, key := range []string{"metadata", "rawMetadata"} {
+		if _, ok := fields[key]; ok {
+			pe.Include.Metadata = true
+
+			break
+		}
+	}
+
+	for _, key := range checksumColumnNames {
+		if _, ok := fields[key]; ok {
+			pe.Include.Checksum = true
+
+			break
+		}
+	}
+
+	if _, ok := fields["tags"]; ok {
+		pe.Include.Tags = true
+	}
+
+	if _, ok := fields["copy"]; ok {
+		pe.Include.Copy = true
+	}
+
+	for _, key := range []string{"versionId", "versioning"} {
+		if _, ok := fields[key]; ok {
+			pe.Include.Versions = true
+
+			break
+		}
+	}
+
+	if _, legalHoldExists := fields["legalHold"]; legalHoldExists {
+		pe.Include.LegalHold = true
+	}
+
+	if _, ok := fields["lifecycle"]; ok {
+		pe.Include.Lifecycle = true
+	}
+
+	if _, ok := fields["encryption"]; ok {
+		pe.Include.Encryption = true
+	}
+
+	if _, ok := fields["objectLock"]; ok {
+		pe.IncludeObjectLock = true
+	}
 }
 
 func (pe *PredicateEvaluator) evalQueryPredicate(expression schema.Expression) (bool, error) {

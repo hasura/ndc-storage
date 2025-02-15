@@ -10,7 +10,7 @@ definition:
     - name: legalHold
       type: Boolean
     - name: metadata
-      type: Json
+      type: "[StorageKeyValue!]"
     - name: mode
       type: StorageRetentionMode
     - name: object
@@ -20,7 +20,7 @@ definition:
     - name: size
       type: Int64
     - name: tags
-      type: Json
+      type: "[StorageKeyValue!]"
   graphql:
     typeName: StorageCopyDestOptions
     inputTypeName: StorageCopyDestOptionsInput

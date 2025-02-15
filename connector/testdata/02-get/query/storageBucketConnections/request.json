@@ -11,29 +11,9 @@
     "after": {
       "type": "literal",
       "value": null
-    },
-    "where": {
-      "type": "literal",
-      "value": {
-        "type": "and",
-        "expressions": [
-          {
-            "type": "binary_comparison_operator",
-            "column": { "type": "column", "name": "clientId", "path": [] },
-            "operator": "_eq",
-            "value": { "type": "scalar", "value": "gcs" }
-          },
-          {
-            "type": "binary_comparison_operator",
-            "column": { "type": "column", "name": "bucket", "path": [] },
-            "operator": "_starts_with",
-            "value": { "type": "scalar", "value": "gcs" }
-          }
-        ]
-      }
     }
   },
-  "collection": "storageBuckets",
+  "collection": "storageBucketConnections",
   "collection_relationships": {},
   "query": {
     "fields": {
@@ -162,6 +142,10 @@
                             },
                             "type": "column"
                           },
+                          "lastModified": {
+                            "column": "lastModified",
+                            "type": "column"
+                          },
                           "lifecycle": {
                             "column": "lifecycle",
                             "fields": {
@@ -270,6 +254,22 @@
                                                 },
                                                 "tags": {
                                                   "column": "tags",
+                                                  "fields": {
+                                                    "fields": {
+                                                      "fields": {
+                                                        "key": {
+                                                          "column": "key",
+                                                          "type": "column"
+                                                        },
+                                                        "value": {
+                                                          "column": "value",
+                                                          "type": "column"
+                                                        }
+                                                      },
+                                                      "type": "object"
+                                                    },
+                                                    "type": "array"
+                                                  },
                                                   "type": "column"
                                                 }
                                               },

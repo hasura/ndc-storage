@@ -5,27 +5,27 @@ import (
 
 	"github.com/hasura/ndc-sdk-go/schema"
 	"github.com/hasura/ndc-sdk-go/utils"
-	"github.com/hasura/ndc-storage/connector/functions/internal"
+	"github.com/hasura/ndc-storage/connector/collection"
 	"github.com/hasura/ndc-storage/connector/storage/common"
 	"github.com/hasura/ndc-storage/connector/types"
 )
 
 // ProcedureCreateStorageBucket creates a new bucket.
-func ProcedureCreateStorageBucket(ctx context.Context, state *types.State, args *common.MakeStorageBucketArguments) (bool, error) {
+func ProcedureCreateStorageBucket(ctx context.Context, state *types.State, args *common.MakeStorageBucketArguments) (SuccessResponse, error) {
 	if err := state.Storage.MakeBucket(ctx, args.ClientID, &args.MakeStorageBucketOptions); err != nil {
-		return false, err
+		return SuccessResponse{}, err
 	}
 
-	return true, nil
+	return NewSuccessResponse(), nil
 }
 
-// FunctionStorageBuckets list all buckets.
-func FunctionStorageBuckets(ctx context.Context, state *types.State, args *common.ListStorageBucketArguments) (StorageConnection[common.StorageBucket], error) {
+// FunctionStorageBucketConnections list all buckets using the relay style.
+func FunctionStorageBucketConnections(ctx context.Context, state *types.State, args *common.ListStorageBucketArguments) (StorageConnection[common.StorageBucket], error) {
 	if args.First != nil && *args.First <= 0 {
 		return StorageConnection[common.StorageBucket]{}, schema.UnprocessableContentError("$first argument must be larger than 0", nil)
 	}
 
-	request, err := internal.EvalBucketPredicate(args.ClientID, args.Prefix, args.Where, types.QueryVariablesFromContext(ctx))
+	request, err := collection.EvalBucketPredicate(args.ClientID, args.Prefix, args.Where, types.QueryVariablesFromContext(ctx))
 	if err != nil {
 		return StorageConnection[common.StorageBucket]{}, err
 	}
@@ -79,7 +79,7 @@ func FunctionStorageBuckets(ctx context.Context, state *types.State, args *commo
 
 // FunctionStorageBucket gets a bucket by name.
 func FunctionStorageBucket(ctx context.Context, state *types.State, args *common.StorageBucketArguments) (*common.StorageBucket, error) {
-	request := internal.PredicateEvaluator{}
+	request := collection.PredicateEvaluator{}
 
 	if err := request.EvalSelection(utils.CommandSelectionFieldFromContext(ctx)); err != nil {
 		return nil, err
@@ -98,24 +98,29 @@ func FunctionStorageBucket(ctx context.Context, state *types.State, args *common
 }
 
 // FunctionStorageBucketExists checks if a bucket exists.
-func FunctionStorageBucketExists(ctx context.Context, state *types.State, args *common.StorageBucketArguments) (bool, error) {
-	return state.Storage.BucketExists(ctx, args)
+func FunctionStorageBucketExists(ctx context.Context, state *types.State, args *common.StorageBucketArguments) (ExistsResponse, error) {
+	exists, err := state.Storage.BucketExists(ctx, args)
+	if err != nil {
+		return ExistsResponse{}, err
+	}
+
+	return ExistsResponse{Exists: exists}, nil
 }
 
 // ProcedureRemoveStorageBucket removes a bucket, bucket should be empty to be successfully removed.
-func ProcedureRemoveStorageBucket(ctx context.Context, state *types.State, args *common.StorageBucketArguments) (bool, error) {
+func ProcedureRemoveStorageBucket(ctx context.Context, state *types.State, args *common.StorageBucketArguments) (SuccessResponse, error) {
 	if err := state.Storage.RemoveBucket(ctx, args); err != nil {
-		return false, err
+		return SuccessResponse{}, err
 	}
 
-	return true, nil
+	return NewSuccessResponse(), nil
 }
 
 // ProcedureUpdateStorageBucket updates the bucket's configuration.
-func ProcedureUpdateStorageBucket(ctx context.Context, state *types.State, args *common.UpdateBucketArguments) (bool, error) {
+func ProcedureUpdateStorageBucket(ctx context.Context, state *types.State, args *common.UpdateBucketArguments) (SuccessResponse, error) {
 	if err := state.Storage.UpdateBucket(ctx, args); err != nil {
-		return false, err
+		return SuccessResponse{}, err
 	}
 
-	return true, nil
+	return NewSuccessResponse(), nil
 }

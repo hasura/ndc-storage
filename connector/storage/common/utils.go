@@ -5,6 +5,7 @@ import (
 	"crypto/md5"
 	"hash"
 	"io"
+	"net/http"
 	"sync"
 
 	md5simd "github.com/minio/md5-simd"
@@ -66,4 +67,40 @@ func CalculateContentMd5(reader io.Reader) (io.Reader, []byte, error) {
 	hash.Close()
 
 	return reader, result, nil
+}
+
+// KeyValuesToStringMap converts a storage key value slice to a string map.
+func KeyValuesToStringMap(inputs []StorageKeyValue) map[string]string {
+	result := make(map[string]string)
+
+	for _, item := range inputs {
+		result[item.Key] = item.Value
+	}
+
+	return result
+}
+
+// StringMapToKeyValues converts a string map to a key value slice.
+func StringMapToKeyValues(inputs map[string]string) []StorageKeyValue {
+	result := []StorageKeyValue{}
+
+	for key, value := range inputs {
+		result = append(result, StorageKeyValue{
+			Key:   key,
+			Value: value,
+		})
+	}
+
+	return result
+}
+
+// KeyValuesToHeader converts a storage key value slice to a http.Header instance.
+func KeyValuesToHeaders(inputs []StorageKeyValue) http.Header {
+	result := http.Header{}
+
+	for _, item := range inputs {
+		result.Add(item.Key, item.Value)
+	}
+
+	return result
 }

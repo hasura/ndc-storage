@@ -99,3 +99,5 @@ clients:
 concurrency:
   query: 10
   mutation: 10
+generator:
+  promptqlCompatible: true

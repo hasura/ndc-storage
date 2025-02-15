@@ -57,9 +57,21 @@
             }
           ]
         },
-        "tags": {
-          "Foo": "bar"
-        }
+        "tags": [
+          {
+            "key": "Foo",
+            "value": "bar"
+          }
+        ]
+      },
+      "fields": {
+        "fields": {
+          "success": {
+            "column": "success",
+            "type": "column"
+          }
+        },
+        "type": "object"
       }
     }
   ]
