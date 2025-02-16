@@ -246,7 +246,7 @@ func (ac AuthCredentials) JSONSchema() *jsonschema.Schema { //nolint:funlen
 	})
 	entraProps.Set("audience", &jsonschema.Schema{
 		Description: "Audience to use when requesting tokens for Azure Active Directory authentication",
-		Type:        envStringRefName,
+		Ref:         envStringRefName,
 	})
 
 	entraProps.Set("disableInstanceDiscovery", &jsonschema.Schema{

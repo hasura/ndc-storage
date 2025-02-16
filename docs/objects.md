@@ -74,12 +74,16 @@ The response is a base64-encode string. The client must decode the string to get
 
 ```gql
 query DownloadObject {
-  downloadStorageObject(object: "hello.txt")
+  downloadStorageObject(object: "hello.txt") {
+    data
+  }
 }
 
 # {
 #   "data": {
-#     "downloadStorageObject": "SGVsbG8gd29ybGQK"
+#     "downloadStorageObject": {
+#       "data": "SGVsbG8gd29ybGQK"
+#     }
 #   }
 # }
 ```
@@ -93,12 +97,16 @@ Use the `downloadStorageObjectText` query if you are confident that the object c
 
 ```gql
 query DownloadObjectText {
-  downloadStorageObjectText(object: "hello.txt")
+  downloadStorageObjectText(object: "hello.txt") {
+    data
+  }
 }
 
 # {
 #   "data": {
-#     "downloadStorageObjectText": "Hello world\n"
+#     "downloadStorageObjectText": {
+#       "data": "Hello world\n"
+#     }
 #   }
 # }
 ```
@@ -111,10 +119,17 @@ You can use either `clientId`, `bucket`, `prefix`, or `where` boolean expression
 
 ```graphql
 query ListObjects {
-  storageObjects(prefix: "hello", where: { object: { _contains: "world" } }) {
-    objects {
-      name
-      # ...
+  storageObjectConnections(
+    prefix: "hello"
+    where: { object: { _contains: "world" } }
+  ) {
+    edges {
+      cursor
+      node {
+        clientId
+        bucket
+        # ...
+      }
     }
   }
 }
@@ -125,8 +140,8 @@ query ListObjects {
 Relay style suits object listing because most cloud storage services only support cursor-based pagination. The object name is used as the cursor ID.
 
 ```graphql
-query ListObjects {
-  storageObjects(after: "hello.txt", first: 3) {
+query ListObjectConnections {
+  storageObjectConnections(after: "hello.txt", first: 3) {
     pageInfo {
       hasNextPage
     }
@@ -163,6 +178,19 @@ query ListObjects {
         }
       }
     }
+  }
+}
+```
+
+Or you can use the `storageObjects` collection. The response structure is simpler but some argument isn't functional such as sorting.
+
+```graphql
+query ListObjects {
+  storageObjects(after: "hello.txt", limit: 3) {
+    clientId
+    bucket
+    name
+    # ...
   }
 }
 ```
