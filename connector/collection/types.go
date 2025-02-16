@@ -11,8 +11,8 @@ const (
 	StorageObjectName           = "StorageObject"
 	StorageBucketName           = "StorageBucket"
 	StorageObjectColumnClientID = "clientId"
-	StorageObjectColumnObject   = "object"
 	StorageObjectColumnBucket   = "bucket"
+	StorageObjectColumnName     = "name"
 )
 
 const (
@@ -81,7 +81,7 @@ func GetConnectorSchema(clientIDs []string) *schema.SchemaResponse {
 					StorageObjectColumnClientID: schema.ObjectField{
 						Type: schema.NewNamedType(ScalarStorageClientID).Encode(),
 					},
-					StorageObjectColumnBucket: schema.ObjectField{
+					StorageObjectColumnName: schema.ObjectField{
 						Type: schema.NewNamedType(ScalarStringFilter).Encode(),
 					},
 				},
@@ -94,7 +94,7 @@ func GetConnectorSchema(clientIDs []string) *schema.SchemaResponse {
 					StorageObjectColumnBucket: schema.ObjectField{
 						Type: schema.NewNamedType(ScalarBucketName).Encode(),
 					},
-					StorageObjectColumnObject: schema.ObjectField{
+					StorageObjectColumnName: schema.ObjectField{
 						Type: schema.NewNamedType(ScalarStringFilter).Encode(),
 					},
 				},

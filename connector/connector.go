@@ -99,6 +99,26 @@ func (c *Connector) TryInitState(ctx context.Context, configuration *types.Confi
 	}, nil
 }
 
+// HealthCheck checks the health of the connector.
+//
+// For example, this function should check that the connector
+// is able to reach its data source over the network.
+//
+// Should throw if the check fails, else resolve.
+func (c *Connector) HealthCheck(ctx context.Context, configuration *types.Configuration, state *types.State) error {
+	return nil
+}
+
+// GetCapabilities get the connector's capabilities.
+func (c *Connector) GetCapabilities(configuration *types.Configuration) schema.CapabilitiesResponseMarshaler {
+	return c.capabilities
+}
+
+// GetSchema gets the connector's schema.
+func (c *Connector) GetSchema(ctx context.Context, configuration *types.Configuration, _ *types.State) (schema.SchemaResponseMarshaler, error) {
+	return c.rawSchema, nil
+}
+
 func (c *Connector) evalSchema(connectorSchema *schema.SchemaResponse) {
 	// override field types of the StorageObject object
 	objectClientID := connectorSchema.ObjectTypes[collection.StorageObjectName].Fields[collection.StorageObjectColumnClientID]
@@ -109,10 +129,18 @@ func (c *Connector) evalSchema(connectorSchema *schema.SchemaResponse) {
 	objectBucketField.Type = schema.NewNamedType(collection.ScalarBucketName).Encode()
 	connectorSchema.ObjectTypes[collection.StorageObjectName].Fields[collection.StorageObjectColumnBucket] = objectBucketField
 
+	objectNameField := connectorSchema.ObjectTypes[collection.StorageObjectName].Fields[collection.StorageObjectColumnName]
+	objectNameField.Type = schema.NewNamedType(collection.ScalarStringFilter).Encode()
+	connectorSchema.ObjectTypes[collection.StorageObjectName].Fields[collection.StorageObjectColumnName] = objectNameField
+
 	// override field types of the StorageBucket object
 	bucketClientID := connectorSchema.ObjectTypes[collection.StorageBucketName].Fields[collection.StorageObjectColumnClientID]
 	bucketClientID.Type = schema.NewNamedType(collection.ScalarStorageClientID).Encode()
 	connectorSchema.ObjectTypes[collection.StorageBucketName].Fields[collection.StorageObjectColumnClientID] = bucketClientID
+
+	bucketNameField := connectorSchema.ObjectTypes[collection.StorageBucketName].Fields[collection.StorageObjectColumnName]
+	bucketNameField.Type = schema.NewNamedType(collection.ScalarStringFilter).Encode()
+	connectorSchema.ObjectTypes[collection.StorageBucketName].Fields[collection.StorageObjectColumnName] = bucketNameField
 
 	for i, f := range connectorSchema.Functions {
 		if c.config.Generator.PromptQLCompatible && !slices.Contains([]string{"storageBucketConnections", "storageObjectConnections"}, f.Name) {
@@ -134,24 +162,4 @@ func (c *Connector) evalSchema(connectorSchema *schema.SchemaResponse) {
 			connectorSchema.Procedures[i] = f
 		}
 	}
-}
-
-// HealthCheck checks the health of the connector.
-//
-// For example, this function should check that the connector
-// is able to reach its data source over the network.
-//
-// Should throw if the check fails, else resolve.
-func (c *Connector) HealthCheck(ctx context.Context, configuration *types.Configuration, state *types.State) error {
-	return nil
-}
-
-// GetCapabilities get the connector's capabilities.
-func (c *Connector) GetCapabilities(configuration *types.Configuration) schema.CapabilitiesResponseMarshaler {
-	return c.capabilities
-}
-
-// GetSchema gets the connector's schema.
-func (c *Connector) GetSchema(ctx context.Context, configuration *types.Configuration, _ *types.State) (schema.SchemaResponseMarshaler, error) {
-	return c.rawSchema, nil
 }

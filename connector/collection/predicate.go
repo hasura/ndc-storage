@@ -37,7 +37,7 @@ func EvalBucketPredicate(clientID *common.StorageClientID, prefix string, predic
 	}
 
 	if len(predicate) > 0 {
-		ok, err := result.evalQueryPredicate(predicate)
+		ok, err := result.evalQueryPredicate(predicate, true)
 		if err != nil {
 			return nil, err
 		}
@@ -75,7 +75,7 @@ func EvalObjectPredicate(bucketInfo common.StorageBucketArguments, preOperator *
 	}
 
 	if len(predicate) > 0 {
-		ok, err := result.evalQueryPredicate(predicate)
+		ok, err := result.evalQueryPredicate(predicate, false)
 		if err != nil {
 			return nil, err
 		}
@@ -179,7 +179,7 @@ func (pe *PredicateEvaluator) evalQuerySelectionFields(fields map[string]schema.
 	}
 }
 
-func (pe *PredicateEvaluator) evalQueryPredicate(expression schema.Expression) (bool, error) {
+func (pe *PredicateEvaluator) evalQueryPredicate(expression schema.Expression, forBucket bool) (bool, error) {
 	exprT, err := expression.InterfaceT()
 	if err != nil {
 		return false, err
@@ -188,7 +188,7 @@ func (pe *PredicateEvaluator) evalQueryPredicate(expression schema.Expression) (
 	switch expr := exprT.(type) {
 	case *schema.ExpressionAnd:
 		for _, nestedExpr := range expr.Expressions {
-			ok, err := pe.evalQueryPredicate(nestedExpr)
+			ok, err := pe.evalQueryPredicate(nestedExpr, forBucket)
 			if err != nil {
 				return false, err
 			}
@@ -223,10 +223,18 @@ func (pe *PredicateEvaluator) evalQueryPredicate(expression schema.Expression) (
 			}
 
 			return ok, nil
-		case StorageObjectColumnObject:
-			ok, err := pe.evalStringFilter(&pe.ObjectNamePredicate, expr)
+		case StorageObjectColumnName:
+			var ok bool
+			var err error
+
+			if forBucket {
+				ok, err = pe.evalStringFilter(&pe.BucketPredicate, expr)
+			} else {
+				ok, err = pe.evalStringFilter(&pe.ObjectNamePredicate, expr)
+			}
+
 			if err != nil {
-				return false, fmt.Errorf("%s: %w", StorageObjectColumnObject, err)
+				return false, fmt.Errorf("%s: %w", StorageObjectColumnName, err)
 			}
 
 			return ok, nil

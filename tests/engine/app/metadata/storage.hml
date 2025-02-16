@@ -1000,7 +1000,7 @@ definition:
             name:
               type:
                 type: named
-                name: String
+                name: StorageStringFilter
             objectLock:
               type:
                 type: nullable
@@ -1074,14 +1074,14 @@ definition:
                   name: StorageClientID
         StorageBucketFilter:
           fields:
-            bucket:
-              type:
-                type: named
-                name: StorageStringFilter
             clientId:
               type:
                 type: named
                 name: StorageClientID
+            name:
+              type:
+                type: named
+                name: StorageStringFilter
         StorageBucketVersioningConfiguration:
           description: is the versioning configuration structure
           fields:
@@ -1576,7 +1576,7 @@ definition:
             name:
               type:
                 type: named
-                name: String
+                name: StorageStringFilter
             owner:
               type:
                 type: nullable
@@ -1769,7 +1769,7 @@ definition:
               type:
                 type: named
                 name: StorageClientID
-            object:
+            name:
               type:
                 type: named
                 name: StorageStringFilter

@@ -7,7 +7,7 @@
       "arguments": {
         "bucket": "minio-bucket-test",
         "versioning": false,
-        "tags": {}
+        "tags": []
       },
       "fields": {
         "fields": {

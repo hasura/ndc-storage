@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"sync"
 
+	"github.com/hasura/ndc-sdk-go/utils"
 	md5simd "github.com/minio/md5-simd"
 )
 
@@ -82,13 +83,19 @@ func KeyValuesToStringMap(inputs []StorageKeyValue) map[string]string {
 
 // StringMapToKeyValues converts a string map to a key value slice.
 func StringMapToKeyValues(inputs map[string]string) []StorageKeyValue {
-	result := []StorageKeyValue{}
+	if len(inputs) == 0 {
+		return []StorageKeyValue{}
+	}
 
-	for key, value := range inputs {
-		result = append(result, StorageKeyValue{
+	keys := utils.GetSortedKeys(inputs)
+	result := make([]StorageKeyValue, len(keys))
+
+	for i, key := range keys {
+		value := inputs[key]
+		result[i] = StorageKeyValue{
 			Key:   key,
 			Value: value,
-		})
+		}
 	}
 
 	return result

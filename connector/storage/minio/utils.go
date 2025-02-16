@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/hasura/ndc-sdk-go/schema"
+	"github.com/hasura/ndc-sdk-go/utils"
 	"github.com/hasura/ndc-storage/connector/storage/common"
 	"github.com/minio/minio-go/v7"
 	"github.com/minio/minio-go/v7/pkg/notification"
@@ -112,8 +113,11 @@ func serializeObjectInfo(obj *minio.ObjectInfo, fromList bool) common.StorageObj
 		}
 	} else {
 		object.Metadata = common.StringMapToKeyValues(obj.UserMetadata)
+		keys := utils.GetSortedKeys(obj.Metadata)
 
-		for key, values := range obj.Metadata {
+		for _, key := range keys {
+			values := obj.Metadata[key]
+
 			if len(values) == 0 {
 				continue
 			}

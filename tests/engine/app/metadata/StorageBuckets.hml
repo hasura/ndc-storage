@@ -735,7 +735,7 @@ definition:
     - name: logging
       type: BucketLogging
     - name: name
-      type: String!
+      type: StorageStringFilter!
     - name: objectLock
       type: StorageObjectLockConfig
     - name: region
@@ -816,7 +816,7 @@ definition:
         - fieldName: locationType
           booleanExpressionType: StringBoolExp
         - fieldName: name
-          booleanExpressionType: StringBoolExp
+          booleanExpressionType: StorageStringFilterBoolExp
         - fieldName: region
           booleanExpressionType: StringBoolExp
         - fieldName: requesterPays
@@ -855,7 +855,7 @@ definition:
         - fieldName: locationType
           orderByExpression: StringOrderByExp
         - fieldName: name
-          orderByExpression: StringOrderByExp
+          orderByExpression: StorageStringFilterOrderByExp
         - fieldName: region
           orderByExpression: StringOrderByExp
         - fieldName: requesterPays

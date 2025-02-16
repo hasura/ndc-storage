@@ -25,7 +25,7 @@
                 "rpo": null,
                 "softDeletePolicy": null,
                 "storageClass": "STANDARD",
-                "tags": null,
+                "tags": [],
                 "versioning": {
                   "enabled": false,
                   "excludeFolders": null,

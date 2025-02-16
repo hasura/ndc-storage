@@ -8,7 +8,7 @@ definition:
       type: StorageBucketName!
     - name: clientId
       type: StorageClientId!
-    - name: object
+    - name: name
       type: StorageStringFilter!
   graphql:
     typeName: StorageObjectFilter
@@ -28,7 +28,7 @@ definition:
         allowedFields:
           - bucket
           - clientId
-          - object
+          - name
 
 ---
 kind: BooleanExpressionType
@@ -43,7 +43,7 @@ definition:
           booleanExpressionType: StorageBucketNameBoolExp
         - fieldName: clientId
           booleanExpressionType: StorageClientIdBoolExp
-        - fieldName: object
+        - fieldName: name
           booleanExpressionType: StorageStringFilterBoolExp
       comparableRelationships: []
   logicalOperators:

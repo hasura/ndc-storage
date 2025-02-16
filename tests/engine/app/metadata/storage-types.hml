@@ -252,6 +252,52 @@ definition:
 kind: ScalarType
 version: v1
 definition:
+  name: StorageStringFilter
+  graphql:
+    typeName: StorageStringFilter
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: StorageStringFilterBoolExp
+  operand:
+    scalar:
+      type: StorageStringFilter
+      comparisonOperators:
+        - name: _contains
+          argumentType: StorageStringFilter!
+        - name: _eq
+          argumentType: StorageStringFilter!
+        - name: _icontains
+          argumentType: StorageStringFilter!
+        - name: _starts_with
+          argumentType: StorageStringFilter!
+      dataConnectorOperatorMapping:
+        - dataConnectorName: storage
+          dataConnectorScalarType: StorageStringFilter
+          operatorMapping: {}
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: StorageStringFilterBoolExp
+
+---
+kind: DataConnectorScalarRepresentation
+version: v1
+definition:
+  dataConnectorName: storage
+  dataConnectorScalarType: StorageStringFilter
+  representation: StorageStringFilter
+  graphql:
+    comparisonExpressionTypeName: StorageStringFilterComparisonExp
+
+---
+kind: ScalarType
+version: v1
+definition:
   name: StorageRetentionMode
   graphql:
     typeName: StorageRetentionMode
@@ -453,6 +499,19 @@ definition:
         enableAll: true
   graphql:
     expressionTypeName: StringOrderByExp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: StorageStringFilterOrderByExp
+  operand:
+    scalar:
+      orderedType: StorageStringFilter
+      enableOrderByDirections:
+        enableAll: true
+  graphql:
+    expressionTypeName: StorageStringFilterOrderByExp
 
 ---
 kind: OrderByExpression
@@ -685,52 +744,6 @@ definition:
   representation: Bytes
   graphql:
     comparisonExpressionTypeName: BytesComparisonExp
-
----
-kind: ScalarType
-version: v1
-definition:
-  name: StorageStringFilter
-  graphql:
-    typeName: StorageStringFilter
-
----
-kind: BooleanExpressionType
-version: v1
-definition:
-  name: StorageStringFilterBoolExp
-  operand:
-    scalar:
-      type: StorageStringFilter
-      comparisonOperators:
-        - name: _contains
-          argumentType: StorageStringFilter!
-        - name: _eq
-          argumentType: StorageStringFilter!
-        - name: _icontains
-          argumentType: StorageStringFilter!
-        - name: _starts_with
-          argumentType: StorageStringFilter!
-      dataConnectorOperatorMapping:
-        - dataConnectorName: storage
-          dataConnectorScalarType: StorageStringFilter
-          operatorMapping: {}
-  logicalOperators:
-    enable: true
-  isNull:
-    enable: true
-  graphql:
-    typeName: StorageStringFilterBoolExp
-
----
-kind: DataConnectorScalarRepresentation
-version: v1
-definition:
-  dataConnectorName: storage
-  dataConnectorScalarType: StorageStringFilter
-  representation: StorageStringFilter
-  graphql:
-    comparisonExpressionTypeName: StorageStringFilterComparisonExp
 
 ---
 kind: ScalarType

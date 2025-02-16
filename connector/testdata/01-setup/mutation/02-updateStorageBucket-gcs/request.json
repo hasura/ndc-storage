@@ -7,9 +7,12 @@
       "arguments": {
         "clientId": "gcs",
         "bucket": "gcs-bucket",
-        "tags": {
-          "Foo": "gcs-bar"
-        }
+        "tags": [
+          {
+            "key": "Foo",
+            "value": "gcs-bar"
+          }
+        ]
       },
       "fields": {
         "fields": {

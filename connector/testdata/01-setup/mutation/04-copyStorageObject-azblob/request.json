@@ -9,12 +9,18 @@
           "bucket": "azblob-bucket-test",
           "object": "public/hello2.txt",
           "size": 8502136105187820186,
-          "metadata": {
-            "UserID": "2"
-          },
-          "tags": {
-            "Copy": "true"
-          }
+          "metadata": [
+            {
+              "key": "UserID",
+              "value": "2"
+            }
+          ],
+          "tags": [
+            {
+              "key": "Copy",
+              "value": "true"
+            }
+          ]
         },
         "source": {
           "bucket": "azblob-bucket-test",

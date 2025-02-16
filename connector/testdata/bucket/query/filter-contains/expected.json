@@ -2,63 +2,33 @@
   {
     "rows": [
       {
-        "__value": {
-          "edges": [
-            {
-              "cursor": "dummy-bucket-8",
-              "node": {
-                "clientId": "minio",
-                "etag": null,
-                "name": "dummy-bucket-8",
-                "storageClass": null,
-                "tags": null
-              }
-            }
-          ],
-          "pageInfo": { "hasNextPage": false }
-        }
+        "clientId": "minio",
+        "etag": null,
+        "name": "dummy-bucket-8",
+        "storageClass": null,
+        "tags": []
       }
     ]
   },
   {
     "rows": [
       {
-        "__value": {
-          "edges": [
-            {
-              "cursor": "dummy-bucket-8",
-              "node": {
-                "clientId": "azblob",
-                "etag": null,
-                "name": "dummy-bucket-8",
-                "storageClass": null,
-                "tags": null
-              }
-            }
-          ],
-          "pageInfo": { "hasNextPage": false }
-        }
+        "clientId": "azblob",
+        "etag": null,
+        "name": "dummy-bucket-8",
+        "storageClass": null,
+        "tags": []
       }
     ]
   },
   {
     "rows": [
       {
-        "__value": {
-          "edges": [
-            {
-              "cursor": "dummy-bucket-8",
-              "node": {
-                "clientId": "gcs",
-                "etag": "RVRhZw==",
-                "name": "dummy-bucket-8",
-                "storageClass": "STANDARD",
-                "tags": null
-              }
-            }
-          ],
-          "pageInfo": { "hasNextPage": false }
-        }
+        "clientId": "gcs",
+        "etag": "RVRhZw==",
+        "name": "dummy-bucket-8",
+        "storageClass": "STANDARD",
+        "tags": []
       }
     ]
   }

@@ -35,6 +35,9 @@ func TestConnectorQueries(t *testing.T) {
 					"clientId": "%s",
 					"name": "dummy-bucket-%d"
 				}`, cid, i)),
+					Fields: schema.NewNestedObject(map[string]schema.FieldEncoder{
+						"success": schema.NewColumnField("success", nil),
+					}).Encode(),
 				})
 			}
 
@@ -166,11 +169,20 @@ func TestMaxDownloadSizeValidation(t *testing.T) {
 			}
 		},
 		"collection": "%s",
-		"collection_relationships": {},
+		"collection_relationships": {},	
 		"query": {
 			"fields": {
 				"__value": {
 					"column": "__value",
+					"fields": {
+						"fields": {
+							"data": {
+								"column": "data",
+								"type": "column"
+							}
+						},
+						"type": "object"
+					},
 					"type": "column"
 				}
 			}

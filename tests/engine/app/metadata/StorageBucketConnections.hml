@@ -4,10 +4,10 @@ version: v1
 definition:
   name: StorageBucketFilter
   fields:
-    - name: bucket
-      type: StorageStringFilter!
     - name: clientId
       type: StorageClientId!
+    - name: name
+      type: StorageStringFilter!
   graphql:
     typeName: StorageBucketFilter
     inputTypeName: StorageBucketFilterInput
@@ -24,8 +24,8 @@ definition:
     - role: admin
       output:
         allowedFields:
-          - bucket
           - clientId
+          - name
 
 ---
 kind: BooleanExpressionType
@@ -36,10 +36,10 @@ definition:
     object:
       type: StorageBucketFilter
       comparableFields:
-        - fieldName: bucket
-          booleanExpressionType: StorageStringFilterBoolExp
         - fieldName: clientId
           booleanExpressionType: StorageClientIdBoolExp
+        - fieldName: name
+          booleanExpressionType: StorageStringFilterBoolExp
       comparableRelationships: []
   logicalOperators:
     enable: true

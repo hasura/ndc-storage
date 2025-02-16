@@ -44,11 +44,11 @@
                 "leaseStatus": "unlocked",
                 "legalHold": null,
                 "mediaLink": null,
-                "metadata": {},
+                "metadata": [],
                 "name": "public/hello.txt",
                 "owner": null,
                 "permissions": null,
-                "rawMetadata": null,
+                "rawMetadata": [],
                 "rehydratePriority": null,
                 "remainingRetentionDays": null,
                 "replicationReady": null,
@@ -62,7 +62,7 @@
                 "size": 10,
                 "storageClass": "Cool",
                 "tagCount": 2,
-                "tags": null
+                "tags": []
               }
             }
           ],

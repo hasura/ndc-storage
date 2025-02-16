@@ -39,13 +39,16 @@
           "leaseStatus": "unlocked",
           "legalHold": null,
           "mediaLink": null,
-          "metadata": {
-            "foo": "Bar"
-          },
+          "metadata": [
+            {
+              "key": "foo",
+              "value": "Bar"
+            }
+          ],
           "name": "public/hello.txt",
           "owner": null,
           "permissions": null,
-          "rawMetadata": null,
+          "rawMetadata": [],
           "rehydratePriority": null,
           "remainingRetentionDays": null,
           "replicationReady": null,
@@ -59,10 +62,16 @@
           "size": 10,
           "storageClass": "Cool",
           "tagCount": 2,
-          "tags": {
-            "Foo": "baz",
-            "UserID": "3"
-          },
+          "tags": [
+            {
+              "key": "Foo",
+              "value": "baz"
+            },
+            {
+              "key": "UserID",
+              "value": "3"
+            }
+          ],
           "versionId": null
         }
       }

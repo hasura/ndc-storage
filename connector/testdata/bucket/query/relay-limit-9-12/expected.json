@@ -1,0 +1,65 @@
+[
+  {
+    "rows": [
+      {
+        "__value": {
+          "edges": [
+            {
+              "cursor": "dummy-bucket-9",
+              "node": {
+                "clientId": "minio",
+                "etag": null,
+                "name": "dummy-bucket-9",
+                "storageClass": null,
+                "tags": []
+              }
+            }
+          ],
+          "pageInfo": { "hasNextPage": false }
+        }
+      }
+    ]
+  },
+  {
+    "rows": [
+      {
+        "__value": {
+          "edges": [
+            {
+              "cursor": "dummy-bucket-9",
+              "node": {
+                "clientId": "azblob",
+                "etag": null,
+                "name": "dummy-bucket-9",
+                "storageClass": null,
+                "tags": []
+              }
+            }
+          ],
+          "pageInfo": { "hasNextPage": false }
+        }
+      }
+    ]
+  },
+  {
+    "rows": [
+      {
+        "__value": {
+          "edges": [
+            {
+              "cursor": "dummy-bucket-9",
+              "node": {
+                "clientId": "gcs",
+                "etag": "RVRhZw==",
+                "name": "dummy-bucket-9",
+                "storageClass": "STANDARD",
+                "tags": []
+              }
+            }
+          ],
+          "pageInfo": { "hasNextPage": false }
+        }
+      }
+    ]
+  }
+]

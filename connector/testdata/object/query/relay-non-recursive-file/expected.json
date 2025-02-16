@@ -1,0 +1,68 @@
+[
+  {
+    "rows": [
+      {
+        "__value": {
+          "edges": [
+            {
+              "cursor": "movies/1920s/movies.json",
+              "node": {
+                "bucket": "dummy-bucket-0",
+                "clientId": "minio",
+                "isDirectory": false,
+                "name": "movies/1920s/movies.json",
+                "size": 3463423,
+                "storageClass": "STANDARD"
+              }
+            }
+          ],
+          "pageInfo": { "hasNextPage": false }
+        }
+      }
+    ]
+  },
+  {
+    "rows": [
+      {
+        "__value": {
+          "edges": [
+            {
+              "cursor": "movies/1920s/movies.json",
+              "node": {
+                "bucket": "dummy-bucket-0",
+                "clientId": "azblob",
+                "isDirectory": false,
+                "name": "movies/1920s/movies.json",
+                "size": 3463423,
+                "storageClass": "Hot"
+              }
+            }
+          ],
+          "pageInfo": { "hasNextPage": false }
+        }
+      }
+    ]
+  },
+  {
+    "rows": [
+      {
+        "__value": {
+          "edges": [
+            {
+              "cursor": "movies/1920s/movies.json",
+              "node": {
+                "bucket": "dummy-bucket-0",
+                "clientId": "gcs",
+                "isDirectory": false,
+                "name": "movies/1920s/movies.json",
+                "size": 3463423,
+                "storageClass": "STANDARD"
+              }
+            }
+          ],
+          "pageInfo": { "hasNextPage": false }
+        }
+      }
+    ]
+  }
+]

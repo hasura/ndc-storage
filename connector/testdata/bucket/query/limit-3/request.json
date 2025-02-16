@@ -1,30 +1,8 @@
 {
   "arguments": {
-    "first": {
-      "type": "literal",
-      "value": 3
-    },
     "after": {
       "type": "literal",
       "value": null
-    },
-    "prefix": {
-      "type": "literal",
-      "value": "dummy"
-    },
-    "where": {
-      "type": "literal",
-      "value": {
-        "expressions": [
-          {
-            "type": "binary_comparison_operator",
-            "column": { "type": "column", "name": "clientId", "path": [] },
-            "operator": "_eq",
-            "value": { "type": "variable", "name": "$clientId" }
-          }
-        ],
-        "type": "and"
-      }
     }
   },
   "variables": [
@@ -32,93 +10,64 @@
     { "$clientId": "azblob" },
     { "$clientId": "gcs" }
   ],
-  "collection": "storageBucketConnections",
+  "collection": "storageBuckets",
   "collection_relationships": {},
   "query": {
     "fields": {
-      "__value": {
-        "column": "__value",
+      "clientId": {
+        "column": "clientId",
+        "type": "column"
+      },
+      "etag": {
+        "column": "etag",
+        "type": "column"
+      },
+      "name": {
+        "column": "name",
+        "type": "column"
+      },
+      "storageClass": {
+        "column": "storageClass",
+        "type": "column"
+      },
+      "tags": {
+        "column": "tags",
         "fields": {
           "fields": {
-            "edges": {
-              "column": "edges",
-              "fields": {
-                "fields": {
-                  "fields": {
-                    "cursor": {
-                      "column": "cursor",
-                      "type": "column"
-                    },
-                    "node": {
-                      "column": "node",
-                      "fields": {
-                        "fields": {
-                          "clientId": {
-                            "column": "clientId",
-                            "type": "column"
-                          },
-                          "etag": {
-                            "column": "etag",
-                            "type": "column"
-                          },
-                          "name": {
-                            "column": "name",
-                            "type": "column"
-                          },
-                          "storageClass": {
-                            "column": "storageClass",
-                            "type": "column"
-                          },
-                          "tags": {
-                            "column": "tags",
-                            "fields": {
-                              "fields": {
-                                "fields": {
-                                  "key": {
-                                    "column": "key",
-                                    "type": "column"
-                                  },
-                                  "value": {
-                                    "column": "value",
-                                    "type": "column"
-                                  }
-                                },
-                                "type": "object"
-                              },
-                              "type": "array"
-                            },
-                            "type": "column"
-                          }
-                        },
-                        "type": "object"
-                      },
-                      "type": "column"
-                    }
-                  },
-                  "type": "object"
-                },
-                "type": "array"
+            "fields": {
+              "key": {
+                "column": "key",
+                "type": "column"
               },
-              "type": "column"
+              "value": {
+                "column": "value",
+                "type": "column"
+              }
             },
-            "pageInfo": {
-              "column": "pageInfo",
-              "fields": {
-                "fields": {
-                  "hasNextPage": {
-                    "column": "hasNextPage",
-                    "type": "column"
-                  }
-                },
-                "type": "object"
-              },
-              "type": "column"
-            }
+            "type": "object"
           },
-          "type": "object"
+          "type": "array"
         },
         "type": "column"
       }
+    },
+    "limit": 3,
+    "predicate": {
+      "expressions": [
+        {
+          "type": "binary_comparison_operator",
+          "column": { "type": "column", "name": "clientId", "path": [] },
+          "operator": "_eq",
+          "value": { "type": "variable", "name": "$clientId" }
+        },
+        {
+          "column": { "type": "column", "name": "name" },
+          "operator": "_starts_with",
+          "type": "binary_comparison_operator",
+          "value": { "type": "scalar", "value": "dummy" }
+        }
+      ],
+      "type": "and"
     }
   }
 }

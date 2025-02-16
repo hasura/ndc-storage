@@ -46,14 +46,14 @@
                 "leaseStatus": null,
                 "legalHold": null,
                 "mediaLink": null,
-                "metadata": {},
+                "metadata": [],
                 "name": "public/hello.txt",
                 "owner": {
                   "id": "minio",
                   "name": "02d6176db174dc93cb1b899f7c6078f08654445fe8cf1b6ce98d8855f66bdbf4"
                 },
                 "permissions": null,
-                "rawMetadata": null,
+                "rawMetadata": [],
                 "rehydratePriority": null,
                 "remainingRetentionDays": null,
                 "replicationReady": false,
@@ -67,7 +67,7 @@
                 "size": 10,
                 "storageClass": "STANDARD",
                 "tagCount": 0,
-                "tags": null
+                "tags": []
               }
             },
             {
@@ -112,14 +112,14 @@
                 "leaseStatus": null,
                 "legalHold": null,
                 "mediaLink": null,
-                "metadata": {},
+                "metadata": [],
                 "name": "public/hello2.txt",
                 "owner": {
                   "id": "minio",
                   "name": "02d6176db174dc93cb1b899f7c6078f08654445fe8cf1b6ce98d8855f66bdbf4"
                 },
                 "permissions": null,
-                "rawMetadata": null,
+                "rawMetadata": [],
                 "rehydratePriority": null,
                 "remainingRetentionDays": null,
                 "replicationReady": false,
@@ -133,7 +133,7 @@
                 "size": 10,
                 "storageClass": "STANDARD",
                 "tagCount": 0,
-                "tags": null
+                "tags": []
               }
             },
             {
@@ -178,14 +178,14 @@
                 "leaseStatus": null,
                 "legalHold": null,
                 "mediaLink": null,
-                "metadata": {},
+                "metadata": [],
                 "name": "public/hello3.txt",
                 "owner": {
                   "id": "minio",
                   "name": "02d6176db174dc93cb1b899f7c6078f08654445fe8cf1b6ce98d8855f66bdbf4"
                 },
                 "permissions": null,
-                "rawMetadata": null,
+                "rawMetadata": [],
                 "rehydratePriority": null,
                 "remainingRetentionDays": null,
                 "replicationReady": false,
@@ -199,7 +199,7 @@
                 "size": 10,
                 "storageClass": "STANDARD",
                 "tagCount": 0,
-                "tags": null
+                "tags": []
               }
             },
             {
@@ -244,14 +244,14 @@
                 "leaseStatus": null,
                 "legalHold": null,
                 "mediaLink": null,
-                "metadata": {},
+                "metadata": [],
                 "name": "public/workd2.txt",
                 "owner": {
                   "id": "minio",
                   "name": "02d6176db174dc93cb1b899f7c6078f08654445fe8cf1b6ce98d8855f66bdbf4"
                 },
                 "permissions": null,
-                "rawMetadata": null,
+                "rawMetadata": [],
                 "rehydratePriority": null,
                 "remainingRetentionDays": null,
                 "replicationReady": false,
@@ -265,7 +265,7 @@
                 "size": 10,
                 "storageClass": "STANDARD",
                 "tagCount": 0,
-                "tags": null
+                "tags": []
               }
             }
           ],

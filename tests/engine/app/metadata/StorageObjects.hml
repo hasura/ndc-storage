@@ -257,7 +257,7 @@ definition:
     - name: metadata
       type: "[StorageKeyValue!]"
     - name: name
-      type: String!
+      type: StorageStringFilter!
     - name: owner
       type: StorageOwner
     - name: permissions
@@ -463,7 +463,7 @@ definition:
         - fieldName: mediaLink
           booleanExpressionType: StringBoolExp
         - fieldName: name
-          booleanExpressionType: StringBoolExp
+          booleanExpressionType: StorageStringFilterBoolExp
         - fieldName: permissions
           booleanExpressionType: StringBoolExp
         - fieldName: rehydratePriority
@@ -590,7 +590,7 @@ definition:
         - fieldName: mediaLink
           orderByExpression: StringOrderByExp
         - fieldName: name
-          orderByExpression: StringOrderByExp
+          orderByExpression: StorageStringFilterOrderByExp
         - fieldName: permissions
           orderByExpression: StringOrderByExp
         - fieldName: rehydratePriority
