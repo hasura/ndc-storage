@@ -506,7 +506,7 @@ type StorageRetentionMode string
 type RemoveStorageObjectError struct {
 	ObjectName string `json:"objectName"`
 	VersionID  string `json:"versionId"`
-	Error      error  `json:"error"`
+	Error      string `json:"error"`
 }
 
 // ChecksumType contains information about the checksum type.

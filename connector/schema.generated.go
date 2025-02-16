@@ -451,7 +451,7 @@ func GetConnectorSchema() *schema.SchemaResponse {
 				Description: toPtr("the container of Multi Delete S3 API error."),
 				Fields: schema.ObjectTypeFields{
 					"error": schema.ObjectField{
-						Type: schema.NewNullableType(schema.NewNamedType("JSON")).Encode(),
+						Type: schema.NewNamedType("String").Encode(),
 					},
 					"objectName": schema.ObjectField{
 						Type: schema.NewNamedType("String").Encode(),

@@ -6,7 +6,7 @@ definition:
   description: the container of Multi Delete S3 API error.
   fields:
     - name: error
-      type: Json
+      type: String!
     - name: objectName
       type: String!
     - name: versionId

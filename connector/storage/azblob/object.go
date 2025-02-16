@@ -586,7 +586,7 @@ func (c *Client) RemoveObjects(ctx context.Context, bucketName string, opts *com
 
 		return []common.RemoveStorageObjectError{
 			{
-				Error: err,
+				Error: err.Error(),
 			},
 		}
 	}
@@ -599,7 +599,7 @@ func (c *Client) RemoveObjects(ctx context.Context, bucketName string, opts *com
 		if err != nil {
 			return []common.RemoveStorageObjectError{
 				{
-					Error: err,
+					Error: err.Error(),
 				},
 			}
 		}
@@ -608,7 +608,7 @@ func (c *Client) RemoveObjects(ctx context.Context, bucketName string, opts *com
 			if err := batchBuilder.Delete(obj.Name, &container.BatchDeleteOptions{}); err != nil {
 				return []common.RemoveStorageObjectError{
 					{
-						Error: err,
+						Error: err.Error(),
 					},
 				}
 			}
@@ -616,7 +616,7 @@ func (c *Client) RemoveObjects(ctx context.Context, bucketName string, opts *com
 
 		if _, err := containerClient.SubmitBatch(ctx, batchBuilder, nil); err != nil {
 			errs = append(errs, common.RemoveStorageObjectError{
-				Error: err,
+				Error: err.Error(),
 			})
 		}
 	}

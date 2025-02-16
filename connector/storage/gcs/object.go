@@ -334,7 +334,7 @@ func (c *Client) RemoveObjects(ctx context.Context, bucketName string, opts *com
 
 			return []common.RemoveStorageObjectError{
 				{
-					Error: err,
+					Error: err.Error(),
 				},
 			}
 		}
@@ -357,7 +357,7 @@ func (c *Client) RemoveObjects(ctx context.Context, bucketName string, opts *com
 				errs = append(errs, common.RemoveStorageObjectError{
 					ObjectName: item.Name,
 					VersionID:  strconv.Itoa(int(item.Generation)),
-					Error:      err,
+					Error:      err.Error(),
 				})
 			}
 		}
@@ -371,7 +371,7 @@ func (c *Client) RemoveObjects(ctx context.Context, bucketName string, opts *com
 				if err != nil {
 					errs = append(errs, common.RemoveStorageObjectError{
 						ObjectName: name,
-						Error:      err,
+						Error:      err.Error(),
 					})
 				}
 
@@ -386,7 +386,7 @@ func (c *Client) RemoveObjects(ctx context.Context, bucketName string, opts *com
 		if err := eg.Wait(); err != nil {
 			return []common.RemoveStorageObjectError{
 				{
-					Error: err,
+					Error: err.Error(),
 				},
 			}
 		}

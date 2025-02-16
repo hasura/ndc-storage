@@ -449,7 +449,7 @@ func (mc *Client) RemoveObjects(ctx context.Context, bucketName string, opts *co
 		errs = append(errs, common.RemoveStorageObjectError{
 			ObjectName: err.ObjectName,
 			VersionID:  err.VersionID,
-			Error:      err.Err,
+			Error:      err.Err.Error(),
 		})
 	}
 

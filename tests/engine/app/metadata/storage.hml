@@ -820,10 +820,8 @@ definition:
           fields:
             error:
               type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: JSON
+                type: named
+                name: String
             objectName:
               type:
                 type: named
