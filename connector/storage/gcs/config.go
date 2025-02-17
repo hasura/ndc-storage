@@ -10,6 +10,7 @@ import (
 	"slices"
 	"strings"
 
+	"cloud.google.com/go/storage"
 	"github.com/hasura/ndc-sdk-go/utils"
 	"github.com/hasura/ndc-storage/connector/storage/common"
 	"github.com/invopop/jsonschema"
@@ -87,7 +88,9 @@ func (cc ClientConfig) toClientOptions(ctx context.Context, logger *slog.Logger)
 			opts = append(opts, option.WithGRPCConnectionPool(cc.GRPCConnPoolSize))
 		}
 	} else if utils.IsDebug(logger) {
-		httpTransport, err := ghttp.NewTransport(ctx, common.NewTransport(logger, port, secure), opts...)
+		transportOpts := append(opts, option.WithScopes(storage.ScopeFullControl, "https://www.googleapis.com/auth/cloud-platform"))
+
+		httpTransport, err := ghttp.NewTransport(ctx, common.NewTransport(logger, port, secure), transportOpts...)
 		if err != nil {
 			return nil, err
 		}
