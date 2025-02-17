@@ -21,17 +21,12 @@ import (
 )
 
 // ListObjects list objects in a bucket.
-func (mc *Client) ListObjects(ctx context.Context, bucketName string, opts *common.ListStorageObjectsOptions, predicate func(string) bool) (*common.StorageObjectListResults, error) { //nolint:funlen
+func (mc *Client) ListObjects(ctx context.Context, bucketName string, opts *common.ListStorageObjectsOptions, predicate func(string) bool) (*common.StorageObjectListResults, error) {
 	ctx, span := mc.startOtelSpan(ctx, "ListObjects", bucketName)
 	defer span.End()
 
 	logger := connector.GetLogger(ctx)
 	maxResults := opts.MaxResults
-	// Do not set the limit if the post-predicate function exists.
-	// Results will be filtered and paginated by the client.
-	if predicate != nil {
-		opts.MaxResults = 0
-	}
 
 	objChan := mc.client.ListObjects(ctx, bucketName, mc.validateListObjectsOptions(span, opts))
 	minioObjects := []minio.ObjectInfo{}
