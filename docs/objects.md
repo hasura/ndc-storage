@@ -18,7 +18,7 @@ query PresignedUploadUrl {
 ```
 
 > [!NOTE]
-> If the host of endpoint is a private DNS the presigned-URL is unable to access. In this case, you must configure the `publicHost` in the client settings.
+> If the endpoint host is a private DNS the presigned-URL cannot be accessed. In this case, you must configure the `publicHost` in the client settings.
 
 ### Direct Upload
 
@@ -68,7 +68,7 @@ query GetSignedDownloadURL {
 ```
 
 > [!NOTE]
-> If the host of endpoint is a private DNS the presigned-URL is unable to access. In this case, you must configure the `publicHost` in the client settings.
+> If the endpoint host is a private DNS the presigned-URL cannot be accessed. In this case, you must configure the `publicHost` in the client settings.
 
 ### Direct Download
 
@@ -205,8 +205,8 @@ query RelayListObjects {
 
 The `storageObjects` collection doesn't return pagination information. You need to get the `name` in the last object to paginate by the `after` cursor.
 
-> [!NOTE] > **Why does `storageObjects` and `storageObjectConnections` operations exist? **
->
+> [!NOTE]
+> **Why do `storageObjects` and `storageObjectConnections` operations exist? **
 > The `storageObjects` collection provides a simpler response structure that PromptQL can query easily. The `storageObjectConnections` function returns a better cursor-based pagination response on but the schema is complicated for PromptQL to understand.
 
 > [!NOTE]
