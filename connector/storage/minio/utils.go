@@ -229,7 +229,6 @@ func (mc *Client) validateListObjectsOptions(span trace.Span, opts *common.ListS
 		WithMetadata: opts.Include.Metadata,
 		Prefix:       opts.Prefix,
 		Recursive:    !opts.Hierarchy,
-		MaxKeys:      opts.MaxResults,
 		StartAfter:   opts.StartAfter,
 	}
 }

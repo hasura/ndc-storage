@@ -17,6 +17,9 @@ query PresignedUploadUrl {
 }
 ```
 
+> [!NOTE]
+> If the host of endpoint is a private DNS the presigned-URL is unable to access. In this case, you must configure the `publicHost` in the client settings.
+
 ### Direct Upload
 
 The object data must be encoded as a base64 string.
@@ -63,6 +66,9 @@ query GetSignedDownloadURL {
   }
 }
 ```
+
+> [!NOTE]
+> If the host of endpoint is a private DNS the presigned-URL is unable to access. In this case, you must configure the `publicHost` in the client settings.
 
 ### Direct Download
 
@@ -118,10 +124,10 @@ query DownloadObjectText {
 You can use either `clientId`, `bucket`, `prefix`, or `where` boolean expression to filter object results. The `where` argument is mainly used for permissions. The filter expression is evaluated twice, before and after fetching the results. Cloud storage APIs usually support filtering by the name prefix only. Other operators (`_contains`, `_icontains`) are filtered from fetched results by pure logic.
 
 ```graphql
-query ListObjects {
+query RelayListObjects {
   storageObjectConnections(
     prefix: "hello"
-    where: { object: { _contains: "world" } }
+    where: { name: { _contains: "world" } }
   ) {
     edges {
       cursor
@@ -135,12 +141,27 @@ query ListObjects {
 }
 ```
 
+In `storageObjects` query, the `prefix` argument doesn't exist. You should use the `_starts_with` operator in the `where` predicate instead.
+
+```graphql
+query ListObjects {
+  storageObjects(
+    where: { name: { _starts_with: "hello", _contains: "world" } }
+  ) {
+    clientId
+    bucket
+    name
+    # ...
+  }
+}
+```
+
 #### Pagination
 
 Relay style suits object listing because most cloud storage services only support cursor-based pagination. The object name is used as the cursor ID.
 
 ```graphql
-query ListObjectConnections {
+query RelayListObjects {
   storageObjectConnections(after: "hello.txt", first: 3) {
     pageInfo {
       hasNextPage
@@ -182,7 +203,14 @@ query ListObjectConnections {
 }
 ```
 
-Or you can use the `storageObjects` collection. The response structure is simpler but some argument isn't functional such as sorting.
+The `storageObjects` collection doesn't return pagination information. You need to get the `name` in the last object to paginate by the `after` cursor.
+
+> [!NOTE] > **Why does `storageObjects` and `storageObjectConnections` operations exist? **
+>
+> The `storageObjects` collection provides a simpler response structure that PromptQL can query easily. The `storageObjectConnections` function returns a better cursor-based pagination response on but the schema is complicated for PromptQL to understand.
+
+> [!NOTE]
+> Sorting isn't supported.
 
 ```graphql
 query ListObjects {

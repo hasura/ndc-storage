@@ -1,6 +1,6 @@
 name: ndc-storage
 version: "${CLI_VERSION}"
-shortDescription: "CLI plugin for Hasura Prometheus data connector"
+shortDescription: "CLI plugin for Hasura Storage data connector"
 homepage: https://github.com/hasura/ndc-storage
 hidden: true
 platforms:
