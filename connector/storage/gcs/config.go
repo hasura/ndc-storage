@@ -88,9 +88,10 @@ func (cc ClientConfig) toClientOptions(ctx context.Context, logger *slog.Logger)
 			opts = append(opts, option.WithGRPCConnectionPool(cc.GRPCConnPoolSize))
 		}
 	} else if utils.IsDebug(logger) {
-		transportOpts := append(opts, option.WithScopes(storage.ScopeFullControl, "https://www.googleapis.com/auth/cloud-platform"))
-
-		httpTransport, err := ghttp.NewTransport(ctx, common.NewTransport(logger, port, secure), transportOpts...)
+		httpTransport, err := ghttp.NewTransport(ctx,
+			common.NewTransport(logger, port, secure),
+			append(opts, option.WithScopes(storage.ScopeFullControl, "https://www.googleapis.com/auth/cloud-platform"))...,
+		)
 		if err != nil {
 			return nil, err
 		}
