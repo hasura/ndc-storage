@@ -8,6 +8,15 @@
         "clientId": "minio",
         "name": "minio-bucket-empty",
         "region": "us-east-1"
+      },
+      "fields": {
+        "fields": {
+          "success": {
+            "column": "success",
+            "type": "column"
+          }
+        },
+        "type": "object"
       }
     }
   ]

@@ -36,7 +36,7 @@ kind: Command
 version: v1
 definition:
   name: UpdateStorageObject
-  outputType: Boolean!
+  outputType: SuccessResponse!
   arguments:
     - name: bucket
       type: String
@@ -45,17 +45,15 @@ definition:
     - name: legalHold
       type: Boolean
     - name: metadata
-      type: Json
+      type: "[StorageKeyValue!]"
     - name: object
       type: String!
     - name: retention
       type: SetStorageObjectRetentionOptions
     - name: tags
-      type: Json
+      type: "[StorageKeyValue!]"
     - name: versionId
       type: String
-    - name: where
-      type: StorageObjectFilterBoolExp
   source:
     dataConnectorName: storage
     dataConnectorCommand:

@@ -3,7 +3,7 @@ kind: Command
 version: v1
 definition:
   name: RemoveStorageBucket
-  outputType: Boolean!
+  outputType: SuccessResponse!
   arguments:
     - name: bucket
       type: String

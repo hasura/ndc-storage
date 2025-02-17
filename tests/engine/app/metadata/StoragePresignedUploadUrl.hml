@@ -10,11 +10,9 @@ definition:
     - name: clientId
       type: StorageClientId
     - name: expiry
-      type: Duration
+      type: DurationString
     - name: object
       type: String!
-    - name: where
-      type: StorageObjectFilterBoolExp
   source:
     dataConnectorName: storage
     dataConnectorCommand:

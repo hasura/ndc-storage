@@ -1,0 +1,44 @@
+[
+  {
+    "rows": [
+      {
+        "__value": {
+          "edges": [
+            {
+              "cursor": "gcs-bucket",
+              "node": {
+                "autoclass": null,
+                "clientId": "gcs",
+                "cors": [],
+                "customPlacementConfig": null,
+                "defaultEventBasedHold": false,
+                "encryption": null,
+                "etag": "RVRhZw==",
+                "hierarchicalNamespace": null,
+                "lifecycle": { "rules": [] },
+                "locationType": "region",
+                "logging": null,
+                "name": "gcs-bucket",
+                "objectLock": null,
+                "region": "US-CENTRAL1",
+                "requesterPays": false,
+                "rpo": null,
+                "softDeletePolicy": null,
+                "storageClass": "STANDARD",
+                "tags": [],
+                "versioning": {
+                  "enabled": false,
+                  "excludeFolders": null,
+                  "excludedPrefixes": null,
+                  "mfaDelete": null
+                },
+                "website": null
+              }
+            }
+          ],
+          "pageInfo": { "hasNextPage": false }
+        }
+      }
+    ]
+  }
+]

@@ -7,6 +7,15 @@
       "arguments": {
         "clientId": "gcs",
         "bucket": "gcs-bucket"
+      },
+      "fields": {
+        "fields": {
+          "success": {
+            "column": "success",
+            "type": "column"
+          }
+        },
+        "type": "object"
       }
     }
   ]

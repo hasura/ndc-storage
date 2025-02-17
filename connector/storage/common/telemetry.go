@@ -63,7 +63,7 @@ func SetObjectInfoSpanAttributes(span trace.Span, object *StorageObject) {
 		span.SetAttributes(attribute.Int("storage.object.metadata_count", len(object.Metadata)))
 	}
 
-	if !object.Expires.IsZero() {
+	if object.Expires != nil && !object.Expires.IsZero() {
 		span.SetAttributes(attribute.String("storage.object.expires", object.Expires.Format(time.RFC3339)))
 	}
 

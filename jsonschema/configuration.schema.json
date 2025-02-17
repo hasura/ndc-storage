@@ -268,7 +268,7 @@
                       "description": "the path of a file containing a Kubernetes service account token"
                     },
                     "audience": {
-                      "type": "#/$defs/EnvString",
+                      "$ref": "#/$defs/EnvString",
                       "description": "Audience to use when requesting tokens for Azure Active Directory authentication"
                     },
                     "disableInstanceDiscovery": {
@@ -451,6 +451,9 @@
         },
         "runtime": {
           "$ref": "#/$defs/RuntimeSettings"
+        },
+        "generator": {
+          "$ref": "#/$defs/GeneratorSettings"
         }
       },
       "additionalProperties": false,
@@ -482,6 +485,19 @@
         }
       },
       "type": "object"
+    },
+    "GeneratorSettings": {
+      "properties": {
+        "promptqlCompatible": {
+          "type": "boolean",
+          "default": false
+        }
+      },
+      "additionalProperties": false,
+      "type": "object",
+      "required": [
+        "promptqlCompatible"
+      ]
     },
     "RuntimeSettings": {
       "properties": {

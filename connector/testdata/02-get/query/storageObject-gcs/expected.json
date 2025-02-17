@@ -8,8 +8,8 @@
           "acl": [
             {
               "entity": "projectOwner-test-project",
-              "projectTeam": {},
-              "role": "OWNER"
+              "role": "OWNER",
+              "projectTeam": {}
             }
           ],
           "archiveStatus": null,
@@ -47,14 +47,14 @@
           "leaseStatus": null,
           "legalHold": false,
           "mediaLink": "http://0.0.0.0:4443/download/storage/v1/b/gcs-bucket/o/public%2Fhello.txt?alt=media",
-          "metadata": {
-            "Foo": "gcp-baz",
-            "UserID": "3"
-          },
+          "metadata": [
+            { "key": "Foo", "value": "gcp-baz" },
+            { "key": "UserID", "value": "3" }
+          ],
           "name": "public/hello.txt",
           "owner": null,
           "permissions": null,
-          "rawMetadata": null,
+          "rawMetadata": [],
           "rehydratePriority": null,
           "remainingRetentionDays": null,
           "replicationReady": null,
@@ -68,7 +68,7 @@
           "size": 10,
           "storageClass": "Cool",
           "tagCount": 0,
-          "tags": null
+          "tags": []
         }
       }
     ]

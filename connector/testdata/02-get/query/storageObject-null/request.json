@@ -19,7 +19,7 @@
         "expressions": [
           {
             "type": "binary_comparison_operator",
-            "column": { "type": "column", "name": "object", "path": [] },
+            "column": { "type": "column", "name": "name", "path": [] },
             "operator": "_starts_with",
             "value": { "type": "scalar", "value": "not-found" }
           },
@@ -257,6 +257,22 @@
             },
             "metadata": {
               "column": "metadata",
+              "fields": {
+                "fields": {
+                  "fields": {
+                    "key": {
+                      "column": "key",
+                      "type": "column"
+                    },
+                    "value": {
+                      "column": "value",
+                      "type": "column"
+                    }
+                  },
+                  "type": "object"
+                },
+                "type": "array"
+              },
               "type": "column"
             },
             "name": {
@@ -286,6 +302,22 @@
             },
             "rawMetadata": {
               "column": "rawMetadata",
+              "fields": {
+                "fields": {
+                  "fields": {
+                    "key": {
+                      "column": "key",
+                      "type": "column"
+                    },
+                    "value": {
+                      "column": "value",
+                      "type": "column"
+                    }
+                  },
+                  "type": "object"
+                },
+                "type": "array"
+              },
               "type": "column"
             },
             "rehydratePriority": {
@@ -355,6 +387,22 @@
             },
             "tags": {
               "column": "tags",
+              "fields": {
+                "fields": {
+                  "fields": {
+                    "key": {
+                      "column": "key",
+                      "type": "column"
+                    },
+                    "value": {
+                      "column": "value",
+                      "type": "column"
+                    }
+                  },
+                  "type": "object"
+                },
+                "type": "array"
+              },
               "type": "column"
             },
             "versionId": {

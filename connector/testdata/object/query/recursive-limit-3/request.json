@@ -1,24 +1,7 @@
 {
   "collection": "storageObjects",
   "arguments": {
-    "hierarchy": { "type": "literal", "value": false },
-    "first": { "type": "literal", "value": 3 },
-    "bucket": { "type": "literal", "value": "dummy-bucket-0" },
-    "prefix": { "type": "literal", "value": "movies" },
-    "where": {
-      "type": "literal",
-      "value": {
-        "type": "and",
-        "expressions": [
-          {
-            "type": "binary_comparison_operator",
-            "column": { "type": "column", "name": "clientId", "path": [] },
-            "operator": "_eq",
-            "value": { "type": "variable", "name": "$clientId" }
-          }
-        ]
-      }
-    }
+    "hierarchy": { "type": "literal", "value": false }
   },
   "variables": [
     { "$clientId": "minio" },
@@ -28,77 +11,54 @@
   "collection_relationships": {},
   "query": {
     "fields": {
-      "__value": {
-        "column": "__value",
-        "fields": {
-          "fields": {
-            "edges": {
-              "column": "edges",
-              "fields": {
-                "fields": {
-                  "fields": {
-                    "cursor": {
-                      "column": "cursor",
-                      "type": "column"
-                    },
-                    "node": {
-                      "column": "node",
-                      "fields": {
-                        "fields": {
-                          "bucket": {
-                            "column": "bucket",
-                            "type": "column"
-                          },
-                          "clientId": {
-                            "column": "clientId",
-                            "type": "column"
-                          },
-                          "isDirectory": {
-                            "column": "isDirectory",
-                            "type": "column"
-                          },
-                          "name": {
-                            "column": "name",
-                            "type": "column"
-                          },
-                          "size": {
-                            "column": "size",
-                            "type": "column"
-                          },
-                          "storageClass": {
-                            "column": "storageClass",
-                            "type": "column"
-                          }
-                        },
-                        "type": "object"
-                      },
-                      "type": "column"
-                    }
-                  },
-                  "type": "object"
-                },
-                "type": "array"
-              },
-              "type": "column"
-            },
-            "pageInfo": {
-              "column": "pageInfo",
-              "fields": {
-                "fields": {
-                  "hasNextPage": {
-                    "column": "hasNextPage",
-                    "type": "column"
-                  }
-                },
-                "type": "object"
-              },
-              "type": "column"
-            }
-          },
-          "type": "object"
-        },
+      "bucket": {
+        "column": "bucket",
+        "type": "column"
+      },
+      "clientId": {
+        "column": "clientId",
+        "type": "column"
+      },
+      "isDirectory": {
+        "column": "isDirectory",
+        "type": "column"
+      },
+      "name": {
+        "column": "name",
+        "type": "column"
+      },
+      "size": {
+        "column": "size",
+        "type": "column"
+      },
+      "storageClass": {
+        "column": "storageClass",
         "type": "column"
       }
+    },
+    "limit": 3,
+    "predicate": {
+      "type": "and",
+      "expressions": [
+        {
+          "type": "binary_comparison_operator",
+          "column": { "type": "column", "name": "clientId", "path": [] },
+          "operator": "_eq",
+          "value": { "type": "variable", "name": "$clientId" }
+        },
+        {
+          "type": "binary_comparison_operator",
+          "column": { "type": "column", "name": "bucket", "path": [] },
+          "operator": "_eq",
+          "value": { "type": "scalar", "value": "dummy-bucket-0" }
+        },
+        {
+          "type": "binary_comparison_operator",
+          "column": { "type": "column", "name": "name", "path": [] },
+          "operator": "_starts_with",
+          "value": { "type": "scalar", "value": "movies" }
+        }
+      ]
     }
   }
 }

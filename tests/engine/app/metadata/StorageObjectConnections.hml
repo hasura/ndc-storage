@@ -1,0 +1,153 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: StorageObjectFilter
+  fields:
+    - name: bucket
+      type: StorageBucketName!
+    - name: clientId
+      type: StorageClientId!
+    - name: name
+      type: StorageStringFilter!
+  graphql:
+    typeName: StorageObjectFilter
+    inputTypeName: StorageObjectFilterInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: storage
+      dataConnectorObjectType: StorageObjectFilter
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: StorageObjectFilter
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - bucket
+          - clientId
+          - name
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: StorageObjectFilterBoolExp
+  operand:
+    object:
+      type: StorageObjectFilter
+      comparableFields:
+        - fieldName: bucket
+          booleanExpressionType: StorageBucketNameBoolExp
+        - fieldName: clientId
+          booleanExpressionType: StorageClientIdBoolExp
+        - fieldName: name
+          booleanExpressionType: StorageStringFilterBoolExp
+      comparableRelationships: []
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: StorageObjectFilterBoolExp
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: StorageConnectionEdgeStorageObject
+  description: the connection information of the relay pagination response.
+  fields:
+    - name: cursor
+      type: String!
+    - name: node
+      type: StorageObject!
+  graphql:
+    typeName: StorageConnectionEdgeStorageObject
+    inputTypeName: StorageConnectionEdgeStorageObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: storage
+      dataConnectorObjectType: StorageConnectionEdge_StorageObject
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: StorageConnectionEdgeStorageObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - cursor
+          - node
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: StorageConnectionStorageObject
+  fields:
+    - name: edges
+      type: "[StorageConnectionEdgeStorageObject!]!"
+    - name: pageInfo
+      type: StoragePaginationInfo!
+  graphql:
+    typeName: StorageConnectionStorageObject
+    inputTypeName: StorageConnectionStorageObjectInput
+  dataConnectorTypeMapping:
+    - dataConnectorName: storage
+      dataConnectorObjectType: StorageConnection_StorageObject
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: StorageConnectionStorageObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - edges
+          - pageInfo
+
+---
+kind: Command
+version: v1
+definition:
+  name: StorageObjectConnections
+  outputType: StorageConnectionStorageObject!
+  arguments:
+    - name: after
+      type: String
+    - name: bucket
+      type: String
+    - name: clientId
+      type: StorageClientId
+    - name: first
+      type: Int32
+    - name: hierarchy
+      type: Boolean
+    - name: prefix
+      type: String
+    - name: where
+      type: StorageObjectFilterBoolExp
+  source:
+    dataConnectorName: storage
+    dataConnectorCommand:
+      function: storageObjectConnections
+  graphql:
+    rootFieldName: storageObjectConnections
+    rootFieldKind: Query
+  description: lists objects in a bucket using the relay style.
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: StorageObjectConnections
+  permissions:
+    - role: admin
+      allowExecution: true
+

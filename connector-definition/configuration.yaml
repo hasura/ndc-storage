@@ -22,3 +22,5 @@ concurrency:
   mutation: 1
 runtime:
   maxDownloadSizeMBs: 20
+generator:
+  promptqlCompatible: false

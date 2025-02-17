@@ -8,10 +8,25 @@
         "clientId": "gcs",
         "bucket": "gcs-bucket",
         "object": "public/hello.txt",
-        "metadata": {
-          "Foo": "gcp-baz",
-          "UserID": "3"
-        }
+        "metadata": [
+          {
+            "key": "Foo",
+            "value": "gcp-baz"
+          },
+          {
+            "key": "UserID",
+            "value": "3"
+          }
+        ]
+      },
+      "fields": {
+        "fields": {
+          "success": {
+            "column": "success",
+            "type": "column"
+          }
+        },
+        "type": "object"
       }
     }
   ]

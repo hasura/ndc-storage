@@ -7,9 +7,21 @@
       "arguments": {
         "clientId": "azblob",
         "bucket": "azblob-bucket-test",
-        "tags": {
-          "Foo": "baz"
-        }
+        "tags": [
+          {
+            "key": "Foo",
+            "value": "baz"
+          }
+        ]
+      },
+      "fields": {
+        "fields": {
+          "success": {
+            "column": "success",
+            "type": "column"
+          }
+        },
+        "type": "object"
       }
     }
   ]

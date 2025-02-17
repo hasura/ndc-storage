@@ -35,6 +35,9 @@ func TestConnectorQueries(t *testing.T) {
 					"clientId": "%s",
 					"name": "dummy-bucket-%d"
 				}`, cid, i)),
+					Fields: schema.NewNestedObject(map[string]schema.FieldEncoder{
+						"success": schema.NewColumnField("success", nil),
+					}).Encode(),
 				})
 			}
 
@@ -84,11 +87,17 @@ func TestConnectorQueries(t *testing.T) {
 						"contentType":        "application/json",
 						"expires":            "2099-01-01T00:00:00Z",
 						"sendContentMd5":     true,
-						"metadata": map[string]any{
-							"Foo": "Baz",
+						"metadata": []map[string]any{
+							{
+								"key":   "Foo",
+								"value": "Bar",
+							},
 						},
-						"tags": map[string]any{
-							"category": "movie",
+						"tags": []map[string]any{
+							{
+								"key":   "category",
+								"value": "movie",
+							},
 						},
 					},
 				}
@@ -160,11 +169,20 @@ func TestMaxDownloadSizeValidation(t *testing.T) {
 			}
 		},
 		"collection": "%s",
-		"collection_relationships": {},
+		"collection_relationships": {},	
 		"query": {
 			"fields": {
 				"__value": {
 					"column": "__value",
+					"fields": {
+						"fields": {
+							"data": {
+								"column": "data",
+								"type": "column"
+							}
+						},
+						"type": "object"
+					},
 					"type": "column"
 				}
 			}

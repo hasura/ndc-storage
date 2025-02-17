@@ -1,0 +1,125 @@
+[
+  {
+    "rows": [
+      {
+        "__value": {
+          "edges": [
+            {
+              "cursor": "dummy-bucket-0",
+              "node": {
+                "clientId": "minio",
+                "etag": null,
+                "name": "dummy-bucket-0",
+                "storageClass": null,
+                "tags": []
+              }
+            },
+            {
+              "cursor": "dummy-bucket-1",
+              "node": {
+                "clientId": "minio",
+                "etag": null,
+                "name": "dummy-bucket-1",
+                "storageClass": null,
+                "tags": []
+              }
+            },
+            {
+              "cursor": "dummy-bucket-2",
+              "node": {
+                "clientId": "minio",
+                "etag": null,
+                "name": "dummy-bucket-2",
+                "storageClass": null,
+                "tags": []
+              }
+            }
+          ],
+          "pageInfo": { "hasNextPage": true }
+        }
+      }
+    ]
+  },
+  {
+    "rows": [
+      {
+        "__value": {
+          "edges": [
+            {
+              "cursor": "dummy-bucket-0",
+              "node": {
+                "clientId": "azblob",
+                "etag": null,
+                "name": "dummy-bucket-0",
+                "storageClass": null,
+                "tags": []
+              }
+            },
+            {
+              "cursor": "dummy-bucket-1",
+              "node": {
+                "clientId": "azblob",
+                "etag": null,
+                "name": "dummy-bucket-1",
+                "storageClass": null,
+                "tags": []
+              }
+            },
+            {
+              "cursor": "dummy-bucket-2",
+              "node": {
+                "clientId": "azblob",
+                "etag": null,
+                "name": "dummy-bucket-2",
+                "storageClass": null,
+                "tags": []
+              }
+            }
+          ],
+          "pageInfo": { "hasNextPage": true }
+        }
+      }
+    ]
+  },
+  {
+    "rows": [
+      {
+        "__value": {
+          "edges": [
+            {
+              "cursor": "dummy-bucket-0",
+              "node": {
+                "clientId": "gcs",
+                "etag": "RVRhZw==",
+                "name": "dummy-bucket-0",
+                "storageClass": "STANDARD",
+                "tags": []
+              }
+            },
+            {
+              "cursor": "dummy-bucket-1",
+              "node": {
+                "clientId": "gcs",
+                "etag": "RVRhZw==",
+                "name": "dummy-bucket-1",
+                "storageClass": "STANDARD",
+                "tags": []
+              }
+            },
+            {
+              "cursor": "dummy-bucket-2",
+              "node": {
+                "clientId": "gcs",
+                "etag": "RVRhZw==",
+                "name": "dummy-bucket-2",
+                "storageClass": "STANDARD",
+                "tags": []
+              }
+            }
+          ],
+          "pageInfo": { "hasNextPage": true }
+        }
+      }
+    ]
+  }
+]

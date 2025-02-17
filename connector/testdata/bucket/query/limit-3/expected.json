@@ -2,123 +2,75 @@
   {
     "rows": [
       {
-        "__value": {
-          "edges": [
-            {
-              "cursor": "dummy-bucket-0",
-              "node": {
-                "clientId": "minio",
-                "etag": null,
-                "name": "dummy-bucket-0",
-                "storageClass": null,
-                "tags": null
-              }
-            },
-            {
-              "cursor": "dummy-bucket-1",
-              "node": {
-                "clientId": "minio",
-                "etag": null,
-                "name": "dummy-bucket-1",
-                "storageClass": null,
-                "tags": null
-              }
-            },
-            {
-              "cursor": "dummy-bucket-2",
-              "node": {
-                "clientId": "minio",
-                "etag": null,
-                "name": "dummy-bucket-2",
-                "storageClass": null,
-                "tags": null
-              }
-            }
-          ],
-          "pageInfo": { "hasNextPage": true }
-        }
+        "clientId": "minio",
+        "etag": null,
+        "name": "dummy-bucket-0",
+        "storageClass": null,
+        "tags": []
+      },
+      {
+        "clientId": "minio",
+        "etag": null,
+        "name": "dummy-bucket-1",
+        "storageClass": null,
+        "tags": []
+      },
+      {
+        "clientId": "minio",
+        "etag": null,
+        "name": "dummy-bucket-2",
+        "storageClass": null,
+        "tags": []
       }
     ]
   },
   {
     "rows": [
       {
-        "__value": {
-          "edges": [
-            {
-              "cursor": "dummy-bucket-0",
-              "node": {
-                "clientId": "azblob",
-                "etag": null,
-                "name": "dummy-bucket-0",
-                "storageClass": null,
-                "tags": null
-              }
-            },
-            {
-              "cursor": "dummy-bucket-1",
-              "node": {
-                "clientId": "azblob",
-                "etag": null,
-                "name": "dummy-bucket-1",
-                "storageClass": null,
-                "tags": null
-              }
-            },
-            {
-              "cursor": "dummy-bucket-2",
-              "node": {
-                "clientId": "azblob",
-                "etag": null,
-                "name": "dummy-bucket-2",
-                "storageClass": null,
-                "tags": null
-              }
-            }
-          ],
-          "pageInfo": { "hasNextPage": true }
-        }
+        "clientId": "azblob",
+        "etag": null,
+        "name": "dummy-bucket-0",
+        "storageClass": null,
+        "tags": []
+      },
+      {
+        "clientId": "azblob",
+        "etag": null,
+        "name": "dummy-bucket-1",
+        "storageClass": null,
+        "tags": []
+      },
+      {
+        "clientId": "azblob",
+        "etag": null,
+        "name": "dummy-bucket-2",
+        "storageClass": null,
+        "tags": []
       }
     ]
   },
   {
     "rows": [
       {
-        "__value": {
-          "edges": [
-            {
-              "cursor": "dummy-bucket-0",
-              "node": {
-                "clientId": "gcs",
-                "etag": "RVRhZw==",
-                "name": "dummy-bucket-0",
-                "storageClass": "STANDARD",
-                "tags": null
-              }
-            },
-            {
-              "cursor": "dummy-bucket-1",
-              "node": {
-                "clientId": "gcs",
-                "etag": "RVRhZw==",
-                "name": "dummy-bucket-1",
-                "storageClass": "STANDARD",
-                "tags": null
-              }
-            },
-            {
-              "cursor": "dummy-bucket-2",
-              "node": {
-                "clientId": "gcs",
-                "etag": "RVRhZw==",
-                "name": "dummy-bucket-2",
-                "storageClass": "STANDARD",
-                "tags": null
-              }
-            }
-          ],
-          "pageInfo": { "hasNextPage": true }
-        }
+        "clientId": "gcs",
+        "etag": "RVRhZw==",
+        "name": "dummy-bucket-0",
+        "storageClass": "STANDARD",
+        "tags": []
+      },
+      {
+        "clientId": "gcs",
+        "etag": "RVRhZw==",
+        "name": "dummy-bucket-1",
+        "storageClass": "STANDARD",
+        "tags": []
+      },
+      {
+        "clientId": "gcs",
+        "etag": "RVRhZw==",
+        "name": "dummy-bucket-2",
+        "storageClass": "STANDARD",
+        "tags": []
       }
     ]
   }

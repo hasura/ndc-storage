@@ -20,7 +20,7 @@ func (c *Client) MakeBucket(ctx context.Context, args *common.MakeStorageBucketO
 
 	attrs := &storage.BucketAttrs{
 		Location: args.Region,
-		Labels:   args.Tags,
+		Labels:   common.KeyValuesToStringMap(args.Tags),
 		Name:     args.Name,
 	}
 
@@ -158,18 +158,21 @@ func (c *Client) UpdateBucket(ctx context.Context, bucketName string, opts commo
 	inputAttrs := storage.BucketAttrsToUpdate{}
 
 	if opts.Tags != nil {
-		for key, value := range opts.Tags {
-			span.SetAttributes(attribute.String("storage.bucket_tag"+key, value))
+		tagKeys := map[string]bool{}
+		for _, item := range *opts.Tags {
+			tagKeys[item.Key] = true
+
+			span.SetAttributes(attribute.String("storage.bucket_tag"+item.Key, item.Value))
 		}
 
 		for key := range attrs.Labels {
-			if _, ok := opts.Tags[key]; !ok {
+			if _, ok := tagKeys[key]; !ok {
 				inputAttrs.DeleteLabel(key)
 			}
 		}
 
-		for key, value := range opts.Tags {
-			inputAttrs.SetLabel(key, value)
+		for _, item := range *opts.Tags {
+			inputAttrs.SetLabel(item.Key, item.Value)
 		}
 	}
 

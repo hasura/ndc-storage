@@ -1,0 +1,134 @@
+[
+  {
+    "rows": [
+      {
+        "__value": {
+          "edges": [
+            {
+              "cursor": "movies/1930s/movies.json",
+              "node": {
+                "bucket": "dummy-bucket-0",
+                "clientId": "minio",
+                "isDirectory": false,
+                "name": "movies/1930s/movies.json",
+                "size": 2921862,
+                "storageClass": "STANDARD"
+              }
+            },
+            {
+              "cursor": "movies/1940s/movies.json",
+              "node": {
+                "bucket": "dummy-bucket-0",
+                "clientId": "minio",
+                "isDirectory": false,
+                "name": "movies/1940s/movies.json",
+                "size": 2972875,
+                "storageClass": "STANDARD"
+              }
+            },
+            {
+              "cursor": "movies/1950s/movies.json",
+              "node": {
+                "bucket": "dummy-bucket-0",
+                "clientId": "minio",
+                "isDirectory": false,
+                "name": "movies/1950s/movies.json",
+                "size": 2123294,
+                "storageClass": "STANDARD"
+              }
+            }
+          ],
+          "pageInfo": { "hasNextPage": true }
+        }
+      }
+    ]
+  },
+  {
+    "rows": [
+      {
+        "__value": {
+          "edges": [
+            {
+              "cursor": "movies/1930s/movies.json",
+              "node": {
+                "bucket": "dummy-bucket-0",
+                "clientId": "azblob",
+                "isDirectory": false,
+                "name": "movies/1930s/movies.json",
+                "size": 2921862,
+                "storageClass": "Hot"
+              }
+            },
+            {
+              "cursor": "movies/1940s/movies.json",
+              "node": {
+                "bucket": "dummy-bucket-0",
+                "clientId": "azblob",
+                "isDirectory": false,
+                "name": "movies/1940s/movies.json",
+                "size": 2972875,
+                "storageClass": "Hot"
+              }
+            },
+            {
+              "cursor": "movies/1950s/movies.json",
+              "node": {
+                "bucket": "dummy-bucket-0",
+                "clientId": "azblob",
+                "isDirectory": false,
+                "name": "movies/1950s/movies.json",
+                "size": 2123294,
+                "storageClass": "Hot"
+              }
+            }
+          ],
+          "pageInfo": { "hasNextPage": true }
+        }
+      }
+    ]
+  },
+  {
+    "rows": [
+      {
+        "__value": {
+          "edges": [
+            {
+              "cursor": "movies/1930s/movies.json",
+              "node": {
+                "bucket": "dummy-bucket-0",
+                "clientId": "gcs",
+                "isDirectory": false,
+                "name": "movies/1930s/movies.json",
+                "size": 2921862,
+                "storageClass": "STANDARD"
+              }
+            },
+            {
+              "cursor": "movies/1940s/movies.json",
+              "node": {
+                "bucket": "dummy-bucket-0",
+                "clientId": "gcs",
+                "isDirectory": false,
+                "name": "movies/1940s/movies.json",
+                "size": 2972875,
+                "storageClass": "STANDARD"
+              }
+            },
+            {
+              "cursor": "movies/1950s/movies.json",
+              "node": {
+                "bucket": "dummy-bucket-0",
+                "clientId": "gcs",
+                "isDirectory": false,
+                "name": "movies/1950s/movies.json",
+                "size": 2123294,
+                "storageClass": "STANDARD"
+              }
+            }
+          ],
+          "pageInfo": { "hasNextPage": true }
+        }
+      }
+    ]
+  }
+]

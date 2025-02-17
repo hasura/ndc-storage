@@ -25,8 +25,8 @@ func (c *Client) MakeBucket(ctx context.Context, args *common.MakeStorageBucketO
 		Metadata: map[string]*string{},
 	}
 
-	for key, value := range args.Tags {
-		options.Metadata[key] = &value
+	for _, item := range args.Tags {
+		options.Metadata[item.Key] = &item.Value
 	}
 
 	_, err := c.client.CreateContainer(ctx, args.Name, options)
@@ -95,13 +95,12 @@ L:
 				result.Name = *container.Name
 			}
 
-			if container.Metadata != nil {
-				result.Tags = map[string]string{}
-
-				for key, value := range container.Metadata {
-					if value != nil {
-						result.Tags[key] = *value
-					}
+			for key, value := range container.Metadata {
+				if value != nil {
+					result.Tags = append(result.Tags, common.StorageKeyValue{
+						Key:   key,
+						Value: *value,
+					})
 				}
 			}
 
@@ -216,13 +215,12 @@ func (c *Client) getBucket(ctx context.Context, bucketName string, options commo
 				result.Name = *container.Name
 			}
 
-			if container.Metadata != nil {
-				result.Tags = map[string]string{}
-
-				for key, value := range container.Metadata {
-					if value != nil {
-						result.Tags[key] = *value
-					}
+			for key, value := range container.Metadata {
+				if value != nil {
+					result.Tags = append(result.Tags, common.StorageKeyValue{
+						Key:   key,
+						Value: *value,
+					})
 				}
 			}
 
@@ -243,7 +241,7 @@ func (c *Client) UpdateBucket(ctx context.Context, bucketName string, opts commo
 	defer span.End()
 
 	if opts.Tags != nil {
-		if err := c.SetBucketTagging(ctx, bucketName, opts.Tags); err != nil {
+		if err := c.SetBucketTagging(ctx, bucketName, common.KeyValuesToStringMap(*opts.Tags)); err != nil {
 			return err
 		}
 	}

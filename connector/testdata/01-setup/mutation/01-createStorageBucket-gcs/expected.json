@@ -1,7 +1,9 @@
 {
   "operation_results": [
     {
-      "result": true,
+      "result": {
+        "success": true
+      },
       "type": "procedure"
     }
   ]

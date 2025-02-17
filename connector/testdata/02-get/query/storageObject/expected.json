@@ -40,21 +40,45 @@
           "leaseStatus": null,
           "legalHold": null,
           "mediaLink": null,
-          "metadata": {
-            "Foo": "Bar"
-          },
+          "metadata": [
+            {
+              "key": "Foo",
+              "value": "Bar"
+            }
+          ],
           "name": "public/hello.txt",
           "owner": null,
           "permissions": null,
-          "rawMetadata": {
-            "Cache-Control": "max-age=180, public",
-            "Content-Disposition": "attachment",
-            "Content-Encoding": "gzip",
-            "Content-Language": "en-US",
-            "Content-Type": "text/plain",
-            "X-Amz-Meta-Foo": "Bar",
-            "X-Amz-Tagging-Count": "1"
-          },
+          "rawMetadata": [
+            {
+              "key": "Cache-Control",
+              "value": "max-age=180, public"
+            },
+            {
+              "key": "Content-Disposition",
+              "value": "attachment"
+            },
+            {
+              "key": "Content-Encoding",
+              "value": "gzip"
+            },
+            {
+              "key": "Content-Language",
+              "value": "en-US"
+            },
+            {
+              "key": "Content-Type",
+              "value": "text/plain"
+            },
+            {
+              "key": "X-Amz-Meta-Foo",
+              "value": "Bar"
+            },
+            {
+              "key": "X-Amz-Tagging-Count",
+              "value": "1"
+            }
+          ],
           "rehydratePriority": null,
           "remainingRetentionDays": null,
           "replicationReady": false,
@@ -68,9 +92,12 @@
           "size": 10,
           "storageClass": null,
           "tagCount": 1,
-          "tags": {
-            "UserID": "1"
-          }
+          "tags": [
+            {
+              "key": "UserID",
+              "value": "1"
+            }
+          ]
         }
       }
     ]

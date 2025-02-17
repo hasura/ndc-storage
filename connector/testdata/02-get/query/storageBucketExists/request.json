@@ -15,6 +15,15 @@
     "fields": {
       "__value": {
         "column": "__value",
+        "fields": {
+          "fields": {
+            "exists": {
+              "column": "exists",
+              "type": "column"
+            }
+          },
+          "type": "object"
+        },
         "type": "column"
       }
     }

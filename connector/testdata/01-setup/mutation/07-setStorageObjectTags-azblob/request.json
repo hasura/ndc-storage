@@ -7,10 +7,25 @@
       "arguments": {
         "bucket": "azblob-bucket-test",
         "object": "public/hello.txt",
-        "tags": {
-          "Foo": "baz",
-          "UserID": "3"
-        }
+        "tags": [
+          {
+            "key": "Foo",
+            "value": "baz"
+          },
+          {
+            "key": "UserID",
+            "value": "3"
+          }
+        ]
+      },
+      "fields": {
+        "fields": {
+          "success": {
+            "column": "success",
+            "type": "column"
+          }
+        },
+        "type": "object"
       }
     }
   ]

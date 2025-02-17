@@ -7,6 +7,12 @@ import (
 	"github.com/hasura/ndc-sdk-go/schema"
 )
 
+// StorageKeyValue represent a key-value string pair
+type StorageKeyValue struct {
+	Key   string `json:"key"`
+	Value string `json:"value"`
+}
+
 // ListStorageBucketArguments represent the input arguments for the ListBuckets methods.
 type ListStorageBucketArguments struct {
 	// The storage client ID.
@@ -67,7 +73,7 @@ type MakeStorageBucketOptions struct {
 	// Enable object locking
 	ObjectLock bool `json:"objectLock,omitempty"`
 	// Optional tags
-	Tags map[string]string `json:"tags,omitempty"`
+	Tags []StorageKeyValue `json:"tags,omitempty"`
 }
 
 // ListIncompleteUploadsArguments the input arguments of the ListIncompleteUploads method.
@@ -99,17 +105,17 @@ type PresignedGetStorageObjectArguments struct {
 
 // PresignedGetStorageObjectOptions represent the options for the PresignedGetObject method.
 type PresignedGetStorageObjectOptions struct {
-	Expiry        *scalar.Duration    `json:"expiry"`
-	RequestParams map[string][]string `json:"requestParams,omitempty"`
+	Expiry        *scalar.DurationString `json:"expiry"`
+	RequestParams []StorageKeyValue      `json:"requestParams,omitempty"`
 }
 
 // PresignedPutStorageObjectArguments represent the input arguments for the PresignedPutObject method.
 type PresignedPutStorageObjectArguments struct {
 	StorageBucketArguments
 
-	Object string            `json:"object"`
-	Expiry *scalar.Duration  `json:"expiry"`
-	Where  schema.Expression `json:"where"  ndc:"predicate=StorageObjectFilter"`
+	Object string                 `json:"object"`
+	Expiry *scalar.DurationString `json:"expiry"`
+	Where  schema.Expression      `json:"where"  ndc:"predicate=StorageObjectFilter"`
 }
 
 // ListStorageObjectsArguments holds all arguments of a list object request.
@@ -185,8 +191,8 @@ type GetStorageObjectArguments struct {
 
 // GetStorageObjectOptions are used to specify additional headers or options during GET requests.
 type GetStorageObjectOptions struct {
-	Headers       map[string]string   `json:"headers,omitempty"`
-	RequestParams map[string][]string `json:"requestParams,omitempty"`
+	Headers       []StorageKeyValue `json:"headers,omitempty"`
+	RequestParams []StorageKeyValue `json:"requestParams,omitempty"`
 	// ServerSideEncryption *ServerSideEncryptionMethod `json:"serverSideEncryption"`
 	VersionID  *string `json:"versionId"`
 	PartNumber *int    `json:"partNumber"`
@@ -214,10 +220,10 @@ type StorageCopyDestOptions struct {
 	// if no user-metadata is provided, it is copied from source
 	// (when there is only once source object in the compose
 	// request)
-	Metadata map[string]string `json:"metadata,omitempty"`
+	Metadata []StorageKeyValue `json:"metadata,omitempty"`
 
 	// `tags` is the user defined object tags to be set on destination.
-	Tags map[string]string `json:"tags,omitempty"`
+	Tags []StorageKeyValue `json:"tags,omitempty"`
 
 	// Specifies whether you want to apply a Legal Hold to the copied object.
 	LegalHold *bool `json:"legalHold"`
@@ -279,8 +285,8 @@ type UpdateStorageObjectOptions struct {
 	VersionID string                            `json:"versionId,omitempty"`
 	Retention *SetStorageObjectRetentionOptions `json:"retention"`
 	LegalHold *bool                             `json:"legalHold"`
-	Metadata  map[string]string                 `json:"metadata,omitempty"`
-	Tags      map[string]string                 `json:"tags,omitempty"`
+	Metadata  *[]StorageKeyValue                `json:"metadata"`
+	Tags      *[]StorageKeyValue                `json:"tags"`
 }
 
 // IsEmpty checks if all elements in the option object is null.
@@ -323,8 +329,8 @@ type PutStorageObjectRetentionOptions struct {
 
 // PutStorageObjectOptions represents options specified by user for PutObject call.
 type PutStorageObjectOptions struct {
-	Metadata           map[string]string                 `json:"metadata,omitempty"`
-	Tags               map[string]string                 `json:"tags,omitempty"`
+	Metadata           []StorageKeyValue                 `json:"metadata,omitempty"`
+	Tags               []StorageKeyValue                 `json:"tags,omitempty"`
 	ContentType        string                            `json:"contentType,omitempty"`
 	ContentEncoding    string                            `json:"contentEncoding,omitempty"`
 	ContentDisposition string                            `json:"contentDisposition,omitempty"`
@@ -362,8 +368,8 @@ type PutStorageObjectOptions struct {
 
 // PresignedURLResponse holds the presigned URL and expiry information.
 type PresignedURLResponse struct {
-	URL       string `json:"url"`
-	ExpiredAt string `json:"expiredAt"`
+	URL       string    `json:"url"`
+	ExpiredAt time.Time `json:"expiredAt"`
 }
 
 // UpdateBucketArguments hold update options for the bucket.
@@ -374,7 +380,7 @@ type UpdateBucketArguments struct {
 
 // UpdateStorageBucketOptions hold update options for the bucket.
 type UpdateStorageBucketOptions struct {
-	Tags              map[string]string                  `json:"tags,omitempty"`
+	Tags              *[]StorageKeyValue                 `json:"tags"`
 	VersioningEnabled *bool                              `json:"versioningEnabled"`
 	Lifecycle         *ObjectLifecycleConfiguration      `json:"lifecycle"`
 	Encryption        *ServerSideEncryptionConfiguration `json:"encryption"`

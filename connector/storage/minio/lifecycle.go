@@ -181,17 +181,17 @@ func validateLifecycleFilters(input []common.ObjectLifecycleFilter) lifecycle.Fi
 		return result
 	}
 
-	for key, value := range input[0].Tags {
+	for _, item := range input[0].Tags {
 		if result.Tag.Key == "" {
-			result.Tag.Key = key
-			result.Tag.Value = value
+			result.Tag.Key = item.Key
+			result.Tag.Value = item.Value
 
 			continue
 		}
 
 		result.And.Tags = append(result.And.Tags, lifecycle.Tag{
-			Key:   key,
-			Value: value,
+			Key:   item.Key,
+			Value: item.Value,
 		})
 	}
 
@@ -211,10 +211,10 @@ func validateLifecycleFilters(input []common.ObjectLifecycleFilter) lifecycle.Fi
 		return result
 	}
 
-	for key, value := range input[1].Tags {
+	for _, item := range input[1].Tags {
 		result.And.Tags = append(result.And.Tags, lifecycle.Tag{
-			Key:   key,
-			Value: value,
+			Key:   item.Key,
+			Value: item.Value,
 		})
 	}
 
@@ -361,8 +361,11 @@ func serializeLifecycleFilter(input lifecycle.Filter) []common.ObjectLifecycleFi
 	}
 
 	if input.Tag.Key != "" || input.Tag.Value != "" {
-		firstItem.Tags = map[string]string{
-			input.Tag.Key: input.Tag.Value,
+		firstItem.Tags = []common.StorageKeyValue{
+			{
+				Key:   input.Tag.Key,
+				Value: input.Tag.Value,
+			},
 		}
 	}
 
@@ -385,14 +388,15 @@ func serializeLifecycleFilter(input lifecycle.Filter) []common.ObjectLifecycleFi
 		sndItem.ObjectSizeLessThan = &input.And.ObjectSizeLessThan
 	}
 
-	sndItem.Tags = make(map[string]string)
-
 	for _, t := range input.And.Tags {
 		if t.IsEmpty() {
 			continue
 		}
 
-		sndItem.Tags[t.Key] = t.Value
+		sndItem.Tags = append(sndItem.Tags, common.StorageKeyValue{
+			Key:   t.Key,
+			Value: t.Value,
+		})
 	}
 
 	result = append(result, sndItem)

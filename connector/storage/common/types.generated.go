@@ -35,7 +35,7 @@ func (j *GetStorageObjectArguments) FromValue(input map[string]any) error {
 // FromValue decodes values from map
 func (j *GetStorageObjectOptions) FromValue(input map[string]any) error {
 	var err error
-	j.Headers, err = utils.DecodeObjectValueDefault[map[string]string](input, "headers")
+	j.Headers, err = utils.DecodeObjectValueDefault[[]StorageKeyValue](input, "headers")
 	if err != nil {
 		return err
 	}
@@ -43,7 +43,7 @@ func (j *GetStorageObjectOptions) FromValue(input map[string]any) error {
 	if err != nil {
 		return err
 	}
-	j.RequestParams, err = utils.DecodeObjectValueDefault[map[string][]string](input, "requestParams")
+	j.RequestParams, err = utils.DecodeObjectValueDefault[[]StorageKeyValue](input, "requestParams")
 	if err != nil {
 		return err
 	}
@@ -159,11 +159,11 @@ func (j *PresignedGetStorageObjectArguments) FromValue(input map[string]any) err
 // FromValue decodes values from map
 func (j *PresignedGetStorageObjectOptions) FromValue(input map[string]any) error {
 	var err error
-	j.Expiry, err = utils.DecodeNullableObjectValue[scalar.Duration](input, "expiry")
+	j.Expiry, err = utils.DecodeNullableObjectValue[scalar.DurationString](input, "expiry")
 	if err != nil {
 		return err
 	}
-	j.RequestParams, err = utils.DecodeObjectValueDefault[map[string][]string](input, "requestParams")
+	j.RequestParams, err = utils.DecodeObjectValueDefault[[]StorageKeyValue](input, "requestParams")
 	if err != nil {
 		return err
 	}
@@ -177,7 +177,7 @@ func (j *PresignedPutStorageObjectArguments) FromValue(input map[string]any) err
 	if err != nil {
 		return err
 	}
-	j.Expiry, err = utils.DecodeNullableObjectValue[scalar.Duration](input, "expiry")
+	j.Expiry, err = utils.DecodeNullableObjectValue[scalar.DurationString](input, "expiry")
 	if err != nil {
 		return err
 	}
@@ -200,6 +200,20 @@ func (j *StorageBucketArguments) FromValue(input map[string]any) error {
 		return err
 	}
 	j.ClientID, err = utils.DecodeNullableObjectValue[StorageClientID](input, "clientId")
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// FromValue decodes values from map
+func (j *StorageKeyValue) FromValue(input map[string]any) error {
+	var err error
+	j.Key, err = utils.GetString(input, "key")
+	if err != nil {
+		return err
+	}
+	j.Value, err = utils.GetString(input, "value")
 	if err != nil {
 		return err
 	}
@@ -265,9 +279,17 @@ func (j CustomPlacementConfig) ToMap() map[string]any {
 // ToMap encodes the struct to a value map
 func (j GetStorageObjectOptions) ToMap() map[string]any {
 	r := make(map[string]any)
-	r["headers"] = j.Headers
+	j_Headers := make([]any, len(j.Headers))
+	for i, j_Headers_v := range j.Headers {
+		j_Headers[i] = j_Headers_v
+	}
+	r["headers"] = j_Headers
 	r["partNumber"] = j.PartNumber
-	r["requestParams"] = j.RequestParams
+	j_RequestParams := make([]any, len(j.RequestParams))
+	for i, j_RequestParams_v := range j.RequestParams {
+		j_RequestParams[i] = j_RequestParams_v
+	}
+	r["requestParams"] = j_RequestParams
 	r["versionId"] = j.VersionID
 
 	return r
@@ -302,7 +324,11 @@ func (j MakeStorageBucketOptions) ToMap() map[string]any {
 	r["name"] = j.Name
 	r["objectLock"] = j.ObjectLock
 	r["region"] = j.Region
-	r["tags"] = j.Tags
+	j_Tags := make([]any, len(j.Tags))
+	for i, j_Tags_v := range j.Tags {
+		j_Tags[i] = j_Tags_v
+	}
+	r["tags"] = j_Tags
 
 	return r
 }
@@ -363,7 +389,11 @@ func (j ObjectLifecycleFilter) ToMap() map[string]any {
 	r["matchesSuffix"] = j.MatchesSuffix
 	r["objectSizeGreaterThan"] = j.ObjectSizeGreaterThan
 	r["objectSizeLessThan"] = j.ObjectSizeLessThan
-	r["tags"] = j.Tags
+	j_Tags := make([]any, len(j.Tags))
+	for i, j_Tags_v := range j.Tags {
+		j_Tags[i] = j_Tags_v
+	}
+	r["tags"] = j_Tags
 
 	return r
 }
@@ -437,7 +467,11 @@ func (j ObjectLifecycleTransition) ToMap() map[string]any {
 func (j PresignedGetStorageObjectOptions) ToMap() map[string]any {
 	r := make(map[string]any)
 	r["expiry"] = j.Expiry
-	r["requestParams"] = j.RequestParams
+	j_RequestParams := make([]any, len(j.RequestParams))
+	for i, j_RequestParams_v := range j.RequestParams {
+		j_RequestParams[i] = j_RequestParams_v
+	}
+	r["requestParams"] = j_RequestParams
 
 	return r
 }
@@ -466,7 +500,11 @@ func (j PutStorageObjectOptions) ToMap() map[string]any {
 	r["disableMultipart"] = j.DisableMultipart
 	r["expires"] = j.Expires
 	r["legalHold"] = j.LegalHold
-	r["metadata"] = j.Metadata
+	j_Metadata := make([]any, len(j.Metadata))
+	for i, j_Metadata_v := range j.Metadata {
+		j_Metadata[i] = j_Metadata_v
+	}
+	r["metadata"] = j_Metadata
 	r["numThreads"] = j.NumThreads
 	r["partSize"] = j.PartSize
 	if j.Retention != nil {
@@ -474,7 +512,11 @@ func (j PutStorageObjectOptions) ToMap() map[string]any {
 	}
 	r["sendContentMd5"] = j.SendContentMd5
 	r["storageClass"] = j.StorageClass
-	r["tags"] = j.Tags
+	j_Tags := make([]any, len(j.Tags))
+	for i, j_Tags_v := range j.Tags {
+		j_Tags[i] = j_Tags_v
+	}
+	r["tags"] = j_Tags
 	r["websiteRedirectLocation"] = j.WebsiteRedirectLocation
 
 	return r
@@ -583,7 +625,11 @@ func (j StorageBucket) ToMap() map[string]any {
 		r["softDeletePolicy"] = (*j.SoftDeletePolicy)
 	}
 	r["storageClass"] = j.StorageClass
-	r["tags"] = j.Tags
+	j_Tags := make([]any, len(j.Tags))
+	for i, j_Tags_v := range j.Tags {
+		j_Tags[i] = j_Tags_v
+	}
+	r["tags"] = j_Tags
 	if j.Versioning != nil {
 		r["versioning"] = (*j.Versioning)
 	}
@@ -619,12 +665,20 @@ func (j StorageCopyDestOptions) ToMap() map[string]any {
 	r := make(map[string]any)
 	r["bucket"] = j.Bucket
 	r["legalHold"] = j.LegalHold
-	r["metadata"] = j.Metadata
+	j_Metadata := make([]any, len(j.Metadata))
+	for i, j_Metadata_v := range j.Metadata {
+		j_Metadata[i] = j_Metadata_v
+	}
+	r["metadata"] = j_Metadata
 	r["mode"] = j.Mode
 	r["object"] = j.Object
 	r["retainUntilDate"] = j.RetainUntilDate
 	r["size"] = j.Size
-	r["tags"] = j.Tags
+	j_Tags := make([]any, len(j.Tags))
+	for i, j_Tags_v := range j.Tags {
+		j_Tags[i] = j_Tags_v
+	}
+	r["tags"] = j_Tags
 
 	return r
 }
@@ -663,6 +717,15 @@ func (j StorageGrantee) ToMap() map[string]any {
 	r["displayName"] = j.DisplayName
 	r["id"] = j.ID
 	r["uri"] = j.URI
+
+	return r
+}
+
+// ToMap encodes the struct to a value map
+func (j StorageKeyValue) ToMap() map[string]any {
+	r := make(map[string]any)
+	r["key"] = j.Key
+	r["value"] = j.Value
 
 	return r
 }
@@ -714,13 +777,21 @@ func (j StorageObject) ToMap() map[string]any {
 	r["leaseStatus"] = j.LeaseStatus
 	r["legalHold"] = j.LegalHold
 	r["mediaLink"] = j.MediaLink
-	r["metadata"] = j.Metadata
+	j_Metadata := make([]any, len(j.Metadata))
+	for i, j_Metadata_v := range j.Metadata {
+		j_Metadata[i] = j_Metadata_v
+	}
+	r["metadata"] = j_Metadata
 	r["name"] = j.Name
 	if j.Owner != nil {
 		r["owner"] = (*j.Owner)
 	}
 	r["permissions"] = j.Permissions
-	r["rawMetadata"] = j.RawMetadata
+	j_RawMetadata := make([]any, len(j.RawMetadata))
+	for i, j_RawMetadata_v := range j.RawMetadata {
+		j_RawMetadata[i] = j_RawMetadata_v
+	}
+	r["rawMetadata"] = j_RawMetadata
 	r["rehydratePriority"] = j.RehydratePriority
 	r["remainingRetentionDays"] = j.RemainingRetentionDays
 	r["replicationReady"] = j.ReplicationReady
@@ -736,7 +807,11 @@ func (j StorageObject) ToMap() map[string]any {
 	r["size"] = j.Size
 	r["storageClass"] = j.StorageClass
 	r["tagCount"] = j.TagCount
-	r["tags"] = j.Tags
+	j_Tags := make([]any, len(j.Tags))
+	for i, j_Tags_v := range j.Tags {
+		j_Tags[i] = j_Tags_v
+	}
+	r["tags"] = j_Tags
 	r["versionId"] = j.VersionID
 
 	return r
@@ -867,7 +942,13 @@ func (j UpdateStorageBucketOptions) ToMap() map[string]any {
 	if j.ObjectLock != nil {
 		r["objectLock"] = (*j.ObjectLock)
 	}
-	r["tags"] = j.Tags
+	if j.Tags != nil {
+		j_Tags := make([]any, len((*j.Tags)))
+		for i, j_Tags_v := range *j.Tags {
+			j_Tags[i] = j_Tags_v
+		}
+		r["tags"] = j_Tags
+	}
 	r["versioningEnabled"] = j.VersioningEnabled
 
 	return r
@@ -877,11 +958,23 @@ func (j UpdateStorageBucketOptions) ToMap() map[string]any {
 func (j UpdateStorageObjectOptions) ToMap() map[string]any {
 	r := make(map[string]any)
 	r["legalHold"] = j.LegalHold
-	r["metadata"] = j.Metadata
+	if j.Metadata != nil {
+		j_Metadata := make([]any, len((*j.Metadata)))
+		for i, j_Metadata_v := range *j.Metadata {
+			j_Metadata[i] = j_Metadata_v
+		}
+		r["metadata"] = j_Metadata
+	}
 	if j.Retention != nil {
 		r["retention"] = (*j.Retention)
 	}
-	r["tags"] = j.Tags
+	if j.Tags != nil {
+		j_Tags := make([]any, len((*j.Tags)))
+		for i, j_Tags_v := range *j.Tags {
+			j_Tags[i] = j_Tags_v
+		}
+		r["tags"] = j_Tags
+	}
 	r["versionId"] = j.VersionID
 
 	return r

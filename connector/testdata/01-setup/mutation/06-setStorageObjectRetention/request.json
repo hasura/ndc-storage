@@ -12,6 +12,15 @@
           "mode": "Locked",
           "retainUntilDate": "2099-01-01T00:00:00Z"
         }
+      },
+      "fields": {
+        "fields": {
+          "success": {
+            "column": "success",
+            "type": "column"
+          }
+        },
+        "type": "object"
       }
     }
   ]

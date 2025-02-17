@@ -46,11 +46,6 @@ func (c *Client) ValidateBucket(key string) (string, error) {
 	return c.defaultBucket, nil
 }
 
-// FormatTimestamp formats the Time value to string
-func FormatTimestamp(value time.Time) string {
-	return value.Format(time.RFC3339)
-}
-
 // ClientConfig abstracts a storage client configuration.
 type ClientConfig map[string]any
 

@@ -8,9 +8,21 @@
         "clientId": "gcs",
         "name": "gcs-bucket",
         "objectLock": true,
-        "tags": {
-          "provider": "gcp"
-        }
+        "tags": [
+          {
+            "key": "provider",
+            "value": "gcp"
+          }
+        ]
+      },
+      "fields": {
+        "fields": {
+          "success": {
+            "column": "success",
+            "type": "column"
+          }
+        },
+        "type": "object"
       }
     }
   ]

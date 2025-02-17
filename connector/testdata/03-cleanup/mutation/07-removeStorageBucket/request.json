@@ -6,6 +6,15 @@
       "name": "removeStorageBucket",
       "arguments": {
         "bucket": "minio-bucket-empty"
+      },
+      "fields": {
+        "fields": {
+          "success": {
+            "column": "success",
+            "type": "column"
+          }
+        },
+        "type": "object"
       }
     }
   ]

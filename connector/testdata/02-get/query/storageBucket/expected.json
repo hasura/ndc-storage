@@ -10,6 +10,7 @@
           "encryption": null,
           "etag": null,
           "hierarchicalNamespace": null,
+          "lastModified": null,
           "lifecycle": {
             "rules": [
               {
@@ -30,7 +31,7 @@
                     "matchesSuffix": null,
                     "objectSizeGreaterThan": null,
                     "objectSizeLessThan": null,
-                    "tags": null
+                    "tags": []
                   },
                   {
                     "matchesPrefix": ["JSqXP0pJZF"],
@@ -38,9 +39,7 @@
                     "matchesSuffix": null,
                     "objectSizeGreaterThan": 1000000,
                     "objectSizeLessThan": 1,
-                    "tags": {
-                      "7Uw1or2jrq": "00sA2cRTCB"
-                    }
+                    "tags": [{ "key": "7Uw1or2jrq", "value": "00sA2cRTCB" }]
                   }
                 ],
                 "id": "aXD6eFi5JE",
@@ -63,10 +62,7 @@
           "rpo": null,
           "softDeletePolicy": null,
           "storageClass": null,
-          "tags": {
-            "Foo": "bar"
-          },
-          "lastModified": null,
+          "tags": [{ "key": "Foo", "value": "bar" }],
           "versioning": {
             "enabled": true,
             "excludeFolders": false,

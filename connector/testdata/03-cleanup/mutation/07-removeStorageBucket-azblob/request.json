@@ -6,6 +6,15 @@
       "name": "removeStorageBucket",
       "arguments": {
         "bucket": "azblob-bucket-test"
+      },
+      "fields": {
+        "fields": {
+          "success": {
+            "column": "success",
+            "type": "column"
+          }
+        },
+        "type": "object"
       }
     }
   ]

@@ -19,6 +19,8 @@ type Configuration struct {
 	Concurrency ConcurrencySettings `json:"concurrency,omitempty" yaml:"concurrency,omitempty"`
 	// Common runtime settings for all clients.
 	Runtime storage.RuntimeSettings `json:"runtime" yaml:"runtime"`
+	// Schema generator settings.
+	Generator GeneratorSettings `json:"generator,omitempty" yaml:"generator,omitempty"`
 }
 
 // Validate checks if the configuration is valid.
@@ -46,4 +48,10 @@ type ConcurrencySettings struct {
 	Query int `json:"query" jsonschema:"min=1,default=5" yaml:"query"`
 	// Maximum number of concurrent executions if there are many mutation operations.
 	Mutation int `json:"mutation" jsonschema:"min=1,default=1" yaml:"mutation"`
+}
+
+// GeneratorSettings represent settings for schema generation.
+type GeneratorSettings struct {
+	// Generate the connector schema to be compatible with PromptQL.
+	PromptQLCompatible bool `json:"promptqlCompatible" jsonschema:"default=false" yaml:"promptqlCompatible"`
 }

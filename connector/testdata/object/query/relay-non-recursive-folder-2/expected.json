@@ -1,0 +1,134 @@
+[
+  {
+    "rows": [
+      {
+        "__value": {
+          "edges": [
+            {
+              "cursor": "movies/1930s/",
+              "node": {
+                "bucket": "dummy-bucket-0",
+                "clientId": "minio",
+                "isDirectory": true,
+                "name": "movies/1930s/",
+                "size": 0,
+                "storageClass": null
+              }
+            },
+            {
+              "cursor": "movies/1940s/",
+              "node": {
+                "bucket": "dummy-bucket-0",
+                "clientId": "minio",
+                "isDirectory": true,
+                "name": "movies/1940s/",
+                "size": 0,
+                "storageClass": null
+              }
+            },
+            {
+              "cursor": "movies/1950s/",
+              "node": {
+                "bucket": "dummy-bucket-0",
+                "clientId": "minio",
+                "isDirectory": true,
+                "name": "movies/1950s/",
+                "size": 0,
+                "storageClass": null
+              }
+            }
+          ],
+          "pageInfo": { "hasNextPage": true }
+        }
+      }
+    ]
+  },
+  {
+    "rows": [
+      {
+        "__value": {
+          "edges": [
+            {
+              "cursor": "movies/1930s/",
+              "node": {
+                "bucket": "dummy-bucket-0",
+                "clientId": "azblob",
+                "isDirectory": true,
+                "name": "movies/1930s/",
+                "size": null,
+                "storageClass": null
+              }
+            },
+            {
+              "cursor": "movies/1940s/",
+              "node": {
+                "bucket": "dummy-bucket-0",
+                "clientId": "azblob",
+                "isDirectory": true,
+                "name": "movies/1940s/",
+                "size": null,
+                "storageClass": null
+              }
+            },
+            {
+              "cursor": "movies/1950s/",
+              "node": {
+                "bucket": "dummy-bucket-0",
+                "clientId": "azblob",
+                "isDirectory": true,
+                "name": "movies/1950s/",
+                "size": null,
+                "storageClass": null
+              }
+            }
+          ],
+          "pageInfo": { "hasNextPage": true }
+        }
+      }
+    ]
+  },
+  {
+    "rows": [
+      {
+        "__value": {
+          "edges": [
+            {
+              "cursor": "movies/1930s/",
+              "node": {
+                "bucket": "dummy-bucket-0",
+                "clientId": "gcs",
+                "isDirectory": true,
+                "name": "movies/1930s/",
+                "size": 0,
+                "storageClass": null
+              }
+            },
+            {
+              "cursor": "movies/1940s/",
+              "node": {
+                "bucket": "dummy-bucket-0",
+                "clientId": "gcs",
+                "isDirectory": true,
+                "name": "movies/1940s/",
+                "size": 0,
+                "storageClass": null
+              }
+            },
+            {
+              "cursor": "movies/1950s/",
+              "node": {
+                "bucket": "dummy-bucket-0",
+                "clientId": "gcs",
+                "isDirectory": true,
+                "name": "movies/1950s/",
+                "size": 0,
+                "storageClass": null
+              }
+            }
+          ],
+          "pageInfo": { "hasNextPage": true }
+        }
+      }
+    ]
+  }
+]

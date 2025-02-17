@@ -63,7 +63,7 @@ definition:
     - name: legalHold
       type: Boolean
     - name: metadata
-      type: Json
+      type: "[StorageKeyValue!]"
     - name: numThreads
       type: Int32
     - name: partSize
@@ -75,7 +75,7 @@ definition:
     - name: storageClass
       type: String
     - name: tags
-      type: Json
+      type: "[StorageKeyValue!]"
     - name: websiteRedirectLocation
       type: String
   graphql:
@@ -132,8 +132,6 @@ definition:
       type: String!
     - name: options
       type: PutStorageObjectOptions
-    - name: where
-      type: StorageObjectFilterBoolExp
   source:
     dataConnectorName: storage
     dataConnectorCommand:

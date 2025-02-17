@@ -231,8 +231,8 @@ func (mc *Client) PutObject(ctx context.Context, bucketName string, objectName s
 	)
 
 	options := minio.PutObjectOptions{
-		UserMetadata:            opts.Metadata,
-		UserTags:                opts.Tags,
+		UserMetadata:            common.KeyValuesToStringMap(opts.Metadata),
+		UserTags:                common.KeyValuesToStringMap(opts.Tags),
 		ContentType:             opts.ContentType,
 		ContentEncoding:         opts.ContentEncoding,
 		ContentDisposition:      opts.ContentDisposition,
@@ -449,7 +449,7 @@ func (mc *Client) RemoveObjects(ctx context.Context, bucketName string, opts *co
 		errs = append(errs, common.RemoveStorageObjectError{
 			ObjectName: err.ObjectName,
 			VersionID:  err.VersionID,
-			Error:      err.Err,
+			Error:      err.Err.Error(),
 		})
 	}
 
@@ -474,7 +474,7 @@ func (mc *Client) UpdateObject(ctx context.Context, bucketName string, objectNam
 	}
 
 	if opts.Tags != nil {
-		if err := mc.SetObjectTags(ctx, bucketName, objectName, opts.VersionID, opts.Tags); err != nil {
+		if err := mc.SetObjectTags(ctx, bucketName, objectName, opts.VersionID, common.KeyValuesToStringMap(*opts.Tags)); err != nil {
 			return err
 		}
 	}
@@ -696,20 +696,16 @@ func (mc *Client) presignObject(ctx context.Context, method string, bucketName s
 	ctx, span := mc.startOtelSpan(ctx, method+" PresignedObject", bucketName)
 	defer span.End()
 
-	reqParams := url.Values{}
-
-	for key, params := range opts.RequestParams {
-		for _, param := range params {
-			reqParams.Add(key, param)
-		}
-	}
+	reqParams := url.Values(common.KeyValuesToHeaders(opts.RequestParams))
 
 	span.SetAttributes(
 		attribute.String("storage.key", objectName),
 		attribute.String("url.query", reqParams.Encode()),
 	)
 
-	if opts.Expiry != nil {
+	expiry := time.Hour
+	if opts.Expiry != nil && opts.Expiry.Duration > 0 {
+		expiry = opts.Expiry.Duration
 		span.SetAttributes(attribute.String("storage.expiry", opts.Expiry.String()))
 	}
 
@@ -725,7 +721,7 @@ func (mc *Client) presignObject(ctx context.Context, method string, bucketName s
 		header.Set("Host", mc.publicHost.Host)
 	}
 
-	result, err = mc.client.PresignHeader(ctx, method, bucketName, objectName, opts.Expiry.Duration, reqParams, header)
+	result, err = mc.client.PresignHeader(ctx, method, bucketName, objectName, expiry, reqParams, header)
 	if err != nil {
 		span.SetStatus(codes.Error, err.Error())
 		span.RecordError(err)
@@ -846,7 +842,7 @@ func (mc *Client) populateObject(ctx context.Context, result *common.StorageObje
 			return err
 		}
 
-		result.Tags = userTags
+		result.Tags = common.StringMapToKeyValues(userTags)
 	}
 
 	if include.LegalHold {

@@ -6,6 +6,7 @@ import (
 
 	"github.com/hasura/ndc-sdk-go/schema"
 	"github.com/hasura/ndc-sdk-go/utils"
+	"github.com/hasura/ndc-storage/connector/collection"
 	"github.com/hasura/ndc-storage/connector/types"
 	"go.opentelemetry.io/otel/codes"
 	"golang.org/x/sync/errgroup"
@@ -87,7 +88,31 @@ func (c *Connector) execQuery(ctx context.Context, state *types.State, request *
 		})
 	}
 
-	result, err := c.apiHandler.Query(context.WithValue(ctx, types.QueryVariablesContextKey, variables), state, request, rawArgs)
+	var result *schema.RowSet
+
+	switch request.Collection {
+	case collection.CollectionStorageBuckets:
+		executor := collection.CollectionBucketExecutor{
+			Storage:     state.Storage,
+			Request:     request,
+			Arguments:   rawArgs,
+			Variables:   variables,
+			Concurrency: c.config.Concurrency.Query,
+		}
+		result, err = executor.Execute(ctx)
+	case collection.CollectionStorageObjects:
+		executor := collection.CollectionObjectExecutor{
+			Storage:     state.Storage,
+			Request:     request,
+			Arguments:   rawArgs,
+			Variables:   variables,
+			Concurrency: c.config.Concurrency.Query,
+		}
+		result, err = executor.Execute(ctx)
+	default:
+		result, err = c.apiHandler.Query(context.WithValue(ctx, types.QueryVariablesContextKey, variables), state, request, rawArgs)
+	}
+
 	if err != nil {
 		span.SetStatus(codes.Error, fmt.Sprintf("failed to execute function %d", index))
 		span.RecordError(err)

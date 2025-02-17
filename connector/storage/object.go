@@ -263,6 +263,7 @@ func (m *Manager) PresignedGetObject(ctx context.Context, bucketInfo common.Stor
 		exp = opts.Expiry.Duration
 	} else if client.defaultPresignedExpiry != nil {
 		exp = *client.defaultPresignedExpiry
+		opts.Expiry = &scalar.DurationString{Duration: exp}
 	}
 
 	if exp == 0 {
@@ -276,7 +277,7 @@ func (m *Manager) PresignedGetObject(ctx context.Context, bucketInfo common.Stor
 
 	return &common.PresignedURLResponse{
 		URL:       rawURL,
-		ExpiredAt: FormatTimestamp(time.Now().Add(opts.Expiry.Duration)),
+		ExpiredAt: time.Now().Add(exp),
 	}, nil
 }
 
@@ -284,7 +285,7 @@ func (m *Manager) PresignedGetObject(ctx context.Context, bucketInfo common.Stor
 // Browsers/Mobile clients may point to this URL to upload objects directly to a bucket even if it is private.
 // This presigned URL can have an associated expiration time in seconds after which it is no longer operational.
 // The default expiry is set to 7 days.
-func (m *Manager) PresignedPutObject(ctx context.Context, bucketInfo common.StorageBucketArguments, objectName string, expiry *scalar.Duration) (*common.PresignedURLResponse, error) {
+func (m *Manager) PresignedPutObject(ctx context.Context, bucketInfo common.StorageBucketArguments, objectName string, expiry *scalar.DurationString) (*common.PresignedURLResponse, error) {
 	if err := s3utils.CheckValidObjectName(objectName); err != nil {
 		return nil, schema.UnprocessableContentError(err.Error(), nil)
 	}
@@ -313,6 +314,6 @@ func (m *Manager) PresignedPutObject(ctx context.Context, bucketInfo common.Stor
 
 	return &common.PresignedURLResponse{
 		URL:       rawURL,
-		ExpiredAt: FormatTimestamp(time.Now().Add(exp)),
+		ExpiredAt: time.Now().Add(exp),
 	}, nil
 }
