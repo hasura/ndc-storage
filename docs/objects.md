@@ -206,7 +206,8 @@ query RelayListObjects {
 The `storageObjects` collection doesn't return pagination information. You need to get the `name` in the last object to paginate by the `after` cursor.
 
 > [!NOTE]
-> **Why do `storageObjects` and `storageObjectConnections` operations exist? **
+> **Why do `storageObjects` and `storageObjectConnections` operations exist?**
+> 
 > The `storageObjects` collection provides a simpler response structure that PromptQL can query easily. The `storageObjectConnections` function returns a better cursor-based pagination response on but the schema is complicated for PromptQL to understand.
 
 > [!NOTE]
