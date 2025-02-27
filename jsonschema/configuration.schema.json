@@ -491,13 +491,14 @@
         "promptqlCompatible": {
           "type": "boolean",
           "default": false
+        },
+        "dynamicCredentials": {
+          "type": "boolean",
+          "default": false
         }
       },
       "additionalProperties": false,
-      "type": "object",
-      "required": [
-        "promptqlCompatible"
-      ]
+      "type": "object"
     },
     "RuntimeSettings": {
       "properties": {

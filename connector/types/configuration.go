@@ -25,7 +25,7 @@ type Configuration struct {
 
 // Validate checks if the configuration is valid.
 func (c Configuration) Validate() error {
-	if len(c.Clients) == 0 {
+	if len(c.Clients) == 0 && !c.Generator.DynamicCredentials {
 		return errors.New("require at least 1 element in the clients array")
 	}
 
@@ -53,5 +53,7 @@ type ConcurrencySettings struct {
 // GeneratorSettings represent settings for schema generation.
 type GeneratorSettings struct {
 	// Generate the connector schema to be compatible with PromptQL.
-	PromptQLCompatible bool `json:"promptqlCompatible" jsonschema:"default=false" yaml:"promptqlCompatible"`
+	PromptQLCompatible bool `json:"promptqlCompatible,omitempty" jsonschema:"default=false" yaml:"promptqlCompatible"`
+	// Allow users to input dynamic credentials.
+	DynamicCredentials bool `json:"dynamicCredentials,omitempty" jsonschema:"default=false" yaml:"dynamicCredentials"`
 }

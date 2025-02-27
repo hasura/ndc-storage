@@ -19,7 +19,7 @@ type CollectionObjectExecutor struct {
 }
 
 // Execute executes the query request to get list of storage objects.
-func (coe *CollectionObjectExecutor) Execute(ctx context.Context) (*schema.RowSet, error) {
+func (coe *CollectionObjectExecutor) Execute(ctx context.Context) (*schema.RowSet, error) { //nolint:cyclop,funlen
 	if coe.Request.Query.Offset != nil && *coe.Request.Query.Offset < 0 {
 		return nil, schema.UnprocessableContentError("offset must be positive", nil)
 	}
@@ -31,7 +31,15 @@ func (coe *CollectionObjectExecutor) Execute(ctx context.Context) (*schema.RowSe
 		}, nil
 	}
 
-	request, err := EvalObjectPredicate(common.StorageBucketArguments{}, nil, coe.Request.Query.Predicate, coe.Variables)
+	bucketArguments := common.StorageBucketArguments{}
+
+	if bucket, err := utils.GetNullableString(coe.Arguments, StorageObjectColumnBucket); err != nil {
+		return nil, schema.UnprocessableContentError(err.Error(), nil)
+	} else if bucket != nil {
+		bucketArguments.Bucket = *bucket
+	}
+
+	request, err := EvalObjectPredicate(bucketArguments, nil, coe.Request.Query.Predicate, coe.Variables)
 	if err != nil {
 		return nil, schema.UnprocessableContentError(err.Error(), nil)
 	}
@@ -51,6 +59,30 @@ func (coe *CollectionObjectExecutor) Execute(ctx context.Context) (*schema.RowSe
 		Prefix:     request.ObjectNamePredicate.GetPrefix(),
 		Include:    request.Include,
 		NumThreads: coe.Concurrency,
+	}
+
+	if clientType, err := utils.GetNullableString(coe.Arguments, ArgumentClientType); err != nil {
+		return nil, schema.UnprocessableContentError(err.Error(), nil)
+	} else if clientType != nil {
+		request.ClientType = (*common.StorageProviderType)(clientType)
+	}
+
+	if endpoint, err := utils.GetNullableString(coe.Arguments, ArgumentEndpoint); err != nil {
+		return nil, schema.UnprocessableContentError(err.Error(), nil)
+	} else if endpoint != nil {
+		request.Endpoint = *endpoint
+	}
+
+	if accessKey, err := utils.GetNullableString(coe.Arguments, ArgumentAccessKeyID); err != nil {
+		return nil, schema.UnprocessableContentError(err.Error(), nil)
+	} else if accessKey != nil {
+		request.AccessKeyID = *accessKey
+	}
+
+	if secretAccessKey, err := utils.GetNullableString(coe.Arguments, ArgumentSecretAccessKey); err != nil {
+		return nil, schema.UnprocessableContentError(err.Error(), nil)
+	} else if secretAccessKey != nil {
+		request.SecretAccessKey = *secretAccessKey
 	}
 
 	if hierarchy, err := utils.GetNullableBoolean(coe.Arguments, argumentHierarchy); err != nil {

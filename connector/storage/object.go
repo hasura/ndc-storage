@@ -15,7 +15,7 @@ import (
 
 // ListObjects lists objects in a bucket.
 func (m *Manager) ListObjects(ctx context.Context, bucketInfo common.StorageBucketArguments, opts *common.ListStorageObjectsOptions, predicate func(string) bool) (*common.StorageObjectListResults, error) {
-	client, bucketName, err := m.GetClientAndBucket(bucketInfo.ClientID, bucketInfo.Bucket)
+	client, bucketName, err := m.GetClientAndBucket(ctx, bucketInfo)
 	if err != nil {
 		return &common.StorageObjectListResults{ //nolint:nilerr
 			Objects: []common.StorageObject{},
@@ -37,7 +37,7 @@ func (m *Manager) ListObjects(ctx context.Context, bucketInfo common.StorageBuck
 
 // ListObjects lists deleted objects in a bucket.
 func (m *Manager) ListDeletedObjects(ctx context.Context, bucketInfo common.StorageBucketArguments, opts *common.ListStorageObjectsOptions, predicate func(string) bool) (*common.StorageObjectListResults, error) {
-	client, bucketName, err := m.GetClientAndBucket(bucketInfo.ClientID, bucketInfo.Bucket)
+	client, bucketName, err := m.GetClientAndBucket(ctx, bucketInfo)
 	if err != nil {
 		return nil, err
 	}
@@ -57,7 +57,7 @@ func (m *Manager) ListDeletedObjects(ctx context.Context, bucketInfo common.Stor
 
 // ListIncompleteUploads list partially uploaded objects in a bucket.
 func (m *Manager) ListIncompleteUploads(ctx context.Context, bucketInfo common.StorageBucketArguments, opts common.ListIncompleteUploadsOptions) ([]common.StorageObjectMultipartInfo, error) {
-	client, bucketName, err := m.GetClientAndBucket(bucketInfo.ClientID, bucketInfo.Bucket)
+	client, bucketName, err := m.GetClientAndBucket(ctx, bucketInfo)
 	if err != nil {
 		return nil, err
 	}
@@ -67,7 +67,7 @@ func (m *Manager) ListIncompleteUploads(ctx context.Context, bucketInfo common.S
 
 // GetObject returns a stream of the object data. Most of the common errors occur when reading the stream.
 func (m *Manager) GetObject(ctx context.Context, bucketInfo common.StorageBucketArguments, objectName string, opts common.GetStorageObjectOptions) (io.ReadCloser, error) {
-	client, bucketName, err := m.GetClientAndBucket(bucketInfo.ClientID, bucketInfo.Bucket)
+	client, bucketName, err := m.GetClientAndBucket(ctx, bucketInfo)
 	if err != nil {
 		return nil, err
 	}
@@ -98,7 +98,7 @@ func (m *Manager) GetObject(ctx context.Context, bucketInfo common.StorageBucket
 // PutObject uploads objects that are less than 128MiB in a single PUT operation. For objects that are greater than 128MiB in size,
 // PutObject seamlessly uploads the object as parts of 128MiB or more depending on the actual file size. The max upload size for an object is 5TB.
 func (m *Manager) PutObject(ctx context.Context, bucketInfo common.StorageBucketArguments, objectName string, opts *common.PutStorageObjectOptions, data []byte) (*common.StorageUploadInfo, error) {
-	client, bucketName, err := m.GetClientAndBucket(bucketInfo.ClientID, bucketInfo.Bucket)
+	client, bucketName, err := m.GetClientAndBucket(ctx, bucketInfo)
 	if err != nil {
 		return nil, err
 	}
@@ -118,7 +118,10 @@ func (m *Manager) PutObject(ctx context.Context, bucketInfo common.StorageBucket
 // It supports conditional copying, copying a part of an object and server-side encryption of destination and decryption of source.
 // To copy multiple source objects into a single destination object see the ComposeObject API.
 func (m *Manager) CopyObject(ctx context.Context, args *common.CopyStorageObjectArguments) (*common.StorageUploadInfo, error) {
-	client, bucketName, err := m.GetClientAndBucket(args.ClientID, args.Dest.Bucket)
+	client, bucketName, err := m.GetClientAndBucket(ctx, common.StorageBucketArguments{
+		ClientID: args.ClientID,
+		Bucket:   args.Dest.Bucket,
+	})
 	if err != nil {
 		return nil, err
 	}
@@ -141,7 +144,10 @@ func (m *Manager) CopyObject(ctx context.Context, args *common.CopyStorageObject
 
 // ComposeObject creates an object by concatenating a list of source objects using server-side copying.
 func (m *Manager) ComposeObject(ctx context.Context, args *common.ComposeStorageObjectArguments) (*common.StorageUploadInfo, error) {
-	client, bucketName, err := m.GetClientAndBucket(args.ClientID, args.Dest.Bucket)
+	client, bucketName, err := m.GetClientAndBucket(ctx, common.StorageBucketArguments{
+		ClientID: args.ClientID,
+		Bucket:   args.Dest.Bucket,
+	})
 	if err != nil {
 		return nil, err
 	}
@@ -169,7 +175,7 @@ func (m *Manager) ComposeObject(ctx context.Context, args *common.ComposeStorage
 
 // StatObject fetches metadata of an object.
 func (m *Manager) StatObject(ctx context.Context, bucketInfo common.StorageBucketArguments, objectName string, opts common.GetStorageObjectOptions) (*common.StorageObject, error) {
-	client, bucketName, err := m.GetClientAndBucket(bucketInfo.ClientID, bucketInfo.Bucket)
+	client, bucketName, err := m.GetClientAndBucket(ctx, bucketInfo)
 	if err != nil {
 		return nil, err
 	}
@@ -191,7 +197,7 @@ func (m *Manager) statObject(ctx context.Context, client *Client, bucketName, ob
 
 // RemoveObject removes an object with some specified options.
 func (m *Manager) RemoveObject(ctx context.Context, bucketInfo common.StorageBucketArguments, objectName string, opts common.RemoveStorageObjectOptions) error {
-	client, bucketName, err := m.GetClientAndBucket(bucketInfo.ClientID, bucketInfo.Bucket)
+	client, bucketName, err := m.GetClientAndBucket(ctx, bucketInfo)
 	if err != nil {
 		return err
 	}
@@ -205,7 +211,7 @@ func (m *Manager) UpdateObject(ctx context.Context, bucketInfo common.StorageBuc
 		return nil
 	}
 
-	client, bucketName, err := m.GetClientAndBucket(bucketInfo.ClientID, bucketInfo.Bucket)
+	client, bucketName, err := m.GetClientAndBucket(ctx, bucketInfo)
 	if err != nil {
 		return err
 	}
@@ -216,7 +222,7 @@ func (m *Manager) UpdateObject(ctx context.Context, bucketInfo common.StorageBuc
 // RemoveObjects remove a list of objects obtained from an input channel. The call sends a delete request to the server up to 1000 objects at a time.
 // The errors observed are sent over the error channel.
 func (m *Manager) RemoveObjects(ctx context.Context, bucketInfo common.StorageBucketArguments, opts *common.RemoveStorageObjectsOptions, predicate func(string) bool) ([]common.RemoveStorageObjectError, error) {
-	client, bucketName, err := m.GetClientAndBucket(bucketInfo.ClientID, bucketInfo.Bucket)
+	client, bucketName, err := m.GetClientAndBucket(ctx, bucketInfo)
 	if err != nil {
 		return nil, err
 	}
@@ -226,7 +232,7 @@ func (m *Manager) RemoveObjects(ctx context.Context, bucketInfo common.StorageBu
 
 // RestoreObject restores a soft-deleted object.
 func (m *Manager) RestoreObject(ctx context.Context, bucketInfo common.StorageBucketArguments, objectName string) error {
-	client, bucketName, err := m.GetClientAndBucket(bucketInfo.ClientID, bucketInfo.Bucket)
+	client, bucketName, err := m.GetClientAndBucket(ctx, bucketInfo)
 	if err != nil {
 		return err
 	}
@@ -236,7 +242,10 @@ func (m *Manager) RestoreObject(ctx context.Context, bucketInfo common.StorageBu
 
 // RemoveIncompleteUpload removes a partially uploaded object.
 func (m *Manager) RemoveIncompleteUpload(ctx context.Context, args *common.RemoveIncompleteUploadArguments) error {
-	client, bucketName, err := m.GetClientAndBucket(args.ClientID, args.Bucket)
+	client, bucketName, err := m.GetClientAndBucket(ctx, common.StorageBucketArguments{
+		ClientID: args.ClientID,
+		Bucket:   args.Bucket,
+	})
 	if err != nil {
 		return err
 	}
@@ -252,7 +261,7 @@ func (m *Manager) PresignedGetObject(ctx context.Context, bucketInfo common.Stor
 		return nil, schema.UnprocessableContentError(err.Error(), nil)
 	}
 
-	client, bucketName, err := m.GetClientAndBucket(bucketInfo.ClientID, bucketInfo.Bucket)
+	client, bucketName, err := m.GetClientAndBucket(ctx, bucketInfo)
 	if err != nil {
 		return nil, err
 	}
@@ -290,7 +299,7 @@ func (m *Manager) PresignedPutObject(ctx context.Context, bucketInfo common.Stor
 		return nil, schema.UnprocessableContentError(err.Error(), nil)
 	}
 
-	client, bucketName, err := m.GetClientAndBucket(bucketInfo.ClientID, bucketInfo.Bucket)
+	client, bucketName, err := m.GetClientAndBucket(ctx, bucketInfo)
 	if err != nil {
 		return nil, err
 	}

@@ -36,9 +36,14 @@ type GetStorageBucketArguments struct {
 // StorageBucketArguments represent the common input arguments for bucket-related methods.
 type StorageBucketArguments struct {
 	// The storage client ID.
-	ClientID *StorageClientID `json:"clientId,omitempty"`
+	ClientID   *StorageClientID     `json:"clientId,omitempty"`
+	ClientType *StorageProviderType `json:"clientType,omitempty"`
+	Endpoint   string               `json:"endpoint,omitempty"`
+
 	// The bucket name.
-	Bucket string `json:"bucket,omitempty"`
+	Bucket          string `json:"bucket,omitempty"`
+	AccessKeyID     string `json:"accessKeyId,omitempty"`
+	SecretAccessKey string `json:"secretAccessKey,omitempty"`
 }
 
 // CopyStorageObjectArguments represent input arguments of the CopyObject method.

@@ -195,11 +195,27 @@ func (j *PresignedPutStorageObjectArguments) FromValue(input map[string]any) err
 // FromValue decodes values from map
 func (j *StorageBucketArguments) FromValue(input map[string]any) error {
 	var err error
+	j.AccessKeyID, err = utils.GetStringDefault(input, "accessKeyId")
+	if err != nil {
+		return err
+	}
 	j.Bucket, err = utils.GetStringDefault(input, "bucket")
 	if err != nil {
 		return err
 	}
 	j.ClientID, err = utils.DecodeNullableObjectValue[StorageClientID](input, "clientId")
+	if err != nil {
+		return err
+	}
+	j.ClientType, err = utils.DecodeNullableObjectValue[StorageProviderType](input, "clientType")
+	if err != nil {
+		return err
+	}
+	j.Endpoint, err = utils.GetStringDefault(input, "endpoint")
+	if err != nil {
+		return err
+	}
+	j.SecretAccessKey, err = utils.GetStringDefault(input, "secretAccessKey")
 	if err != nil {
 		return err
 	}
@@ -643,8 +659,12 @@ func (j StorageBucket) ToMap() map[string]any {
 // ToMap encodes the struct to a value map
 func (j StorageBucketArguments) ToMap() map[string]any {
 	r := make(map[string]any)
+	r["accessKeyId"] = j.AccessKeyID
 	r["bucket"] = j.Bucket
 	r["clientId"] = j.ClientID
+	r["clientType"] = j.ClientType
+	r["endpoint"] = j.Endpoint
+	r["secretAccessKey"] = j.SecretAccessKey
 
 	return r
 }
@@ -1168,6 +1188,68 @@ func (s *StorageObjectReplicationStatus) FromValue(value any) error {
 		return nil
 	}
 	result, err := ParseStorageObjectReplicationStatus(*valueStr)
+	if err != nil {
+		return err
+	}
+
+	*s = result
+	return nil
+}
+
+// ScalarName get the schema name of the scalar
+func (j StorageProviderType) ScalarName() string {
+	return "StorageProviderType"
+}
+
+const (
+	StorageProviderTypeS3     StorageProviderType = "s3"
+	StorageProviderTypeGcs    StorageProviderType = "gcs"
+	StorageProviderTypeAzblob StorageProviderType = "azblob"
+)
+
+var enumValues_StorageProviderType = []StorageProviderType{StorageProviderTypeS3, StorageProviderTypeGcs, StorageProviderTypeAzblob}
+
+// ParseStorageProviderType parses a StorageProviderType enum from string
+func ParseStorageProviderType(input string) (StorageProviderType, error) {
+	result := StorageProviderType(input)
+	if !slices.Contains(enumValues_StorageProviderType, result) {
+		return StorageProviderType(""), errors.New("failed to parse StorageProviderType, expect one of [s3, gcs, azblob]")
+	}
+
+	return result, nil
+}
+
+// IsValid checks if the value is invalid
+func (j StorageProviderType) IsValid() bool {
+	return slices.Contains(enumValues_StorageProviderType, j)
+}
+
+// UnmarshalJSON implements json.Unmarshaler.
+func (j *StorageProviderType) UnmarshalJSON(b []byte) error {
+	var rawValue string
+	if err := json.Unmarshal(b, &rawValue); err != nil {
+		return err
+	}
+
+	value, err := ParseStorageProviderType(rawValue)
+	if err != nil {
+		return err
+	}
+
+	*j = value
+	return nil
+}
+
+// FromValue decodes the scalar from an unknown value
+func (s *StorageProviderType) FromValue(value any) error {
+	valueStr, err := utils.DecodeNullableString(value)
+	if err != nil {
+		return err
+	}
+	if valueStr == nil {
+		return nil
+	}
+	result, err := ParseStorageProviderType(*valueStr)
 	if err != nil {
 		return err
 	}

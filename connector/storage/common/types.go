@@ -1,9 +1,6 @@
 package common
 
 import (
-	"fmt"
-	"slices"
-
 	"github.com/invopop/jsonschema"
 )
 
@@ -20,6 +17,7 @@ const (
 type StorageClientID string
 
 // StorageProviderType represents a storage provider type enum.
+// @enum s3,gcs,azblob
 type StorageProviderType string
 
 const (
@@ -27,20 +25,6 @@ const (
 	GoogleStorage  StorageProviderType = "gcs"
 	AzureBlobStore StorageProviderType = "azblob"
 )
-
-var enumValues_StorageProviderType = []StorageProviderType{
-	S3, GoogleStorage, AzureBlobStore,
-}
-
-// ParseStorageProviderType parses the StorageProviderType from string.
-func ParseStorageProviderType(input string) (StorageProviderType, error) {
-	result := StorageProviderType(input)
-	if !slices.Contains(enumValues_StorageProviderType, result) {
-		return "", fmt.Errorf("invalid StorageProviderType, expected one of %v, got: %s", enumValues_StorageProviderType, input)
-	}
-
-	return result, nil
-}
 
 // Validate checks if the provider type is valid.
 func (spt StorageProviderType) Validate() error {

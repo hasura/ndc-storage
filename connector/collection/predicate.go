@@ -11,7 +11,8 @@ import (
 
 // PredicateEvaluator the structured predicate result which is evaluated from the raw expression.
 type PredicateEvaluator struct {
-	ClientID          *common.StorageClientID
+	common.StorageBucketArguments
+
 	IsValid           bool
 	Include           common.StorageObjectIncludeOptions
 	IncludeObjectLock bool
@@ -24,7 +25,9 @@ type PredicateEvaluator struct {
 // EvalBucketPredicate evaluates the predicate bucket condition of the query request.
 func EvalBucketPredicate(clientID *common.StorageClientID, prefix string, predicate schema.Expression, variables map[string]any) (*PredicateEvaluator, error) {
 	result := &PredicateEvaluator{
-		ClientID:  clientID,
+		StorageBucketArguments: common.StorageBucketArguments{
+			ClientID: clientID,
+		},
 		Include:   common.StorageObjectIncludeOptions{},
 		variables: variables,
 	}
@@ -55,9 +58,9 @@ func EvalBucketPredicate(clientID *common.StorageClientID, prefix string, predic
 // EvalObjectPredicate evaluates the predicate object condition of the query request.
 func EvalObjectPredicate(bucketInfo common.StorageBucketArguments, preOperator *StringComparisonOperator, predicate schema.Expression, variables map[string]any) (*PredicateEvaluator, error) {
 	result := &PredicateEvaluator{
-		ClientID:  bucketInfo.ClientID,
-		Include:   common.StorageObjectIncludeOptions{},
-		variables: variables,
+		StorageBucketArguments: bucketInfo,
+		Include:                common.StorageObjectIncludeOptions{},
+		variables:              variables,
 	}
 
 	if bucketInfo.Bucket != "" {
@@ -93,8 +96,12 @@ func EvalObjectPredicate(bucketInfo common.StorageBucketArguments, preOperator *
 // GetBucketArguments get bucket arguments information
 func (pe PredicateEvaluator) GetBucketArguments() common.StorageBucketArguments {
 	result := common.StorageBucketArguments{
-		ClientID: pe.ClientID,
-		Bucket:   pe.BucketPredicate.GetPrefix(),
+		ClientID:        pe.ClientID,
+		ClientType:      pe.ClientType,
+		Endpoint:        pe.Endpoint,
+		AccessKeyID:     pe.AccessKeyID,
+		SecretAccessKey: pe.SecretAccessKey,
+		Bucket:          pe.BucketPredicate.GetPrefix(),
 	}
 
 	return result

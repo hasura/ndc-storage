@@ -8,7 +8,10 @@ import (
 
 // MakeBucket creates a new bucket.
 func (m *Manager) MakeBucket(ctx context.Context, clientID *common.StorageClientID, args *common.MakeStorageBucketOptions) error {
-	client, bucketName, err := m.GetClientAndBucket(clientID, args.Name)
+	client, bucketName, err := m.GetClientAndBucket(ctx, common.StorageBucketArguments{
+		ClientID: clientID,
+		Bucket:   args.Name,
+	})
 	if err != nil {
 		return err
 	}
@@ -24,7 +27,7 @@ func (m *Manager) UpdateBucket(ctx context.Context, args *common.UpdateBucketArg
 		return nil
 	}
 
-	client, bucketName, err := m.GetClientAndBucket(args.ClientID, args.Bucket)
+	client, bucketName, err := m.GetClientAndBucket(ctx, args.StorageBucketArguments)
 	if err != nil {
 		return err
 	}
@@ -55,7 +58,7 @@ func (m *Manager) ListBuckets(ctx context.Context, clientID *common.StorageClien
 
 // GetBucket gets bucket by name.
 func (m *Manager) GetBucket(ctx context.Context, bucketInfo *common.StorageBucketArguments, options common.BucketOptions) (*common.StorageBucket, error) {
-	client, bucketName, err := m.GetClientAndBucket(bucketInfo.ClientID, bucketInfo.Bucket)
+	client, bucketName, err := m.GetClientAndBucket(ctx, *bucketInfo)
 	if err != nil {
 		return nil, err
 	}
@@ -72,7 +75,7 @@ func (m *Manager) GetBucket(ctx context.Context, bucketInfo *common.StorageBucke
 
 // BucketExists checks if a bucket exists.
 func (m *Manager) BucketExists(ctx context.Context, args *common.StorageBucketArguments) (bool, error) {
-	client, bucketName, err := m.GetClientAndBucket(args.ClientID, args.Bucket)
+	client, bucketName, err := m.GetClientAndBucket(ctx, *args)
 	if err != nil {
 		return false, err
 	}
@@ -82,7 +85,7 @@ func (m *Manager) BucketExists(ctx context.Context, args *common.StorageBucketAr
 
 // RemoveBucket removes a bucket, bucket should be empty to be successfully removed.
 func (m *Manager) RemoveBucket(ctx context.Context, args *common.StorageBucketArguments) error {
-	client, bucketName, err := m.GetClientAndBucket(args.ClientID, args.Bucket)
+	client, bucketName, err := m.GetClientAndBucket(ctx, *args)
 	if err != nil {
 		return err
 	}

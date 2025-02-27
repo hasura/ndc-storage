@@ -100,6 +100,15 @@ definition:
               - REPLICA
           aggregate_functions: {}
           comparison_operators: {}
+        StorageProviderType:
+          representation:
+            type: enum
+            one_of:
+              - s3
+              - gcs
+              - azblob
+          aggregate_functions: {}
+          comparison_operators: {}
         StorageRetentionMode:
           representation:
             type: enum
@@ -301,6 +310,12 @@ definition:
         ListStorageObjectsArguments:
           description: holds all arguments of a list object request.
           fields:
+            accessKeyId:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
             after:
               type:
                 type: nullable
@@ -319,6 +334,18 @@ definition:
                 underlying_type:
                   type: named
                   name: StorageClientID
+            clientType:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: StorageProviderType
+            endpoint:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
             first:
               type:
                 type: nullable
@@ -332,6 +359,12 @@ definition:
                   type: named
                   name: Boolean
             prefix:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
+            secretAccessKey:
               type:
                 type: nullable
                 underlying_type:
@@ -643,6 +676,12 @@ definition:
         PutStorageObjectArguments:
           description: represents input arguments of the PutObject method.
           fields:
+            accessKeyId:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
             bucket:
               type:
                 type: nullable
@@ -655,6 +694,18 @@ definition:
                 underlying_type:
                   type: named
                   name: StorageClientID
+            clientType:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: StorageProviderType
+            endpoint:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
             object:
               type:
                 type: named
@@ -665,6 +716,12 @@ definition:
                 underlying_type:
                   type: named
                   name: PutStorageObjectOptions
+            secretAccessKey:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
             where:
               type:
                 type: nullable
@@ -1058,6 +1115,12 @@ definition:
         StorageBucketArguments:
           description: represent the common input arguments for bucket-related methods.
           fields:
+            accessKeyId:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
             bucket:
               type:
                 type: nullable
@@ -1070,6 +1133,24 @@ definition:
                 underlying_type:
                   type: named
                   name: StorageClientID
+            clientType:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: StorageProviderType
+            endpoint:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
+            secretAccessKey:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
         StorageBucketFilter:
           fields:
             clientId:
