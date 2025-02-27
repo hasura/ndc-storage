@@ -1642,8 +1642,17 @@ func GetConnectorSchema() *schema.SchemaResponse {
 				Description: toPtr("creates a new bucket."),
 				ResultType:  schema.NewNamedType("SuccessResponse").Encode(),
 				Arguments: map[string]schema.ArgumentInfo{
+					"accessKeyId": {
+						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
+					},
 					"clientId": {
 						Type: schema.NewNullableType(schema.NewNamedType("StorageClientID")).Encode(),
+					},
+					"clientType": {
+						Type: schema.NewNullableType(schema.NewNamedType("StorageProviderType")).Encode(),
+					},
+					"endpoint": {
+						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
 					},
 					"name": {
 						Type: schema.NewNamedType("String").Encode(),
@@ -1652,6 +1661,9 @@ func GetConnectorSchema() *schema.SchemaResponse {
 						Type: schema.NewNullableType(schema.NewNamedType("Boolean")).Encode(),
 					},
 					"region": {
+						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
+					},
+					"secretAccessKey": {
 						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
 					},
 					"tags": {

@@ -206,4 +206,14 @@ func (c *Connector) evalSchema(connectorSchema *schema.SchemaResponse) {
 		bytesScalar.Representation = schema.NewTypeRepresentationString().Encode()
 		connectorSchema.ScalarTypes["Bytes"] = *bytesScalar
 	}
+
+	if !c.config.Generator.DynamicCredentials {
+		for name, object := range connectorSchema.ObjectTypes {
+			for _, key := range dynamicCredentialArguments {
+				delete(object.Fields, key)
+			}
+
+			connectorSchema.ObjectTypes[name] = object
+		}
+	}
 }

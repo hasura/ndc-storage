@@ -61,28 +61,8 @@ func (coe *CollectionObjectExecutor) Execute(ctx context.Context) (*schema.RowSe
 		NumThreads: coe.Concurrency,
 	}
 
-	if clientType, err := utils.GetNullableString(coe.Arguments, ArgumentClientType); err != nil {
-		return nil, schema.UnprocessableContentError(err.Error(), nil)
-	} else if clientType != nil {
-		request.ClientType = (*common.StorageProviderType)(clientType)
-	}
-
-	if endpoint, err := utils.GetNullableString(coe.Arguments, ArgumentEndpoint); err != nil {
-		return nil, schema.UnprocessableContentError(err.Error(), nil)
-	} else if endpoint != nil {
-		request.Endpoint = *endpoint
-	}
-
-	if accessKey, err := utils.GetNullableString(coe.Arguments, ArgumentAccessKeyID); err != nil {
-		return nil, schema.UnprocessableContentError(err.Error(), nil)
-	} else if accessKey != nil {
-		request.AccessKeyID = *accessKey
-	}
-
-	if secretAccessKey, err := utils.GetNullableString(coe.Arguments, ArgumentSecretAccessKey); err != nil {
-		return nil, schema.UnprocessableContentError(err.Error(), nil)
-	} else if secretAccessKey != nil {
-		request.SecretAccessKey = *secretAccessKey
+	if err := request.EvalArguments(coe.Arguments); err != nil {
+		return nil, err
 	}
 
 	if hierarchy, err := utils.GetNullableBoolean(coe.Arguments, argumentHierarchy); err != nil {

@@ -119,8 +119,10 @@ func (m *Manager) PutObject(ctx context.Context, bucketInfo common.StorageBucket
 // To copy multiple source objects into a single destination object see the ComposeObject API.
 func (m *Manager) CopyObject(ctx context.Context, args *common.CopyStorageObjectArguments) (*common.StorageUploadInfo, error) {
 	client, bucketName, err := m.GetClientAndBucket(ctx, common.StorageBucketArguments{
-		ClientID: args.ClientID,
-		Bucket:   args.Dest.Bucket,
+		StorageClientCredentialArguments: common.StorageClientCredentialArguments{
+			ClientID: args.ClientID,
+		},
+		Bucket: args.Dest.Bucket,
 	})
 	if err != nil {
 		return nil, err
@@ -145,8 +147,10 @@ func (m *Manager) CopyObject(ctx context.Context, args *common.CopyStorageObject
 // ComposeObject creates an object by concatenating a list of source objects using server-side copying.
 func (m *Manager) ComposeObject(ctx context.Context, args *common.ComposeStorageObjectArguments) (*common.StorageUploadInfo, error) {
 	client, bucketName, err := m.GetClientAndBucket(ctx, common.StorageBucketArguments{
-		ClientID: args.ClientID,
-		Bucket:   args.Dest.Bucket,
+		StorageClientCredentialArguments: common.StorageClientCredentialArguments{
+			ClientID: args.ClientID,
+		},
+		Bucket: args.Dest.Bucket,
 	})
 	if err != nil {
 		return nil, err
@@ -243,8 +247,10 @@ func (m *Manager) RestoreObject(ctx context.Context, bucketInfo common.StorageBu
 // RemoveIncompleteUpload removes a partially uploaded object.
 func (m *Manager) RemoveIncompleteUpload(ctx context.Context, args *common.RemoveIncompleteUploadArguments) error {
 	client, bucketName, err := m.GetClientAndBucket(ctx, common.StorageBucketArguments{
-		ClientID: args.ClientID,
-		Bucket:   args.Bucket,
+		StorageClientCredentialArguments: common.StorageClientCredentialArguments{
+			ClientID: args.ClientID,
+		},
+		Bucket: args.Bucket,
 	})
 	if err != nil {
 		return err

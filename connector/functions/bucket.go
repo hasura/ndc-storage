@@ -25,7 +25,7 @@ func FunctionStorageBucketConnections(ctx context.Context, state *types.State, a
 		return StorageConnection[common.StorageBucket]{}, schema.UnprocessableContentError("$first argument must be larger than 0", nil)
 	}
 
-	request, err := collection.EvalBucketPredicate(args.ClientID, args.Prefix, args.Where, types.QueryVariablesFromContext(ctx))
+	request, err := collection.EvalBucketPredicate(args.StorageClientCredentialArguments, args.Prefix, args.Where, types.QueryVariablesFromContext(ctx))
 	if err != nil {
 		return StorageConnection[common.StorageBucket]{}, err
 	}
@@ -45,7 +45,9 @@ func FunctionStorageBucketConnections(ctx context.Context, state *types.State, a
 		predicate = nil
 	}
 
-	buckets, err := state.Storage.ListBuckets(ctx, request.ClientID, &common.ListStorageBucketsOptions{
+	bucketArguments := request.GetBucketArguments()
+
+	buckets, err := state.Storage.ListBuckets(ctx, bucketArguments.StorageClientCredentialArguments, &common.ListStorageBucketsOptions{
 		Prefix:     request.BucketPredicate.GetPrefix(),
 		MaxResults: args.First,
 		StartAfter: args.After,

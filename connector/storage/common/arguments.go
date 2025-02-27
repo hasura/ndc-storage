@@ -15,8 +15,8 @@ type StorageKeyValue struct {
 
 // ListStorageBucketArguments represent the input arguments for the ListBuckets methods.
 type ListStorageBucketArguments struct {
-	// The storage client ID.
-	ClientID *StorageClientID `json:"clientId,omitempty"`
+	StorageClientCredentialArguments
+
 	// Returns list of bucket with the prefix.
 	Prefix string `json:"prefix,omitempty"`
 	// The maximum number of objects requested per batch.
@@ -35,15 +35,30 @@ type GetStorageBucketArguments struct {
 
 // StorageBucketArguments represent the common input arguments for bucket-related methods.
 type StorageBucketArguments struct {
-	// The storage client ID.
-	ClientID   *StorageClientID     `json:"clientId,omitempty"`
-	ClientType *StorageProviderType `json:"clientType,omitempty"`
-	Endpoint   string               `json:"endpoint,omitempty"`
-
 	// The bucket name.
-	Bucket          string `json:"bucket,omitempty"`
-	AccessKeyID     string `json:"accessKeyId,omitempty"`
-	SecretAccessKey string `json:"secretAccessKey,omitempty"`
+	Bucket string `json:"bucket,omitempty"`
+
+	StorageClientCredentialArguments
+}
+
+// StorageClientCredentials hold common storage client credential arguments.
+type StorageClientCredentialArguments struct {
+	ClientID        *StorageClientID     `json:"clientId,omitempty"`
+	ClientType      *StorageProviderType `json:"clientType,omitempty"`
+	Endpoint        string               `json:"endpoint,omitempty"`
+	AccessKeyID     string               `json:"accessKeyId,omitempty"`
+	SecretAccessKey string               `json:"secretAccessKey,omitempty"`
+}
+
+// IsEmpty checks if all properties are empty.
+func (ca StorageClientCredentialArguments) IsEmpty() bool {
+	return ca.ClientType == nil || !ca.ClientType.IsValid() || (ca.AccessKeyID == "" && ca.SecretAccessKey == "" && ca.Endpoint == "")
+}
+
+// MakeStorageBucketArguments holds all arguments to tweak bucket creation.
+type MakeStorageBucketArguments struct {
+	StorageClientCredentialArguments
+	MakeStorageBucketOptions
 }
 
 // CopyStorageObjectArguments represent input arguments of the CopyObject method.
@@ -60,13 +75,6 @@ type ComposeStorageObjectArguments struct {
 	ClientID *StorageClientID        `json:"clientId,omitempty"`
 	Dest     StorageCopyDestOptions  `json:"dest"`
 	Sources  []StorageCopySrcOptions `json:"sources"`
-}
-
-// MakeStorageBucketArguments holds all arguments to tweak bucket creation.
-type MakeStorageBucketArguments struct {
-	ClientID *StorageClientID `json:"clientId,omitempty"`
-
-	MakeStorageBucketOptions
 }
 
 // MakeStorageBucketOptions holds all options to tweak bucket creation.

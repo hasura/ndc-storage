@@ -2145,7 +2145,35 @@ definition:
         - name: storageBuckets
           description: List storage buckets
           arguments:
+            accessKeyId:
+              description: Access key ID or Account name credential
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
             after:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
+            clientType:
+              description: The cloud storage provider type
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: StorageProviderType
+            endpoint:
+              description: Endpoint of the cloud storage service
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
+            secretAccessKey:
+              description: Secret Access key ID or Account key credential
               type:
                 type: nullable
                 underlying_type:
@@ -2157,7 +2185,34 @@ definition:
         - name: storageObjects
           description: List storage objects
           arguments:
+            accessKeyId:
+              description: Access key ID or Account name credential
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
             after:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
+            bucket:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
+            clientType:
+              description: The cloud storage provider type
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: StorageProviderType
+            endpoint:
+              description: Endpoint of the cloud storage service
               type:
                 type: nullable
                 underlying_type:
@@ -2169,6 +2224,13 @@ definition:
                 underlying_type:
                   type: named
                   name: Boolean
+            secretAccessKey:
+              description: Secret Access key ID or Account key credential
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
           type: StorageObject
           uniqueness_constraints: {}
           foreign_keys: {}
@@ -2176,6 +2238,12 @@ definition:
         - name: downloadStorageObject
           description: returns a stream of the object data. Most of the common errors occur when reading the stream.
           arguments:
+            accessKeyId:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
             bucket:
               type:
                 type: nullable
@@ -2188,6 +2256,18 @@ definition:
                 underlying_type:
                   type: named
                   name: StorageClientID
+            clientType:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: StorageProviderType
+            endpoint:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
             headers:
               type:
                 type: nullable
@@ -2214,6 +2294,12 @@ definition:
                   element_type:
                     type: named
                     name: StorageKeyValue
+            secretAccessKey:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
             versionId:
               type:
                 type: nullable
@@ -2226,6 +2312,12 @@ definition:
         - name: downloadStorageObjectText
           description: returns the object content in plain text. Use this function only if you know exactly the file as an text file.
           arguments:
+            accessKeyId:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
             bucket:
               type:
                 type: nullable
@@ -2238,6 +2330,18 @@ definition:
                 underlying_type:
                   type: named
                   name: StorageClientID
+            clientType:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: StorageProviderType
+            endpoint:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
             headers:
               type:
                 type: nullable
@@ -2264,6 +2368,12 @@ definition:
                   element_type:
                     type: named
                     name: StorageKeyValue
+            secretAccessKey:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
             versionId:
               type:
                 type: nullable
@@ -2276,6 +2386,12 @@ definition:
         - name: storageBucket
           description: gets a bucket by name.
           arguments:
+            accessKeyId:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
             bucket:
               type:
                 type: nullable
@@ -2288,6 +2404,24 @@ definition:
                 underlying_type:
                   type: named
                   name: StorageClientID
+            clientType:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: StorageProviderType
+            endpoint:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
+            secretAccessKey:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
           result_type:
             type: nullable
             underlying_type:
@@ -2332,6 +2466,12 @@ definition:
         - name: storageBucketExists
           description: checks if a bucket exists.
           arguments:
+            accessKeyId:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
             bucket:
               type:
                 type: nullable
@@ -2344,12 +2484,36 @@ definition:
                 underlying_type:
                   type: named
                   name: StorageClientID
+            clientType:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: StorageProviderType
+            endpoint:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
+            secretAccessKey:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
           result_type:
             type: named
             name: ExistsResponse
         - name: storageDeletedObjects
           description: list deleted objects in a bucket.
           arguments:
+            accessKeyId:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
             after:
               type:
                 type: nullable
@@ -2368,6 +2532,18 @@ definition:
                 underlying_type:
                   type: named
                   name: StorageClientID
+            clientType:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: StorageProviderType
+            endpoint:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
             first:
               type:
                 type: nullable
@@ -2386,12 +2562,24 @@ definition:
                 underlying_type:
                   type: named
                   name: String
+            secretAccessKey:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
           result_type:
             type: named
             name: StorageObjectListResults
         - name: storageIncompleteUploads
           description: list partially uploaded objects in a bucket.
           arguments:
+            accessKeyId:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
             bucket:
               type:
                 type: nullable
@@ -2404,7 +2592,25 @@ definition:
                 underlying_type:
                   type: named
                   name: StorageClientID
+            clientType:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: StorageProviderType
+            endpoint:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
             prefix:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
+            secretAccessKey:
               type:
                 type: nullable
                 underlying_type:
@@ -2418,6 +2624,12 @@ definition:
         - name: storageObject
           description: fetches metadata of an object.
           arguments:
+            accessKeyId:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
             bucket:
               type:
                 type: nullable
@@ -2430,6 +2642,18 @@ definition:
                 underlying_type:
                   type: named
                   name: StorageClientID
+            clientType:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: StorageProviderType
+            endpoint:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
             headers:
               type:
                 type: nullable
@@ -2456,6 +2680,12 @@ definition:
                   element_type:
                     type: named
                     name: StorageKeyValue
+            secretAccessKey:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
             versionId:
               type:
                 type: nullable
@@ -2470,6 +2700,12 @@ definition:
         - name: storageObjectConnections
           description: lists objects in a bucket using the relay style.
           arguments:
+            accessKeyId:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
             after:
               type:
                 type: nullable
@@ -2488,6 +2724,18 @@ definition:
                 underlying_type:
                   type: named
                   name: StorageClientID
+            clientType:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: StorageProviderType
+            endpoint:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
             first:
               type:
                 type: nullable
@@ -2506,6 +2754,12 @@ definition:
                 underlying_type:
                   type: named
                   name: String
+            secretAccessKey:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
             where:
               type:
                 type: nullable
@@ -2518,6 +2772,12 @@ definition:
         - name: storagePresignedDownloadUrl
           description: generates a presigned URL for HTTP GET operations. Browsers/Mobile clients may point to this URL to directly download objects even if the bucket is private. This presigned URL can have an associated expiration time in seconds after which it is no longer operational. The maximum expiry is 604800 seconds (i.e. 7 days) and minimum is 1 second.
           arguments:
+            accessKeyId:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
             bucket:
               type:
                 type: nullable
@@ -2530,6 +2790,18 @@ definition:
                 underlying_type:
                   type: named
                   name: StorageClientID
+            clientType:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: StorageProviderType
+            endpoint:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
             expiry:
               type:
                 type: nullable
@@ -2548,6 +2820,12 @@ definition:
                   element_type:
                     type: named
                     name: StorageKeyValue
+            secretAccessKey:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
           result_type:
             type: nullable
             underlying_type:
@@ -2556,6 +2834,12 @@ definition:
         - name: storagePresignedUploadUrl
           description: generates a presigned URL for HTTP PUT operations. Browsers/Mobile clients may point to this URL to upload objects directly to a bucket even if it is private. This presigned URL can have an associated expiration time in seconds after which it is no longer operational. The default expiry is set to 7 days.
           arguments:
+            accessKeyId:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
             bucket:
               type:
                 type: nullable
@@ -2568,6 +2852,18 @@ definition:
                 underlying_type:
                   type: named
                   name: StorageClientID
+            clientType:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: StorageProviderType
+            endpoint:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
             expiry:
               type:
                 type: nullable
@@ -2578,6 +2874,12 @@ definition:
               type:
                 type: named
                 name: String
+            secretAccessKey:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
           result_type:
             type: nullable
             underlying_type:
@@ -2629,12 +2931,30 @@ definition:
         - name: createStorageBucket
           description: creates a new bucket.
           arguments:
+            accessKeyId:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
             clientId:
               type:
                 type: nullable
                 underlying_type:
                   type: named
                   name: StorageClientID
+            clientType:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: StorageProviderType
+            endpoint:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
             name:
               type:
                 type: named
@@ -2646,6 +2966,12 @@ definition:
                   type: named
                   name: Boolean
             region:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
+            secretAccessKey:
               type:
                 type: nullable
                 underlying_type:
@@ -2665,6 +2991,12 @@ definition:
         - name: removeIncompleteStorageUpload
           description: removes a partially uploaded object.
           arguments:
+            accessKeyId:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
             bucket:
               type:
                 type: nullable
@@ -2677,16 +3009,40 @@ definition:
                 underlying_type:
                   type: named
                   name: StorageClientID
+            clientType:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: StorageProviderType
+            endpoint:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
             object:
               type:
                 type: named
                 name: String
+            secretAccessKey:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
           result_type:
             type: named
             name: SuccessResponse
         - name: removeStorageBucket
           description: removes a bucket, bucket should be empty to be successfully removed.
           arguments:
+            accessKeyId:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
             bucket:
               type:
                 type: nullable
@@ -2699,12 +3055,36 @@ definition:
                 underlying_type:
                   type: named
                   name: StorageClientID
+            clientType:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: StorageProviderType
+            endpoint:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
+            secretAccessKey:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
           result_type:
             type: named
             name: SuccessResponse
         - name: removeStorageObject
           description: removes an object with some specified options.
           arguments:
+            accessKeyId:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
             bucket:
               type:
                 type: nullable
@@ -2717,6 +3097,18 @@ definition:
                 underlying_type:
                   type: named
                   name: StorageClientID
+            clientType:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: StorageProviderType
+            endpoint:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
             forceDelete:
               type:
                 type: nullable
@@ -2733,6 +3125,12 @@ definition:
               type:
                 type: named
                 name: String
+            secretAccessKey:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
             softDelete:
               type:
                 type: nullable
@@ -2751,6 +3149,12 @@ definition:
         - name: removeStorageObjects
           description: remove a list of objects obtained from an input channel. The call sends a delete request to the server up to 1000 objects at a time. The errors observed are sent over the error channel.
           arguments:
+            accessKeyId:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
             after:
               type:
                 type: nullable
@@ -2769,6 +3173,18 @@ definition:
                 underlying_type:
                   type: named
                   name: StorageClientID
+            clientType:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: StorageProviderType
+            endpoint:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
             first:
               type:
                 type: nullable
@@ -2793,6 +3209,12 @@ definition:
                 underlying_type:
                   type: named
                   name: String
+            secretAccessKey:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
           result_type:
             type: array
             element_type:
@@ -2801,6 +3223,12 @@ definition:
         - name: restoreStorageObject
           description: restore a soft-deleted object.
           arguments:
+            accessKeyId:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
             bucket:
               type:
                 type: nullable
@@ -2813,16 +3241,40 @@ definition:
                 underlying_type:
                   type: named
                   name: StorageClientID
+            clientType:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: StorageProviderType
+            endpoint:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
             object:
               type:
                 type: named
                 name: String
+            secretAccessKey:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
           result_type:
             type: named
             name: SuccessResponse
         - name: updateStorageBucket
           description: updates the bucket's configuration.
           arguments:
+            accessKeyId:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
             bucket:
               type:
                 type: nullable
@@ -2835,12 +3287,24 @@ definition:
                 underlying_type:
                   type: named
                   name: StorageClientID
+            clientType:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: StorageProviderType
             encryption:
               type:
                 type: nullable
                 underlying_type:
                   type: named
                   name: ServerSideEncryptionConfiguration
+            endpoint:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
             lifecycle:
               type:
                 type: nullable
@@ -2853,6 +3317,12 @@ definition:
                 underlying_type:
                   type: named
                   name: SetStorageObjectLockConfig
+            secretAccessKey:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
             tags:
               type:
                 type: nullable
@@ -2873,6 +3343,12 @@ definition:
         - name: updateStorageObject
           description: updates the object's configuration.
           arguments:
+            accessKeyId:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
             bucket:
               type:
                 type: nullable
@@ -2885,6 +3361,18 @@ definition:
                 underlying_type:
                   type: named
                   name: StorageClientID
+            clientType:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: StorageProviderType
+            endpoint:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
             legalHold:
               type:
                 type: nullable
@@ -2909,6 +3397,12 @@ definition:
                 underlying_type:
                   type: named
                   name: SetStorageObjectRetentionOptions
+            secretAccessKey:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
             tags:
               type:
                 type: nullable
@@ -2929,6 +3423,12 @@ definition:
         - name: uploadStorageObject
           description: uploads object that are less than 128MiB in a single PUT operation. For objects that are greater than 128MiB in size, PutObject seamlessly uploads the object as parts of 128MiB or more depending on the actual file size. The max upload size for an object is 5TB.
           arguments:
+            accessKeyId:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
             bucket:
               type:
                 type: nullable
@@ -2941,10 +3441,22 @@ definition:
                 underlying_type:
                   type: named
                   name: StorageClientID
+            clientType:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: StorageProviderType
             data:
               type:
                 type: named
                 name: Bytes
+            endpoint:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
             object:
               type:
                 type: named
@@ -2955,12 +3467,24 @@ definition:
                 underlying_type:
                   type: named
                   name: PutStorageObjectOptions
+            secretAccessKey:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
           result_type:
             type: named
             name: StorageUploadInfo
         - name: uploadStorageObjectText
           description: uploads object in plain text to the storage server. The file content is not encoded to base64 so the input size is smaller than 30%.
           arguments:
+            accessKeyId:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
             bucket:
               type:
                 type: nullable
@@ -2973,10 +3497,22 @@ definition:
                 underlying_type:
                   type: named
                   name: StorageClientID
+            clientType:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: StorageProviderType
             data:
               type:
                 type: named
                 name: String
+            endpoint:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
             object:
               type:
                 type: named
@@ -2987,6 +3523,12 @@ definition:
                 underlying_type:
                   type: named
                   name: PutStorageObjectOptions
+            secretAccessKey:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
           result_type:
             type: named
             name: StorageUploadInfo

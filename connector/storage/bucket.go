@@ -9,8 +9,10 @@ import (
 // MakeBucket creates a new bucket.
 func (m *Manager) MakeBucket(ctx context.Context, clientID *common.StorageClientID, args *common.MakeStorageBucketOptions) error {
 	client, bucketName, err := m.GetClientAndBucket(ctx, common.StorageBucketArguments{
-		ClientID: clientID,
-		Bucket:   args.Name,
+		StorageClientCredentialArguments: common.StorageClientCredentialArguments{
+			ClientID: clientID,
+		},
+		Bucket: args.Name,
 	})
 	if err != nil {
 		return err
@@ -36,9 +38,13 @@ func (m *Manager) UpdateBucket(ctx context.Context, args *common.UpdateBucketArg
 }
 
 // ListBuckets list all buckets.
-func (m *Manager) ListBuckets(ctx context.Context, clientID *common.StorageClientID, options *common.ListStorageBucketsOptions, predicate func(string) bool) (*common.StorageBucketListResults, error) {
-	client, ok := m.GetClient(clientID)
-	if !ok {
+func (m *Manager) ListBuckets(ctx context.Context, clientInfo common.StorageClientCredentialArguments, options *common.ListStorageBucketsOptions, predicate func(string) bool) (*common.StorageBucketListResults, error) {
+	client, err := m.GetOrCreateClient(ctx, clientInfo)
+	if err != nil {
+		return nil, err
+	}
+
+	if client == nil {
 		return &common.StorageBucketListResults{
 			Buckets: []common.StorageBucket{},
 		}, nil

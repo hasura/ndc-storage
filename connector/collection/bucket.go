@@ -31,7 +31,7 @@ func (coe *CollectionBucketExecutor) Execute(ctx context.Context) (*schema.RowSe
 		}, nil
 	}
 
-	request, err := EvalBucketPredicate(nil, "", coe.Request.Query.Predicate, coe.Variables)
+	request, err := EvalBucketPredicate(common.StorageClientCredentialArguments{}, "", coe.Request.Query.Predicate, coe.Variables)
 	if err != nil {
 		return nil, schema.UnprocessableContentError(err.Error(), nil)
 	}
@@ -43,6 +43,10 @@ func (coe *CollectionBucketExecutor) Execute(ctx context.Context) (*schema.RowSe
 			Aggregates: schema.RowSetAggregates{},
 			Rows:       []map[string]any{},
 		}, nil
+	}
+
+	if err := request.EvalArguments(coe.Arguments); err != nil {
+		return nil, err
 	}
 
 	request.evalQuerySelectionFields(coe.Request.Query.Fields)
@@ -82,7 +86,7 @@ func (coe *CollectionBucketExecutor) Execute(ctx context.Context) (*schema.RowSe
 		options.MaxResults = &maxResults
 	}
 
-	response, err := coe.Storage.ListBuckets(ctx, request.ClientID, options, predicate)
+	response, err := coe.Storage.ListBuckets(ctx, request.GetBucketArguments().StorageClientCredentialArguments, options, predicate)
 	if err != nil {
 		return nil, err
 	}
