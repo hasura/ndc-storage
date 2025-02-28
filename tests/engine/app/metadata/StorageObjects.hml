@@ -634,20 +634,6 @@ definition:
       type: String
     - name: hierarchy
       type: Boolean
-    - name: accessKeyId
-      type: String
-      description: Access key ID or Account name credential
-    - name: bucket
-      type: String
-    - name: clientType
-      type: StorageProviderType
-      description: The cloud storage provider type
-    - name: endpoint
-      type: String
-      description: Endpoint of the cloud storage service
-    - name: secretAccessKey
-      type: String
-      description: Secret Access key ID or Account key credential
   source:
     dataConnectorName: storage
     collection: storageObjects

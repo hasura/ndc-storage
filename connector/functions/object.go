@@ -102,8 +102,8 @@ func FunctionStorageObject(ctx context.Context, state *types.State, args *common
 	return state.Storage.StatObject(ctx, request.GetBucketArguments(), request.ObjectNamePredicate.GetPrefix(), opts)
 }
 
-// FunctionDownloadStorageObject returns a stream of the object data. Most of the common errors occur when reading the stream.
-func FunctionDownloadStorageObject(ctx context.Context, state *types.State, args *common.GetStorageObjectArguments) (DownloadStorageObjectResponse, error) {
+// FunctionDownloadStorageObjectAsBytes returns a stream of the object data. Most of the common errors occur when reading the stream.
+func FunctionDownloadStorageObjectAsBytes(ctx context.Context, state *types.State, args *common.GetStorageObjectArguments) (DownloadStorageObjectResponse, error) {
 	args.Base64Encoded = true
 
 	reader, err := downloadStorageObject(ctx, state, args)
@@ -123,8 +123,8 @@ func FunctionDownloadStorageObject(ctx context.Context, state *types.State, args
 	return DownloadStorageObjectResponse{Data: dataBytes}, nil
 }
 
-// FunctionDownloadStorageObjectText returns the object content in plain text. Use this function only if you know exactly the file as an text file.
-func FunctionDownloadStorageObjectText(ctx context.Context, state *types.State, args *common.GetStorageObjectArguments) (DownloadStorageObjectTextResponse, error) {
+// FunctionDownloadStorageObjectAsText returns the object content in plain text. Use this function only if you know exactly the file as an text file.
+func FunctionDownloadStorageObjectAsText(ctx context.Context, state *types.State, args *common.GetStorageObjectArguments) (DownloadStorageObjectTextResponse, error) {
 	reader, err := downloadStorageObject(ctx, state, args)
 	if err != nil {
 		return DownloadStorageObjectTextResponse{}, err

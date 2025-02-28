@@ -195,11 +195,11 @@ func TestMaxDownloadSizeValidation(t *testing.T) {
 		MaxDownloadSizeMBs float64
 	}{
 		{
-			Name:               "downloadStorageObject",
+			Name:               "downloadStorageObjectAsBytes",
 			MaxDownloadSizeMBs: 1.33,
 		},
 		{
-			Name:               "downloadStorageObjectText",
+			Name:               "downloadStorageObjectAsText",
 			MaxDownloadSizeMBs: 2,
 		},
 	}

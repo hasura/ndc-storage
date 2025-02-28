@@ -24,8 +24,8 @@ The following credential arguments will be presented in all operations:
 **Example**:
 
 ```graphql
-query DownloadStorageObjectText {
-  downloadStorageObjectText(
+query DownloadStorageObjectAsText {
+  downloadStorageObjectAsText(
     clientType: "s3"
     endpoint: "http://minio:9000"
     accessKeyId: "test-key"

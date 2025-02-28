@@ -94,7 +94,7 @@ func (dch DataConnectorHandler) execQuery(ctx context.Context, state *types.Stat
 	span := trace.SpanFromContext(ctx)
 	logger := connector.GetLogger(ctx)
 	switch request.Collection {
-	case "downloadStorageObject":
+	case "downloadStorageObjectAsBytes":
 
 		selection, err := queryFields.AsObject()
 		if err != nil {
@@ -113,7 +113,7 @@ func (dch DataConnectorHandler) execQuery(ctx context.Context, state *types.Stat
 		connector_addSpanEvent(span, logger, "execute_function", map[string]any{
 			"arguments": args,
 		})
-		rawResult, err := FunctionDownloadStorageObject(ctx, state, &args)
+		rawResult, err := FunctionDownloadStorageObjectAsBytes(ctx, state, &args)
 
 		if err != nil {
 			return nil, err
@@ -128,7 +128,7 @@ func (dch DataConnectorHandler) execQuery(ctx context.Context, state *types.Stat
 		}
 		return result, nil
 
-	case "downloadStorageObjectText":
+	case "downloadStorageObjectAsText":
 
 		selection, err := queryFields.AsObject()
 		if err != nil {
@@ -147,7 +147,7 @@ func (dch DataConnectorHandler) execQuery(ctx context.Context, state *types.Stat
 		connector_addSpanEvent(span, logger, "execute_function", map[string]any{
 			"arguments": args,
 		})
-		rawResult, err := FunctionDownloadStorageObjectText(ctx, state, &args)
+		rawResult, err := FunctionDownloadStorageObjectAsText(ctx, state, &args)
 
 		if err != nil {
 			return nil, err
@@ -485,7 +485,7 @@ func (dch DataConnectorHandler) execQuery(ctx context.Context, state *types.Stat
 	}
 }
 
-var enumValues_FunctionName = []string{"downloadStorageObject", "downloadStorageObjectText", "storageBucket", "storageBucketConnections", "storageBucketExists", "storageDeletedObjects", "storageIncompleteUploads", "storageObject", "storageObjectConnections", "storagePresignedDownloadUrl", "storagePresignedUploadUrl"}
+var enumValues_FunctionName = []string{"downloadStorageObjectAsBytes", "downloadStorageObjectAsText", "storageBucket", "storageBucketConnections", "storageBucketExists", "storageDeletedObjects", "storageIncompleteUploads", "storageObject", "storageObjectConnections", "storagePresignedDownloadUrl", "storagePresignedUploadUrl"}
 
 // MutationExists check if the mutation name exists
 func (dch DataConnectorHandler) MutationExists(name string) bool {

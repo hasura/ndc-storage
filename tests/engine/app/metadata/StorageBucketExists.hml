@@ -36,14 +36,6 @@ definition:
       type: String
     - name: clientId
       type: StorageClientId
-    - name: accessKeyId
-      type: String
-    - name: clientType
-      type: StorageProviderType
-    - name: endpoint
-      type: String
-    - name: secretAccessKey
-      type: String
   source:
     dataConnectorName: storage
     dataConnectorCommand:

@@ -81,11 +81,11 @@ func (j *ListIncompleteUploadsOptions) FromValue(input map[string]any) error {
 // FromValue decodes values from map
 func (j *ListStorageBucketArguments) FromValue(input map[string]any) error {
 	var err error
-	j.After, err = utils.GetStringDefault(input, "after")
+	j.StorageClientCredentialArguments, err = utils.DecodeObject[StorageClientCredentialArguments](input)
 	if err != nil {
 		return err
 	}
-	j.ClientID, err = utils.DecodeNullableObjectValue[StorageClientID](input, "clientId")
+	j.After, err = utils.GetStringDefault(input, "after")
 	if err != nil {
 		return err
 	}
@@ -195,11 +195,21 @@ func (j *PresignedPutStorageObjectArguments) FromValue(input map[string]any) err
 // FromValue decodes values from map
 func (j *StorageBucketArguments) FromValue(input map[string]any) error {
 	var err error
-	j.AccessKeyID, err = utils.GetStringDefault(input, "accessKeyId")
+	j.StorageClientCredentialArguments, err = utils.DecodeObject[StorageClientCredentialArguments](input)
 	if err != nil {
 		return err
 	}
 	j.Bucket, err = utils.GetStringDefault(input, "bucket")
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// FromValue decodes values from map
+func (j *StorageClientCredentialArguments) FromValue(input map[string]any) error {
+	var err error
+	j.AccessKeyID, err = utils.GetStringDefault(input, "accessKeyId")
 	if err != nil {
 		return err
 	}
@@ -659,12 +669,8 @@ func (j StorageBucket) ToMap() map[string]any {
 // ToMap encodes the struct to a value map
 func (j StorageBucketArguments) ToMap() map[string]any {
 	r := make(map[string]any)
-	r["accessKeyId"] = j.AccessKeyID
+	r = utils.MergeMap(r, j.StorageClientCredentialArguments.ToMap())
 	r["bucket"] = j.Bucket
-	r["clientId"] = j.ClientID
-	r["clientType"] = j.ClientType
-	r["endpoint"] = j.Endpoint
-	r["secretAccessKey"] = j.SecretAccessKey
 
 	return r
 }
@@ -676,6 +682,18 @@ func (j StorageBucketVersioningConfiguration) ToMap() map[string]any {
 	r["excludeFolders"] = j.ExcludeFolders
 	r["excludedPrefixes"] = j.ExcludedPrefixes
 	r["mfaDelete"] = j.MFADelete
+
+	return r
+}
+
+// ToMap encodes the struct to a value map
+func (j StorageClientCredentialArguments) ToMap() map[string]any {
+	r := make(map[string]any)
+	r["accessKeyId"] = j.AccessKeyID
+	r["clientId"] = j.ClientID
+	r["clientType"] = j.ClientType
+	r["endpoint"] = j.Endpoint
+	r["secretAccessKey"] = j.SecretAccessKey
 
 	return r
 }

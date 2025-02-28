@@ -877,18 +877,6 @@ definition:
   arguments:
     - name: after
       type: String
-    - name: accessKeyId
-      type: String
-      description: Access key ID or Account name credential
-    - name: clientType
-      type: StorageProviderType
-      description: The cloud storage provider type
-    - name: endpoint
-      type: String
-      description: Endpoint of the cloud storage service
-    - name: secretAccessKey
-      type: String
-      description: Secret Access key ID or Account key credential
   source:
     dataConnectorName: storage
     collection: storageBuckets

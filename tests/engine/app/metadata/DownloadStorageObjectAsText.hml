@@ -29,7 +29,7 @@ definition:
 kind: Command
 version: v1
 definition:
-  name: DownloadStorageObjectText
+  name: DownloadStorageObjectAsText
   outputType: DownloadStorageObjectTextResponse!
   arguments:
     - name: bucket
@@ -46,20 +46,12 @@ definition:
       type: "[StorageKeyValue!]"
     - name: versionId
       type: String
-    - name: accessKeyId
-      type: String
-    - name: clientType
-      type: StorageProviderType
-    - name: endpoint
-      type: String
-    - name: secretAccessKey
-      type: String
   source:
     dataConnectorName: storage
     dataConnectorCommand:
-      function: downloadStorageObjectText
+      function: downloadStorageObjectAsText
   graphql:
-    rootFieldName: downloadStorageObjectText
+    rootFieldName: downloadStorageObjectAsText
     rootFieldKind: Query
   description: returns the object content in plain text. Use this function only if
     you know exactly the file as an text file.
@@ -68,7 +60,7 @@ definition:
 kind: CommandPermissions
 version: v1
 definition:
-  commandName: DownloadStorageObjectText
+  commandName: DownloadStorageObjectAsText
   permissions:
     - role: admin
       allowExecution: true

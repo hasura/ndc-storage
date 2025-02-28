@@ -655,6 +655,25 @@ func GetConnectorSchema() *schema.SchemaResponse {
 					},
 				},
 			},
+			"StorageClientCredentialArguments": schema.ObjectType{
+				Fields: schema.ObjectTypeFields{
+					"accessKeyId": schema.ObjectField{
+						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
+					},
+					"clientId": schema.ObjectField{
+						Type: schema.NewNullableType(schema.NewNamedType("StorageClientID")).Encode(),
+					},
+					"clientType": schema.ObjectField{
+						Type: schema.NewNullableType(schema.NewNamedType("StorageProviderType")).Encode(),
+					},
+					"endpoint": schema.ObjectField{
+						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
+					},
+					"secretAccessKey": schema.ObjectField{
+						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
+					},
+				},
+			},
 			"StorageConnectionEdge_StorageBucket": schema.ObjectType{
 				Description: toPtr("the connection information of the relay pagination response."),
 				Fields: schema.ObjectTypeFields{
@@ -1224,7 +1243,7 @@ func GetConnectorSchema() *schema.SchemaResponse {
 		},
 		Functions: []schema.FunctionInfo{
 			{
-				Name:        "downloadStorageObject",
+				Name:        "downloadStorageObjectAsBytes",
 				Description: toPtr("returns a stream of the object data. Most of the common errors occur when reading the stream."),
 				ResultType:  schema.NewNamedType("DownloadStorageObjectResponse").Encode(),
 				Arguments: map[string]schema.ArgumentInfo{
@@ -1267,7 +1286,7 @@ func GetConnectorSchema() *schema.SchemaResponse {
 				},
 			},
 			{
-				Name:        "downloadStorageObjectText",
+				Name:        "downloadStorageObjectAsText",
 				Description: toPtr("returns the object content in plain text. Use this function only if you know exactly the file as an text file."),
 				ResultType:  schema.NewNamedType("DownloadStorageObjectTextResponse").Encode(),
 				Arguments: map[string]schema.ArgumentInfo{
@@ -1339,16 +1358,28 @@ func GetConnectorSchema() *schema.SchemaResponse {
 				Description: toPtr("list all buckets using the relay style."),
 				ResultType:  schema.NewNamedType("StorageConnection_StorageBucket").Encode(),
 				Arguments: map[string]schema.ArgumentInfo{
+					"accessKeyId": {
+						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
+					},
 					"after": {
 						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
 					},
 					"clientId": {
 						Type: schema.NewNullableType(schema.NewNamedType("StorageClientID")).Encode(),
 					},
+					"clientType": {
+						Type: schema.NewNullableType(schema.NewNamedType("StorageProviderType")).Encode(),
+					},
+					"endpoint": {
+						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
+					},
 					"first": {
 						Type: schema.NewNullableType(schema.NewNamedType("Int32")).Encode(),
 					},
 					"prefix": {
+						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
+					},
+					"secretAccessKey": {
 						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
 					},
 					"where": {

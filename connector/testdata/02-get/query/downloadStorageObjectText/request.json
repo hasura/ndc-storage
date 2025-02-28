@@ -29,7 +29,7 @@
       "value": null
     }
   },
-  "collection": "downloadStorageObjectText",
+  "collection": "downloadStorageObjectAsText",
   "collection_relationships": {},
   "query": {
     "fields": {

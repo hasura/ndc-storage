@@ -29,7 +29,7 @@ definition:
 kind: Command
 version: v1
 definition:
-  name: DownloadStorageObject
+  name: DownloadStorageObjectAsBytes
   outputType: DownloadStorageObjectResponse!
   arguments:
     - name: bucket
@@ -46,20 +46,12 @@ definition:
       type: "[StorageKeyValue!]"
     - name: versionId
       type: String
-    - name: accessKeyId
-      type: String
-    - name: clientType
-      type: StorageProviderType
-    - name: endpoint
-      type: String
-    - name: secretAccessKey
-      type: String
   source:
     dataConnectorName: storage
     dataConnectorCommand:
-      function: downloadStorageObject
+      function: downloadStorageObjectAsBytes
   graphql:
-    rootFieldName: downloadStorageObject
+    rootFieldName: downloadStorageObjectAsBytes
     rootFieldKind: Query
   description: returns a stream of the object data. Most of the common errors
     occur when reading the stream.
@@ -68,7 +60,7 @@ definition:
 kind: CommandPermissions
 version: v1
 definition:
-  commandName: DownloadStorageObject
+  commandName: DownloadStorageObjectAsBytes
   permissions:
     - role: admin
       allowExecution: true

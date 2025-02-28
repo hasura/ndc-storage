@@ -14,6 +14,11 @@ import (
 func TestConnector(t *testing.T) {
 	setConnectorTestEnv(t)
 
+	configDir := os.Getenv("CONFIG_DIR")
+	if configDir == "" {
+		configDir = "../tests/configuration"
+	}
+
 	for i, dir := range []string{"01-setup", "02-get", "03-cleanup"} {
 		var serverOptions []connector.ServeOption
 
