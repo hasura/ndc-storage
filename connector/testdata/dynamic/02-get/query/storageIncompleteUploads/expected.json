@@ -1,0 +1,22 @@
+[
+  {
+    "rows": [
+      {
+        "__value": [
+          {
+            "key": null,
+            "size": 16,
+            "storageClass": null,
+            "uploadId": null
+          },
+          {
+            "key": null,
+            "size": 10,
+            "storageClass": null,
+            "uploadId": null
+          }
+        ]
+      }
+    ]
+  }
+]

@@ -1,0 +1,107 @@
+{
+  "collection_relationships": {},
+  "operations": [
+    {
+      "type": "procedure",
+      "name": "uploadStorageObjectAsText",
+      "arguments": {
+        "bucket": "minio-bucket-lock",
+        "data": "SGVsbG8gd29ybGQK",
+        "object": "SiKBc6ifDC",
+        "options": {
+          "autoChecksum": "CRC32",
+          "cacheControl": "max-age=100",
+          "checksum": "CRC32",
+          "clientId": "s3",
+          "concurrentStreamParts": false,
+          "contentDisposition": "attachment",
+          "contentEncoding": "gzip",
+          "contentLanguage": "en-US",
+          "contentType": "text/plain",
+          "disableContentSha256": false,
+          "disableMultipart": false,
+          "expires": "2099-01-01T00:00:00Z",
+          "legalHold": true,
+          "retention": {
+            "mode": "Unlocked",
+            "retainUntilDate": "2099-01-01T00:00:02Z"
+          },
+          "numThreads": 2,
+          "partSize": 35739157156577,
+          "sendContentMd5": false,
+          "storageClass": "STANDARD",
+          "metadata": [
+            {
+              "key": "Foo",
+              "value": "Bar"
+            }
+          ],
+          "tags": [
+            {
+              "key": "UserID",
+              "value": "2"
+            }
+          ],
+          "websiteRedirectLocation": "http://localhost:9001"
+        }
+      },
+      "fields": {
+        "fields": {
+          "bucket": {
+            "column": "bucket",
+            "type": "column"
+          },
+          "checksumCrc32": {
+            "column": "checksumCrc32",
+            "type": "column"
+          },
+          "checksumCrc32C": {
+            "column": "checksumCrc32C",
+            "type": "column"
+          },
+          "checksumCrc64Nvme": {
+            "column": "checksumCrc64Nvme",
+            "type": "column"
+          },
+          "checksumSha1": {
+            "column": "checksumSha1",
+            "type": "column"
+          },
+          "checksumSha256": {
+            "column": "checksumSha256",
+            "type": "column"
+          },
+          "etag": {
+            "column": "etag",
+            "type": "column"
+          },
+          "expiration": {
+            "column": "expiration",
+            "type": "column"
+          },
+          "expirationRuleId": {
+            "column": "expirationRuleId",
+            "type": "column"
+          },
+          "lastModified": {
+            "column": "lastModified",
+            "type": "column"
+          },
+          "location": {
+            "column": "location",
+            "type": "column"
+          },
+          "name": {
+            "column": "name",
+            "type": "column"
+          },
+          "size": {
+            "column": "size",
+            "type": "column"
+          }
+        },
+        "type": "object"
+      }
+    }
+  ]
+}

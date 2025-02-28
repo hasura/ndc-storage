@@ -102,8 +102,8 @@ func FunctionStorageObject(ctx context.Context, state *types.State, args *common
 	return state.Storage.StatObject(ctx, request.GetBucketArguments(), request.ObjectNamePredicate.GetPrefix(), opts)
 }
 
-// FunctionDownloadStorageObjectAsBytes returns a stream of the object data. Most of the common errors occur when reading the stream.
-func FunctionDownloadStorageObjectAsBytes(ctx context.Context, state *types.State, args *common.GetStorageObjectArguments) (DownloadStorageObjectResponse, error) {
+// FunctionDownloadStorageObjectAsBase64 returns a stream of the object data. Most of the common errors occur when reading the stream.
+func FunctionDownloadStorageObjectAsBase64(ctx context.Context, state *types.State, args *common.GetStorageObjectArguments) (DownloadStorageObjectResponse, error) {
 	args.Base64Encoded = true
 
 	reader, err := downloadStorageObject(ctx, state, args)
@@ -203,9 +203,9 @@ func FunctionStorageIncompleteUploads(ctx context.Context, state *types.State, a
 	return state.Storage.ListIncompleteUploads(ctx, args.StorageBucketArguments, args.ListIncompleteUploadsOptions)
 }
 
-// ProcedureUploadStorageObject uploads object that are less than 128MiB in a single PUT operation. For objects that are greater than 128MiB in size,
+// ProcedureUploadStorageObjectAsBase64 uploads object that are less than 128MiB in a single PUT operation. For objects that are greater than 128MiB in size,
 // PutObject seamlessly uploads the object as parts of 128MiB or more depending on the actual file size. The max upload size for an object is 5TB.
-func ProcedureUploadStorageObject(ctx context.Context, state *types.State, args *PutStorageObjectBase64Arguments) (common.StorageUploadInfo, error) {
+func ProcedureUploadStorageObjectAsBase64(ctx context.Context, state *types.State, args *PutStorageObjectBase64Arguments) (common.StorageUploadInfo, error) {
 	return uploadStorageObject(ctx, state, &args.PutStorageObjectArguments, args.Data.Bytes())
 }
 
@@ -230,8 +230,8 @@ func uploadStorageObject(ctx context.Context, state *types.State, args *PutStora
 	return *result, nil
 }
 
-// ProcedureUploadStorageObjectText uploads object in plain text to the storage server. The file content is not encoded to base64 so the input size is smaller than 30%.
-func ProcedureUploadStorageObjectText(ctx context.Context, state *types.State, args *PutStorageObjectTextArguments) (common.StorageUploadInfo, error) {
+// ProcedureUploadStorageObjectAsText uploads object in plain text to the storage server. The file content is not encoded to base64 so the input size is smaller than 30%.
+func ProcedureUploadStorageObjectAsText(ctx context.Context, state *types.State, args *PutStorageObjectTextArguments) (common.StorageUploadInfo, error) {
 	return uploadStorageObject(ctx, state, &args.PutStorageObjectArguments, []byte(args.Data))
 }
 

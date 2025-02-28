@@ -110,7 +110,7 @@ func TestConnectorQueries(t *testing.T) {
 					Operations: []schema.MutationOperation{
 						{
 							Type:      schema.MutationOperationProcedure,
-							Name:      "uploadStorageObjectText",
+							Name:      "uploadStorageObjectAsText",
 							Arguments: rawArguments,
 							Fields: schema.NewNestedObject(map[string]schema.FieldEncoder{
 								"name": schema.NewColumnField("name", nil),
@@ -195,7 +195,7 @@ func TestMaxDownloadSizeValidation(t *testing.T) {
 		MaxDownloadSizeMBs float64
 	}{
 		{
-			Name:               "downloadStorageObjectAsBytes",
+			Name:               "downloadStorageObjectAsBase64",
 			MaxDownloadSizeMBs: 1.33,
 		},
 		{
@@ -215,5 +215,4 @@ func TestMaxDownloadSizeValidation(t *testing.T) {
 			resp.Body.Close()
 		})
 	}
-
 }

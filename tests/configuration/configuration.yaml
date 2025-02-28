@@ -49,6 +49,7 @@ clients:
     defaultPresignedExpiry: "1h"
     allowedBuckets:
       - azblob-bucket-test
+      - azblob-dynamic
       - dummy-bucket-0
       - dummy-bucket-1
       - dummy-bucket-2

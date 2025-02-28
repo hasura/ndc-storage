@@ -1,0 +1,51 @@
+{
+  "arguments": {
+    "bucket": {
+      "type": "literal",
+      "value": "minio-bucket-test"
+    },
+    "checksum": {
+      "type": "literal",
+      "value": true
+    },
+    "headers": {
+      "type": "literal",
+      "value": null
+    },
+    "object": {
+      "type": "literal",
+      "value": "public/hello.txt"
+    },
+    "partNumber": {
+      "type": "literal",
+      "value": 1
+    },
+    "requestParams": {
+      "type": "literal",
+      "value": null
+    },
+    "versionId": {
+      "type": "literal",
+      "value": null
+    }
+  },
+  "collection": "downloadStorageObjectAsBase64",
+  "collection_relationships": {},
+  "query": {
+    "fields": {
+      "__value": {
+        "column": "__value",
+        "fields": {
+          "fields": {
+            "data": {
+              "column": "data",
+              "type": "column"
+            }
+          },
+          "type": "object"
+        },
+        "type": "column"
+      }
+    }
+  }
+}

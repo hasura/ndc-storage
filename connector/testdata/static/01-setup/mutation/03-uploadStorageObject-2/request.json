@@ -1,0 +1,106 @@
+{
+  "collection_relationships": {},
+  "operations": [
+    {
+      "type": "procedure",
+      "name": "uploadStorageObjectAsBase64",
+      "arguments": {
+        "bucket": "minio-bucket-test",
+        "data": "SVpHWjhMMHZzVw==",
+        "object": "public/hello2.txt",
+        "options": {
+          "autoChecksum": "SHA256",
+          "cacheControl": "max-age=180, public",
+          "checksum": "SHA256",
+          "clientId": "s3",
+          "concurrentStreamParts": false,
+          "contentDisposition": "attachment",
+          "contentEncoding": "gzip",
+          "contentLanguage": "en-US",
+          "contentType": "text/plain",
+          "disableContentSha256": false,
+          "disableMultipart": false,
+          "expires": "2099-01-01T00:00:00Z",
+          "numThreads": 1,
+          "partSize": 3573915715657741285,
+          "sendContentMd5": false,
+          "storageClass": "STANDARD",
+          "metadata": [
+            {
+              "key": "Foo",
+              "value": "Bar"
+            }
+          ],
+          "tags": [
+            {
+              "key": "UserID",
+              "value": "1"
+            }
+          ],
+          "websiteRedirectLocation": "http://localhost:9001"
+        }
+      },
+      "fields": {
+        "fields": {
+          "clientId": {
+            "column": "clientId",
+            "type": "column"
+          },
+          "bucket": {
+            "column": "bucket",
+            "type": "column"
+          },
+          "checksumCrc32": {
+            "column": "checksumCrc32",
+            "type": "column"
+          },
+          "checksumCrc32C": {
+            "column": "checksumCrc32C",
+            "type": "column"
+          },
+          "checksumCrc64Nvme": {
+            "column": "checksumCrc64Nvme",
+            "type": "column"
+          },
+          "checksumSha1": {
+            "column": "checksumSha1",
+            "type": "column"
+          },
+          "checksumSha256": {
+            "column": "checksumSha256",
+            "type": "column"
+          },
+          "etag": {
+            "column": "etag",
+            "type": "column"
+          },
+          "expiration": {
+            "column": "expiration",
+            "type": "column"
+          },
+          "expirationRuleId": {
+            "column": "expirationRuleId",
+            "type": "column"
+          },
+          "lastModified": {
+            "column": "lastModified",
+            "type": "column"
+          },
+          "location": {
+            "column": "location",
+            "type": "column"
+          },
+          "name": {
+            "column": "name",
+            "type": "column"
+          },
+          "size": {
+            "column": "size",
+            "type": "column"
+          }
+        },
+        "type": "object"
+      }
+    }
+  ]
+}

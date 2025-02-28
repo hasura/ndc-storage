@@ -45,8 +45,8 @@ docker compose up -d --build minio s3mock azurite gcp-storage-emulator ndc-stora
 wait_services
 ./tmp/ndc-test test --endpoint http://localhost:8080 
 
-run_test ../tests/configuration
 run_test ../tests/configuration-static
+run_test ../tests/configuration
 
 cat coverage.out.tmp | grep -v "main.go" > coverage.out.tmp2
 cat coverage.out.tmp2 | grep -v "version.go" > coverage.out.tmp

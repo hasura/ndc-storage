@@ -94,7 +94,7 @@ func (dch DataConnectorHandler) execQuery(ctx context.Context, state *types.Stat
 	span := trace.SpanFromContext(ctx)
 	logger := connector.GetLogger(ctx)
 	switch request.Collection {
-	case "downloadStorageObjectAsBytes":
+	case "downloadStorageObjectAsBase64":
 
 		selection, err := queryFields.AsObject()
 		if err != nil {
@@ -113,7 +113,7 @@ func (dch DataConnectorHandler) execQuery(ctx context.Context, state *types.Stat
 		connector_addSpanEvent(span, logger, "execute_function", map[string]any{
 			"arguments": args,
 		})
-		rawResult, err := FunctionDownloadStorageObjectAsBytes(ctx, state, &args)
+		rawResult, err := FunctionDownloadStorageObjectAsBase64(ctx, state, &args)
 
 		if err != nil {
 			return nil, err
@@ -485,7 +485,7 @@ func (dch DataConnectorHandler) execQuery(ctx context.Context, state *types.Stat
 	}
 }
 
-var enumValues_FunctionName = []string{"downloadStorageObjectAsBytes", "downloadStorageObjectAsText", "storageBucket", "storageBucketConnections", "storageBucketExists", "storageDeletedObjects", "storageIncompleteUploads", "storageObject", "storageObjectConnections", "storagePresignedDownloadUrl", "storagePresignedUploadUrl"}
+var enumValues_FunctionName = []string{"downloadStorageObjectAsBase64", "downloadStorageObjectAsText", "storageBucket", "storageBucketConnections", "storageBucketExists", "storageDeletedObjects", "storageIncompleteUploads", "storageObject", "storageObjectConnections", "storagePresignedDownloadUrl", "storagePresignedUploadUrl"}
 
 // MutationExists check if the mutation name exists
 func (dch DataConnectorHandler) MutationExists(name string) bool {
@@ -810,7 +810,7 @@ func (dch DataConnectorHandler) Mutation(ctx context.Context, state *types.State
 		}
 		return schema.NewProcedureResult(result).Encode(), nil
 
-	case "uploadStorageObject":
+	case "uploadStorageObjectAsBase64":
 
 		selection, err := operation.Fields.AsObject()
 		if err != nil {
@@ -825,7 +825,7 @@ func (dch DataConnectorHandler) Mutation(ctx context.Context, state *types.State
 			})
 		}
 		span.AddEvent("execute_procedure")
-		rawResult, err := ProcedureUploadStorageObject(ctx, state, &args)
+		rawResult, err := ProcedureUploadStorageObjectAsBase64(ctx, state, &args)
 
 		if err != nil {
 			return nil, err
@@ -841,7 +841,7 @@ func (dch DataConnectorHandler) Mutation(ctx context.Context, state *types.State
 		}
 		return schema.NewProcedureResult(result).Encode(), nil
 
-	case "uploadStorageObjectText":
+	case "uploadStorageObjectAsText":
 
 		selection, err := operation.Fields.AsObject()
 		if err != nil {
@@ -856,7 +856,7 @@ func (dch DataConnectorHandler) Mutation(ctx context.Context, state *types.State
 			})
 		}
 		span.AddEvent("execute_procedure")
-		rawResult, err := ProcedureUploadStorageObjectText(ctx, state, &args)
+		rawResult, err := ProcedureUploadStorageObjectAsText(ctx, state, &args)
 
 		if err != nil {
 			return nil, err
@@ -877,7 +877,7 @@ func (dch DataConnectorHandler) Mutation(ctx context.Context, state *types.State
 	}
 }
 
-var enumValues_ProcedureName = []string{"composeStorageObject", "copyStorageObject", "createStorageBucket", "removeIncompleteStorageUpload", "removeStorageBucket", "removeStorageObject", "removeStorageObjects", "restoreStorageObject", "updateStorageBucket", "updateStorageObject", "uploadStorageObject", "uploadStorageObjectText"}
+var enumValues_ProcedureName = []string{"composeStorageObject", "copyStorageObject", "createStorageBucket", "removeIncompleteStorageUpload", "removeStorageBucket", "removeStorageObject", "removeStorageObjects", "restoreStorageObject", "updateStorageBucket", "updateStorageObject", "uploadStorageObjectAsBase64", "uploadStorageObjectAsText"}
 
 func connector_addSpanEvent(span trace.Span, logger *slog.Logger, name string, data map[string]any, options ...trace.EventOption) {
 	logger.Debug(name, slog.Any("data", data))

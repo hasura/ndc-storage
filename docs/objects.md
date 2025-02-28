@@ -26,7 +26,7 @@ The object data must be encoded as a base64 string.
 
 ```gql
 mutation UploadObject {
-  uploadStorageObject(object: "hello.txt", data: "SGVsbG8gd29ybGQK") {
+  uploadStorageObjectAsBase64(object: "hello.txt", data: "SGVsbG8gd29ybGQK") {
     bucket
     name
     size
@@ -37,11 +37,11 @@ mutation UploadObject {
 
 ### Upload Text Objects
 
-Use the `uploadStorageObjectText` mutation if you are confident that the object content is plain text. The request size is less than the base64-encoded string by 30%.
+Use the `uploadStorageObjectAsText` mutation if you are confident that the object content is plain text. The request size is less than the base64-encoded string by 30%.
 
 ```gql
 mutation UploadObjectText {
-  uploadStorageObjectText(object: "hello2.txt", data: "Hello World") {
+  uploadStorageObjectAsText(object: "hello2.txt", data: "Hello World") {
     bucket
     name
     size
@@ -80,14 +80,14 @@ The response is a base64-encode string. The client must decode the string to get
 
 ```gql
 query DownloadObject {
-  downloadStorageObjectAsBytes(object: "hello.txt") {
+  downloadStorageObjectAsBase64(object: "hello.txt") {
     data
   }
 }
 
 # {
 #   "data": {
-#     "downloadStorageObjectAsBytes": {
+#     "downloadStorageObjectAsBase64": {
 #       "data": "SGVsbG8gd29ybGQK"
 #     }
 #   }
