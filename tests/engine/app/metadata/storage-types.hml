@@ -783,3 +783,79 @@ definition:
   graphql:
     comparisonExpressionTypeName: ChecksumTypeComparisonExp
 
+---
+kind: ScalarType
+version: v1
+definition:
+  name: DownloadHttpMethod
+  graphql:
+    typeName: DownloadHttpMethod
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: DownloadHttpMethodBoolExp
+  operand:
+    scalar:
+      type: DownloadHttpMethod
+      comparisonOperators: []
+      dataConnectorOperatorMapping:
+        - dataConnectorName: storage
+          dataConnectorScalarType: DownloadHTTPMethod
+          operatorMapping: {}
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: DownloadHttpMethodBoolExp
+
+---
+kind: DataConnectorScalarRepresentation
+version: v1
+definition:
+  dataConnectorName: storage
+  dataConnectorScalarType: DownloadHTTPMethod
+  representation: DownloadHttpMethod
+  graphql:
+    comparisonExpressionTypeName: DownloadHttpMethodComparisonExp
+
+---
+kind: ScalarType
+version: v1
+definition:
+  name: StorageProviderType
+  graphql:
+    typeName: StorageProviderType
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: StorageProviderTypeBoolExp
+  operand:
+    scalar:
+      type: StorageProviderType
+      comparisonOperators: []
+      dataConnectorOperatorMapping:
+        - dataConnectorName: storage
+          dataConnectorScalarType: StorageProviderType
+          operatorMapping: {}
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: StorageProviderTypeBoolExp
+
+---
+kind: DataConnectorScalarRepresentation
+version: v1
+definition:
+  dataConnectorName: storage
+  dataConnectorScalarType: StorageProviderType
+  representation: StorageProviderType
+  graphql:
+    comparisonExpressionTypeName: StorageProviderTypeComparisonExp
+

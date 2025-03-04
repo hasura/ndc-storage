@@ -2,23 +2,25 @@
 kind: Command
 version: v1
 definition:
-  name: StorageObject
-  outputType: StorageObject
+  name: UploadStorageObjectFromUrl
+  outputType: StorageUploadInfo!
   arguments:
+    - name: bodyText
+      type: String
     - name: bucket
       type: String
     - name: clientId
       type: StorageClientId
     - name: headers
       type: "[StorageKeyValue!]"
+    - name: method
+      type: DownloadHttpMethod
     - name: object
       type: String!
-    - name: partNumber
-      type: Int32
-    - name: requestParams
-      type: "[StorageKeyValue!]"
-    - name: versionId
-      type: String
+    - name: options
+      type: PutStorageObjectOptions
+    - name: url
+      type: String!
     - name: accessKeyId
       type: String
     - name: clientType
@@ -30,17 +32,19 @@ definition:
   source:
     dataConnectorName: storage
     dataConnectorCommand:
-      function: storageObject
+      procedure: uploadStorageObjectFromUrl
   graphql:
-    rootFieldName: storageObject
-    rootFieldKind: Query
-  description: fetches metadata of an object.
+    rootFieldName: uploadStorageObjectFromUrl
+    rootFieldKind: Mutation
+  description: uploads an object from a remote file that is donwloaded from an
+    HTTP URL. The HTTP clients download the file and upload it to the storage
+    bucket.
 
 ---
 kind: CommandPermissions
 version: v1
 definition:
-  commandName: StorageObject
+  commandName: UploadStorageObjectFromUrl
   permissions:
     - role: admin
       allowExecution: true

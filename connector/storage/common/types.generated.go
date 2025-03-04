@@ -322,6 +322,21 @@ func (j GetStorageObjectOptions) ToMap() map[string]any {
 }
 
 // ToMap encodes the struct to a value map
+func (j HTTPRequestOptions) ToMap() map[string]any {
+	r := make(map[string]any)
+	r["bodyText"] = j.BodyText
+	j_Headers := make([]any, len(j.Headers))
+	for i, j_Headers_v := range j.Headers {
+		j_Headers[i] = j_Headers_v
+	}
+	r["headers"] = j_Headers
+	r["method"] = j.Method
+	r["url"] = j.URL
+
+	return r
+}
+
+// ToMap encodes the struct to a value map
 func (j ListIncompleteUploadsOptions) ToMap() map[string]any {
 	r := make(map[string]any)
 	r["prefix"] = j.Prefix
@@ -507,6 +522,19 @@ func (j PresignedURLResponse) ToMap() map[string]any {
 	r := make(map[string]any)
 	r["expiredAt"] = j.ExpiredAt
 	r["url"] = j.URL
+
+	return r
+}
+
+// ToMap encodes the struct to a value map
+func (j PutStorageObjectArguments) ToMap() map[string]any {
+	r := make(map[string]any)
+	r = utils.MergeMap(r, j.StorageBucketArguments.ToMap())
+	r["object"] = j.Object
+	r["options"] = j.Options
+	if j.Where != nil {
+		r["where"] = j.Where
+	}
 
 	return r
 }
@@ -1077,6 +1105,67 @@ func (s *ChecksumType) FromValue(value any) error {
 		return nil
 	}
 	result, err := ParseChecksumType(*valueStr)
+	if err != nil {
+		return err
+	}
+
+	*s = result
+	return nil
+}
+
+// ScalarName get the schema name of the scalar
+func (j DownloadHTTPMethod) ScalarName() string {
+	return "DownloadHTTPMethod"
+}
+
+const (
+	DownloadHttpmethodGet  DownloadHTTPMethod = "GET"
+	DownloadHttpmethodPost DownloadHTTPMethod = "POST"
+)
+
+var enumValues_DownloadHttpmethod = []DownloadHTTPMethod{DownloadHttpmethodGet, DownloadHttpmethodPost}
+
+// ParseDownloadHttpmethod parses a DownloadHTTPMethod enum from string
+func ParseDownloadHttpmethod(input string) (DownloadHTTPMethod, error) {
+	result := DownloadHTTPMethod(input)
+	if !slices.Contains(enumValues_DownloadHttpmethod, result) {
+		return DownloadHTTPMethod(""), errors.New("failed to parse DownloadHTTPMethod, expect one of [GET, POST]")
+	}
+
+	return result, nil
+}
+
+// IsValid checks if the value is invalid
+func (j DownloadHTTPMethod) IsValid() bool {
+	return slices.Contains(enumValues_DownloadHttpmethod, j)
+}
+
+// UnmarshalJSON implements json.Unmarshaler.
+func (j *DownloadHTTPMethod) UnmarshalJSON(b []byte) error {
+	var rawValue string
+	if err := json.Unmarshal(b, &rawValue); err != nil {
+		return err
+	}
+
+	value, err := ParseDownloadHttpmethod(rawValue)
+	if err != nil {
+		return err
+	}
+
+	*j = value
+	return nil
+}
+
+// FromValue decodes the scalar from an unknown value
+func (s *DownloadHTTPMethod) FromValue(value any) error {
+	valueStr, err := utils.DecodeNullableString(value)
+	if err != nil {
+		return err
+	}
+	if valueStr == nil {
+		return nil
+	}
+	result, err := ParseDownloadHttpmethod(*valueStr)
 	if err != nil {
 		return err
 	}

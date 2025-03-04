@@ -21,7 +21,6 @@ import (
 	"github.com/hasura/ndc-storage/connector/storage/common"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/codes"
-	"go.opentelemetry.io/otel/trace"
 )
 
 // ListObjects list objects in a bucket.
@@ -626,7 +625,7 @@ func (c *Client) RemoveObjects(ctx context.Context, bucketName string, opts *com
 
 // UpdateObject updates object configurations.
 func (c *Client) UpdateObject(ctx context.Context, bucketName string, objectName string, opts common.UpdateStorageObjectOptions) error {
-	ctx, span := c.startOtelSpanWithKind(ctx, trace.SpanKindInternal, "UpdateObject", bucketName)
+	ctx, span := c.startOtelSpan(ctx, "UpdateObject", bucketName)
 	defer span.End()
 
 	span.SetAttributes(attribute.String("storage.key", objectName))

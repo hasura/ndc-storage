@@ -104,8 +104,6 @@ func FunctionStorageObject(ctx context.Context, state *types.State, args *common
 
 // FunctionDownloadStorageObjectAsBase64 returns a stream of the object data. Most of the common errors occur when reading the stream.
 func FunctionDownloadStorageObjectAsBase64(ctx context.Context, state *types.State, args *common.GetStorageObjectArguments) (DownloadStorageObjectResponse, error) {
-	args.Base64Encoded = true
-
 	reader, err := downloadStorageObject(ctx, state, args)
 	if err != nil {
 		return DownloadStorageObjectResponse{}, err
@@ -209,7 +207,7 @@ func ProcedureUploadStorageObjectAsBase64(ctx context.Context, state *types.Stat
 	return uploadStorageObject(ctx, state, &args.PutStorageObjectArguments, args.Data.Bytes())
 }
 
-func uploadStorageObject(ctx context.Context, state *types.State, args *PutStorageObjectArguments, data []byte) (common.StorageUploadInfo, error) {
+func uploadStorageObject(ctx context.Context, state *types.State, args *common.PutStorageObjectArguments, data []byte) (common.StorageUploadInfo, error) {
 	request, err := collection.EvalObjectPredicate(args.StorageBucketArguments, &collection.StringComparisonOperator{
 		Value:    args.Object,
 		Operator: collection.OperatorEqual,
@@ -233,6 +231,28 @@ func uploadStorageObject(ctx context.Context, state *types.State, args *PutStora
 // ProcedureUploadStorageObjectAsText uploads object in plain text to the storage server. The file content is not encoded to base64 so the input size is smaller than 30%.
 func ProcedureUploadStorageObjectAsText(ctx context.Context, state *types.State, args *PutStorageObjectTextArguments) (common.StorageUploadInfo, error) {
 	return uploadStorageObject(ctx, state, &args.PutStorageObjectArguments, []byte(args.Data))
+}
+
+// ProcedureUploadStorageObjectFromURL uploads an object from a remote file that is downloaded from an HTTP URL. The HTTP clients download the file and upload it to the storage bucket.
+func ProcedureUploadStorageObjectFromURL(ctx context.Context, state *types.State, args *common.UploadStorageObjectFromURLArguments) (common.StorageUploadInfo, error) {
+	request, err := collection.EvalObjectPredicate(args.StorageBucketArguments, &collection.StringComparisonOperator{
+		Value:    args.Object,
+		Operator: collection.OperatorEqual,
+	}, args.Where, types.QueryVariablesFromContext(ctx))
+	if err != nil {
+		return common.StorageUploadInfo{}, err
+	}
+
+	if !request.IsValid {
+		return common.StorageUploadInfo{}, schema.ForbiddenError("permission denied", nil)
+	}
+
+	result, err := state.Storage.UploadObjectFromURL(ctx, request.GetBucketArguments(), request.ObjectNamePredicate.GetPrefix(), &args.HTTPRequestOptions, &args.Options)
+	if err != nil {
+		return common.StorageUploadInfo{}, err
+	}
+
+	return *result, nil
 }
 
 // ProcedureCopyStorageObject creates or replaces an object through server-side copying of an existing object.

@@ -101,4 +101,4 @@ concurrency:
   mutation: 10
 generator:
   promptqlCompatible: true
-  dynamicCredentials: true
+  dynamicCredentials: false

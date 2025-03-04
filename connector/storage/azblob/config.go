@@ -13,6 +13,7 @@ import (
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/policy"
 	"github.com/Azure/azure-sdk-for-go/sdk/azidentity"
 	"github.com/Azure/azure-sdk-for-go/sdk/storage/azblob"
+	"github.com/hasura/ndc-http/exhttp"
 	"github.com/hasura/ndc-sdk-go/utils"
 	"github.com/hasura/ndc-storage/connector/storage/common"
 	"github.com/invopop/jsonschema"
@@ -53,7 +54,21 @@ func (cc ClientConfig) toAzureBlobClient(logger *slog.Logger) (*azblob.Client, e
 	}
 
 	isDebug := utils.IsDebug(logger)
-	transport := common.NewTransport(logger, port, true)
+
+	var httpTransport *http.Transport
+
+	if cc.HTTP != nil {
+		httpTransport, err = cc.HTTP.ToTransport(logger)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	transport := common.NewTransport(httpTransport, common.HTTPTransportOptions{
+		Logger:             logger,
+		Port:               port,
+		DisableCompression: true,
+	})
 
 	opts := &azblob.ClientOptions{
 		ClientOptions: policy.ClientOptions{
@@ -82,6 +97,8 @@ func (cc ClientConfig) toAzureBlobClient(logger *slog.Logger) (*azblob.Client, e
 type OtherConfig struct {
 	// Authentication credentials.
 	Authentication AuthCredentials `json:"authentication" mapstructure:"authentication" yaml:"authentication"`
+	// Configuration for the http client that is used for uploading files from URL.
+	HTTP *exhttp.HTTPTransportTLSConfig `json:"http" mapstructure:"http" yaml:"http"`
 }
 
 // AuthType represents the authentication type enum.

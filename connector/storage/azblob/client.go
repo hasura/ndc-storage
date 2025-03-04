@@ -33,16 +33,7 @@ func New(ctx context.Context, cfg *ClientConfig, logger *slog.Logger) (*Client, 
 }
 
 func (c *Client) startOtelSpan(ctx context.Context, name string, bucketName string) (context.Context, trace.Span) {
-	spanKind := trace.SpanKindClient
-	if c.isDebug {
-		spanKind = trace.SpanKindInternal
-	}
-
-	return c.startOtelSpanWithKind(ctx, spanKind, name, bucketName)
-}
-
-func (c *Client) startOtelSpanWithKind(ctx context.Context, spanKind trace.SpanKind, name string, bucketName string) (context.Context, trace.Span) {
-	ctx, span := tracer.Start(ctx, name, trace.WithSpanKind(spanKind))
+	ctx, span := tracer.Start(ctx, name, trace.WithSpanKind(trace.SpanKindInternal))
 	span.SetAttributes(
 		common.NewDBSystemAttribute(),
 		attribute.String("rpc.system", "azblob"),

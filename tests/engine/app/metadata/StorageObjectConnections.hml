@@ -133,6 +133,14 @@ definition:
       type: String
     - name: where
       type: StorageObjectFilterBoolExp
+    - name: accessKeyId
+      type: String
+    - name: clientType
+      type: StorageProviderType
+    - name: endpoint
+      type: String
+    - name: secretAccessKey
+      type: String
   source:
     dataConnectorName: storage
     dataConnectorCommand:

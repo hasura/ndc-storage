@@ -8,6 +8,7 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/hasura/ndc-http/exhttp"
 	"github.com/hasura/ndc-sdk-go/connector"
 	"github.com/hasura/ndc-sdk-go/schema"
 	"github.com/hasura/ndc-sdk-go/utils"
@@ -21,24 +22,36 @@ var tracer = connector.NewTracer("connector/storage")
 
 // RuntimeSettings hold runtime settings for the connector.
 type RuntimeSettings struct {
-	// Maximum size in MB of the object is allowed to download content in the GraphQL response
+	// Maximum size in MB of the object is allowed to download the content in the GraphQL response
 	// to avoid memory leaks. Pre-signed URLs are recommended for large files.
 	MaxDownloadSizeMBs int64 `json:"maxDownloadSizeMBs" jsonschema:"min=1,default=20" yaml:"maxDownloadSizeMBs"`
+	// Maximum size in MB of the object is allowed to upload the content from HTTP URL
+	// to avoid memory leaks. Pre-signed URLs are recommended for large files.
+	MaxUploadSizeMBs int64 `json:"maxUploadSizeMBs" jsonschema:"min=1,default=20" yaml:"maxUploadSizeMBs"`
+	// Configuration for the http client that is used for uploading files from URL.
+	HTTP *exhttp.HTTPTransportTLSConfig `json:"http" yaml:"http"`
 }
 
 // Manager represents the high-level client that manages internal clients and configurations.
 type Manager struct {
-	clients []Client
-	runtime RuntimeSettings
-	logger  *slog.Logger
+	clients    []Client
+	httpClient *common.HTTPClient
+	runtime    RuntimeSettings
+	logger     *slog.Logger
 }
 
 // NewManager creates a storage client manager instance.
 func NewManager(ctx context.Context, configs []ClientConfig, runtimeSettings RuntimeSettings, logger *slog.Logger) (*Manager, error) {
+	httpClient, err := common.NewHTTPClient(runtimeSettings.HTTP, logger)
+	if err != nil {
+		return nil, fmt.Errorf("failed to initialize the http client: %w", err)
+	}
+
 	result := &Manager{
-		clients: make([]Client, len(configs)),
-		runtime: runtimeSettings,
-		logger:  logger,
+		clients:    make([]Client, len(configs)),
+		httpClient: httpClient,
+		runtime:    runtimeSettings,
+		logger:     logger,
 	}
 
 	for i, config := range configs {

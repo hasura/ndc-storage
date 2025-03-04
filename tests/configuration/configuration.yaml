@@ -1,6 +1,27 @@
 # yaml-language-server: $schema=../../jsonschema/configuration.schema.json
 runtime:
   maxDownloadSizeMBs: 2
+  maxUploadSizeMBs: 10
+  http:
+    dialer:
+      keepAliveCount: 10
+      keepAliveEnabled: true
+      keepAliveIdle: 1m
+      keepAliveInterval: 1m
+      timeout: 1m
+    expectContinueTimeout: 10s
+    idleConnTimeout: 1m
+    maxConnsPerHost: 10
+    maxIdleConns: 100
+    maxIdleConnsPerHost: 100
+    maxResponseHeaderBytes: 4000000
+    readBufferSize: 10241024
+    writeBufferSize: 1000000
+    responseHeaderTimeout: 1m
+    tlsHandshakeTimeout: 10s
+    tls:
+      insecureSkipVerify:
+        value: true
 clients:
   - id: minio
     type: s3
@@ -17,6 +38,26 @@ clients:
         env: ACCESS_KEY_ID
       secretAccessKey:
         env: SECRET_ACCESS_KEY
+    http:
+      dialer:
+        keepAliveCount: 10
+        keepAliveEnabled: true
+        keepAliveIdle: 1m
+        keepAliveInterval: 1m
+        timeout: 1m
+      expectContinueTimeout: 10s
+      idleConnTimeout: 1m
+      maxConnsPerHost: 10
+      maxIdleConns: 100
+      maxIdleConnsPerHost: 100
+      maxResponseHeaderBytes: 4000000
+      readBufferSize: 10241024
+      writeBufferSize: 1000000
+      responseHeaderTimeout: 1m
+      tlsHandshakeTimeout: 10s
+      tls:
+        insecureSkipVerify:
+          value: true
   - id: s3
     type: s3
     endpoint:
@@ -34,6 +75,26 @@ clients:
         env: S3_ACCESS_KEY_ID
       secretAccessKey:
         env: S3_SECRET_ACCESS_KEY
+    http:
+      dialer:
+        keepAliveCount: 10
+        keepAliveEnabled: true
+        keepAliveIdle: 1m
+        keepAliveInterval: 1m
+        timeout: 1m
+      expectContinueTimeout: 10s
+      idleConnTimeout: 1m
+      maxConnsPerHost: 10
+      maxIdleConns: 100
+      maxIdleConnsPerHost: 100
+      maxResponseHeaderBytes: 4000000
+      readBufferSize: 10241024
+      writeBufferSize: 1000000
+      responseHeaderTimeout: 1m
+      tlsHandshakeTimeout: 10s
+      tls:
+        insecureSkipVerify:
+          value: true
   - id: azblob
     type: azblob
     endpoint:
@@ -60,6 +121,26 @@ clients:
       - dummy-bucket-7
       - dummy-bucket-8
       - dummy-bucket-9
+    http:
+      dialer:
+        keepAliveCount: 10
+        keepAliveEnabled: true
+        keepAliveIdle: 1m
+        keepAliveInterval: 1m
+        timeout: 1m
+      expectContinueTimeout: 10s
+      idleConnTimeout: 1m
+      maxConnsPerHost: 10
+      maxIdleConns: 100
+      maxIdleConnsPerHost: 100
+      maxResponseHeaderBytes: 4000000
+      readBufferSize: 10241024
+      writeBufferSize: 1000000
+      responseHeaderTimeout: 1m
+      tlsHandshakeTimeout: 10s
+      tls:
+        insecureSkipVerify:
+          value: true
   - id: azblob-connstr
     type: azblob
     defaultBucket:
@@ -102,4 +183,4 @@ concurrency:
   mutation: 10
 generator:
   promptqlCompatible: true
-  dynamicCredentials: false
+  dynamicCredentials: true

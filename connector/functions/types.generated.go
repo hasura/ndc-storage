@@ -39,19 +39,6 @@ func (j ExistsResponse) ToMap() map[string]any {
 }
 
 // ToMap encodes the struct to a value map
-func (j PutStorageObjectArguments) ToMap() map[string]any {
-	r := make(map[string]any)
-	r = utils.MergeMap(r, j.StorageBucketArguments.ToMap())
-	r["object"] = j.Object
-	r["options"] = j.Options
-	if j.Where != nil {
-		r["where"] = j.Where
-	}
-
-	return r
-}
-
-// ToMap encodes the struct to a value map
 func (j SuccessResponse) ToMap() map[string]any {
 	r := make(map[string]any)
 	r["success"] = j.Success
@@ -872,12 +859,43 @@ func (dch DataConnectorHandler) Mutation(ctx context.Context, state *types.State
 		}
 		return schema.NewProcedureResult(result).Encode(), nil
 
+	case "uploadStorageObjectFromUrl":
+
+		selection, err := operation.Fields.AsObject()
+		if err != nil {
+			return nil, schema.UnprocessableContentError("the selection field type must be object", map[string]any{
+				"cause": err.Error(),
+			})
+		}
+		var args common.UploadStorageObjectFromURLArguments
+		if err := json.Unmarshal(operation.Arguments, &args); err != nil {
+			return nil, schema.UnprocessableContentError("failed to decode arguments", map[string]any{
+				"cause": err.Error(),
+			})
+		}
+		span.AddEvent("execute_procedure")
+		rawResult, err := ProcedureUploadStorageObjectFromURL(ctx, state, &args)
+
+		if err != nil {
+			return nil, err
+		}
+
+		connector_addSpanEvent(span, logger, "evaluate_response_selection", map[string]any{
+			"raw_result": rawResult,
+		})
+		result, err := utils.EvalNestedColumnObject(selection, rawResult)
+
+		if err != nil {
+			return nil, err
+		}
+		return schema.NewProcedureResult(result).Encode(), nil
+
 	default:
 		return nil, utils.ErrHandlerNotfound
 	}
 }
 
-var enumValues_ProcedureName = []string{"composeStorageObject", "copyStorageObject", "createStorageBucket", "removeIncompleteStorageUpload", "removeStorageBucket", "removeStorageObject", "removeStorageObjects", "restoreStorageObject", "updateStorageBucket", "updateStorageObject", "uploadStorageObjectAsBase64", "uploadStorageObjectAsText"}
+var enumValues_ProcedureName = []string{"composeStorageObject", "copyStorageObject", "createStorageBucket", "removeIncompleteStorageUpload", "removeStorageBucket", "removeStorageObject", "removeStorageObjects", "restoreStorageObject", "updateStorageBucket", "updateStorageObject", "uploadStorageObjectAsBase64", "uploadStorageObjectAsText", "uploadStorageObjectFromUrl"}
 
 func connector_addSpanEvent(span trace.Span, logger *slog.Logger, name string, data map[string]any, options ...trace.EventOption) {
 	logger.Debug(name, slog.Any("data", data))

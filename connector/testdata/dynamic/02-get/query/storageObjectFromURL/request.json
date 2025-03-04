@@ -1,0 +1,141 @@
+{
+  "arguments": {
+    "clientType": {
+      "type": "literal",
+      "value": "azblob"
+    },
+    "endpoint": {
+      "type": "literal",
+      "value": "http://local.hasura.dev:10000"
+    },
+    "accessKeyId": {
+      "type": "literal",
+      "value": "local"
+    },
+    "secretAccessKey": {
+      "type": "literal",
+      "value": "Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw=="
+    },
+    "checksum": {
+      "type": "literal",
+      "value": true
+    },
+    "object": {
+      "type": "literal",
+      "value": "country-by-name.json"
+    },
+    "where": {
+      "type": "literal",
+      "value": {
+        "type": "and",
+        "expressions": [
+          {
+            "type": "binary_comparison_operator",
+            "column": { "type": "column", "name": "bucket", "path": [] },
+            "operator": "_eq",
+            "value": { "type": "scalar", "value": "azblob-dynamic" }
+          }
+        ]
+      }
+    }
+  },
+  "collection": "storageObject",
+  "collection_relationships": {},
+  "query": {
+    "fields": {
+      "__value": {
+        "column": "__value",
+        "fields": {
+          "fields": {
+            "bucket": {
+              "column": "bucket",
+              "type": "column"
+            },
+            "clientId": {
+              "column": "clientId",
+              "type": "column"
+            },
+            "contentDisposition": {
+              "column": "contentDisposition",
+              "type": "column"
+            },
+            "contentEncoding": {
+              "column": "contentEncoding",
+              "type": "column"
+            },
+            "contentLanguage": {
+              "column": "contentLanguage",
+              "type": "column"
+            },
+            "contentMd5": {
+              "column": "contentMd5",
+              "type": "column"
+            },
+            "contentType": {
+              "column": "contentType",
+              "type": "column"
+            },
+            "metadata": {
+              "column": "metadata",
+              "fields": {
+                "fields": {
+                  "fields": {
+                    "key": {
+                      "column": "key",
+                      "type": "column"
+                    },
+                    "value": {
+                      "column": "value",
+                      "type": "column"
+                    }
+                  },
+                  "type": "object"
+                },
+                "type": "array"
+              },
+              "type": "column"
+            },
+            "name": {
+              "column": "name",
+              "type": "column"
+            },
+            "size": {
+              "column": "size",
+              "type": "column"
+            },
+            "storageClass": {
+              "column": "storageClass",
+              "type": "column"
+            },
+            "tagCount": {
+              "column": "tagCount",
+              "type": "column"
+            },
+            "tags": {
+              "column": "tags",
+              "fields": {
+                "fields": {
+                  "fields": {
+                    "key": {
+                      "column": "key",
+                      "type": "column"
+                    },
+                    "value": {
+                      "column": "value",
+                      "type": "column"
+                    }
+                  },
+                  "type": "object"
+                },
+                "type": "array"
+              },
+              "type": "column"
+            }
+          },
+          "type": "object"
+        },
+        "type": "column"
+      }
+    }
+  }
+}

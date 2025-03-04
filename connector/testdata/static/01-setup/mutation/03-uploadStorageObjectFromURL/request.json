@@ -1,0 +1,29 @@
+{
+  "operations": [
+    {
+      "type": "procedure",
+      "name": "uploadStorageObjectFromUrl",
+      "arguments": {
+        "bucket": "minio-bucket-test",
+        "object": "country-by-name.json",
+        "url": "https://raw.githubusercontent.com/samayo/country-json/refs/heads/master/src/country-by-name.json"
+      },
+      "fields": {
+        "type": "object",
+        "fields": {
+          "name": {
+            "type": "column",
+            "column": "name",
+            "fields": null
+          },
+          "size": {
+            "type": "column",
+            "column": "size",
+            "fields": null
+          }
+        }
+      }
+    }
+  ],
+  "collection_relationships": {}
+}

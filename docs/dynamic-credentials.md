@@ -21,7 +21,11 @@ The following credential arguments will be presented in all operations:
 - `secretAccessKey`: Secret access key of S3, GCS or the account key of Azure Blob Storage.
 - `endpoint`: Endpoint of the storage service. Required for other S3-compatible services such as MinIO, R2, etc... and Azure Blob Storage.
 
-**Example**:
+## Examples
+
+### S3-compatible Storage
+
+Add the `s3` client type, `accessKeyId` and `secretAccessKey` to request arguments. The endpoint is required if the storage service isn't S3.
 
 ```graphql
 query DownloadStorageObjectAsText {
@@ -30,6 +34,64 @@ query DownloadStorageObjectAsText {
     endpoint: "http://minio:9000"
     accessKeyId: "test-key"
     secretAccessKey: "randomsecret"
+    object: "people-1000.csv"
+    bucket: "default"
+  ) {
+    data
+  }
+}
+```
+
+### Google Cloud Storage
+
+Add the `gcs` client type, `accessKeyId` and `secretAccessKey` to request arguments. The Access Key ID and Secret Access Key are [generated HMAC key](https://cloud.google.com/storage/docs/authentication/hmackeys).
+
+```graphql
+query DownloadStorageObjectAsText {
+  downloadStorageObjectAsText(
+    clientType: "gcs"
+    accessKeyId: "test-key"
+    secretAccessKey: "randomsecret"
+    object: "people-1000.csv"
+    bucket: "default"
+  ) {
+    data
+  }
+}
+```
+
+### Azure Blob Storage
+
+Support shared key and connection string credentials.
+
+#### Connection String
+
+Add the `azblob` client type and `endpoint` to request arguments.
+
+```graphql
+query DownloadStorageObjectAsText {
+  downloadStorageObjectAsText(
+    clientType: "azblob"
+    endpoint: "AccountName=local;AccountKey=xxx;BlobEndpoint=default"
+    object: "people-1000.csv"
+    bucket: "default"
+  ) {
+    data
+  }
+}
+```
+
+#### Shared Key
+
+Add the `azblob` client type, `endpoint`, `accessKeyId` and `secretAccessKey` to request arguments. Access Key ID and Secret Access Key are account name and account key.
+
+```graphql
+query DownloadStorageObjectAsText {
+  downloadStorageObjectAsText(
+    clientType: "azblob"
+    endpoint: "http://local.hasura.dev:10000"
+    accessKeyId: "local"
+    secretAccessKey: "xxxx"
     object: "people-1000.csv"
     bucket: "default"
   ) {

@@ -74,7 +74,7 @@ func (cc ClientConfig) toClientOptions(ctx context.Context, logger *slog.Logger)
 
 	opts = append(opts, cred)
 
-	endpointURL, port, secure, err := cc.BaseClientConfig.ValidateEndpoint()
+	endpointURL, port, _, err := cc.BaseClientConfig.ValidateEndpoint()
 	if err != nil {
 		return nil, err
 	}
@@ -89,7 +89,11 @@ func (cc ClientConfig) toClientOptions(ctx context.Context, logger *slog.Logger)
 		}
 	} else if utils.IsDebug(logger) {
 		httpTransport, err := ghttp.NewTransport(ctx,
-			common.NewTransport(logger, port, secure),
+			common.NewTransport(nil, common.HTTPTransportOptions{
+				Logger:             logger,
+				Port:               port,
+				DisableCompression: true,
+			}),
 			append(opts, option.WithScopes(storage.ScopeFullControl, "https://www.googleapis.com/auth/cloud-platform"))...,
 		)
 		if err != nil {

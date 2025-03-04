@@ -2,12 +2,10 @@ package common
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
 	"net/url"
-	"strconv"
-	"strings"
 
+	"github.com/hasura/ndc-http/exhttp"
 	"github.com/hasura/ndc-sdk-go/utils"
 	"github.com/invopop/jsonschema"
 )
@@ -64,28 +62,16 @@ func (bcc BaseClientConfig) ValidateEndpoint() (*url.URL, int, bool, error) {
 		return nil, port, useSSL, nil
 	}
 
-	endpointURL, err := url.Parse(rawEndpoint)
+	endpointURL, err := exhttp.ParseHttpURL(rawEndpoint)
 	if err != nil {
 		return nil, port, false, fmt.Errorf("invalid endpoint url: %w", err)
 	}
 
-	if !strings.HasPrefix(endpointURL.Scheme, "http") {
-		return nil, port, false, errors.New("invalid endpoint url http scheme: " + endpointURL.Scheme)
-	}
+	useSSL = endpointURL.Scheme == "https"
 
-	if endpointURL.Scheme == "https" {
-		useSSL = true
-		port = 443
-	}
-
-	rawPort := endpointURL.Port()
-	if rawPort != "" {
-		p, err := strconv.Atoi(rawPort)
-		if err != nil {
-			return nil, 0, false, fmt.Errorf("invalid endpoint port: %s", rawPort)
-		}
-
-		port = p
+	port, err = exhttp.ParsePort(endpointURL.Port(), endpointURL.Scheme)
+	if err != nil {
+		return nil, 0, false, err
 	}
 
 	return endpointURL, port, useSSL, nil
@@ -123,7 +109,7 @@ func (bcc BaseClientConfig) GetJSONSchema(providerTypes []any) *jsonschema.Schem
 	properties.Set("defaultPresignedExpiry", &jsonschema.Schema{
 		Description: "Default bucket name to be set if the user doesn't specify any bucket",
 		Type:        "string",
-		Pattern:     `[0-9]+(s|m|h)`,
+		Pattern:     `^((([0-9]+h)?([0-9]+m)?([0-9]+s))|(([0-9]+h)?([0-9]+m))|([0-9]+h))$`,
 		Default:     "24h",
 	})
 	properties.Set("allowedBuckets", &jsonschema.Schema{

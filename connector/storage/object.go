@@ -5,10 +5,14 @@ import (
 	"context"
 	"fmt"
 	"io"
+	"log/slog"
+	"mime"
+	"net/http"
 	"time"
 
 	"github.com/hasura/ndc-sdk-go/scalar"
 	"github.com/hasura/ndc-sdk-go/schema"
+	"github.com/hasura/ndc-sdk-go/utils"
 	"github.com/hasura/ndc-storage/connector/storage/common"
 	"github.com/minio/minio-go/v7/pkg/s3utils"
 )
@@ -81,15 +85,8 @@ func (m *Manager) GetObject(ctx context.Context, bucketInfo common.StorageBucket
 		return nil, schema.UnprocessableContentError("cannot download directory: "+objectName, nil)
 	}
 
-	maxDownloadSizeMBs := float64(m.runtime.MaxDownloadSizeMBs)
-
-	// encoding the file content to base64 increases the size to 33%
-	if opts.Base64Encoded {
-		maxDownloadSizeMBs = maxDownloadSizeMBs * 2 / 3
-	}
-
-	if objectStat.Size == nil || *objectStat.Size >= int64(maxDownloadSizeMBs*1024*1024) {
-		return nil, schema.UnprocessableContentError(fmt.Sprintf("file size >= %.2f MB is not allowed to be downloaded directly. Please use presignedGetObject function for large files", maxDownloadSizeMBs), nil)
+	if objectStat.Size == nil || *objectStat.Size > m.runtime.MaxDownloadSizeMBs*1024*1024 {
+		return nil, schema.UnprocessableContentError(fmt.Sprintf("file size >= %d MB is not allowed to be downloaded directly. Please use presignedGetObject function for large files", m.runtime.MaxDownloadSizeMBs), nil)
 	}
 
 	return client.GetObject(ctx, bucketName, objectName, opts)
@@ -103,7 +100,12 @@ func (m *Manager) PutObject(ctx context.Context, bucketInfo common.StorageBucket
 		return nil, err
 	}
 
-	result, err := client.PutObject(ctx, bucketName, objectName, opts, bytes.NewReader(data), int64(len(data)))
+	contentLength := int64(len(data))
+	if contentLength > m.runtime.MaxUploadSizeMBs*1024*1024 {
+		return nil, maxUploadSizeLimitError(m.runtime.MaxUploadSizeMBs)
+	}
+
+	result, err := client.PutObject(ctx, bucketName, objectName, opts, bytes.NewReader(data), contentLength)
 	if err != nil {
 		return nil, err
 	}
@@ -331,4 +333,117 @@ func (m *Manager) PresignedPutObject(ctx context.Context, bucketInfo common.Stor
 		URL:       rawURL,
 		ExpiredAt: time.Now().Add(exp),
 	}, nil
+}
+
+// UploadObjectFromURL uploads an object from an HTTP URL. The HTTP clients download the file and upload it to the storage bucket.
+func (m *Manager) UploadObjectFromURL(ctx context.Context, bucketInfo common.StorageBucketArguments, objectName string, httpRequest *common.HTTPRequestOptions, opts *common.PutStorageObjectOptions) (*common.StorageUploadInfo, error) {
+	client, bucketName, err := m.GetClientAndBucket(ctx, bucketInfo)
+	if err != nil {
+		return nil, err
+	}
+
+	var contentLength int64 = -1
+	maxUploadSizeBytes := m.runtime.MaxUploadSizeMBs * 1024 * 1024
+
+	if httpRequest.Method == nil || (*httpRequest.Method == "" || *httpRequest.Method == http.MethodGet) {
+		contentLength = m.contentLengthFromHEAD(ctx, httpRequest)
+
+		if contentLength > maxUploadSizeBytes {
+			return nil, maxUploadSizeLimitError(m.runtime.MaxUploadSizeMBs)
+		}
+	}
+
+	resp, err := m.httpClient.Request(ctx, httpRequest)
+	if err != nil {
+		return nil, err
+	}
+
+	defer func() {
+		_ = resp.Body.Close()
+	}()
+
+	if resp.ContentLength >= 0 {
+		contentLength = resp.ContentLength
+	}
+
+	respBody := resp.Body
+
+	if contentLength < 0 {
+		var buf bytes.Buffer
+
+		contentLength, err = io.Copy(&buf, resp.Body)
+		if err != nil {
+			return nil, schema.UnprocessableContentError(err.Error(), nil)
+		}
+
+		resp.Body.Close()
+
+		respBody = io.NopCloser(&buf)
+	}
+
+	if contentLength > maxUploadSizeBytes {
+		return nil, maxUploadSizeLimitError(m.runtime.MaxUploadSizeMBs)
+	}
+
+	if contentType := resp.Header.Get(common.HeaderContentType); contentType != "" && opts.ContentType == "" {
+		mediaType, _, err := mime.ParseMediaType(contentType)
+		if err != nil {
+			return nil, schema.UnprocessableContentError("invalid response content type: "+err.Error(), nil)
+		}
+
+		opts.ContentType = contentType
+
+		if mediaType == common.ContentTypeTextPlain {
+			newContentType := common.ContentTypeFromFilePath(httpRequest.URL)
+			if newContentType != "" {
+				opts.ContentType = newContentType
+			}
+		}
+	}
+
+	if contentLanguage := resp.Header.Get(common.HeaderContentLanguage); contentLanguage != "" && opts.ContentLanguage == "" {
+		opts.ContentLanguage = contentLanguage
+	}
+
+	result, err := client.PutObject(ctx, bucketName, objectName, opts, respBody, contentLength)
+	if err != nil {
+		return nil, err
+	}
+
+	result.Bucket = bucketName
+	result.ClientID = string(client.id)
+
+	return result, nil
+}
+
+// Try sending an HEAD request to get the content length
+// and validate before requesting the GET request.
+// It avoids reading the entire response body to estimate the file size.
+func (m *Manager) contentLengthFromHEAD(ctx context.Context, httpRequest *common.HTTPRequestOptions) int64 {
+	httpRequest.Method = utils.ToPtr(common.DownloadHTTPMethod(http.MethodHead))
+
+	resp, err := m.httpClient.Request(ctx, httpRequest)
+	if err != nil {
+		slog.Debug(fmt.Sprintf("failed to send HEAD request: %s", err), slog.String("url", httpRequest.URL))
+
+		return -1
+	}
+
+	if resp.StatusCode >= 300 {
+		slog.Debug("failed to send HEAD request: "+resp.Status, slog.String("url", httpRequest.URL))
+
+		return -1
+	}
+
+	if resp.Body != nil {
+		resp.Body.Close()
+	}
+
+	httpRequest.Method = utils.ToPtr(common.DownloadHTTPMethod(http.MethodGet))
+
+	return resp.ContentLength
+}
+
+func maxUploadSizeLimitError(mbs int64) error {
+	return schema.UnprocessableContentError(fmt.Sprintf("file size > %d MB is not allowed to be upload directly. Please use presignedPutObject function for large files", mbs), nil)
 }

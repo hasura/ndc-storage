@@ -4,10 +4,12 @@ import (
 	"errors"
 	"fmt"
 	"log/slog"
+	"net/http"
 	"net/url"
 	"slices"
 	"strings"
 
+	"github.com/hasura/ndc-http/exhttp"
 	"github.com/hasura/ndc-sdk-go/utils"
 	"github.com/hasura/ndc-storage/connector/storage/common"
 	"github.com/invopop/jsonschema"
@@ -65,6 +67,8 @@ type OtherConfig struct {
 	// TrailingHeaders indicates server support of trailing headers.
 	// Only supported for v4 signatures.
 	TrailingHeaders bool `json:"trailingHeaders,omitempty" mapstructure:"trailingHeaders" yaml:"trailingHeaders,omitempty"`
+	// Configuration for the http client that is used for uploading files from URL.
+	HTTP *exhttp.HTTPTransportTLSConfig `json:"http" mapstructure:"http" yaml:"http"`
 }
 
 func (cc ClientConfig) toMinioOptions(providerType common.StorageProviderType, logger *slog.Logger) (*minio.Options, string, error) {
@@ -92,7 +96,21 @@ func (cc ClientConfig) toMinioOptions(providerType common.StorageProviderType, l
 		endpoint = endpointURL.Host
 	}
 
-	transport := common.NewTransport(logger, port, useSSL)
+	var httpTransport *http.Transport
+
+	if cc.HTTP != nil {
+		httpTransport, err = cc.HTTP.ToTransport(logger)
+		if err != nil {
+			return nil, "", err
+		}
+	}
+
+	transport := common.NewTransport(httpTransport, common.HTTPTransportOptions{
+		Logger:             logger,
+		Port:               port,
+		DisableCompression: true,
+	})
+
 	opts := &minio.Options{
 		Secure:          useSSL,
 		Transport:       transport,

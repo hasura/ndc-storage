@@ -210,8 +210,7 @@ type GetStorageObjectOptions struct {
 	VersionID  *string `json:"versionId"`
 	PartNumber *int    `json:"partNumber"`
 	// Options to be included for the object information.
-	Include       StorageObjectIncludeOptions `json:"-"`
-	Base64Encoded bool                        `json:"-"`
+	Include StorageObjectIncludeOptions `json:"-"`
 }
 
 // StorageCopyDestOptions represents options specified by user for CopyObject/ComposeObject APIs.
@@ -415,4 +414,19 @@ type RestoreStorageObjectArguments struct {
 
 	Object string            `json:"object"`
 	Where  schema.Expression `json:"where"  ndc:"predicate=StorageObjectFilter"`
+}
+
+// PutStorageObjectArguments represents input arguments of the PutObject method.
+type PutStorageObjectArguments struct {
+	StorageBucketArguments
+
+	Object  string                  `json:"object"`
+	Options PutStorageObjectOptions `json:"options,omitempty"`
+	Where   schema.Expression       `json:"where"             ndc:"predicate=StorageObjectFilter"`
+}
+
+// UploadStorageObjectFromURLArguments represents input arguments of the UploadStorageObjectFromURL method.
+type UploadStorageObjectFromURLArguments struct {
+	PutStorageObjectArguments
+	HTTPRequestOptions
 }

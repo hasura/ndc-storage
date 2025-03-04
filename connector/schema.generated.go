@@ -125,6 +125,23 @@ func GetConnectorSchema() *schema.SchemaResponse {
 					},
 				},
 			},
+			"HTTPRequestOptions": schema.ObjectType{
+				Description: toPtr("hold HTTP request options."),
+				Fields: schema.ObjectTypeFields{
+					"bodyText": schema.ObjectField{
+						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
+					},
+					"headers": schema.ObjectField{
+						Type: schema.NewNullableType(schema.NewArrayType(schema.NewNamedType("StorageKeyValue"))).Encode(),
+					},
+					"method": schema.ObjectField{
+						Type: schema.NewNullableType(schema.NewNamedType("DownloadHTTPMethod")).Encode(),
+					},
+					"url": schema.ObjectField{
+						Type: schema.NewNamedType("String").Encode(),
+					},
+				},
+			},
 			"ListIncompleteUploadsOptions": schema.ObjectType{
 				Description: toPtr("the input arguments of the ListIncompleteUploads method."),
 				Fields: schema.ObjectTypeFields{
@@ -2032,6 +2049,52 @@ func GetConnectorSchema() *schema.SchemaResponse {
 					},
 				},
 			},
+			{
+				Name:        "uploadStorageObjectFromUrl",
+				Description: toPtr("uploads an object from a remote file that is donwloaded from an HTTP URL. The HTTP clients download the file and upload it to the storage bucket."),
+				ResultType:  schema.NewNamedType("StorageUploadInfo").Encode(),
+				Arguments: map[string]schema.ArgumentInfo{
+					"accessKeyId": {
+						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
+					},
+					"bodyText": {
+						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
+					},
+					"bucket": {
+						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
+					},
+					"clientId": {
+						Type: schema.NewNullableType(schema.NewNamedType("StorageClientID")).Encode(),
+					},
+					"clientType": {
+						Type: schema.NewNullableType(schema.NewNamedType("StorageProviderType")).Encode(),
+					},
+					"endpoint": {
+						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
+					},
+					"headers": {
+						Type: schema.NewNullableType(schema.NewArrayType(schema.NewNamedType("StorageKeyValue"))).Encode(),
+					},
+					"method": {
+						Type: schema.NewNullableType(schema.NewNamedType("DownloadHTTPMethod")).Encode(),
+					},
+					"object": {
+						Type: schema.NewNamedType("String").Encode(),
+					},
+					"options": {
+						Type: schema.NewNullableType(schema.NewNamedType("PutStorageObjectOptions")).Encode(),
+					},
+					"secretAccessKey": {
+						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
+					},
+					"url": {
+						Type: schema.NewNamedType("String").Encode(),
+					},
+					"where": {
+						Type: schema.NewNullableType(schema.NewPredicateType("StorageObjectFilter")).Encode(),
+					},
+				},
+			},
 		},
 		ScalarTypes: schema.SchemaResponseScalarTypes{
 			"Boolean": schema.ScalarType{
@@ -2053,6 +2116,11 @@ func GetConnectorSchema() *schema.SchemaResponse {
 				AggregateFunctions:  schema.ScalarTypeAggregateFunctions{},
 				ComparisonOperators: map[string]schema.ComparisonOperatorDefinition{},
 				Representation:      schema.NewTypeRepresentationDate().Encode(),
+			},
+			"DownloadHTTPMethod": schema.ScalarType{
+				AggregateFunctions:  schema.ScalarTypeAggregateFunctions{},
+				ComparisonOperators: map[string]schema.ComparisonOperatorDefinition{},
+				Representation:      schema.NewTypeRepresentationEnum([]string{"GET", "POST"}).Encode(),
 			},
 			"DurationString": schema.ScalarType{
 				AggregateFunctions:  schema.ScalarTypeAggregateFunctions{},

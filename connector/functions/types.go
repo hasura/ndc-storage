@@ -46,24 +46,15 @@ type DownloadStorageObjectTextResponse struct {
 }
 
 // PutStorageObjectArguments represents input arguments of the PutObject method.
-type PutStorageObjectArguments struct {
-	common.StorageBucketArguments
-
-	Object  string                         `json:"object"`
-	Options common.PutStorageObjectOptions `json:"options,omitempty"`
-	Where   schema.Expression              `json:"where"             ndc:"predicate=StorageObjectFilter"`
-}
-
-// PutStorageObjectArguments represents input arguments of the PutObject method.
 type PutStorageObjectBase64Arguments struct {
-	PutStorageObjectArguments
+	common.PutStorageObjectArguments
 
 	Data scalar.Bytes `json:"data"`
 }
 
 // PutStorageObjectTextArguments represents input arguments of the PutStorageObjectText method.
 type PutStorageObjectTextArguments struct {
-	PutStorageObjectArguments
+	common.PutStorageObjectArguments
 
 	Data string `json:"data"`
 }
