@@ -22,6 +22,10 @@ query PresignedUploadUrl {
 
 ### Direct Upload
 
+> [!NOTE]
+> The connector limits the maximum upload size via the `runtime.maxUploadSizeMBs` setting to avoid memory leaks.
+> Note that the file content is encoded to base64 string so the request body is 33% increased. For example, if the file size is 20 MB the request size will be 30 MB.
+
 The object data must be encoded as a base64 string.
 
 ```gql
@@ -37,6 +41,9 @@ mutation UploadObject {
 
 ### Upload Text Objects
 
+> [!NOTE]
+> The connector limits the maximum upload size via the `runtime.maxUploadSizeMBs` setting to avoid memory leaks.
+
 Use the `uploadStorageObjectAsText` mutation if you are confident that the object content is plain text. The request size is less than the base64-encoded string by 30%.
 
 ```gql
@@ -51,6 +58,9 @@ mutation UploadObjectText {
 ```
 
 ### Upload From a URL
+
+> [!NOTE]
+> The connector limits the maximum upload size via the `runtime.maxUploadSizeMBs` setting to avoid memory leaks.
 
 The connector will download the file from the `url` argument via HTTP protocol and upload it to the storage service.
 
