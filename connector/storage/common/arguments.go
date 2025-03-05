@@ -122,7 +122,7 @@ type PresignedGetStorageObjectArguments struct {
 	PresignedGetStorageObjectOptions
 
 	Name  string            `json:"name"`
-	Where schema.Expression `json:"where"  ndc:"predicate=StorageObjectFilter"`
+	Where schema.Expression `json:"where" ndc:"predicate=StorageObjectFilter"`
 }
 
 // PresignedGetStorageObjectOptions represent the options for the PresignedGetObject method.
@@ -208,7 +208,7 @@ type GetStorageObjectArguments struct {
 	GetStorageObjectOptions
 
 	Name  string            `json:"name"`
-	Where schema.Expression `json:"where"  ndc:"predicate=StorageObjectFilter"`
+	Where schema.Expression `json:"where" ndc:"predicate=StorageObjectFilter"`
 }
 
 // GetStorageObjectOptions are used to specify additional headers or options during GET requests.
@@ -281,7 +281,7 @@ type RemoveStorageObjectArguments struct {
 	RemoveStorageObjectOptions
 
 	Name  string            `json:"name"`
-	Where schema.Expression `json:"where"  ndc:"predicate=StorageObjectFilter"`
+	Where schema.Expression `json:"where" ndc:"predicate=StorageObjectFilter"`
 }
 
 // RemoveStorageObjectOptions represents options specified by user for RemoveObject call.
@@ -298,7 +298,7 @@ type UpdateStorageObjectArguments struct {
 	UpdateStorageObjectOptions
 
 	Name  string            `json:"name"`
-	Where schema.Expression `json:"where"  ndc:"predicate=StorageObjectFilter"`
+	Where schema.Expression `json:"where" ndc:"predicate=StorageObjectFilter"`
 }
 
 // UpdateStorageObjectOptions represents options specified by user for updating object.
@@ -422,7 +422,7 @@ type RestoreStorageObjectArguments struct {
 	StorageBucketArguments
 
 	Name  string            `json:"name"`
-	Where schema.Expression `json:"where"  ndc:"predicate=StorageObjectFilter"`
+	Where schema.Expression `json:"where" ndc:"predicate=StorageObjectFilter"`
 }
 
 // PutStorageObjectArguments represents input arguments of the PutObject method.
