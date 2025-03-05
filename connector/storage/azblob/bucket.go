@@ -13,7 +13,6 @@ import (
 	"github.com/hasura/ndc-storage/connector/storage/common"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/codes"
-	"go.opentelemetry.io/otel/trace"
 )
 
 // MakeBucket creates a new bucket.
@@ -237,7 +236,7 @@ func (c *Client) getBucket(ctx context.Context, bucketName string, options commo
 
 // UpdateBucket updates configurations for the bucket.
 func (c *Client) UpdateBucket(ctx context.Context, bucketName string, opts common.UpdateStorageBucketOptions) error {
-	ctx, span := c.startOtelSpanWithKind(ctx, trace.SpanKindInternal, "UpdateBucket", bucketName)
+	ctx, span := c.startOtelSpan(ctx, "UpdateBucket", bucketName)
 	defer span.End()
 
 	if opts.Tags != nil {

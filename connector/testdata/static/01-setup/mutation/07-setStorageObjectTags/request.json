@@ -1,0 +1,32 @@
+{
+  "collection_relationships": {},
+  "operations": [
+    {
+      "type": "procedure",
+      "name": "updateStorageObject",
+      "arguments": {
+        "bucket": "minio-bucket-test",
+        "name": "public/workd2.txt",
+        "tags": [
+          {
+            "key": "Foo",
+            "value": "baz"
+          },
+          {
+            "key": "UserID",
+            "value": "3"
+          }
+        ]
+      },
+      "fields": {
+        "fields": {
+          "success": {
+            "column": "success",
+            "type": "column"
+          }
+        },
+        "type": "object"
+      }
+    }
+  ]
+}

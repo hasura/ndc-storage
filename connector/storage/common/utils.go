@@ -5,14 +5,16 @@ import (
 	"crypto/md5"
 	"hash"
 	"io"
+	"mime"
 	"net/http"
+	"path/filepath"
 	"sync"
 
 	"github.com/hasura/ndc-sdk-go/utils"
 	md5simd "github.com/minio/md5-simd"
 )
 
-var md5Pool = sync.Pool{New: func() interface{} { return md5.New() }}
+var md5Pool = sync.Pool{New: func() any { return md5.New() }}
 
 func newMd5Hasher() md5simd.Hasher {
 	hash, _ := md5Pool.Get().(hash.Hash)
@@ -110,4 +112,14 @@ func KeyValuesToHeaders(inputs []StorageKeyValue) http.Header {
 	}
 
 	return result
+}
+
+// ContentTypeFromFilePath tries to guess the content type from the extension of file path.
+func ContentTypeFromFilePath(filePath string) string {
+	ext := filepath.Ext(filePath)
+	if ext == "" {
+		return ""
+	}
+
+	return mime.TypeByExtension(ext)
 }

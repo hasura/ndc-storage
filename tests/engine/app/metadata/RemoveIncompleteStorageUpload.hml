@@ -5,12 +5,20 @@ definition:
   name: RemoveIncompleteStorageUpload
   outputType: SuccessResponse!
   arguments:
+    - name: accessKeyId
+      type: String
     - name: bucket
       type: String
     - name: clientId
       type: StorageClientId
-    - name: object
+    - name: clientType
+      type: StorageProviderType
+    - name: endpoint
+      type: String
+    - name: name
       type: String!
+    - name: secretAccessKey
+      type: String
   source:
     dataConnectorName: storage
     dataConnectorCommand:

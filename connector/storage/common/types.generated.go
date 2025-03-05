@@ -11,6 +11,24 @@ import (
 )
 
 // FromValue decodes values from map
+func (j *GetStorageBucketArguments) FromValue(input map[string]any) error {
+	var err error
+	j.StorageClientCredentialArguments, err = utils.DecodeObject[StorageClientCredentialArguments](input)
+	if err != nil {
+		return err
+	}
+	j.Name, err = utils.GetString(input, "name")
+	if err != nil {
+		return err
+	}
+	j.Where, err = utils.DecodeObjectValueDefault[schema.Expression](input, "where")
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// FromValue decodes values from map
 func (j *GetStorageObjectArguments) FromValue(input map[string]any) error {
 	var err error
 	j.GetStorageObjectOptions, err = utils.DecodeObject[GetStorageObjectOptions](input)
@@ -21,7 +39,7 @@ func (j *GetStorageObjectArguments) FromValue(input map[string]any) error {
 	if err != nil {
 		return err
 	}
-	j.Object, err = utils.GetString(input, "object")
+	j.Name, err = utils.GetString(input, "name")
 	if err != nil {
 		return err
 	}
@@ -81,11 +99,11 @@ func (j *ListIncompleteUploadsOptions) FromValue(input map[string]any) error {
 // FromValue decodes values from map
 func (j *ListStorageBucketArguments) FromValue(input map[string]any) error {
 	var err error
-	j.After, err = utils.GetStringDefault(input, "after")
+	j.StorageClientCredentialArguments, err = utils.DecodeObject[StorageClientCredentialArguments](input)
 	if err != nil {
 		return err
 	}
-	j.ClientID, err = utils.DecodeNullableObjectValue[StorageClientID](input, "clientId")
+	j.After, err = utils.GetStringDefault(input, "after")
 	if err != nil {
 		return err
 	}
@@ -145,7 +163,7 @@ func (j *PresignedGetStorageObjectArguments) FromValue(input map[string]any) err
 	if err != nil {
 		return err
 	}
-	j.Object, err = utils.GetString(input, "object")
+	j.Name, err = utils.GetString(input, "name")
 	if err != nil {
 		return err
 	}
@@ -181,7 +199,7 @@ func (j *PresignedPutStorageObjectArguments) FromValue(input map[string]any) err
 	if err != nil {
 		return err
 	}
-	j.Object, err = utils.GetString(input, "object")
+	j.Name, err = utils.GetString(input, "name")
 	if err != nil {
 		return err
 	}
@@ -195,11 +213,37 @@ func (j *PresignedPutStorageObjectArguments) FromValue(input map[string]any) err
 // FromValue decodes values from map
 func (j *StorageBucketArguments) FromValue(input map[string]any) error {
 	var err error
+	j.StorageClientCredentialArguments, err = utils.DecodeObject[StorageClientCredentialArguments](input)
+	if err != nil {
+		return err
+	}
 	j.Bucket, err = utils.GetStringDefault(input, "bucket")
 	if err != nil {
 		return err
 	}
+	return nil
+}
+
+// FromValue decodes values from map
+func (j *StorageClientCredentialArguments) FromValue(input map[string]any) error {
+	var err error
+	j.AccessKeyID, err = utils.GetStringDefault(input, "accessKeyId")
+	if err != nil {
+		return err
+	}
 	j.ClientID, err = utils.DecodeNullableObjectValue[StorageClientID](input, "clientId")
+	if err != nil {
+		return err
+	}
+	j.ClientType, err = utils.DecodeNullableObjectValue[StorageProviderType](input, "clientType")
+	if err != nil {
+		return err
+	}
+	j.Endpoint, err = utils.GetStringDefault(input, "endpoint")
+	if err != nil {
+		return err
+	}
+	j.SecretAccessKey, err = utils.GetStringDefault(input, "secretAccessKey")
 	if err != nil {
 		return err
 	}
@@ -277,6 +321,18 @@ func (j CustomPlacementConfig) ToMap() map[string]any {
 }
 
 // ToMap encodes the struct to a value map
+func (j GetStorageBucketArguments) ToMap() map[string]any {
+	r := make(map[string]any)
+	r = utils.MergeMap(r, j.StorageClientCredentialArguments.ToMap())
+	r["name"] = j.Name
+	if j.Where != nil {
+		r["where"] = j.Where
+	}
+
+	return r
+}
+
+// ToMap encodes the struct to a value map
 func (j GetStorageObjectOptions) ToMap() map[string]any {
 	r := make(map[string]any)
 	j_Headers := make([]any, len(j.Headers))
@@ -291,6 +347,21 @@ func (j GetStorageObjectOptions) ToMap() map[string]any {
 	}
 	r["requestParams"] = j_RequestParams
 	r["versionId"] = j.VersionID
+
+	return r
+}
+
+// ToMap encodes the struct to a value map
+func (j HTTPRequestOptions) ToMap() map[string]any {
+	r := make(map[string]any)
+	r["bodyText"] = j.BodyText
+	j_Headers := make([]any, len(j.Headers))
+	for i, j_Headers_v := range j.Headers {
+		j_Headers[i] = j_Headers_v
+	}
+	r["headers"] = j_Headers
+	r["method"] = j.Method
+	r["url"] = j.URL
 
 	return r
 }
@@ -486,6 +557,19 @@ func (j PresignedURLResponse) ToMap() map[string]any {
 }
 
 // ToMap encodes the struct to a value map
+func (j PutStorageObjectArguments) ToMap() map[string]any {
+	r := make(map[string]any)
+	r = utils.MergeMap(r, j.StorageBucketArguments.ToMap())
+	r["name"] = j.Name
+	r["options"] = j.Options
+	if j.Where != nil {
+		r["where"] = j.Where
+	}
+
+	return r
+}
+
+// ToMap encodes the struct to a value map
 func (j PutStorageObjectOptions) ToMap() map[string]any {
 	r := make(map[string]any)
 	r["autoChecksum"] = j.AutoChecksum
@@ -643,8 +727,8 @@ func (j StorageBucket) ToMap() map[string]any {
 // ToMap encodes the struct to a value map
 func (j StorageBucketArguments) ToMap() map[string]any {
 	r := make(map[string]any)
+	r = utils.MergeMap(r, j.StorageClientCredentialArguments.ToMap())
 	r["bucket"] = j.Bucket
-	r["clientId"] = j.ClientID
 
 	return r
 }
@@ -661,6 +745,18 @@ func (j StorageBucketVersioningConfiguration) ToMap() map[string]any {
 }
 
 // ToMap encodes the struct to a value map
+func (j StorageClientCredentialArguments) ToMap() map[string]any {
+	r := make(map[string]any)
+	r["accessKeyId"] = j.AccessKeyID
+	r["clientId"] = j.ClientID
+	r["clientType"] = j.ClientType
+	r["endpoint"] = j.Endpoint
+	r["secretAccessKey"] = j.SecretAccessKey
+
+	return r
+}
+
+// ToMap encodes the struct to a value map
 func (j StorageCopyDestOptions) ToMap() map[string]any {
 	r := make(map[string]any)
 	r["bucket"] = j.Bucket
@@ -671,7 +767,7 @@ func (j StorageCopyDestOptions) ToMap() map[string]any {
 	}
 	r["metadata"] = j_Metadata
 	r["mode"] = j.Mode
-	r["object"] = j.Object
+	r["name"] = j.Name
 	r["retainUntilDate"] = j.RetainUntilDate
 	r["size"] = j.Size
 	j_Tags := make([]any, len(j.Tags))
@@ -692,8 +788,8 @@ func (j StorageCopySrcOptions) ToMap() map[string]any {
 	r["matchModifiedSince"] = j.MatchModifiedSince
 	r["matchRange"] = j.MatchRange
 	r["matchUnmodifiedSince"] = j.MatchUnmodifiedSince
+	r["name"] = j.Name
 	r["noMatchETag"] = j.NoMatchETag
-	r["object"] = j.Object
 	r["start"] = j.Start
 	r["versionId"] = j.VersionID
 
@@ -1048,6 +1144,67 @@ func (s *ChecksumType) FromValue(value any) error {
 }
 
 // ScalarName get the schema name of the scalar
+func (j DownloadHTTPMethod) ScalarName() string {
+	return "DownloadHTTPMethod"
+}
+
+const (
+	DownloadHttpmethodGet  DownloadHTTPMethod = "GET"
+	DownloadHttpmethodPost DownloadHTTPMethod = "POST"
+)
+
+var enumValues_DownloadHttpmethod = []DownloadHTTPMethod{DownloadHttpmethodGet, DownloadHttpmethodPost}
+
+// ParseDownloadHttpmethod parses a DownloadHTTPMethod enum from string
+func ParseDownloadHttpmethod(input string) (DownloadHTTPMethod, error) {
+	result := DownloadHTTPMethod(input)
+	if !slices.Contains(enumValues_DownloadHttpmethod, result) {
+		return DownloadHTTPMethod(""), errors.New("failed to parse DownloadHTTPMethod, expect one of [GET, POST]")
+	}
+
+	return result, nil
+}
+
+// IsValid checks if the value is invalid
+func (j DownloadHTTPMethod) IsValid() bool {
+	return slices.Contains(enumValues_DownloadHttpmethod, j)
+}
+
+// UnmarshalJSON implements json.Unmarshaler.
+func (j *DownloadHTTPMethod) UnmarshalJSON(b []byte) error {
+	var rawValue string
+	if err := json.Unmarshal(b, &rawValue); err != nil {
+		return err
+	}
+
+	value, err := ParseDownloadHttpmethod(rawValue)
+	if err != nil {
+		return err
+	}
+
+	*j = value
+	return nil
+}
+
+// FromValue decodes the scalar from an unknown value
+func (s *DownloadHTTPMethod) FromValue(value any) error {
+	valueStr, err := utils.DecodeNullableString(value)
+	if err != nil {
+		return err
+	}
+	if valueStr == nil {
+		return nil
+	}
+	result, err := ParseDownloadHttpmethod(*valueStr)
+	if err != nil {
+		return err
+	}
+
+	*s = result
+	return nil
+}
+
+// ScalarName get the schema name of the scalar
 func (j GoogleStorageRPO) ScalarName() string {
 	return "GoogleStorageRPO"
 }
@@ -1168,6 +1325,68 @@ func (s *StorageObjectReplicationStatus) FromValue(value any) error {
 		return nil
 	}
 	result, err := ParseStorageObjectReplicationStatus(*valueStr)
+	if err != nil {
+		return err
+	}
+
+	*s = result
+	return nil
+}
+
+// ScalarName get the schema name of the scalar
+func (j StorageProviderType) ScalarName() string {
+	return "StorageProviderType"
+}
+
+const (
+	StorageProviderTypeS3     StorageProviderType = "s3"
+	StorageProviderTypeGcs    StorageProviderType = "gcs"
+	StorageProviderTypeAzblob StorageProviderType = "azblob"
+)
+
+var enumValues_StorageProviderType = []StorageProviderType{StorageProviderTypeS3, StorageProviderTypeGcs, StorageProviderTypeAzblob}
+
+// ParseStorageProviderType parses a StorageProviderType enum from string
+func ParseStorageProviderType(input string) (StorageProviderType, error) {
+	result := StorageProviderType(input)
+	if !slices.Contains(enumValues_StorageProviderType, result) {
+		return StorageProviderType(""), errors.New("failed to parse StorageProviderType, expect one of [s3, gcs, azblob]")
+	}
+
+	return result, nil
+}
+
+// IsValid checks if the value is invalid
+func (j StorageProviderType) IsValid() bool {
+	return slices.Contains(enumValues_StorageProviderType, j)
+}
+
+// UnmarshalJSON implements json.Unmarshaler.
+func (j *StorageProviderType) UnmarshalJSON(b []byte) error {
+	var rawValue string
+	if err := json.Unmarshal(b, &rawValue); err != nil {
+		return err
+	}
+
+	value, err := ParseStorageProviderType(rawValue)
+	if err != nil {
+		return err
+	}
+
+	*j = value
+	return nil
+}
+
+// FromValue decodes the scalar from an unknown value
+func (s *StorageProviderType) FromValue(value any) error {
+	valueStr, err := utils.DecodeNullableString(value)
+	if err != nil {
+		return err
+	}
+	if valueStr == nil {
+		return nil
+	}
+	result, err := ParseStorageProviderType(*valueStr)
 	if err != nil {
 		return err
 	}

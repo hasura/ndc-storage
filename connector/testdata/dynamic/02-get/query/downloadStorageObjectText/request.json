@@ -1,0 +1,67 @@
+{
+  "arguments": {
+    "clientType": {
+      "type": "literal",
+      "value": "azblob"
+    },
+    "endpoint": {
+      "type": "literal",
+      "value": "http://local.hasura.dev:10000"
+    },
+    "bucket": {
+      "type": "literal",
+      "value": "azblob-dynamic"
+    },
+    "accessKeyId": {
+      "type": "literal",
+      "value": "local"
+    },
+    "secretAccessKey": {
+      "type": "literal",
+      "value": "Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw=="
+    },
+    "checksum": {
+      "type": "literal",
+      "value": true
+    },
+    "headers": {
+      "type": "literal",
+      "value": null
+    },
+    "name": {
+      "type": "literal",
+      "value": "public/hello.txt"
+    },
+    "partNumber": {
+      "type": "literal",
+      "value": 1
+    },
+    "requestParams": {
+      "type": "literal",
+      "value": null
+    },
+    "versionId": {
+      "type": "literal",
+      "value": null
+    }
+  },
+  "collection": "downloadStorageObjectAsText",
+  "collection_relationships": {},
+  "query": {
+    "fields": {
+      "__value": {
+        "column": "__value",
+        "fields": {
+          "fields": {
+            "data": {
+              "column": "data",
+              "type": "column"
+            }
+          },
+          "type": "object"
+        },
+        "type": "column"
+      }
+    }
+  }
+}

@@ -1,0 +1,62 @@
+{
+  "arguments": {
+    "clientType": {
+      "type": "literal",
+      "value": "azblob"
+    },
+    "endpoint": {
+      "type": "literal",
+      "value": "http://local.hasura.dev:10000"
+    },
+    "bucket": {
+      "type": "literal",
+      "value": "azblob-dynamic"
+    },
+    "accessKeyId": {
+      "type": "literal",
+      "value": "local"
+    },
+    "secretAccessKey": {
+      "type": "literal",
+      "value": "Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw=="
+    },
+    "prefix": {
+      "type": "literal",
+      "value": ""
+    }
+  },
+  "collection": "storageIncompleteUploads",
+  "collection_relationships": {},
+  "query": {
+    "fields": {
+      "__value": {
+        "column": "__value",
+        "fields": {
+          "fields": {
+            "fields": {
+              "key": {
+                "column": "key",
+                "type": "column"
+              },
+              "size": {
+                "column": "size",
+                "type": "column"
+              },
+              "storageClass": {
+                "column": "storageClass",
+                "type": "column"
+              },
+              "uploadId": {
+                "column": "uploadId",
+                "type": "column"
+              }
+            },
+            "type": "object"
+          },
+          "type": "array"
+        },
+        "type": "column"
+      }
+    }
+  }
+}

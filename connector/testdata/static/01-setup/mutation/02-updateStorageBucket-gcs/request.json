@@ -1,0 +1,28 @@
+{
+  "collection_relationships": {},
+  "operations": [
+    {
+      "type": "procedure",
+      "name": "updateStorageBucket",
+      "arguments": {
+        "clientId": "gcs",
+        "name": "gcs-bucket",
+        "tags": [
+          {
+            "key": "Foo",
+            "value": "gcs-bar"
+          }
+        ]
+      },
+      "fields": {
+        "fields": {
+          "success": {
+            "column": "success",
+            "type": "column"
+          }
+        },
+        "type": "object"
+      }
+    }
+  ]
+}

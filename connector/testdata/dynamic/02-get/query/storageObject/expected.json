@@ -1,0 +1,69 @@
+[
+  {
+    "rows": [
+      {
+        "__value": {
+          "accessTierInferred": null,
+          "acl": null,
+          "archiveStatus": null,
+          "blobSequenceNumber": null,
+          "blobType": "BlockBlob",
+          "bucket": "azblob-dynamic",
+          "cacheControl": "max-age=180, public",
+          "checksumCrc32": null,
+          "checksumCrc32C": null,
+          "checksumCrc64Nvme": null,
+          "checksumSha1": null,
+          "checksumSha256": null,
+          "clientId": "azblob-temp",
+          "contentDisposition": "attachment",
+          "contentEncoding": null,
+          "contentLanguage": null,
+          "contentMd5": "KZ0tkTzqqDd9IiRNs5cjyg==",
+          "contentType": "application/octet-stream",
+          "copy": null,
+          "customerProvidedKeySha256": null,
+          "deleted": null,
+          "deletedTime": null,
+          "destinationSnapshot": null,
+          "expiration": null,
+          "expirationRuleId": null,
+          "expires": null,
+          "grant": [],
+          "group": null,
+          "incrementalCopy": null,
+          "isLatest": null,
+          "kmsKeyName": null,
+          "leaseDuration": null,
+          "leaseState": "available",
+          "leaseStatus": "unlocked",
+          "legalHold": null,
+          "mediaLink": null,
+          "metadata": [{ "key": "foo", "value": "Bar" }],
+          "name": "public/hello.txt",
+          "owner": null,
+          "permissions": null,
+          "rawMetadata": [],
+          "rehydratePriority": null,
+          "remainingRetentionDays": null,
+          "replicationReady": null,
+          "replicationStatus": null,
+          "resourceType": null,
+          "restore": null,
+          "retentionMode": null,
+          "retentionUntilDate": null,
+          "sealed": null,
+          "serverEncrypted": true,
+          "size": 10,
+          "storageClass": "Cool",
+          "tagCount": 2,
+          "tags": [
+            { "key": "Foo", "value": "baz" },
+            { "key": "UserID", "value": "3" }
+          ],
+          "versionId": null
+        }
+      }
+    ]
+  }
+]

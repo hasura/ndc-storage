@@ -1,0 +1,23 @@
+{
+  "collection_relationships": {},
+  "operations": [
+    {
+      "type": "procedure",
+      "name": "updateStorageObject",
+      "arguments": {
+        "bucket": "minio-bucket-test",
+        "name": "a9cSGZGzM2",
+        "tags": []
+      },
+      "fields": {
+        "fields": {
+          "success": {
+            "column": "success",
+            "type": "column"
+          }
+        },
+        "type": "object"
+      }
+    }
+  ]
+}

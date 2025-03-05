@@ -5,18 +5,26 @@ definition:
   name: StorageObject
   outputType: StorageObject
   arguments:
+    - name: accessKeyId
+      type: String
     - name: bucket
       type: String
     - name: clientId
       type: StorageClientId
+    - name: clientType
+      type: StorageProviderType
+    - name: endpoint
+      type: String
     - name: headers
       type: "[StorageKeyValue!]"
-    - name: object
+    - name: name
       type: String!
     - name: partNumber
       type: Int32
     - name: requestParams
       type: "[StorageKeyValue!]"
+    - name: secretAccessKey
+      type: String
     - name: versionId
       type: String
   source:

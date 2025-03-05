@@ -31,8 +31,12 @@ const (
 )
 
 const (
-	argumentAfter     = "after"
-	argumentHierarchy = "hierarchy"
+	argumentAfter           = "after"
+	argumentHierarchy       = "hierarchy"
+	ArgumentClientType      = "clientType"
+	ArgumentEndpoint        = "endpoint"
+	ArgumentAccessKeyID     = "accessKeyId"
+	ArgumentSecretAccessKey = "secretAccessKey"
 )
 
 var checksumColumnNames = []string{"checksumCrc32", "checksumCrc32C", "checksumCrc64Nvme", "checksumSha1", "checksumSha256"}
@@ -44,21 +48,29 @@ type StringComparisonOperator struct {
 }
 
 // GetConnectorSchema returns connector schema for object collections.
-func GetConnectorSchema(clientIDs []string) *schema.SchemaResponse {
+func GetConnectorSchema(clientIDs []string, dynamicCredentials bool) *schema.SchemaResponse {
+	storageObjectArguments := buildDynamicCredentialArguments(schema.CollectionInfoArguments{
+		argumentAfter: {
+			Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
+		},
+		argumentHierarchy: {
+			Type: schema.NewNullableType(schema.NewNamedType("Boolean")).Encode(),
+		},
+	}, dynamicCredentials)
+
+	if dynamicCredentials {
+		storageObjectArguments[StorageObjectColumnBucket] = schema.ArgumentInfo{
+			Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
+		}
+	}
+
 	return &schema.SchemaResponse{
 		Collections: []schema.CollectionInfo{
 			{
-				Name:        CollectionStorageObjects,
-				Description: utils.ToPtr("List storage objects"),
-				Type:        StorageObjectName,
-				Arguments: schema.CollectionInfoArguments{
-					argumentAfter: {
-						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
-					},
-					argumentHierarchy: {
-						Type: schema.NewNullableType(schema.NewNamedType("Boolean")).Encode(),
-					},
-				},
+				Name:                  CollectionStorageObjects,
+				Description:           utils.ToPtr("List storage objects"),
+				Type:                  StorageObjectName,
+				Arguments:             storageObjectArguments,
 				UniquenessConstraints: schema.CollectionInfoUniquenessConstraints{},
 				ForeignKeys:           schema.CollectionInfoForeignKeys{},
 			},
@@ -66,11 +78,11 @@ func GetConnectorSchema(clientIDs []string) *schema.SchemaResponse {
 				Name:        CollectionStorageBuckets,
 				Description: utils.ToPtr("List storage buckets"),
 				Type:        StorageBucketName,
-				Arguments: schema.CollectionInfoArguments{
+				Arguments: buildDynamicCredentialArguments(schema.CollectionInfoArguments{
 					argumentAfter: {
 						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
 					},
-				},
+				}, dynamicCredentials),
 				UniquenessConstraints: schema.CollectionInfoUniquenessConstraints{},
 				ForeignKeys:           schema.CollectionInfoForeignKeys{},
 			},
@@ -127,4 +139,35 @@ func GetConnectorSchema(clientIDs []string) *schema.SchemaResponse {
 			},
 		},
 	}
+}
+
+func buildDynamicCredentialArguments(arguments map[string]schema.ArgumentInfo, dynamicCredentials bool) map[string]schema.ArgumentInfo {
+	if !dynamicCredentials {
+		return arguments
+	}
+
+	results := map[string]schema.ArgumentInfo{
+		ArgumentClientType: {
+			Description: utils.ToPtr("The cloud storage provider type"),
+			Type:        schema.NewNullableType(schema.NewNamedType("StorageProviderType")).Encode(),
+		},
+		ArgumentEndpoint: {
+			Description: utils.ToPtr("Endpoint of the cloud storage service"),
+			Type:        schema.NewNullableType(schema.NewNamedType("String")).Encode(),
+		},
+		ArgumentAccessKeyID: {
+			Description: utils.ToPtr("Access key ID or Account name credential"),
+			Type:        schema.NewNullableType(schema.NewNamedType("String")).Encode(),
+		},
+		ArgumentSecretAccessKey: {
+			Description: utils.ToPtr("Secret Access key ID or Account key credential"),
+			Type:        schema.NewNullableType(schema.NewNamedType("String")).Encode(),
+		},
+	}
+
+	for key, arg := range arguments {
+		results[key] = arg
+	}
+
+	return results
 }

@@ -14,19 +14,50 @@ import (
 func TestConnector(t *testing.T) {
 	setConnectorTestEnv(t)
 
+	configDir := os.Getenv("CONFIG_DIR")
+	if configDir == "" {
+		configDir = "../tests/configuration"
+	}
+
 	for i, dir := range []string{"01-setup", "02-get", "03-cleanup"} {
 		var serverOptions []connector.ServeOption
 
 		if i == 0 {
 			logger := slog.New(slog.NewJSONHandler(os.Stderr, &slog.HandlerOptions{
-				Level: slog.LevelDebug,
+				// Level: slog.LevelDebug,
 			}))
 			serverOptions = append(serverOptions, connector.WithLogger(logger))
 		}
 
 		ndctest.TestConnector(t, &Connector{}, ndctest.TestConnectorOptions{
 			Configuration: "../tests/configuration",
-			TestDataDir:   filepath.Join("testdata", dir),
+			TestDataDir:   filepath.Join("testdata", "static", dir),
+			ServerOptions: serverOptions,
+		})
+	}
+}
+
+func TestConnectorDynamicCredentials(t *testing.T) {
+	configDir := os.Getenv("CONFIG_DIR")
+	if configDir != "../tests/configuration" {
+		return
+	}
+
+	setConnectorTestEnv(t)
+
+	for i, dir := range []string{"01-setup", "02-get", "03-cleanup"} {
+		var serverOptions []connector.ServeOption
+
+		if i == 0 {
+			logger := slog.New(slog.NewJSONHandler(os.Stderr, &slog.HandlerOptions{
+				// Level: slog.LevelDebug,
+			}))
+			serverOptions = append(serverOptions, connector.WithLogger(logger))
+		}
+
+		ndctest.TestConnector(t, &Connector{}, ndctest.TestConnectorOptions{
+			Configuration: "../tests/configuration",
+			TestDataDir:   filepath.Join("testdata", "dynamic", dir),
 			ServerOptions: serverOptions,
 		})
 	}

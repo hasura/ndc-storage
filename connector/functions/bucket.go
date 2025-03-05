@@ -2,6 +2,7 @@ package functions
 
 import (
 	"context"
+	"errors"
 
 	"github.com/hasura/ndc-sdk-go/schema"
 	"github.com/hasura/ndc-sdk-go/utils"
@@ -25,7 +26,10 @@ func FunctionStorageBucketConnections(ctx context.Context, state *types.State, a
 		return StorageConnection[common.StorageBucket]{}, schema.UnprocessableContentError("$first argument must be larger than 0", nil)
 	}
 
-	request, err := collection.EvalBucketPredicate(args.ClientID, args.Prefix, args.Where, types.QueryVariablesFromContext(ctx))
+	request, err := collection.EvalBucketPredicate(args.StorageClientCredentialArguments, &collection.StringComparisonOperator{
+		Value:    args.Prefix,
+		Operator: collection.OperatorStartsWith,
+	}, args.Where, types.QueryVariablesFromContext(ctx))
 	if err != nil {
 		return StorageConnection[common.StorageBucket]{}, err
 	}
@@ -45,7 +49,9 @@ func FunctionStorageBucketConnections(ctx context.Context, state *types.State, a
 		predicate = nil
 	}
 
-	buckets, err := state.Storage.ListBuckets(ctx, request.ClientID, &common.ListStorageBucketsOptions{
+	bucketArguments := request.GetBucketArguments()
+
+	buckets, err := state.Storage.ListBuckets(ctx, bucketArguments.StorageClientCredentialArguments, &common.ListStorageBucketsOptions{
 		Prefix:     request.BucketPredicate.GetPrefix(),
 		MaxResults: args.First,
 		StartAfter: args.After,
@@ -78,14 +84,24 @@ func FunctionStorageBucketConnections(ctx context.Context, state *types.State, a
 }
 
 // FunctionStorageBucket gets a bucket by name.
-func FunctionStorageBucket(ctx context.Context, state *types.State, args *common.StorageBucketArguments) (*common.StorageBucket, error) {
-	request := collection.PredicateEvaluator{}
+func FunctionStorageBucket(ctx context.Context, state *types.State, args *common.GetStorageBucketArguments) (*common.StorageBucket, error) {
+	request, err := collection.EvalBucketPredicate(args.StorageClientCredentialArguments, &collection.StringComparisonOperator{
+		Value:    args.Name,
+		Operator: collection.OperatorEqual,
+	}, args.Where, types.QueryVariablesFromContext(ctx))
+	if err != nil {
+		return nil, err
+	}
+
+	if !request.IsValid {
+		return nil, nil
+	}
 
 	if err := request.EvalSelection(utils.CommandSelectionFieldFromContext(ctx)); err != nil {
 		return nil, err
 	}
 
-	return state.Storage.GetBucket(ctx, args, common.BucketOptions{
+	return state.Storage.GetBucket(ctx, args.ToStorageBucketArguments(), common.BucketOptions{
 		Include: common.BucketIncludeOptions{
 			Tags:       request.Include.Tags,
 			Versioning: request.Include.Versions,
@@ -98,8 +114,20 @@ func FunctionStorageBucket(ctx context.Context, state *types.State, args *common
 }
 
 // FunctionStorageBucketExists checks if a bucket exists.
-func FunctionStorageBucketExists(ctx context.Context, state *types.State, args *common.StorageBucketArguments) (ExistsResponse, error) {
-	exists, err := state.Storage.BucketExists(ctx, args)
+func FunctionStorageBucketExists(ctx context.Context, state *types.State, args *common.GetStorageBucketArguments) (ExistsResponse, error) {
+	request, err := collection.EvalBucketPredicate(args.StorageClientCredentialArguments, &collection.StringComparisonOperator{
+		Value:    args.Name,
+		Operator: collection.OperatorEqual,
+	}, args.Where, types.QueryVariablesFromContext(ctx))
+	if err != nil {
+		return ExistsResponse{}, err
+	}
+
+	if !request.IsValid {
+		return ExistsResponse{}, nil
+	}
+
+	exists, err := state.Storage.BucketExists(ctx, args.ToStorageBucketArguments())
 	if err != nil {
 		return ExistsResponse{}, err
 	}
@@ -108,8 +136,20 @@ func FunctionStorageBucketExists(ctx context.Context, state *types.State, args *
 }
 
 // ProcedureRemoveStorageBucket removes a bucket, bucket should be empty to be successfully removed.
-func ProcedureRemoveStorageBucket(ctx context.Context, state *types.State, args *common.StorageBucketArguments) (SuccessResponse, error) {
-	if err := state.Storage.RemoveBucket(ctx, args); err != nil {
+func ProcedureRemoveStorageBucket(ctx context.Context, state *types.State, args *common.GetStorageBucketArguments) (SuccessResponse, error) {
+	request, err := collection.EvalBucketPredicate(args.StorageClientCredentialArguments, &collection.StringComparisonOperator{
+		Value:    args.Name,
+		Operator: collection.OperatorEqual,
+	}, args.Where, types.QueryVariablesFromContext(ctx))
+	if err != nil {
+		return SuccessResponse{}, err
+	}
+
+	if !request.IsValid {
+		return SuccessResponse{}, errors.New("permission denied")
+	}
+
+	if err := state.Storage.RemoveBucket(ctx, args.ToStorageBucketArguments()); err != nil {
 		return SuccessResponse{}, err
 	}
 
@@ -118,6 +158,18 @@ func ProcedureRemoveStorageBucket(ctx context.Context, state *types.State, args 
 
 // ProcedureUpdateStorageBucket updates the bucket's configuration.
 func ProcedureUpdateStorageBucket(ctx context.Context, state *types.State, args *common.UpdateBucketArguments) (SuccessResponse, error) {
+	request, err := collection.EvalBucketPredicate(args.StorageClientCredentialArguments, &collection.StringComparisonOperator{
+		Value:    args.Name,
+		Operator: collection.OperatorEqual,
+	}, args.Where, types.QueryVariablesFromContext(ctx))
+	if err != nil {
+		return SuccessResponse{}, err
+	}
+
+	if !request.IsValid {
+		return SuccessResponse{}, errors.New("permission denied")
+	}
+
 	if err := state.Storage.UpdateBucket(ctx, args); err != nil {
 		return SuccessResponse{}, err
 	}

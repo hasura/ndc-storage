@@ -26,7 +26,7 @@ The object data must be encoded as a base64 string.
 
 ```gql
 mutation UploadObject {
-  uploadStorageObject(object: "hello.txt", data: "SGVsbG8gd29ybGQK") {
+  uploadStorageObjectAsBase64(object: "hello.txt", data: "SGVsbG8gd29ybGQK") {
     bucket
     name
     size
@@ -37,11 +37,11 @@ mutation UploadObject {
 
 ### Upload Text Objects
 
-Use the `uploadStorageObjectText` mutation if you are confident that the object content is plain text. The request size is less than the base64-encoded string by 30%.
+Use the `uploadStorageObjectAsText` mutation if you are confident that the object content is plain text. The request size is less than the base64-encoded string by 30%.
 
 ```gql
 mutation UploadObjectText {
-  uploadStorageObjectText(object: "hello2.txt", data: "Hello World") {
+  uploadStorageObjectAsText(object: "hello2.txt", data: "Hello World") {
     bucket
     name
     size
@@ -80,14 +80,14 @@ The response is a base64-encode string. The client must decode the string to get
 
 ```gql
 query DownloadObject {
-  downloadStorageObject(object: "hello.txt") {
+  downloadStorageObjectAsBase64(object: "hello.txt") {
     data
   }
 }
 
 # {
 #   "data": {
-#     "downloadStorageObject": {
+#     "downloadStorageObjectAsBase64": {
 #       "data": "SGVsbG8gd29ybGQK"
 #     }
 #   }
@@ -96,21 +96,21 @@ query DownloadObject {
 
 ### Download Text Objects
 
-Use the `downloadStorageObjectText` query if you are confident that the object content is plain text.
+Use the `downloadStorageObjectAsText` query if you are confident that the object content is plain text.
 
 > [!NOTE]
 > The connector limits the maximum download size via the `runtime.maxDownloadSizeMBs` setting to avoid memory leaks. The GraphQL engine on Hasura Cloud also limits the max response size from connectors. The acceptable file size should be 30 MB in maximum.
 
 ```gql
-query DownloadObjectText {
-  downloadStorageObjectText(object: "hello.txt") {
+query DownloadObjectAsText {
+  downloadStorageObjectAsText(object: "hello.txt") {
     data
   }
 }
 
 # {
 #   "data": {
-#     "downloadStorageObjectText": {
+#     "downloadStorageObjectAsText": {
 #       "data": "Hello world\n"
 #     }
 #   }
@@ -205,9 +205,8 @@ query RelayListObjects {
 
 The `storageObjects` collection doesn't return pagination information. You need to get the `name` in the last object to paginate by the `after` cursor.
 
-> [!NOTE]
-> **Why do `storageObjects` and `storageObjectConnections` operations exist?**
-> 
+> [!NOTE] > **Why do `storageObjects` and `storageObjectConnections` operations exist?**
+>
 > The `storageObjects` collection provides a simpler response structure that PromptQL can query easily. The `storageObjectConnections` function returns a better cursor-based pagination response on but the schema is complicated for PromptQL to understand.
 
 > [!NOTE]

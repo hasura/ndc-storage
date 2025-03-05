@@ -1,0 +1,21 @@
+{
+  "collection_relationships": {},
+  "operations": [
+    {
+      "type": "procedure",
+      "name": "removeStorageBucket",
+      "arguments": {
+        "name": "minio-bucket-empty"
+      },
+      "fields": {
+        "fields": {
+          "success": {
+            "column": "success",
+            "type": "column"
+          }
+        },
+        "type": "object"
+      }
+    }
+  ]
+}

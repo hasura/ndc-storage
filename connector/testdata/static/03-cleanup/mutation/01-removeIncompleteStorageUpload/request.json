@@ -1,0 +1,22 @@
+{
+  "collection_relationships": {},
+  "operations": [
+    {
+      "type": "procedure",
+      "name": "removeIncompleteStorageUpload",
+      "arguments": {
+        "bucket": "minio-bucket-test",
+        "name": "public/hello.txt-2"
+      },
+      "fields": {
+        "fields": {
+          "success": {
+            "column": "success",
+            "type": "column"
+          }
+        },
+        "type": "object"
+      }
+    }
+  ]
+}

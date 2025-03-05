@@ -1,0 +1,27 @@
+{
+  "collection_relationships": {},
+  "operations": [
+    {
+      "type": "procedure",
+      "name": "updateStorageBucket",
+      "arguments": {
+        "name": "minio-bucket-lock",
+        "legalHold": true,
+        "objectLock": {
+          "mode": "Locked",
+          "unit": "DAYS",
+          "validity": 1
+        }
+      },
+      "fields": {
+        "fields": {
+          "success": {
+            "column": "success",
+            "type": "column"
+          }
+        },
+        "type": "object"
+      }
+    }
+  ]
+}

@@ -65,6 +65,7 @@ var defaultConfiguration = types.Configuration{
 	},
 	Runtime: storage.RuntimeSettings{
 		MaxDownloadSizeMBs: 20,
+		MaxUploadSizeMBs:   20,
 	},
 	Clients: []storage.ClientConfig{
 		{

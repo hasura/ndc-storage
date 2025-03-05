@@ -34,7 +34,7 @@
             },
             "defaultPresignedExpiry": {
               "type": "string",
-              "pattern": "[0-9]+(s|m|h)",
+              "pattern": "^((([0-9]+h)?([0-9]+m)?([0-9]+s))|(([0-9]+h)?([0-9]+m))|([0-9]+h))$",
               "description": "Default bucket name to be set if the user doesn't specify any bucket",
               "default": "24h"
             },
@@ -147,7 +147,7 @@
             },
             "defaultPresignedExpiry": {
               "type": "string",
-              "pattern": "[0-9]+(s|m|h)",
+              "pattern": "^((([0-9]+h)?([0-9]+m)?([0-9]+s))|(([0-9]+h)?([0-9]+m))|([0-9]+h))$",
               "description": "Default bucket name to be set if the user doesn't specify any bucket",
               "default": "24h"
             },
@@ -337,7 +337,7 @@
             },
             "defaultPresignedExpiry": {
               "type": "string",
-              "pattern": "[0-9]+(s|m|h)",
+              "pattern": "^((([0-9]+h)?([0-9]+m)?([0-9]+s))|(([0-9]+h)?([0-9]+m))|([0-9]+h))$",
               "description": "Default bucket name to be set if the user doesn't specify any bucket",
               "default": "24h"
             },
@@ -463,6 +463,84 @@
         "runtime"
       ]
     },
+    "DialerConfig": {
+      "properties": {
+        "timeout": {
+          "oneOf": [
+            {
+              "type": "string",
+              "pattern": "^((([0-9]+h)?([0-9]+m)?([0-9]+s))|(([0-9]+h)?([0-9]+m))|([0-9]+h))$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "keepAliveEnabled": {
+          "type": "boolean"
+        },
+        "keepAliveInterval": {
+          "oneOf": [
+            {
+              "type": "string",
+              "pattern": "^((([0-9]+h)?([0-9]+m)?([0-9]+s))|(([0-9]+h)?([0-9]+m))|([0-9]+h))$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "keepAliveCount": {
+          "oneOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "keepAliveIdle": {
+          "oneOf": [
+            {
+              "type": "string",
+              "pattern": "^((([0-9]+h)?([0-9]+m)?([0-9]+s))|(([0-9]+h)?([0-9]+m))|([0-9]+h))$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "additionalProperties": false,
+      "type": "object"
+    },
+    "EnvBool": {
+      "anyOf": [
+        {
+          "required": [
+            "value"
+          ],
+          "title": "value"
+        },
+        {
+          "required": [
+            "env"
+          ],
+          "title": "env"
+        }
+      ],
+      "properties": {
+        "value": {
+          "type": "boolean"
+        },
+        "env": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object"
+    },
     "EnvString": {
       "anyOf": [
         {
@@ -491,26 +569,203 @@
         "promptqlCompatible": {
           "type": "boolean",
           "default": false
+        },
+        "dynamicCredentials": {
+          "type": "boolean",
+          "default": false
         }
       },
       "additionalProperties": false,
-      "type": "object",
-      "required": [
-        "promptqlCompatible"
-      ]
+      "type": "object"
+    },
+    "HTTPTransportTLSConfig": {
+      "properties": {
+        "dialer": {
+          "$ref": "#/$defs/DialerConfig"
+        },
+        "idleConnTimeout": {
+          "oneOf": [
+            {
+              "type": "string",
+              "pattern": "^((([0-9]+h)?([0-9]+m)?([0-9]+s))|(([0-9]+h)?([0-9]+m))|([0-9]+h))$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "responseHeaderTimeout": {
+          "oneOf": [
+            {
+              "type": "string",
+              "pattern": "^((([0-9]+h)?([0-9]+m)?([0-9]+s))|(([0-9]+h)?([0-9]+m))|([0-9]+h))$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "tlsHandshakeTimeout": {
+          "oneOf": [
+            {
+              "type": "string",
+              "pattern": "^((([0-9]+h)?([0-9]+m)?([0-9]+s))|(([0-9]+h)?([0-9]+m))|([0-9]+h))$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "expectContinueTimeout": {
+          "oneOf": [
+            {
+              "type": "string",
+              "pattern": "^((([0-9]+h)?([0-9]+m)?([0-9]+s))|(([0-9]+h)?([0-9]+m))|([0-9]+h))$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "maxIdleConns": {
+          "oneOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "maxIdleConnsPerHost": {
+          "oneOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "maxConnsPerHost": {
+          "oneOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "maxResponseHeaderBytes": {
+          "oneOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "readBufferSize": {
+          "oneOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "writeBufferSize": {
+          "oneOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "tls": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/TLSConfig"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "additionalProperties": false,
+      "type": "object"
     },
     "RuntimeSettings": {
       "properties": {
         "maxDownloadSizeMBs": {
           "type": "integer",
           "default": 20
+        },
+        "maxUploadSizeMBs": {
+          "type": "integer",
+          "default": 20
+        },
+        "http": {
+          "$ref": "#/$defs/HTTPTransportTLSConfig"
         }
       },
       "additionalProperties": false,
       "type": "object",
       "required": [
-        "maxDownloadSizeMBs"
+        "maxDownloadSizeMBs",
+        "maxUploadSizeMBs"
       ]
+    },
+    "TLSConfig": {
+      "properties": {
+        "certFile": {
+          "$ref": "#/$defs/EnvString"
+        },
+        "certPem": {
+          "$ref": "#/$defs/EnvString"
+        },
+        "keyFile": {
+          "$ref": "#/$defs/EnvString"
+        },
+        "keyPem": {
+          "$ref": "#/$defs/EnvString"
+        },
+        "caFile": {
+          "$ref": "#/$defs/EnvString"
+        },
+        "caPem": {
+          "$ref": "#/$defs/EnvString"
+        },
+        "insecureSkipVerify": {
+          "$ref": "#/$defs/EnvBool"
+        },
+        "includeSystemCACertsPool": {
+          "$ref": "#/$defs/EnvBool"
+        },
+        "minVersion": {
+          "type": "string"
+        },
+        "maxVersion": {
+          "type": "string"
+        },
+        "cipherSuites": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "serverName": {
+          "$ref": "#/$defs/EnvString"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object"
     }
   }
 }

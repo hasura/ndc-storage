@@ -15,8 +15,8 @@ type StorageKeyValue struct {
 
 // ListStorageBucketArguments represent the input arguments for the ListBuckets methods.
 type ListStorageBucketArguments struct {
-	// The storage client ID.
-	ClientID *StorageClientID `json:"clientId,omitempty"`
+	StorageClientCredentialArguments
+
 	// Returns list of bucket with the prefix.
 	Prefix string `json:"prefix,omitempty"`
 	// The maximum number of objects requested per batch.
@@ -28,17 +28,46 @@ type ListStorageBucketArguments struct {
 
 // StorageBucketArguments represent the common input arguments for bucket-related methods.
 type GetStorageBucketArguments struct {
-	StorageBucketArguments
+	StorageClientCredentialArguments
 
+	Name  string            `json:"name"`
 	Where schema.Expression `json:"where" ndc:"predicate=StorageBucketFilter"`
+}
+
+// ToStorageBucketArguments convert to the StorageBucketArguments instance.
+func (arg GetStorageBucketArguments) ToStorageBucketArguments() *StorageBucketArguments {
+	return &StorageBucketArguments{
+		Bucket:                           arg.Name,
+		StorageClientCredentialArguments: arg.StorageClientCredentialArguments,
+	}
 }
 
 // StorageBucketArguments represent the common input arguments for bucket-related methods.
 type StorageBucketArguments struct {
-	// The storage client ID.
-	ClientID *StorageClientID `json:"clientId,omitempty"`
 	// The bucket name.
 	Bucket string `json:"bucket,omitempty"`
+
+	StorageClientCredentialArguments
+}
+
+// StorageClientCredentials hold common storage client credential arguments.
+type StorageClientCredentialArguments struct {
+	ClientID        *StorageClientID     `json:"clientId,omitempty"`
+	ClientType      *StorageProviderType `json:"clientType,omitempty"`
+	Endpoint        string               `json:"endpoint,omitempty"`
+	AccessKeyID     string               `json:"accessKeyId,omitempty"`
+	SecretAccessKey string               `json:"secretAccessKey,omitempty"`
+}
+
+// IsEmpty checks if all properties are empty.
+func (ca StorageClientCredentialArguments) IsEmpty() bool {
+	return ca.ClientType == nil || !ca.ClientType.IsValid() || (ca.AccessKeyID == "" && ca.SecretAccessKey == "" && ca.Endpoint == "")
+}
+
+// MakeStorageBucketArguments holds all arguments to tweak bucket creation.
+type MakeStorageBucketArguments struct {
+	StorageClientCredentialArguments
+	MakeStorageBucketOptions
 }
 
 // CopyStorageObjectArguments represent input arguments of the CopyObject method.
@@ -55,13 +84,6 @@ type ComposeStorageObjectArguments struct {
 	ClientID *StorageClientID        `json:"clientId,omitempty"`
 	Dest     StorageCopyDestOptions  `json:"dest"`
 	Sources  []StorageCopySrcOptions `json:"sources"`
-}
-
-// MakeStorageBucketArguments holds all arguments to tweak bucket creation.
-type MakeStorageBucketArguments struct {
-	ClientID *StorageClientID `json:"clientId,omitempty"`
-
-	MakeStorageBucketOptions
 }
 
 // MakeStorageBucketOptions holds all options to tweak bucket creation.
@@ -91,7 +113,7 @@ type ListIncompleteUploadsOptions struct {
 type RemoveIncompleteUploadArguments struct {
 	StorageBucketArguments
 
-	Object string `json:"object"`
+	Name string `json:"name"`
 }
 
 // PresignedGetStorageObjectArguments represent the input arguments for the PresignedGetObject method.
@@ -99,8 +121,8 @@ type PresignedGetStorageObjectArguments struct {
 	StorageBucketArguments
 	PresignedGetStorageObjectOptions
 
-	Object string            `json:"object"`
-	Where  schema.Expression `json:"where"  ndc:"predicate=StorageObjectFilter"`
+	Name  string            `json:"name"`
+	Where schema.Expression `json:"where" ndc:"predicate=StorageObjectFilter"`
 }
 
 // PresignedGetStorageObjectOptions represent the options for the PresignedGetObject method.
@@ -113,7 +135,7 @@ type PresignedGetStorageObjectOptions struct {
 type PresignedPutStorageObjectArguments struct {
 	StorageBucketArguments
 
-	Object string                 `json:"object"`
+	Name   string                 `json:"name"`
 	Expiry *scalar.DurationString `json:"expiry"`
 	Where  schema.Expression      `json:"where"  ndc:"predicate=StorageObjectFilter"`
 }
@@ -185,8 +207,8 @@ type GetStorageObjectArguments struct {
 	StorageBucketArguments
 	GetStorageObjectOptions
 
-	Object string            `json:"object"`
-	Where  schema.Expression `json:"where"  ndc:"predicate=StorageObjectFilter"`
+	Name  string            `json:"name"`
+	Where schema.Expression `json:"where" ndc:"predicate=StorageObjectFilter"`
 }
 
 // GetStorageObjectOptions are used to specify additional headers or options during GET requests.
@@ -197,8 +219,7 @@ type GetStorageObjectOptions struct {
 	VersionID  *string `json:"versionId"`
 	PartNumber *int    `json:"partNumber"`
 	// Options to be included for the object information.
-	Include       StorageObjectIncludeOptions `json:"-"`
-	Base64Encoded bool                        `json:"-"`
+	Include StorageObjectIncludeOptions `json:"-"`
 }
 
 // StorageCopyDestOptions represents options specified by user for CopyObject/ComposeObject APIs.
@@ -206,7 +227,7 @@ type StorageCopyDestOptions struct {
 	// points to destination bucket
 	Bucket string `json:"bucket,omitempty"`
 	// points to destination object
-	Object string `json:"object"`
+	Name string `json:"name"`
 
 	// `Encryption` is the key info for server-side-encryption with customer
 	// provided key. If it is nil, no encryption is performed.
@@ -241,7 +262,7 @@ type StorageCopySrcOptions struct {
 	// source bucket
 	Bucket string `json:"bucket,omitempty"`
 	// source object
-	Object string `json:"object"`
+	Name string `json:"name"`
 
 	VersionID            string     `json:"versionId,omitempty"`
 	MatchETag            string     `json:"matchETag,omitempty"`
@@ -259,8 +280,8 @@ type RemoveStorageObjectArguments struct {
 	StorageBucketArguments
 	RemoveStorageObjectOptions
 
-	Object string            `json:"object"`
-	Where  schema.Expression `json:"where"  ndc:"predicate=StorageObjectFilter"`
+	Name  string            `json:"name"`
+	Where schema.Expression `json:"where" ndc:"predicate=StorageObjectFilter"`
 }
 
 // RemoveStorageObjectOptions represents options specified by user for RemoveObject call.
@@ -276,8 +297,8 @@ type UpdateStorageObjectArguments struct {
 	StorageBucketArguments
 	UpdateStorageObjectOptions
 
-	Object string            `json:"object"`
-	Where  schema.Expression `json:"where"  ndc:"predicate=StorageObjectFilter"`
+	Name  string            `json:"name"`
+	Where schema.Expression `json:"where" ndc:"predicate=StorageObjectFilter"`
 }
 
 // UpdateStorageObjectOptions represents options specified by user for updating object.
@@ -374,7 +395,7 @@ type PresignedURLResponse struct {
 
 // UpdateBucketArguments hold update options for the bucket.
 type UpdateBucketArguments struct {
-	StorageBucketArguments
+	GetStorageBucketArguments
 	UpdateStorageBucketOptions
 }
 
@@ -400,6 +421,21 @@ func (ubo UpdateStorageBucketOptions) IsEmpty() bool {
 type RestoreStorageObjectArguments struct {
 	StorageBucketArguments
 
-	Object string            `json:"object"`
-	Where  schema.Expression `json:"where"  ndc:"predicate=StorageObjectFilter"`
+	Name  string            `json:"name"`
+	Where schema.Expression `json:"where" ndc:"predicate=StorageObjectFilter"`
+}
+
+// PutStorageObjectArguments represents input arguments of the PutObject method.
+type PutStorageObjectArguments struct {
+	StorageBucketArguments
+
+	Name    string                  `json:"name"`
+	Options PutStorageObjectOptions `json:"options,omitempty"`
+	Where   schema.Expression       `json:"where"             ndc:"predicate=StorageObjectFilter"`
+}
+
+// UploadStorageObjectFromURLArguments represents input arguments of the UploadStorageObjectFromURL method.
+type UploadStorageObjectFromURLArguments struct {
+	PutStorageObjectArguments
+	HTTPRequestOptions
 }

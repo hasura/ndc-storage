@@ -1,0 +1,43 @@
+{
+  "arguments": {
+    "clientId": {
+      "type": "literal",
+      "value": "gcs-cred"
+    },
+    "bucket": {
+      "type": "literal",
+      "value": "gcs-bucket"
+    },
+    "expiry": {
+      "type": "literal",
+      "value": "1h"
+    },
+    "name": {
+      "type": "literal",
+      "value": "8UFsTfY9bI"
+    }
+  },
+  "collection": "storagePresignedUploadUrl",
+  "collection_relationships": {},
+  "query": {
+    "fields": {
+      "__value": {
+        "column": "__value",
+        "type": "column",
+        "fields": {
+          "fields": {
+            "url": {
+              "column": "url",
+              "type": "column"
+            },
+            "expiredAt": {
+              "column": "expiredAt",
+              "type": "column"
+            }
+          },
+          "type": "object"
+        }
+      }
+    }
+  }
+}

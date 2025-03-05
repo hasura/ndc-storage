@@ -39,19 +39,6 @@ func (j ExistsResponse) ToMap() map[string]any {
 }
 
 // ToMap encodes the struct to a value map
-func (j PutStorageObjectArguments) ToMap() map[string]any {
-	r := make(map[string]any)
-	r = utils.MergeMap(r, j.StorageBucketArguments.ToMap())
-	r["object"] = j.Object
-	r["options"] = j.Options
-	if j.Where != nil {
-		r["where"] = j.Where
-	}
-
-	return r
-}
-
-// ToMap encodes the struct to a value map
 func (j SuccessResponse) ToMap() map[string]any {
 	r := make(map[string]any)
 	r["success"] = j.Success
@@ -94,7 +81,7 @@ func (dch DataConnectorHandler) execQuery(ctx context.Context, state *types.Stat
 	span := trace.SpanFromContext(ctx)
 	logger := connector.GetLogger(ctx)
 	switch request.Collection {
-	case "downloadStorageObject":
+	case "downloadStorageObjectAsBase64":
 
 		selection, err := queryFields.AsObject()
 		if err != nil {
@@ -113,7 +100,7 @@ func (dch DataConnectorHandler) execQuery(ctx context.Context, state *types.Stat
 		connector_addSpanEvent(span, logger, "execute_function", map[string]any{
 			"arguments": args,
 		})
-		rawResult, err := FunctionDownloadStorageObject(ctx, state, &args)
+		rawResult, err := FunctionDownloadStorageObjectAsBase64(ctx, state, &args)
 
 		if err != nil {
 			return nil, err
@@ -128,7 +115,7 @@ func (dch DataConnectorHandler) execQuery(ctx context.Context, state *types.Stat
 		}
 		return result, nil
 
-	case "downloadStorageObjectText":
+	case "downloadStorageObjectAsText":
 
 		selection, err := queryFields.AsObject()
 		if err != nil {
@@ -147,7 +134,7 @@ func (dch DataConnectorHandler) execQuery(ctx context.Context, state *types.Stat
 		connector_addSpanEvent(span, logger, "execute_function", map[string]any{
 			"arguments": args,
 		})
-		rawResult, err := FunctionDownloadStorageObjectText(ctx, state, &args)
+		rawResult, err := FunctionDownloadStorageObjectAsText(ctx, state, &args)
 
 		if err != nil {
 			return nil, err
@@ -170,7 +157,7 @@ func (dch DataConnectorHandler) execQuery(ctx context.Context, state *types.Stat
 				"cause": err.Error(),
 			})
 		}
-		var args common.StorageBucketArguments
+		var args common.GetStorageBucketArguments
 		parseErr := args.FromValue(rawArgs)
 		if parseErr != nil {
 			return nil, schema.UnprocessableContentError("failed to resolve arguments", map[string]any{
@@ -241,7 +228,7 @@ func (dch DataConnectorHandler) execQuery(ctx context.Context, state *types.Stat
 				"cause": err.Error(),
 			})
 		}
-		var args common.StorageBucketArguments
+		var args common.GetStorageBucketArguments
 		parseErr := args.FromValue(rawArgs)
 		if parseErr != nil {
 			return nil, schema.UnprocessableContentError("failed to resolve arguments", map[string]any{
@@ -485,7 +472,7 @@ func (dch DataConnectorHandler) execQuery(ctx context.Context, state *types.Stat
 	}
 }
 
-var enumValues_FunctionName = []string{"downloadStorageObject", "downloadStorageObjectText", "storageBucket", "storageBucketConnections", "storageBucketExists", "storageDeletedObjects", "storageIncompleteUploads", "storageObject", "storageObjectConnections", "storagePresignedDownloadUrl", "storagePresignedUploadUrl"}
+var enumValues_FunctionName = []string{"downloadStorageObjectAsBase64", "downloadStorageObjectAsText", "storageBucket", "storageBucketConnections", "storageBucketExists", "storageDeletedObjects", "storageIncompleteUploads", "storageObject", "storageObjectConnections", "storagePresignedDownloadUrl", "storagePresignedUploadUrl"}
 
 // MutationExists check if the mutation name exists
 func (dch DataConnectorHandler) MutationExists(name string) bool {
@@ -632,7 +619,7 @@ func (dch DataConnectorHandler) Mutation(ctx context.Context, state *types.State
 				"cause": err.Error(),
 			})
 		}
-		var args common.StorageBucketArguments
+		var args common.GetStorageBucketArguments
 		if err := json.Unmarshal(operation.Arguments, &args); err != nil {
 			return nil, schema.UnprocessableContentError("failed to decode arguments", map[string]any{
 				"cause": err.Error(),
@@ -810,7 +797,7 @@ func (dch DataConnectorHandler) Mutation(ctx context.Context, state *types.State
 		}
 		return schema.NewProcedureResult(result).Encode(), nil
 
-	case "uploadStorageObject":
+	case "uploadStorageObjectAsBase64":
 
 		selection, err := operation.Fields.AsObject()
 		if err != nil {
@@ -825,7 +812,7 @@ func (dch DataConnectorHandler) Mutation(ctx context.Context, state *types.State
 			})
 		}
 		span.AddEvent("execute_procedure")
-		rawResult, err := ProcedureUploadStorageObject(ctx, state, &args)
+		rawResult, err := ProcedureUploadStorageObjectAsBase64(ctx, state, &args)
 
 		if err != nil {
 			return nil, err
@@ -841,7 +828,7 @@ func (dch DataConnectorHandler) Mutation(ctx context.Context, state *types.State
 		}
 		return schema.NewProcedureResult(result).Encode(), nil
 
-	case "uploadStorageObjectText":
+	case "uploadStorageObjectAsText":
 
 		selection, err := operation.Fields.AsObject()
 		if err != nil {
@@ -856,7 +843,38 @@ func (dch DataConnectorHandler) Mutation(ctx context.Context, state *types.State
 			})
 		}
 		span.AddEvent("execute_procedure")
-		rawResult, err := ProcedureUploadStorageObjectText(ctx, state, &args)
+		rawResult, err := ProcedureUploadStorageObjectAsText(ctx, state, &args)
+
+		if err != nil {
+			return nil, err
+		}
+
+		connector_addSpanEvent(span, logger, "evaluate_response_selection", map[string]any{
+			"raw_result": rawResult,
+		})
+		result, err := utils.EvalNestedColumnObject(selection, rawResult)
+
+		if err != nil {
+			return nil, err
+		}
+		return schema.NewProcedureResult(result).Encode(), nil
+
+	case "uploadStorageObjectFromUrl":
+
+		selection, err := operation.Fields.AsObject()
+		if err != nil {
+			return nil, schema.UnprocessableContentError("the selection field type must be object", map[string]any{
+				"cause": err.Error(),
+			})
+		}
+		var args common.UploadStorageObjectFromURLArguments
+		if err := json.Unmarshal(operation.Arguments, &args); err != nil {
+			return nil, schema.UnprocessableContentError("failed to decode arguments", map[string]any{
+				"cause": err.Error(),
+			})
+		}
+		span.AddEvent("execute_procedure")
+		rawResult, err := ProcedureUploadStorageObjectFromURL(ctx, state, &args)
 
 		if err != nil {
 			return nil, err
@@ -877,7 +895,7 @@ func (dch DataConnectorHandler) Mutation(ctx context.Context, state *types.State
 	}
 }
 
-var enumValues_ProcedureName = []string{"composeStorageObject", "copyStorageObject", "createStorageBucket", "removeIncompleteStorageUpload", "removeStorageBucket", "removeStorageObject", "removeStorageObjects", "restoreStorageObject", "updateStorageBucket", "updateStorageObject", "uploadStorageObject", "uploadStorageObjectText"}
+var enumValues_ProcedureName = []string{"composeStorageObject", "copyStorageObject", "createStorageBucket", "removeIncompleteStorageUpload", "removeStorageBucket", "removeStorageObject", "removeStorageObjects", "restoreStorageObject", "updateStorageBucket", "updateStorageObject", "uploadStorageObjectAsBase64", "uploadStorageObjectAsText", "uploadStorageObjectFromUrl"}
 
 func connector_addSpanEvent(span trace.Span, logger *slog.Logger, name string, data map[string]any, options ...trace.EventOption) {
 	logger.Debug(name, slog.Any("data", data))

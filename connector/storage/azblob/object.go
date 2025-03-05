@@ -21,7 +21,6 @@ import (
 	"github.com/hasura/ndc-storage/connector/storage/common"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/codes"
-	"go.opentelemetry.io/otel/trace"
 )
 
 // ListObjects list objects in a bucket.
@@ -438,12 +437,12 @@ func (c *Client) CopyObject(ctx context.Context, dest common.StorageCopyDestOpti
 	defer span.End()
 
 	span.SetAttributes(
-		attribute.String("storage.key", dest.Object),
-		attribute.String("storage.copy_source", src.Object),
+		attribute.String("storage.key", dest.Name),
+		attribute.String("storage.copy_source", src.Name),
 	)
 
-	srcURL := c.client.ServiceClient().NewContainerClient(src.Bucket).NewBlobClient(src.Object).URL()
-	blobClient := c.client.ServiceClient().NewContainerClient(dest.Bucket).NewBlobClient(dest.Object)
+	srcURL := c.client.ServiceClient().NewContainerClient(src.Bucket).NewBlobClient(src.Name).URL()
+	blobClient := c.client.ServiceClient().NewContainerClient(dest.Bucket).NewBlobClient(dest.Name)
 
 	options := &blob.CopyFromURLOptions{
 		BlobTags:  common.KeyValuesToStringMap(dest.Tags),
@@ -465,7 +464,7 @@ func (c *Client) CopyObject(ctx context.Context, dest common.StorageCopyDestOpti
 
 	result := &common.StorageUploadInfo{
 		Bucket: dest.Bucket,
-		Name:   dest.Object,
+		Name:   dest.Name,
 	}
 
 	if resp.ETag != nil && *resp.ETag != "" {
@@ -626,7 +625,7 @@ func (c *Client) RemoveObjects(ctx context.Context, bucketName string, opts *com
 
 // UpdateObject updates object configurations.
 func (c *Client) UpdateObject(ctx context.Context, bucketName string, objectName string, opts common.UpdateStorageObjectOptions) error {
-	ctx, span := c.startOtelSpanWithKind(ctx, trace.SpanKindInternal, "UpdateObject", bucketName)
+	ctx, span := c.startOtelSpan(ctx, "UpdateObject", bucketName)
 	defer span.End()
 
 	span.SetAttributes(attribute.String("storage.key", objectName))

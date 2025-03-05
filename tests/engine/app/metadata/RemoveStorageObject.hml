@@ -5,16 +5,24 @@ definition:
   name: RemoveStorageObject
   outputType: SuccessResponse!
   arguments:
+    - name: accessKeyId
+      type: String
     - name: bucket
       type: String
     - name: clientId
       type: StorageClientId
+    - name: clientType
+      type: StorageProviderType
+    - name: endpoint
+      type: String
     - name: forceDelete
       type: Boolean
     - name: governanceBypass
       type: Boolean
-    - name: object
+    - name: name
       type: String!
+    - name: secretAccessKey
+      type: String
     - name: softDelete
       type: Boolean
     - name: versionId

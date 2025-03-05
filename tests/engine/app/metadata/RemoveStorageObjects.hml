@@ -38,12 +38,18 @@ definition:
   name: RemoveStorageObjects
   outputType: "[RemoveStorageObjectError!]!"
   arguments:
+    - name: accessKeyId
+      type: String
     - name: after
       type: String
     - name: bucket
       type: String
     - name: clientId
       type: StorageClientId
+    - name: clientType
+      type: StorageProviderType
+    - name: endpoint
+      type: String
     - name: first
       type: Int32
     - name: governanceBypass
@@ -51,6 +57,8 @@ definition:
     - name: hierarchy
       type: Boolean
     - name: prefix
+      type: String
+    - name: secretAccessKey
       type: String
   source:
     dataConnectorName: storage

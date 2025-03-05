@@ -1,0 +1,24 @@
+{
+  "collection_relationships": {},
+  "operations": [
+    {
+      "type": "procedure",
+      "name": "removeStorageObject",
+      "arguments": {
+        "bucket": "minio-bucket-test",
+        "forceDelete": true,
+        "governanceBypass": true,
+        "name": "public/hello.txt-2"
+      },
+      "fields": {
+        "fields": {
+          "success": {
+            "column": "success",
+            "type": "column"
+          }
+        },
+        "type": "object"
+      }
+    }
+  ]
+}

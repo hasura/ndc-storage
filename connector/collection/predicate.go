@@ -6,12 +6,14 @@ import (
 	"strings"
 
 	"github.com/hasura/ndc-sdk-go/schema"
+	"github.com/hasura/ndc-sdk-go/utils"
 	"github.com/hasura/ndc-storage/connector/storage/common"
 )
 
 // PredicateEvaluator the structured predicate result which is evaluated from the raw expression.
 type PredicateEvaluator struct {
-	ClientID          *common.StorageClientID
+	common.StorageClientCredentialArguments
+
 	IsValid           bool
 	Include           common.StorageObjectIncludeOptions
 	IncludeObjectLock bool
@@ -22,18 +24,15 @@ type PredicateEvaluator struct {
 }
 
 // EvalBucketPredicate evaluates the predicate bucket condition of the query request.
-func EvalBucketPredicate(clientID *common.StorageClientID, prefix string, predicate schema.Expression, variables map[string]any) (*PredicateEvaluator, error) {
+func EvalBucketPredicate(bucketArguments common.StorageClientCredentialArguments, preOperator *StringComparisonOperator, predicate schema.Expression, variables map[string]any) (*PredicateEvaluator, error) {
 	result := &PredicateEvaluator{
-		ClientID:  clientID,
-		Include:   common.StorageObjectIncludeOptions{},
-		variables: variables,
+		StorageClientCredentialArguments: bucketArguments,
+		Include:                          common.StorageObjectIncludeOptions{},
+		variables:                        variables,
 	}
 
-	if prefix != "" {
-		result.BucketPredicate.Pre = &StringComparisonOperator{
-			Value:    prefix,
-			Operator: OperatorStartsWith,
-		}
+	if preOperator != nil {
+		result.BucketPredicate.Pre = preOperator
 	}
 
 	if len(predicate) > 0 {
@@ -55,9 +54,9 @@ func EvalBucketPredicate(clientID *common.StorageClientID, prefix string, predic
 // EvalObjectPredicate evaluates the predicate object condition of the query request.
 func EvalObjectPredicate(bucketInfo common.StorageBucketArguments, preOperator *StringComparisonOperator, predicate schema.Expression, variables map[string]any) (*PredicateEvaluator, error) {
 	result := &PredicateEvaluator{
-		ClientID:  bucketInfo.ClientID,
-		Include:   common.StorageObjectIncludeOptions{},
-		variables: variables,
+		StorageClientCredentialArguments: bucketInfo.StorageClientCredentialArguments,
+		Include:                          common.StorageObjectIncludeOptions{},
+		variables:                        variables,
 	}
 
 	if bucketInfo.Bucket != "" {
@@ -93,11 +92,46 @@ func EvalObjectPredicate(bucketInfo common.StorageBucketArguments, preOperator *
 // GetBucketArguments get bucket arguments information
 func (pe PredicateEvaluator) GetBucketArguments() common.StorageBucketArguments {
 	result := common.StorageBucketArguments{
-		ClientID: pe.ClientID,
-		Bucket:   pe.BucketPredicate.GetPrefix(),
+		StorageClientCredentialArguments: common.StorageClientCredentialArguments{
+			ClientID:        pe.ClientID,
+			ClientType:      pe.ClientType,
+			Endpoint:        pe.Endpoint,
+			AccessKeyID:     pe.AccessKeyID,
+			SecretAccessKey: pe.SecretAccessKey,
+		},
+		Bucket: pe.BucketPredicate.GetPrefix(),
 	}
 
 	return result
+}
+
+// EvalArguments evaluate other request arguments
+func (pe *PredicateEvaluator) EvalArguments(arguments map[string]any) error {
+	if clientType, err := utils.GetNullableString(arguments, ArgumentClientType); err != nil {
+		return schema.UnprocessableContentError(err.Error(), nil)
+	} else if clientType != nil {
+		pe.ClientType = (*common.StorageProviderType)(clientType)
+	}
+
+	if endpoint, err := utils.GetNullableString(arguments, ArgumentEndpoint); err != nil {
+		return schema.UnprocessableContentError(err.Error(), nil)
+	} else if endpoint != nil {
+		pe.Endpoint = *endpoint
+	}
+
+	if accessKey, err := utils.GetNullableString(arguments, ArgumentAccessKeyID); err != nil {
+		return schema.UnprocessableContentError(err.Error(), nil)
+	} else if accessKey != nil {
+		pe.AccessKeyID = *accessKey
+	}
+
+	if secretAccessKey, err := utils.GetNullableString(arguments, ArgumentSecretAccessKey); err != nil {
+		return schema.UnprocessableContentError(err.Error(), nil)
+	} else if secretAccessKey != nil {
+		pe.SecretAccessKey = *secretAccessKey
+	}
+
+	return nil
 }
 
 func (pe *PredicateEvaluator) EvalSelection(selection schema.NestedField) error {

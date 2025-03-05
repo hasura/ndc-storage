@@ -224,12 +224,12 @@ func (c *Client) CopyObject(ctx context.Context, dest common.StorageCopyDestOpti
 	defer span.End()
 
 	span.SetAttributes(
-		attribute.String("storage.key", dest.Object),
-		attribute.String("storage.copy_source", src.Object),
+		attribute.String("storage.key", dest.Name),
+		attribute.String("storage.copy_source", src.Name),
 	)
 
-	srcHandle := c.client.Bucket(src.Bucket).Object(src.Object)
-	copier := c.client.Bucket(dest.Bucket).Object(dest.Object).CopierFrom(srcHandle)
+	srcHandle := c.client.Bucket(src.Bucket).Object(src.Name)
+	copier := c.client.Bucket(dest.Bucket).Object(dest.Name).CopierFrom(srcHandle)
 
 	object, err := copier.Run(ctx)
 	if err != nil {

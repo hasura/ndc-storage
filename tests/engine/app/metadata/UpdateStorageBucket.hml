@@ -38,16 +38,24 @@ definition:
   name: UpdateStorageBucket
   outputType: SuccessResponse!
   arguments:
-    - name: bucket
+    - name: accessKeyId
       type: String
     - name: clientId
       type: StorageClientId
+    - name: clientType
+      type: StorageProviderType
     - name: encryption
       type: ServerSideEncryptionConfiguration
+    - name: endpoint
+      type: String
     - name: lifecycle
       type: ObjectLifecycleConfiguration
+    - name: name
+      type: String!
     - name: objectLock
       type: SetStorageObjectLockConfig
+    - name: secretAccessKey
+      type: String
     - name: tags
       type: "[StorageKeyValue!]"
     - name: versioningEnabled

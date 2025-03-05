@@ -3,13 +3,16 @@ package azblob
 import (
 	"encoding/base64"
 	"errors"
+	"slices"
 	"strconv"
+	"strings"
 
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore"
 	"github.com/Azure/azure-sdk-for-go/sdk/storage/azblob"
 	"github.com/Azure/azure-sdk-for-go/sdk/storage/azblob/container"
 	"github.com/hasura/ndc-sdk-go/connector"
 	"github.com/hasura/ndc-sdk-go/schema"
+	"github.com/hasura/ndc-sdk-go/utils"
 	"github.com/hasura/ndc-storage/connector/storage/common"
 )
 
@@ -39,14 +42,22 @@ func serializeObjectInfo(item *container.BlobItem) common.StorageObject { //noli
 				Value: *bt.Value,
 			})
 		}
+
+		slices.SortFunc(object.Tags, func(a common.StorageKeyValue, b common.StorageKeyValue) int {
+			return strings.Compare(a.Key, b.Key)
+		})
 	}
 
-	for key, value := range item.Metadata {
-		if value != nil {
-			object.Metadata = append(object.Metadata, common.StorageKeyValue{
-				Key:   key,
-				Value: *value,
-			})
+	if len(item.Metadata) > 0 {
+		metadataKeys := utils.GetSortedKeys(item.Metadata)
+		for _, key := range metadataKeys {
+			value := item.Metadata[key]
+			if value != nil {
+				object.Metadata = append(object.Metadata, common.StorageKeyValue{
+					Key:   key,
+					Value: *value,
+				})
+			}
 		}
 	}
 

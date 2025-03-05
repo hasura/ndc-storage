@@ -1,0 +1,24 @@
+{
+  "collection_relationships": {},
+  "operations": [
+    {
+      "type": "procedure",
+      "name": "removeStorageObject",
+      "arguments": {
+        "bucket": "azblob-bucket-test",
+        "forceDelete": true,
+        "governanceBypass": true,
+        "name": "public/hello.txt"
+      },
+      "fields": {
+        "fields": {
+          "success": {
+            "column": "success",
+            "type": "column"
+          }
+        },
+        "type": "object"
+      }
+    }
+  ]
+}

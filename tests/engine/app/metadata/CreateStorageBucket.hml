@@ -32,13 +32,21 @@ definition:
   name: CreateStorageBucket
   outputType: SuccessResponse!
   arguments:
+    - name: accessKeyId
+      type: String
     - name: clientId
       type: StorageClientId
+    - name: clientType
+      type: StorageProviderType
+    - name: endpoint
+      type: String
     - name: name
       type: String!
     - name: objectLock
       type: Boolean
     - name: region
+      type: String
+    - name: secretAccessKey
       type: String
     - name: tags
       type: "[StorageKeyValue!]"

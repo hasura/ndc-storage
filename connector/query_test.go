@@ -79,7 +79,7 @@ func TestConnectorQueries(t *testing.T) {
 					"clientId": cid,
 					"bucket":   "dummy-bucket-0",
 					"data":     string(rawBody),
-					"object":   key,
+					"name":     key,
 					"options": map[string]any{
 						"cacheControl":       "max-age=100",
 						"contentDisposition": "attachment",
@@ -110,7 +110,7 @@ func TestConnectorQueries(t *testing.T) {
 					Operations: []schema.MutationOperation{
 						{
 							Type:      schema.MutationOperationProcedure,
-							Name:      "uploadStorageObjectText",
+							Name:      "uploadStorageObjectAsText",
 							Arguments: rawArguments,
 							Fields: schema.NewNestedObject(map[string]schema.FieldEncoder{
 								"name": schema.NewColumnField("name", nil),
@@ -163,7 +163,7 @@ func TestMaxDownloadSizeValidation(t *testing.T) {
 				"type": "literal",
 				"value": "dummy-bucket-0"
 			},
-			"object": {
+			"name": {
 				"type": "literal",
 				"value": "movies/2000s/movies.json"
 			}
@@ -192,14 +192,14 @@ func TestMaxDownloadSizeValidation(t *testing.T) {
 
 	testCases := []struct {
 		Name               string
-		MaxDownloadSizeMBs float64
+		MaxDownloadSizeMBs int
 	}{
 		{
-			Name:               "downloadStorageObject",
-			MaxDownloadSizeMBs: 1.33,
+			Name:               "downloadStorageObjectAsBase64",
+			MaxDownloadSizeMBs: 2,
 		},
 		{
-			Name:               "downloadStorageObjectText",
+			Name:               "downloadStorageObjectAsText",
 			MaxDownloadSizeMBs: 2,
 		},
 	}
@@ -211,9 +211,8 @@ func TestMaxDownloadSizeValidation(t *testing.T) {
 			assert.Equal(t, http.StatusUnprocessableEntity, resp.StatusCode)
 			var respBody schema.ErrorResponse
 			assert.NilError(t, json.NewDecoder(resp.Body).Decode(&respBody))
-			assert.Equal(t, respBody.Message, fmt.Sprintf("file size >= %.2f MB is not allowed to be downloaded directly. Please use presignedGetObject function for large files", tc.MaxDownloadSizeMBs))
+			assert.Equal(t, respBody.Message, fmt.Sprintf("file size > %d MB is not allowed to be downloaded directly. Please use presignedGetObject function for large files", tc.MaxDownloadSizeMBs))
 			resp.Body.Close()
 		})
 	}
-
 }

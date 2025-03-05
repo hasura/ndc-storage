@@ -1,0 +1,28 @@
+{
+  "collection_relationships": {},
+  "operations": [
+    {
+      "type": "procedure",
+      "name": "updateStorageBucket",
+      "arguments": {
+        "clientId": "azblob",
+        "name": "azblob-bucket-test",
+        "tags": [
+          {
+            "key": "Foo",
+            "value": "baz"
+          }
+        ]
+      },
+      "fields": {
+        "fields": {
+          "success": {
+            "column": "success",
+            "type": "column"
+          }
+        },
+        "type": "object"
+      }
+    }
+  ]
+}

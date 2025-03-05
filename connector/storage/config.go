@@ -2,14 +2,15 @@ package storage
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"log/slog"
 	"slices"
 	"time"
 
-	"github.com/go-viper/mapstructure/v2"
 	"github.com/hasura/ndc-sdk-go/schema"
+	"github.com/hasura/ndc-sdk-go/utils"
 	"github.com/hasura/ndc-storage/connector/storage/azblob"
 	"github.com/hasura/ndc-storage/connector/storage/common"
 	"github.com/hasura/ndc-storage/connector/storage/gcs"
@@ -51,100 +52,103 @@ type ClientConfig map[string]any
 
 // Validate validates the configuration.
 func (cc ClientConfig) Validate() error {
-	if len(cc) == 0 {
-		return errConfigEmpty
-	}
-
-	var baseConfig common.BaseClientConfig
-	if err := mapstructure.Decode(cc, &baseConfig); err != nil {
-		return err
-	}
-
-	if err := baseConfig.Validate(); err != nil {
-		return err
-	}
-
-	err := baseConfig.Type.Validate()
+	storageType, err := cc.getStorageType()
 	if err != nil {
 		return err
 	}
 
-	switch baseConfig.Type {
-	case common.S3, common.GoogleStorage:
-		minioConfig := minio.ClientConfig{}
-
-		if err := mapstructure.Decode(cc, &minioConfig.OtherConfig); err != nil {
-			return err
-		}
-
-		return nil
-	case common.AzureBlobStore:
-		azConfig := azblob.ClientConfig{}
-
-		if err := mapstructure.Decode(cc, &azConfig.OtherConfig); err != nil {
-			return err
-		}
-
-		return nil
+	rawConfig, err := json.Marshal(cc)
+	if err != nil {
+		return err
 	}
 
-	return errors.New("unsupported storage client: " + string(baseConfig.Type))
+	switch storageType {
+	case common.S3:
+		var config minio.ClientConfig
+		if err := json.Unmarshal(rawConfig, &config); err != nil {
+			return err
+		}
+
+		return config.Validate()
+	case common.GoogleStorage:
+		var config gcs.ClientConfig
+		if err := json.Unmarshal(rawConfig, &config); err != nil {
+			return err
+		}
+
+		return config.Validate()
+	case common.AzureBlobStore:
+		var config azblob.ClientConfig
+		if err := json.Unmarshal(rawConfig, &config); err != nil {
+			return err
+		}
+
+		return config.Validate()
+	}
+
+	return errors.New("unsupported storage client: " + string(storageType))
+}
+
+func (cc ClientConfig) getStorageType() (common.StorageProviderType, error) {
+	if len(cc) == 0 {
+		return "", errConfigEmpty
+	}
+
+	rawStorageType, err := utils.GetString(cc, "type")
+	if err != nil {
+		return "", err
+	}
+
+	storageType, err := common.ParseStorageProviderType(rawStorageType)
+	if err != nil {
+		return "", err
+	}
+
+	return storageType, nil
 }
 
 func (cc ClientConfig) toStorageClient(ctx context.Context, logger *slog.Logger) (*common.BaseClientConfig, common.StorageClient, error) {
-	if len(cc) == 0 {
-		return nil, nil, errConfigEmpty
-	}
-
-	var baseConfig common.BaseClientConfig
-	if err := mapstructure.Decode(cc, &baseConfig); err != nil {
-		return nil, nil, err
-	}
-
-	err := baseConfig.Type.Validate()
+	storageType, err := cc.getStorageType()
 	if err != nil {
 		return nil, nil, err
 	}
 
-	switch baseConfig.Type {
+	rawConfig, err := json.Marshal(cc)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	switch storageType {
 	case common.S3:
-		minioConfig := minio.ClientConfig{
-			BaseClientConfig: baseConfig,
-		}
-
-		if err := mapstructure.Decode(cc, &minioConfig.OtherConfig); err != nil {
+		var config minio.ClientConfig
+		if err := json.Unmarshal(rawConfig, &config); err != nil {
 			return nil, nil, err
 		}
 
-		client, err := minio.New(ctx, baseConfig.Type, &minioConfig, logger)
+		client, err := minio.New(ctx, config.Type, &config, logger)
 
-		return &baseConfig, client, err
+		return &config.BaseClientConfig, client, err
 	case common.GoogleStorage:
-		gcsConfig := gcs.ClientConfig{
-			BaseClientConfig: baseConfig,
-		}
-
-		if err := mapstructure.Decode(cc, &gcsConfig.OtherConfig); err != nil {
+		var config gcs.ClientConfig
+		if err := json.Unmarshal(rawConfig, &config); err != nil {
 			return nil, nil, err
 		}
 
-		client, err := gcs.New(ctx, &gcsConfig, logger)
+		client, err := gcs.New(ctx, &config, logger)
 
-		return &baseConfig, client, err
+		return &config.BaseClientConfig, client, err
 	case common.AzureBlobStore:
-		azConfig := azblob.ClientConfig{
-			BaseClientConfig: baseConfig,
-		}
-		if err := mapstructure.Decode(cc, &azConfig.OtherConfig); err != nil {
+		var azConfig azblob.ClientConfig
+		if err := json.Unmarshal(rawConfig, &azConfig); err != nil {
 			return nil, nil, err
 		}
 
 		client, err := azblob.New(ctx, &azConfig, logger)
 
-		return &baseConfig, client, err
+		return &azConfig.BaseClientConfig, client, err
 	}
 
-	return nil, nil, errors.New("unsupported storage client: " + string(baseConfig.Type))
+	return nil, nil, errors.New("unsupported storage client: " + string(storageType))
 }
 
 // JSONSchema is used to generate a custom jsonschema.

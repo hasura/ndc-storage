@@ -327,7 +327,7 @@ func serializeGetObjectOptions(span trace.Span, opts common.GetStorageObjectOpti
 func serializeCopySourceOptions(src common.StorageCopySrcOptions) minio.CopySrcOptions {
 	srcOptions := minio.CopySrcOptions{
 		Bucket:      src.Bucket,
-		Object:      src.Object,
+		Object:      src.Name,
 		VersionID:   src.VersionID,
 		MatchETag:   src.MatchETag,
 		NoMatchETag: src.NoMatchETag,
@@ -350,7 +350,7 @@ func serializeCopySourceOptions(src common.StorageCopySrcOptions) minio.CopySrcO
 func convertCopyDestOptions(dst common.StorageCopyDestOptions) *minio.CopyDestOptions {
 	destOptions := minio.CopyDestOptions{
 		Bucket:          dst.Bucket,
-		Object:          dst.Object,
+		Object:          dst.Name,
 		UserMetadata:    common.KeyValuesToStringMap(dst.Metadata),
 		ReplaceMetadata: dst.Metadata != nil,
 		UserTags:        common.KeyValuesToStringMap(dst.Tags),
