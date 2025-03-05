@@ -6,7 +6,7 @@
       "name": "updateStorageObject",
       "arguments": {
         "bucket": "azblob-bucket-test",
-        "object": "public/hello.txt",
+        "name": "public/hello.txt",
         "tags": [
           {
             "key": "Foo",

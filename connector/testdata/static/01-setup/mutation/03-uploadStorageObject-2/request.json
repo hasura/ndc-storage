@@ -7,7 +7,7 @@
       "arguments": {
         "bucket": "minio-bucket-test",
         "data": "SVpHWjhMMHZzVw==",
-        "object": "public/hello2.txt",
+        "name": "public/hello2.txt",
         "options": {
           "autoChecksum": "SHA256",
           "cacheControl": "max-age=180, public",

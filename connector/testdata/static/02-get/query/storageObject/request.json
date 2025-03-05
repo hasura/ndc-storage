@@ -8,7 +8,7 @@
       "type": "literal",
       "value": true
     },
-    "object": {
+    "name": {
       "type": "literal",
       "value": "public/hello.txt"
     },

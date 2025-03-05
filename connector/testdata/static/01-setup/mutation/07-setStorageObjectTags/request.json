@@ -6,7 +6,7 @@
       "name": "updateStorageObject",
       "arguments": {
         "bucket": "minio-bucket-test",
-        "object": "public/workd2.txt",
+        "name": "public/workd2.txt",
         "tags": [
           {
             "key": "Foo",

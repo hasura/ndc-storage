@@ -24,7 +24,7 @@ func TestConnector(t *testing.T) {
 
 		if i == 0 {
 			logger := slog.New(slog.NewJSONHandler(os.Stderr, &slog.HandlerOptions{
-				Level: slog.LevelDebug,
+				// Level: slog.LevelDebug,
 			}))
 			serverOptions = append(serverOptions, connector.WithLogger(logger))
 		}
@@ -50,7 +50,7 @@ func TestConnectorDynamicCredentials(t *testing.T) {
 
 		if i == 0 {
 			logger := slog.New(slog.NewJSONHandler(os.Stderr, &slog.HandlerOptions{
-				Level: slog.LevelDebug,
+				// Level: slog.LevelDebug,
 			}))
 			serverOptions = append(serverOptions, connector.WithLogger(logger))
 		}

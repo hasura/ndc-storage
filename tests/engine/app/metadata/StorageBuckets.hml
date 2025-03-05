@@ -875,11 +875,11 @@ definition:
   name: StorageBuckets
   objectType: StorageBucket
   arguments:
-    - name: after
-      type: String
     - name: accessKeyId
       type: String
       description: Access key ID or Account name credential
+    - name: after
+      type: String
     - name: clientType
       type: StorageProviderType
       description: The cloud storage provider type

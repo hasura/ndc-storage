@@ -7,7 +7,7 @@
       "arguments": {
         "clientId": "gcs",
         "bucket": "gcs-bucket",
-        "object": "public/hello.txt",
+        "name": "public/hello.txt",
         "metadata": [
           {
             "key": "Foo",

@@ -11,7 +11,7 @@
         "secretAccessKey": "Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==",
         "bucket": "azblob-dynamic",
         "data": "SGVsbG8gd29ybGQK",
-        "object": "SiKBc6ifDC",
+        "name": "SiKBc6ifDC",
         "options": {
           "autoChecksum": "SHA256",
           "cacheControl": "max-age=180, public",

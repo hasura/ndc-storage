@@ -8,7 +8,7 @@
         "clientId": "gcs",
         "dest": {
           "bucket": "gcs-bucket",
-          "object": "public/hello2.txt",
+          "name": "public/hello2.txt",
           "size": 8502136105187820186,
           "metadata": [
             {
@@ -30,7 +30,7 @@
           "matchRange": true,
           "matchUnmodifiedSince": "2099-01-01T00:00:01Z",
           "noMatchETag": "ic0R0GYP3Z",
-          "object": "public/hello.txt",
+          "name": "public/hello.txt",
           "start": 1
         }
       },

@@ -11,6 +11,24 @@ import (
 )
 
 // FromValue decodes values from map
+func (j *GetStorageBucketArguments) FromValue(input map[string]any) error {
+	var err error
+	j.StorageClientCredentialArguments, err = utils.DecodeObject[StorageClientCredentialArguments](input)
+	if err != nil {
+		return err
+	}
+	j.Name, err = utils.GetString(input, "name")
+	if err != nil {
+		return err
+	}
+	j.Where, err = utils.DecodeObjectValueDefault[schema.Expression](input, "where")
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// FromValue decodes values from map
 func (j *GetStorageObjectArguments) FromValue(input map[string]any) error {
 	var err error
 	j.GetStorageObjectOptions, err = utils.DecodeObject[GetStorageObjectOptions](input)
@@ -21,7 +39,7 @@ func (j *GetStorageObjectArguments) FromValue(input map[string]any) error {
 	if err != nil {
 		return err
 	}
-	j.Object, err = utils.GetString(input, "object")
+	j.Name, err = utils.GetString(input, "name")
 	if err != nil {
 		return err
 	}
@@ -145,7 +163,7 @@ func (j *PresignedGetStorageObjectArguments) FromValue(input map[string]any) err
 	if err != nil {
 		return err
 	}
-	j.Object, err = utils.GetString(input, "object")
+	j.Name, err = utils.GetString(input, "name")
 	if err != nil {
 		return err
 	}
@@ -181,7 +199,7 @@ func (j *PresignedPutStorageObjectArguments) FromValue(input map[string]any) err
 	if err != nil {
 		return err
 	}
-	j.Object, err = utils.GetString(input, "object")
+	j.Name, err = utils.GetString(input, "name")
 	if err != nil {
 		return err
 	}
@@ -298,6 +316,18 @@ func (j BucketWebsite) ToMap() map[string]any {
 func (j CustomPlacementConfig) ToMap() map[string]any {
 	r := make(map[string]any)
 	r["DataLocations"] = j.DataLocations
+
+	return r
+}
+
+// ToMap encodes the struct to a value map
+func (j GetStorageBucketArguments) ToMap() map[string]any {
+	r := make(map[string]any)
+	r = utils.MergeMap(r, j.StorageClientCredentialArguments.ToMap())
+	r["name"] = j.Name
+	if j.Where != nil {
+		r["where"] = j.Where
+	}
 
 	return r
 }
@@ -530,7 +560,7 @@ func (j PresignedURLResponse) ToMap() map[string]any {
 func (j PutStorageObjectArguments) ToMap() map[string]any {
 	r := make(map[string]any)
 	r = utils.MergeMap(r, j.StorageBucketArguments.ToMap())
-	r["object"] = j.Object
+	r["name"] = j.Name
 	r["options"] = j.Options
 	if j.Where != nil {
 		r["where"] = j.Where
@@ -737,7 +767,7 @@ func (j StorageCopyDestOptions) ToMap() map[string]any {
 	}
 	r["metadata"] = j_Metadata
 	r["mode"] = j.Mode
-	r["object"] = j.Object
+	r["name"] = j.Name
 	r["retainUntilDate"] = j.RetainUntilDate
 	r["size"] = j.Size
 	j_Tags := make([]any, len(j.Tags))
@@ -758,8 +788,8 @@ func (j StorageCopySrcOptions) ToMap() map[string]any {
 	r["matchModifiedSince"] = j.MatchModifiedSince
 	r["matchRange"] = j.MatchRange
 	r["matchUnmodifiedSince"] = j.MatchUnmodifiedSince
+	r["name"] = j.Name
 	r["noMatchETag"] = j.NoMatchETag
-	r["object"] = j.Object
 	r["start"] = j.Start
 	r["versionId"] = j.VersionID
 

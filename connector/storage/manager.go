@@ -29,7 +29,7 @@ type RuntimeSettings struct {
 	// to avoid memory leaks. Pre-signed URLs are recommended for large files.
 	MaxUploadSizeMBs int64 `json:"maxUploadSizeMBs" jsonschema:"min=1,default=20" yaml:"maxUploadSizeMBs"`
 	// Configuration for the http client that is used for uploading files from URL.
-	HTTP *exhttp.HTTPTransportTLSConfig `json:"http" yaml:"http"`
+	HTTP *exhttp.HTTPTransportTLSConfig `json:"http,omitempty" yaml:"http"`
 }
 
 // Manager represents the high-level client that manages internal clients and configurations.

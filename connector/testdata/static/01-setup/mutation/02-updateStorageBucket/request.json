@@ -5,7 +5,7 @@
       "type": "procedure",
       "name": "updateStorageBucket",
       "arguments": {
-        "bucket": "minio-bucket-test",
+        "name": "minio-bucket-test",
         "versioningEnabled": true,
         "lifecycle": {
           "rules": [

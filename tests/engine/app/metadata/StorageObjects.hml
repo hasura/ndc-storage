@@ -630,13 +630,11 @@ definition:
   name: StorageObjects
   objectType: StorageObject
   arguments:
-    - name: after
-      type: String
-    - name: hierarchy
-      type: Boolean
     - name: accessKeyId
       type: String
       description: Access key ID or Account name credential
+    - name: after
+      type: String
     - name: bucket
       type: String
     - name: clientType
@@ -645,6 +643,8 @@ definition:
     - name: endpoint
       type: String
       description: Endpoint of the cloud storage service
+    - name: hierarchy
+      type: Boolean
     - name: secretAccessKey
       type: String
       description: Secret Access key ID or Account key credential

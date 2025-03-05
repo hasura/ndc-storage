@@ -7,7 +7,7 @@
       "arguments": {
         "dest": {
           "bucket": "minio-bucket-test",
-          "object": "a9cSGZGzM2",
+          "name": "a9cSGZGzM2",
           "replaceMetadata": false,
           "replaceTags": false,
           "size": 352
@@ -17,7 +17,7 @@
             "bucket": "minio-bucket-test",
             "end": 34,
             "noMatchETag": "ic0R0GYP3Z",
-            "object": "public/hello.txt",
+            "name": "public/hello.txt",
             "start": 0
           }
         ]

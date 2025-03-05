@@ -5,7 +5,7 @@
       "type": "procedure",
       "name": "removeStorageBucket",
       "arguments": {
-        "bucket": "azblob-bucket-test"
+        "name": "azblob-bucket-test"
       },
       "fields": {
         "fields": {

@@ -38,29 +38,29 @@ definition:
   name: UpdateStorageObject
   outputType: SuccessResponse!
   arguments:
+    - name: accessKeyId
+      type: String
     - name: bucket
       type: String
     - name: clientId
       type: StorageClientId
-    - name: legalHold
-      type: Boolean
-    - name: metadata
-      type: "[StorageKeyValue!]"
-    - name: object
-      type: String!
-    - name: retention
-      type: SetStorageObjectRetentionOptions
-    - name: tags
-      type: "[StorageKeyValue!]"
-    - name: versionId
-      type: String
-    - name: accessKeyId
-      type: String
     - name: clientType
       type: StorageProviderType
     - name: endpoint
       type: String
+    - name: legalHold
+      type: Boolean
+    - name: metadata
+      type: "[StorageKeyValue!]"
+    - name: name
+      type: String!
+    - name: retention
+      type: SetStorageObjectRetentionOptions
     - name: secretAccessKey
+      type: String
+    - name: tags
+      type: "[StorageKeyValue!]"
+    - name: versionId
       type: String
   source:
     dataConnectorName: storage

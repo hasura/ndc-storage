@@ -7,7 +7,7 @@
       "arguments": {
         "bucket": "minio-bucket-lock",
         "data": "SGVsbG8gd29ybGQK",
-        "object": "SiKBc6ifDC",
+        "name": "SiKBc6ifDC",
         "options": {
           "autoChecksum": "CRC32",
           "cacheControl": "max-age=100",

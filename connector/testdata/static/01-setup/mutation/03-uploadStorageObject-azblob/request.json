@@ -7,7 +7,7 @@
       "arguments": {
         "bucket": "azblob-bucket-test",
         "data": "SVpHWjhMMHZzVw==",
-        "object": "public/hello.txt",
+        "name": "public/hello.txt",
         "options": {
           "autoChecksum": "SHA256",
           "cacheControl": "max-age=180, public",

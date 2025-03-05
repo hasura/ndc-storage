@@ -32,16 +32,16 @@ definition:
   name: StorageBucketExists
   outputType: ExistsResponse!
   arguments:
-    - name: bucket
+    - name: accessKeyId
       type: String
     - name: clientId
       type: StorageClientId
-    - name: accessKeyId
-      type: String
     - name: clientType
       type: StorageProviderType
     - name: endpoint
       type: String
+    - name: name
+      type: String!
     - name: secretAccessKey
       type: String
   source:

@@ -6,7 +6,7 @@
       "name": "updateStorageBucket",
       "arguments": {
         "clientId": "gcs",
-        "bucket": "gcs-bucket",
+        "name": "gcs-bucket",
         "tags": [
           {
             "key": "Foo",

@@ -37,7 +37,7 @@ func TestMaxUploadSizeValidation(t *testing.T) {
       "arguments": {
         "bucket": "minio-bucket-test",
         "data": "%s",
-        "object": "public/random-failed.txt"
+        "name": "public/random-failed.txt"
       },
       "fields": {
         "fields": {
@@ -78,7 +78,7 @@ func TestMaxUploadSizeValidation(t *testing.T) {
 			assert.Equal(t, http.StatusUnprocessableEntity, resp.StatusCode)
 			var respBody schema.ErrorResponse
 			assert.NilError(t, json.NewDecoder(resp.Body).Decode(&respBody))
-			assert.Equal(t, respBody.Message, fmt.Sprintf("file size > %d MB is not allowed to be upload directly. Please use presignedPutObject function for large files", 1))
+			assert.Equal(t, respBody.Message, fmt.Sprintf("file size > %d MB is not allowed to be upload directly. Please use presignedPutObject function for large files", 8))
 			resp.Body.Close()
 		})
 	}
@@ -102,8 +102,8 @@ func TestMaxUploadSizeURLValidation(t *testing.T) {
 			"name": "uploadStorageObjectFromUrl",
 			"arguments": {
 				"bucket": "minio-bucket-test",
-				"object": "movies-2000s.json",
-				"url": "https://drive.google.com/uc?id=1IXQDp8Um3d-o7ysZLxkDyuvFj9gtlxqz&export=download"
+				"name": "movies-2000s.json",
+				"url": "https://raw.githubusercontent.com/hasura/ndc-stripe/refs/heads/main/config/schema.json"
 			},
 			"fields": {
 				"type": "object",
@@ -130,6 +130,6 @@ func TestMaxUploadSizeURLValidation(t *testing.T) {
 	assert.Equal(t, http.StatusUnprocessableEntity, resp.StatusCode)
 	var respBody schema.ErrorResponse
 	assert.NilError(t, json.NewDecoder(resp.Body).Decode(&respBody))
-	assert.Equal(t, respBody.Message, fmt.Sprintf("file size > %d MB is not allowed to be upload directly. Please use presignedPutObject function for large files", 1))
+	assert.Equal(t, respBody.Message, fmt.Sprintf("file size > %d MB is not allowed to be upload directly. Please use presignedPutObject function for large files", 8))
 	resp.Body.Close()
 }

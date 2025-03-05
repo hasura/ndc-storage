@@ -437,12 +437,12 @@ func (c *Client) CopyObject(ctx context.Context, dest common.StorageCopyDestOpti
 	defer span.End()
 
 	span.SetAttributes(
-		attribute.String("storage.key", dest.Object),
-		attribute.String("storage.copy_source", src.Object),
+		attribute.String("storage.key", dest.Name),
+		attribute.String("storage.copy_source", src.Name),
 	)
 
-	srcURL := c.client.ServiceClient().NewContainerClient(src.Bucket).NewBlobClient(src.Object).URL()
-	blobClient := c.client.ServiceClient().NewContainerClient(dest.Bucket).NewBlobClient(dest.Object)
+	srcURL := c.client.ServiceClient().NewContainerClient(src.Bucket).NewBlobClient(src.Name).URL()
+	blobClient := c.client.ServiceClient().NewContainerClient(dest.Bucket).NewBlobClient(dest.Name)
 
 	options := &blob.CopyFromURLOptions{
 		BlobTags:  common.KeyValuesToStringMap(dest.Tags),
@@ -464,7 +464,7 @@ func (c *Client) CopyObject(ctx context.Context, dest common.StorageCopyDestOpti
 
 	result := &common.StorageUploadInfo{
 		Bucket: dest.Bucket,
-		Name:   dest.Object,
+		Name:   dest.Name,
 	}
 
 	if resp.ETag != nil && *resp.ETag != "" {

@@ -8,7 +8,7 @@
         "bucket": "minio-bucket-test",
         "forceDelete": true,
         "governanceBypass": true,
-        "object": "public/hello.txt-2"
+        "name": "public/hello.txt-2"
       },
       "fields": {
         "fields": {

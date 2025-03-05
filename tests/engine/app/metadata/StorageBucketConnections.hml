@@ -141,24 +141,24 @@ definition:
   name: StorageBucketConnections
   outputType: StorageConnectionStorageBucket!
   arguments:
+    - name: accessKeyId
+      type: String
     - name: after
       type: String
     - name: clientId
       type: StorageClientId
-    - name: first
-      type: Int32
-    - name: prefix
-      type: String
-    - name: where
-      type: StorageBucketFilterBoolExp
-    - name: accessKeyId
-      type: String
     - name: clientType
       type: StorageProviderType
     - name: endpoint
       type: String
+    - name: first
+      type: Int32
+    - name: prefix
+      type: String
     - name: secretAccessKey
       type: String
+    - name: where
+      type: StorageBucketFilterBoolExp
   source:
     dataConnectorName: storage
     dataConnectorCommand:

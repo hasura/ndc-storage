@@ -6,7 +6,7 @@
       "name": "updateStorageObject",
       "arguments": {
         "bucket": "minio-bucket-lock",
-        "object": "SiKBc6ifDC",
+        "name": "SiKBc6ifDC",
         "retention": {
           "governanceBypass": true,
           "mode": "Locked",

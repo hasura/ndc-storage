@@ -35,22 +35,22 @@ definition:
   name: StoragePresignedDownloadUrl
   outputType: PresignedUrlResponse
   arguments:
+    - name: accessKeyId
+      type: String
     - name: bucket
       type: String
     - name: clientId
       type: StorageClientId
-    - name: expiry
-      type: DurationString
-    - name: object
-      type: String!
-    - name: requestParams
-      type: "[StorageKeyValue!]"
-    - name: accessKeyId
-      type: String
     - name: clientType
       type: StorageProviderType
     - name: endpoint
       type: String
+    - name: expiry
+      type: DurationString
+    - name: name
+      type: String!
+    - name: requestParams
+      type: "[StorageKeyValue!]"
     - name: secretAccessKey
       type: String
   source:

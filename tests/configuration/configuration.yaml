@@ -1,7 +1,7 @@
 # yaml-language-server: $schema=../../jsonschema/configuration.schema.json
 runtime:
   maxDownloadSizeMBs: 2
-  maxUploadSizeMBs: 10
+  maxUploadSizeMBs: 8
   http:
     dialer:
       keepAliveCount: 10

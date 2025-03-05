@@ -29,7 +29,7 @@ func (m *Manager) UpdateBucket(ctx context.Context, args *common.UpdateBucketArg
 		return nil
 	}
 
-	client, bucketName, err := m.GetClientAndBucket(ctx, args.StorageBucketArguments)
+	client, bucketName, err := m.GetClientAndBucket(ctx, *args.GetStorageBucketArguments.ToStorageBucketArguments())
 	if err != nil {
 		return err
 	}

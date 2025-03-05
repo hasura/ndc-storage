@@ -20,7 +20,7 @@
       "type": "literal",
       "value": true
     },
-    "object": {
+    "name": {
       "type": "literal",
       "value": "country-by-name.json"
     },

@@ -288,8 +288,8 @@ func (mc *Client) CopyObject(ctx context.Context, dest common.StorageCopyDestOpt
 	defer span.End()
 
 	span.SetAttributes(
-		attribute.String("storage.key", dest.Object),
-		attribute.String("storage.copy_source", src.Object),
+		attribute.String("storage.key", dest.Name),
+		attribute.String("storage.copy_source", src.Name),
 	)
 
 	destOptions := convertCopyDestOptions(dest)
@@ -314,13 +314,13 @@ func (mc *Client) ComposeObject(ctx context.Context, dest common.StorageCopyDest
 	ctx, span := mc.startOtelSpan(ctx, "ComposeObject", dest.Bucket)
 	defer span.End()
 
-	span.SetAttributes(attribute.String("storage.key", dest.Object))
+	span.SetAttributes(attribute.String("storage.key", dest.Name))
 
 	srcKeys := make([]string, len(sources))
 	srcOptions := make([]minio.CopySrcOptions, len(sources))
 
 	for i, src := range sources {
-		srcKeys[i] = src.Object
+		srcKeys[i] = src.Name
 		source := serializeCopySourceOptions(src)
 		srcOptions[i] = source
 	}

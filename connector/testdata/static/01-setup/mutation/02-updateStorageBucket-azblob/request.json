@@ -6,7 +6,7 @@
       "name": "updateStorageBucket",
       "arguments": {
         "clientId": "azblob",
-        "bucket": "azblob-bucket-test",
+        "name": "azblob-bucket-test",
         "tags": [
           {
             "key": "Foo",

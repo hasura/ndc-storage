@@ -275,6 +275,48 @@ definition:
               type:
                 type: named
                 name: Boolean
+        GetStorageBucketArguments:
+          fields:
+            accessKeyId:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
+            clientId:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: StorageClientID
+            clientType:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: StorageProviderType
+            endpoint:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
+            name:
+              type:
+                type: named
+                name: String
+            secretAccessKey:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
+            where:
+              type:
+                type: nullable
+                underlying_type:
+                  type: predicate
+                  object_type_name: StorageBucketFilter
         GetStorageObjectOptions:
           description: are used to specify additional headers or options during GET requests.
           fields:
@@ -307,7 +349,6 @@ definition:
                   type: named
                   name: String
         HTTPRequestOptions:
-          description: hold HTTP request options.
           fields:
             bodyText:
               type:
@@ -741,7 +782,7 @@ definition:
                 underlying_type:
                   type: named
                   name: String
-            object:
+            name:
               type:
                 type: named
                 name: String
@@ -1330,7 +1371,7 @@ definition:
                 underlying_type:
                   type: named
                   name: StorageRetentionMode
-            object:
+            name:
               type:
                 type: named
                 name: String
@@ -1393,16 +1434,16 @@ definition:
                 underlying_type:
                   type: named
                   name: TimestampTZ
+            name:
+              type:
+                type: named
+                name: String
             noMatchETag:
               type:
                 type: nullable
                 underlying_type:
                   type: named
                   name: String
-            object:
-              type:
-                type: named
-                name: String
             start:
               type:
                 type: nullable
@@ -2343,7 +2384,7 @@ definition:
                   element_type:
                     type: named
                     name: StorageKeyValue
-            object:
+            name:
               type:
                 type: named
                 name: String
@@ -2417,7 +2458,7 @@ definition:
                   element_type:
                     type: named
                     name: StorageKeyValue
-            object:
+            name:
               type:
                 type: named
                 name: String
@@ -2459,12 +2500,6 @@ definition:
                 underlying_type:
                   type: named
                   name: String
-            bucket:
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: String
             clientId:
               type:
                 type: nullable
@@ -2483,6 +2518,10 @@ definition:
                 underlying_type:
                   type: named
                   name: String
+            name:
+              type:
+                type: named
+                name: String
             secretAccessKey:
               type:
                 type: nullable
@@ -2563,12 +2602,6 @@ definition:
                 underlying_type:
                   type: named
                   name: String
-            bucket:
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: String
             clientId:
               type:
                 type: nullable
@@ -2587,6 +2620,10 @@ definition:
                 underlying_type:
                   type: named
                   name: String
+            name:
+              type:
+                type: named
+                name: String
             secretAccessKey:
               type:
                 type: nullable
@@ -2753,7 +2790,7 @@ definition:
                   element_type:
                     type: named
                     name: StorageKeyValue
-            object:
+            name:
               type:
                 type: named
                 name: String
@@ -2899,7 +2936,7 @@ definition:
                 underlying_type:
                   type: named
                   name: DurationString
-            object:
+            name:
               type:
                 type: named
                 name: String
@@ -2961,7 +2998,7 @@ definition:
                 underlying_type:
                   type: named
                   name: DurationString
-            object:
+            name:
               type:
                 type: named
                 name: String
@@ -3112,7 +3149,7 @@ definition:
                 underlying_type:
                   type: named
                   name: String
-            object:
+            name:
               type:
                 type: named
                 name: String
@@ -3129,12 +3166,6 @@ definition:
           description: removes a bucket, bucket should be empty to be successfully removed.
           arguments:
             accessKeyId:
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: String
-            bucket:
               type:
                 type: nullable
                 underlying_type:
@@ -3158,6 +3189,10 @@ definition:
                 underlying_type:
                   type: named
                   name: String
+            name:
+              type:
+                type: named
+                name: String
             secretAccessKey:
               type:
                 type: nullable
@@ -3212,7 +3247,7 @@ definition:
                 underlying_type:
                   type: named
                   name: Boolean
-            object:
+            name:
               type:
                 type: named
                 name: String
@@ -3344,7 +3379,7 @@ definition:
                 underlying_type:
                   type: named
                   name: String
-            object:
+            name:
               type:
                 type: named
                 name: String
@@ -3361,12 +3396,6 @@ definition:
           description: updates the bucket's configuration.
           arguments:
             accessKeyId:
-              type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: String
-            bucket:
               type:
                 type: nullable
                 underlying_type:
@@ -3402,6 +3431,10 @@ definition:
                 underlying_type:
                   type: named
                   name: ObjectLifecycleConfiguration
+            name:
+              type:
+                type: named
+                name: String
             objectLock:
               type:
                 type: nullable
@@ -3478,7 +3511,7 @@ definition:
                   element_type:
                     type: named
                     name: StorageKeyValue
-            object:
+            name:
               type:
                 type: named
                 name: String
@@ -3548,7 +3581,7 @@ definition:
                 underlying_type:
                   type: named
                   name: String
-            object:
+            name:
               type:
                 type: named
                 name: String
@@ -3604,7 +3637,7 @@ definition:
                 underlying_type:
                   type: named
                   name: String
-            object:
+            name:
               type:
                 type: named
                 name: String
@@ -3624,7 +3657,7 @@ definition:
             type: named
             name: StorageUploadInfo
         - name: uploadStorageObjectFromUrl
-          description: uploads an object from a remote file that is donwloaded from an HTTP URL. The HTTP clients download the file and upload it to the storage bucket.
+          description: uploads an object from a remote file that is downloaded from an HTTP URL. The HTTP clients download the file and upload it to the storage bucket.
           arguments:
             accessKeyId:
               type:
@@ -3676,7 +3709,7 @@ definition:
                 underlying_type:
                   type: named
                   name: DownloadHTTPMethod
-            object:
+            name:
               type:
                 type: named
                 name: String

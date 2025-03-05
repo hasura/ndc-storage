@@ -8,7 +8,7 @@
       "type": "literal",
       "value": "http://local.hasura.dev:10000"
     },
-    "bucket": {
+    "name": {
       "type": "literal",
       "value": "azblob-dynamic"
     },

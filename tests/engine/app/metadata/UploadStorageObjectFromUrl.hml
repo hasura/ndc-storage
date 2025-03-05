@@ -5,30 +5,30 @@ definition:
   name: UploadStorageObjectFromUrl
   outputType: StorageUploadInfo!
   arguments:
+    - name: accessKeyId
+      type: String
     - name: bodyText
       type: String
     - name: bucket
       type: String
     - name: clientId
       type: StorageClientId
-    - name: headers
-      type: "[StorageKeyValue!]"
-    - name: method
-      type: DownloadHttpMethod
-    - name: object
-      type: String!
-    - name: options
-      type: PutStorageObjectOptions
-    - name: url
-      type: String!
-    - name: accessKeyId
-      type: String
     - name: clientType
       type: StorageProviderType
     - name: endpoint
       type: String
+    - name: headers
+      type: "[StorageKeyValue!]"
+    - name: method
+      type: DownloadHttpMethod
+    - name: name
+      type: String!
+    - name: options
+      type: PutStorageObjectOptions
     - name: secretAccessKey
       type: String
+    - name: url
+      type: String!
   source:
     dataConnectorName: storage
     dataConnectorCommand:
@@ -36,7 +36,7 @@ definition:
   graphql:
     rootFieldName: uploadStorageObjectFromUrl
     rootFieldKind: Mutation
-  description: uploads an object from a remote file that is donwloaded from an
+  description: uploads an object from a remote file that is downloaded from an
     HTTP URL. The HTTP clients download the file and upload it to the storage
     bucket.
 

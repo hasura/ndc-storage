@@ -24,7 +24,7 @@
       "type": "literal",
       "value": "1h"
     },
-    "object": {
+    "name": {
       "type": "literal",
       "value": "public/hello.txt"
     },

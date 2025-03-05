@@ -5,7 +5,7 @@
       "name": "uploadStorageObjectFromUrl",
       "arguments": {
         "bucket": "minio-bucket-test",
-        "object": "country-by-name.json",
+        "name": "country-by-name.json",
         "url": "https://raw.githubusercontent.com/samayo/country-json/refs/heads/master/src/country-by-name.json"
       },
       "fields": {

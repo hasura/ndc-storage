@@ -13,7 +13,7 @@ definition:
       type: "[StorageKeyValue!]"
     - name: mode
       type: StorageRetentionMode
-    - name: object
+    - name: name
       type: String!
     - name: retainUntilDate
       type: TimestampTz
@@ -41,7 +41,7 @@ definition:
           - legalHold
           - metadata
           - mode
-          - object
+          - name
           - retainUntilDate
           - size
           - tags
@@ -65,10 +65,10 @@ definition:
       type: Boolean
     - name: matchUnmodifiedSince
       type: TimestampTz
+    - name: name
+      type: String!
     - name: noMatchETag
       type: String
-    - name: object
-      type: String!
     - name: start
       type: Int64
     - name: versionId
@@ -95,8 +95,8 @@ definition:
           - matchModifiedSince
           - matchRange
           - matchUnmodifiedSince
+          - name
           - noMatchETag
-          - object
           - start
           - versionId
 

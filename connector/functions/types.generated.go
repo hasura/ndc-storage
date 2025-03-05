@@ -157,7 +157,7 @@ func (dch DataConnectorHandler) execQuery(ctx context.Context, state *types.Stat
 				"cause": err.Error(),
 			})
 		}
-		var args common.StorageBucketArguments
+		var args common.GetStorageBucketArguments
 		parseErr := args.FromValue(rawArgs)
 		if parseErr != nil {
 			return nil, schema.UnprocessableContentError("failed to resolve arguments", map[string]any{
@@ -228,7 +228,7 @@ func (dch DataConnectorHandler) execQuery(ctx context.Context, state *types.Stat
 				"cause": err.Error(),
 			})
 		}
-		var args common.StorageBucketArguments
+		var args common.GetStorageBucketArguments
 		parseErr := args.FromValue(rawArgs)
 		if parseErr != nil {
 			return nil, schema.UnprocessableContentError("failed to resolve arguments", map[string]any{
@@ -619,7 +619,7 @@ func (dch DataConnectorHandler) Mutation(ctx context.Context, state *types.State
 				"cause": err.Error(),
 			})
 		}
-		var args common.StorageBucketArguments
+		var args common.GetStorageBucketArguments
 		if err := json.Unmarshal(operation.Arguments, &args); err != nil {
 			return nil, schema.UnprocessableContentError("failed to decode arguments", map[string]any{
 				"cause": err.Error(),

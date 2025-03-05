@@ -31,7 +31,7 @@ func (coe *CollectionBucketExecutor) Execute(ctx context.Context) (*schema.RowSe
 		}, nil
 	}
 
-	request, err := EvalBucketPredicate(common.StorageClientCredentialArguments{}, "", coe.Request.Query.Predicate, coe.Variables)
+	request, err := EvalBucketPredicate(common.StorageClientCredentialArguments{}, nil, coe.Request.Query.Predicate, coe.Variables)
 	if err != nil {
 		return nil, schema.UnprocessableContentError(err.Error(), nil)
 	}

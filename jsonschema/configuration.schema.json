@@ -719,8 +719,7 @@
       "type": "object",
       "required": [
         "maxDownloadSizeMBs",
-        "maxUploadSizeMBs",
-        "http"
+        "maxUploadSizeMBs"
       ]
     },
     "TLSConfig": {

@@ -8,7 +8,7 @@
         "bucket": "azblob-bucket-test",
         "forceDelete": true,
         "governanceBypass": true,
-        "object": "public/hello.txt"
+        "name": "public/hello.txt"
       },
       "fields": {
         "fields": {

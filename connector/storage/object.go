@@ -86,7 +86,7 @@ func (m *Manager) GetObject(ctx context.Context, bucketInfo common.StorageBucket
 	}
 
 	if objectStat.Size == nil || *objectStat.Size > m.runtime.MaxDownloadSizeMBs*1024*1024 {
-		return nil, schema.UnprocessableContentError(fmt.Sprintf("file size >= %d MB is not allowed to be downloaded directly. Please use presignedGetObject function for large files", m.runtime.MaxDownloadSizeMBs), nil)
+		return nil, schema.UnprocessableContentError(fmt.Sprintf("file size > %d MB is not allowed to be downloaded directly. Please use presignedGetObject function for large files", m.runtime.MaxDownloadSizeMBs), nil)
 	}
 
 	return client.GetObject(ctx, bucketName, objectName, opts)
@@ -258,7 +258,7 @@ func (m *Manager) RemoveIncompleteUpload(ctx context.Context, args *common.Remov
 		return err
 	}
 
-	return client.RemoveIncompleteUpload(ctx, bucketName, args.Object)
+	return client.RemoveIncompleteUpload(ctx, bucketName, args.Name)
 }
 
 // PresignedGetObject generates a presigned URL for HTTP GET operations. Browsers/Mobile clients may point to this URL to directly download objects even if the bucket is private.
@@ -362,7 +362,7 @@ func (m *Manager) UploadObjectFromURL(ctx context.Context, bucketInfo common.Sto
 		_ = resp.Body.Close()
 	}()
 
-	if resp.ContentLength >= 0 {
+	if resp.ContentLength > 0 {
 		contentLength = resp.ContentLength
 	}
 

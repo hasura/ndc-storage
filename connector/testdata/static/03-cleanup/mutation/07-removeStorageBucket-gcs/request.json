@@ -6,7 +6,7 @@
       "name": "removeStorageBucket",
       "arguments": {
         "clientId": "gcs",
-        "bucket": "gcs-bucket"
+        "name": "gcs-bucket"
       },
       "fields": {
         "fields": {

@@ -79,7 +79,7 @@ func TestConnectorQueries(t *testing.T) {
 					"clientId": cid,
 					"bucket":   "dummy-bucket-0",
 					"data":     string(rawBody),
-					"object":   key,
+					"name":     key,
 					"options": map[string]any{
 						"cacheControl":       "max-age=100",
 						"contentDisposition": "attachment",
@@ -163,7 +163,7 @@ func TestMaxDownloadSizeValidation(t *testing.T) {
 				"type": "literal",
 				"value": "dummy-bucket-0"
 			},
-			"object": {
+			"name": {
 				"type": "literal",
 				"value": "movies/2000s/movies.json"
 			}

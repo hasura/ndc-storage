@@ -24,18 +24,15 @@ type PredicateEvaluator struct {
 }
 
 // EvalBucketPredicate evaluates the predicate bucket condition of the query request.
-func EvalBucketPredicate(bucketArguments common.StorageClientCredentialArguments, prefix string, predicate schema.Expression, variables map[string]any) (*PredicateEvaluator, error) {
+func EvalBucketPredicate(bucketArguments common.StorageClientCredentialArguments, preOperator *StringComparisonOperator, predicate schema.Expression, variables map[string]any) (*PredicateEvaluator, error) {
 	result := &PredicateEvaluator{
 		StorageClientCredentialArguments: bucketArguments,
 		Include:                          common.StorageObjectIncludeOptions{},
 		variables:                        variables,
 	}
 
-	if prefix != "" {
-		result.BucketPredicate.Pre = &StringComparisonOperator{
-			Value:    prefix,
-			Operator: OperatorStartsWith,
-		}
+	if preOperator != nil {
+		result.BucketPredicate.Pre = preOperator
 	}
 
 	if len(predicate) > 0 {

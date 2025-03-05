@@ -81,7 +81,7 @@ func FunctionStorageDeletedObjects(ctx context.Context, state *types.State, args
 // FunctionStorageObject fetches metadata of an object.
 func FunctionStorageObject(ctx context.Context, state *types.State, args *common.GetStorageObjectArguments) (*common.StorageObject, error) {
 	request, err := collection.EvalObjectPredicate(args.StorageBucketArguments, &collection.StringComparisonOperator{
-		Value:    args.Object,
+		Value:    args.Name,
 		Operator: collection.OperatorEqual,
 	}, args.Where, types.QueryVariablesFromContext(ctx))
 	if err != nil {
@@ -142,7 +142,7 @@ func FunctionDownloadStorageObjectAsText(ctx context.Context, state *types.State
 
 func downloadStorageObject(ctx context.Context, state *types.State, args *common.GetStorageObjectArguments) (io.ReadCloser, error) {
 	request, err := collection.EvalObjectPredicate(args.StorageBucketArguments, &collection.StringComparisonOperator{
-		Value:    args.Object,
+		Value:    args.Name,
 		Operator: collection.OperatorEqual,
 	}, args.Where, types.QueryVariablesFromContext(ctx))
 	if err != nil {
@@ -162,7 +162,7 @@ func downloadStorageObject(ctx context.Context, state *types.State, args *common
 // The maximum expiry is 604800 seconds (i.e. 7 days) and minimum is 1 second.
 func FunctionStoragePresignedDownloadUrl(ctx context.Context, state *types.State, args *common.PresignedGetStorageObjectArguments) (*common.PresignedURLResponse, error) {
 	request, err := collection.EvalObjectPredicate(args.StorageBucketArguments, &collection.StringComparisonOperator{
-		Value:    args.Object,
+		Value:    args.Name,
 		Operator: collection.OperatorEqual,
 	}, args.Where, types.QueryVariablesFromContext(ctx))
 	if err != nil {
@@ -182,7 +182,7 @@ func FunctionStoragePresignedDownloadUrl(ctx context.Context, state *types.State
 // The default expiry is set to 7 days.
 func FunctionStoragePresignedUploadUrl(ctx context.Context, state *types.State, args *common.PresignedPutStorageObjectArguments) (*common.PresignedURLResponse, error) {
 	request, err := collection.EvalObjectPredicate(args.StorageBucketArguments, &collection.StringComparisonOperator{
-		Value:    args.Object,
+		Value:    args.Name,
 		Operator: collection.OperatorEqual,
 	}, args.Where, types.QueryVariablesFromContext(ctx))
 	if err != nil {
@@ -209,7 +209,7 @@ func ProcedureUploadStorageObjectAsBase64(ctx context.Context, state *types.Stat
 
 func uploadStorageObject(ctx context.Context, state *types.State, args *common.PutStorageObjectArguments, data []byte) (common.StorageUploadInfo, error) {
 	request, err := collection.EvalObjectPredicate(args.StorageBucketArguments, &collection.StringComparisonOperator{
-		Value:    args.Object,
+		Value:    args.Name,
 		Operator: collection.OperatorEqual,
 	}, args.Where, types.QueryVariablesFromContext(ctx))
 	if err != nil {
@@ -236,7 +236,7 @@ func ProcedureUploadStorageObjectAsText(ctx context.Context, state *types.State,
 // ProcedureUploadStorageObjectFromURL uploads an object from a remote file that is downloaded from an HTTP URL. The HTTP clients download the file and upload it to the storage bucket.
 func ProcedureUploadStorageObjectFromURL(ctx context.Context, state *types.State, args *common.UploadStorageObjectFromURLArguments) (common.StorageUploadInfo, error) {
 	request, err := collection.EvalObjectPredicate(args.StorageBucketArguments, &collection.StringComparisonOperator{
-		Value:    args.Object,
+		Value:    args.Name,
 		Operator: collection.OperatorEqual,
 	}, args.Where, types.QueryVariablesFromContext(ctx))
 	if err != nil {
@@ -280,7 +280,7 @@ func ProcedureComposeStorageObject(ctx context.Context, state *types.State, args
 // ProcedureUpdateStorageObject updates the object's configuration.
 func ProcedureUpdateStorageObject(ctx context.Context, state *types.State, args *common.UpdateStorageObjectArguments) (SuccessResponse, error) {
 	request, err := collection.EvalObjectPredicate(args.StorageBucketArguments, &collection.StringComparisonOperator{
-		Value:    args.Object,
+		Value:    args.Name,
 		Operator: collection.OperatorEqual,
 	}, args.Where, types.QueryVariablesFromContext(ctx))
 	if err != nil {
@@ -301,7 +301,7 @@ func ProcedureUpdateStorageObject(ctx context.Context, state *types.State, args 
 // ProcedureRemoveStorageObject removes an object with some specified options.
 func ProcedureRemoveStorageObject(ctx context.Context, state *types.State, args *common.RemoveStorageObjectArguments) (SuccessResponse, error) {
 	request, err := collection.EvalObjectPredicate(args.StorageBucketArguments, &collection.StringComparisonOperator{
-		Value:    args.Object,
+		Value:    args.Name,
 		Operator: collection.OperatorEqual,
 	}, args.Where, types.QueryVariablesFromContext(ctx))
 	if err != nil {
@@ -357,7 +357,7 @@ func ProcedureRemoveIncompleteStorageUpload(ctx context.Context, state *types.St
 // ProcedureRestoreStorageObject restore a soft-deleted object.
 func ProcedureRestoreStorageObject(ctx context.Context, state *types.State, args *common.RestoreStorageObjectArguments) (SuccessResponse, error) {
 	request, err := collection.EvalObjectPredicate(args.StorageBucketArguments, &collection.StringComparisonOperator{
-		Value:    args.Object,
+		Value:    args.Name,
 		Operator: collection.OperatorEqual,
 	}, args.Where, types.QueryVariablesFromContext(ctx))
 	if err != nil {
