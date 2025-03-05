@@ -74,6 +74,10 @@ func (m *Manager) GetBucket(ctx context.Context, bucketInfo *common.StorageBucke
 		return nil, err
 	}
 
+	if result == nil {
+		return nil, nil
+	}
+
 	result.ClientID = string(client.id)
 
 	return result, nil
