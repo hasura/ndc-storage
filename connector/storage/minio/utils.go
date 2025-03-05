@@ -16,6 +16,7 @@ import (
 	"go.opentelemetry.io/otel/trace"
 )
 
+const objectNotFoundErrorCode = "NoSuchKey"
 const userMetadataHeaderPrefix = "x-amz-meta-"
 
 func serializeGrant(grant minio.Grant) common.StorageGrant {
@@ -619,7 +620,7 @@ func evalMinioErrorResponse(err minio.ErrorResponse) *schema.ConnectorError {
 	return schema.UnprocessableContentError(err.Message, details)
 }
 
-func serializeErrorResponse(err error) *schema.ConnectorError {
+func serializeErrorResponse(err error) error {
 	var errResponse minio.ErrorResponse
 	if errors.As(err, &errResponse) {
 		return evalMinioErrorResponse(errResponse)
@@ -633,7 +634,7 @@ func serializeErrorResponse(err error) *schema.ConnectorError {
 	return schema.UnprocessableContentError(err.Error(), nil)
 }
 
-func evalNotFoundError(err error, notFoundCode string) *schema.ConnectorError {
+func evalNotFoundError(err error, notFoundCode string) error {
 	var errResponse minio.ErrorResponse
 	if !errors.As(err, &errResponse) {
 		errRespPtr := &errResponse

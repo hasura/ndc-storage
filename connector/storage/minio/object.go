@@ -208,7 +208,7 @@ func (mc *Client) GetObject(ctx context.Context, bucketName, objectName string, 
 		span.SetStatus(codes.Error, err.Error())
 		span.RecordError(err)
 
-		return nil, serializeErrorResponse(err)
+		return nil, evalNotFoundError(err, objectNotFoundErrorCode)
 	}
 
 	return object, nil
@@ -356,7 +356,7 @@ func (mc *Client) StatObject(ctx context.Context, bucketName, objectName string,
 		span.SetStatus(codes.Error, err.Error())
 		span.RecordError(err)
 
-		return nil, serializeErrorResponse(err)
+		return nil, evalNotFoundError(err, objectNotFoundErrorCode)
 	}
 
 	result := serializeObjectInfo(&object, false)
