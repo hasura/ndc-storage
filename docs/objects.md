@@ -10,7 +10,7 @@ Input the object path and the optional expiry of the pre-signed URL (if the `def
 
 ```gql
 query PresignedUploadUrl {
-  storagePresignedUploadUrl(object: "hello.txt", expiry: "1h") {
+  storagePresignedUploadUrl(name: "hello.txt", expiry: "1h") {
     url
     expiredAt
   }
@@ -22,11 +22,15 @@ query PresignedUploadUrl {
 
 ### Direct Upload
 
+> [!NOTE]
+> The connector limits the maximum upload size via the `runtime.maxUploadSizeMBs` setting to avoid memory leaks.
+> Note that the file content is encoded to base64 string so the request body is 33% increased. For example, if the file size is 20 MB the request size will be 30 MB.
+
 The object data must be encoded as a base64 string.
 
 ```gql
 mutation UploadObject {
-  uploadStorageObjectAsBase64(object: "hello.txt", data: "SGVsbG8gd29ybGQK") {
+  uploadStorageObjectAsBase64(name: "hello.txt", data: "SGVsbG8gd29ybGQK") {
     bucket
     name
     size
@@ -37,15 +41,37 @@ mutation UploadObject {
 
 ### Upload Text Objects
 
+> [!NOTE]
+> The connector limits the maximum upload size via the `runtime.maxUploadSizeMBs` setting to avoid memory leaks.
+
 Use the `uploadStorageObjectAsText` mutation if you are confident that the object content is plain text. The request size is less than the base64-encoded string by 30%.
 
 ```gql
 mutation UploadObjectText {
-  uploadStorageObjectAsText(object: "hello2.txt", data: "Hello World") {
+  uploadStorageObjectAsText(name: "hello2.txt", data: "Hello World") {
     bucket
     name
     size
     etag
+  }
+}
+```
+
+### Upload From a URL
+
+> [!NOTE]
+> The connector limits the maximum upload size via the `runtime.maxUploadSizeMBs` setting to avoid memory leaks.
+
+The connector will download the file from the `url` argument via HTTP protocol and upload it to the storage service.
+
+```gql
+mutation UploadObjectFromURL {
+  uploadStorageObjectFromUrl(
+    name: "hello2.txt"
+    url: "https://example.local/hello.txt"
+  ) {
+    name
+    size
   }
 }
 ```
@@ -60,7 +86,7 @@ Input the object path and the optional expiry of the pre-signed URL (if the `def
 
 ```gql
 query GetSignedDownloadURL {
-  storagePresignedDownloadUrl(object: "hello.txt", expiry: "1h") {
+  storagePresignedDownloadUrl(name: "hello.txt", expiry: "1h") {
     url
     expiredAt
   }
@@ -80,7 +106,7 @@ The response is a base64-encode string. The client must decode the string to get
 
 ```gql
 query DownloadObject {
-  downloadStorageObjectAsBase64(object: "hello.txt") {
+  downloadStorageObjectAsBase64(name: "hello.txt") {
     data
   }
 }
@@ -103,7 +129,7 @@ Use the `downloadStorageObjectAsText` query if you are confident that the object
 
 ```gql
 query DownloadObjectAsText {
-  downloadStorageObjectAsText(object: "hello.txt") {
+  downloadStorageObjectAsText(name: "hello.txt") {
     data
   }
 }
@@ -232,7 +258,7 @@ mutation UploadObject {
   uploadStorageObject(
     clientId: "gs"
     bucket: "other-bucket"
-    object: "hello.txt"
+    name: "hello.txt"
     data: "SGVsbG8gd29ybGQK"
   ) {
     bucket
