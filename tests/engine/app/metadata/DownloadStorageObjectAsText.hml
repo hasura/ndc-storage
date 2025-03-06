@@ -6,7 +6,7 @@ definition:
   description: represents the object data response in string format.
   fields:
     - name: data
-      type: String
+      type: String!
   graphql:
     typeName: DownloadStorageObjectTextResponse
     inputTypeName: DownloadStorageObjectTextResponseInput
@@ -30,7 +30,7 @@ kind: Command
 version: v1
 definition:
   name: DownloadStorageObjectAsText
-  outputType: DownloadStorageObjectTextResponse!
+  outputType: DownloadStorageObjectTextResponse
   arguments:
     - name: accessKeyId
       type: String

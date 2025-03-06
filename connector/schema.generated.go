@@ -88,7 +88,7 @@ func GetConnectorSchema() *schema.SchemaResponse {
 				Description: toPtr("represents the object data response in base64-encode string format."),
 				Fields: schema.ObjectTypeFields{
 					"data": schema.ObjectField{
-						Type: schema.NewNullableType(schema.NewNamedType("Bytes")).Encode(),
+						Type: schema.NewNamedType("Bytes").Encode(),
 					},
 				},
 			},
@@ -96,7 +96,7 @@ func GetConnectorSchema() *schema.SchemaResponse {
 				Description: toPtr("represents the object data response in string format."),
 				Fields: schema.ObjectTypeFields{
 					"data": schema.ObjectField{
-						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
+						Type: schema.NewNamedType("String").Encode(),
 					},
 				},
 			},
@@ -1286,7 +1286,7 @@ func GetConnectorSchema() *schema.SchemaResponse {
 			{
 				Name:        "downloadStorageObjectAsBase64",
 				Description: toPtr("returns a stream of the object data. Most of the common errors occur when reading the stream."),
-				ResultType:  schema.NewNamedType("DownloadStorageObjectResponse").Encode(),
+				ResultType:  schema.NewNullableType(schema.NewNamedType("DownloadStorageObjectResponse")).Encode(),
 				Arguments: map[string]schema.ArgumentInfo{
 					"accessKeyId": {
 						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
@@ -1329,7 +1329,7 @@ func GetConnectorSchema() *schema.SchemaResponse {
 			{
 				Name:        "downloadStorageObjectAsText",
 				Description: toPtr("returns the object content in plain text. Use this function only if you know exactly the file as an text file."),
-				ResultType:  schema.NewNamedType("DownloadStorageObjectTextResponse").Encode(),
+				ResultType:  schema.NewNullableType(schema.NewNamedType("DownloadStorageObjectTextResponse")).Encode(),
 				Arguments: map[string]schema.ArgumentInfo{
 					"accessKeyId": {
 						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),

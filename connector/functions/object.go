@@ -103,41 +103,49 @@ func FunctionStorageObject(ctx context.Context, state *types.State, args *common
 }
 
 // FunctionDownloadStorageObjectAsBase64 returns a stream of the object data. Most of the common errors occur when reading the stream.
-func FunctionDownloadStorageObjectAsBase64(ctx context.Context, state *types.State, args *common.GetStorageObjectArguments) (DownloadStorageObjectResponse, error) {
+func FunctionDownloadStorageObjectAsBase64(ctx context.Context, state *types.State, args *common.GetStorageObjectArguments) (*DownloadStorageObjectResponse, error) {
 	reader, err := downloadStorageObject(ctx, state, args)
 	if err != nil {
-		return DownloadStorageObjectResponse{}, err
+		return nil, err
+	}
+
+	if reader == nil {
+		return nil, nil
 	}
 
 	defer reader.Close()
 
 	data, err := io.ReadAll(reader)
 	if err != nil {
-		return DownloadStorageObjectResponse{}, schema.InternalServerError(err.Error(), nil)
+		return nil, schema.InternalServerError(err.Error(), nil)
 	}
 
 	dataBytes := scalar.NewBytes(data)
 
-	return DownloadStorageObjectResponse{Data: dataBytes}, nil
+	return &DownloadStorageObjectResponse{Data: *dataBytes}, nil
 }
 
 // FunctionDownloadStorageObjectAsText returns the object content in plain text. Use this function only if you know exactly the file as an text file.
-func FunctionDownloadStorageObjectAsText(ctx context.Context, state *types.State, args *common.GetStorageObjectArguments) (DownloadStorageObjectTextResponse, error) {
+func FunctionDownloadStorageObjectAsText(ctx context.Context, state *types.State, args *common.GetStorageObjectArguments) (*DownloadStorageObjectTextResponse, error) {
 	reader, err := downloadStorageObject(ctx, state, args)
 	if err != nil {
-		return DownloadStorageObjectTextResponse{}, err
+		return nil, err
+	}
+
+	if reader == nil {
+		return nil, nil
 	}
 
 	defer reader.Close()
 
 	data, err := io.ReadAll(reader)
 	if err != nil {
-		return DownloadStorageObjectTextResponse{}, schema.InternalServerError(err.Error(), nil)
+		return nil, schema.InternalServerError(err.Error(), nil)
 	}
 
 	dataStr := string(data)
 
-	return DownloadStorageObjectTextResponse{Data: &dataStr}, nil
+	return &DownloadStorageObjectTextResponse{Data: dataStr}, nil
 }
 
 func downloadStorageObject(ctx context.Context, state *types.State, args *common.GetStorageObjectArguments) (io.ReadCloser, error) {

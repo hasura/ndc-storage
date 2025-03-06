@@ -255,19 +255,15 @@ definition:
           fields:
             data:
               type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: Bytes
+                type: named
+                name: Bytes
         DownloadStorageObjectTextResponse:
           description: represents the object data response in string format.
           fields:
             data:
               type:
-                type: nullable
-                underlying_type:
-                  type: named
-                  name: String
+                type: named
+                name: String
         ExistsResponse:
           description: represents a common existing response structure.
           fields:
@@ -2415,8 +2411,10 @@ definition:
                   type: named
                   name: String
           result_type:
-            type: named
-            name: DownloadStorageObjectResponse
+            type: nullable
+            underlying_type:
+              type: named
+              name: DownloadStorageObjectResponse
         - name: downloadStorageObjectAsText
           description: returns the object content in plain text. Use this function only if you know exactly the file as an text file.
           arguments:
@@ -2489,8 +2487,10 @@ definition:
                   type: named
                   name: String
           result_type:
-            type: named
-            name: DownloadStorageObjectTextResponse
+            type: nullable
+            underlying_type:
+              type: named
+              name: DownloadStorageObjectTextResponse
         - name: storageBucket
           description: gets a bucket by name.
           arguments:
