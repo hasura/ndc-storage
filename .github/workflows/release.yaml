@@ -80,7 +80,7 @@ jobs:
 
       - uses: actions/upload-artifact@v4
         with:
-          path: release/ndc-storage-*
+          path: release/hasura-ndc-storage-*
           if-no-files-found: error
           name: artifact
 
