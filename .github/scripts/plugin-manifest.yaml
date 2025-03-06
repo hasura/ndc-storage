@@ -7,35 +7,35 @@ platforms:
   - selector: darwin-arm64
     uri: "https://github.com/hasura/ndc-storage/releases/download/${CLI_VERSION}/ndc-storage-darwin-arm64"
     sha256: "${MACOS_ARM64_SHA256}"
-    bin: "ndc-storage"
+    bin: "hasura-ndc-storage"
     files:
       - from: "./ndc-storage-darwin-arm64"
-        to: "ndc-storage"
+        to: "hasura-ndc-storage"
   - selector: linux-arm64
     uri: "https://github.com/hasura/ndc-storage/releases/download/${CLI_VERSION}/ndc-storage-linux-arm64"
     sha256: "${LINUX_ARM64_SHA256}"
-    bin: "ndc-storage"
+    bin: "hasura-ndc-storage"
     files:
       - from: "./ndc-storage-linux-arm64"
-        to: "ndc-storage"
+        to: "hasura-ndc-storage"
   - selector: darwin-amd64
     uri: "https://github.com/hasura/ndc-storage/releases/download/${CLI_VERSION}/ndc-storage-darwin-amd64"
     sha256: "${MACOS_AMD64_SHA256}"
-    bin: "ndc-storage"
+    bin: "hasura-ndc-storage"
     files:
       - from: "./ndc-storage-darwin-amd64"
-        to: "ndc-storage"
+        to: "hasura-ndc-storage"
   - selector: windows-amd64
     uri: "https://github.com/hasura/ndc-storage/releases/download/${CLI_VERSION}/ndc-storage-windows-amd64.exe"
     sha256: "${WINDOWS_AMD64_SHA256}"
-    bin: "ndc-storage.exe"
+    bin: "hasura-ndc-storage.exe"
     files:
       - from: "./ndc-storage-windows-amd64.exe"
-        to: "ndc-storage.exe"
+        to: "hasura-ndc-storage.exe"
   - selector: linux-amd64
     uri: "https://github.com/hasura/ndc-storage/releases/download/${CLI_VERSION}/ndc-storage-linux-amd64"
     sha256: "${LINUX_AMD64_SHA256}"
-    bin: "ndc-storage"
+    bin: "hasura-ndc-storage"
     files:
       - from: "./ndc-storage-linux-amd64"
-        to: "ndc-storage"
+        to: "hasura-ndc-storage"

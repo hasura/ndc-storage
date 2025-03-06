@@ -16,10 +16,10 @@ supportedEnvironmentVariables:
     description: The default bucket to be used. If not set the client must input the bucket in input arguments
     required: false
 commands:
-  update: ndc-storage update
-  upgradeConfiguration: ndc-storage version
+  update: hasura-ndc-storage update
+  upgradeConfiguration: hasura-ndc-storage version
 cliPlugin:
-  name: ndc-storage
+  name: hasura-ndc-storage
   version: "{{VERSION}}"
 dockerComposeWatch:
   # copy config files into the existing container and restart it
