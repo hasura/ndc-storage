@@ -195,6 +195,10 @@ func (m *Manager) statObject(ctx context.Context, client *Client, bucketName, ob
 		return nil, err
 	}
 
+	if result == nil {
+		return nil, nil
+	}
+
 	result.ClientID = string(client.id)
 	result.Bucket = bucketName
 

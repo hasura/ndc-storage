@@ -37,12 +37,12 @@ type ExistsResponse struct {
 
 // DownloadStorageObjectResponse represents the object data response in base64-encode string format.
 type DownloadStorageObjectResponse struct {
-	Data *scalar.Bytes `json:"data"`
+	Data scalar.Bytes `json:"data"`
 }
 
 // DownloadStorageObjectTextResponse represents the object data response in string format.
 type DownloadStorageObjectTextResponse struct {
-	Data *string `json:"data"`
+	Data string `json:"data"`
 }
 
 // PutStorageObjectArguments represents input arguments of the PutObject method.
