@@ -16,8 +16,10 @@ import (
 	"go.opentelemetry.io/otel/trace"
 )
 
-const objectNotFoundErrorCode = "NoSuchKey"
-const userMetadataHeaderPrefix = "x-amz-meta-"
+const (
+	objectNotFoundErrorCode  = "NoSuchKey"
+	userMetadataHeaderPrefix = "x-amz-meta-"
+)
 
 func serializeGrant(grant minio.Grant) common.StorageGrant {
 	g := common.StorageGrant{}
