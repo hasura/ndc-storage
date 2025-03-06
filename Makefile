@@ -35,7 +35,7 @@ ci-build-configuration: clean
 	go get github.com/mitchellh/gox && \
 	go run github.com/mitchellh/gox -ldflags '-X github.com/hasura/ndc-storage/configuration/version.BuildVersion=$(VERSION) -s -w -extldflags "-static"' \
 		-osarch="linux/amd64 linux/arm64 darwin/amd64 windows/amd64 darwin/arm64" \
-		-output="$(OUTPUT_DIR)/ndc-storage-{{.OS}}-{{.Arch}}" \
+		-output="$(OUTPUT_DIR)/hasura-ndc-storage-{{.OS}}-{{.Arch}}" \
 		./configuration
 
 .PHONY: build-supergraph-test
