@@ -19,7 +19,7 @@ commands:
   update: hasura-ndc-storage update
   upgradeConfiguration: hasura-ndc-storage version
 cliPlugin:
-  name: hasura-ndc-storage
+  name: ndc-storage
   version: "{{VERSION}}"
 dockerComposeWatch:
   # copy config files into the existing container and restart it
