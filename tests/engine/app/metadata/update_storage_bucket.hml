@@ -13,7 +13,7 @@ definition:
       type: Int32
   graphql:
     typeName: SetStorageObjectLockConfig
-    inputTypeName: SetStorageObjectLockConfigInput
+    inputTypeName: SetStorageObjectLockConfig_input
   dataConnectorTypeMapping:
     - dataConnectorName: storage
       dataConnectorObjectType: SetStorageObjectLockConfig
@@ -35,14 +35,14 @@ definition:
 kind: Command
 version: v1
 definition:
-  name: UpdateStorageBucket
+  name: update_storage_bucket
   outputType: SuccessResponse!
   arguments:
-    - name: accessKeyId
+    - name: access_key_id
       type: String
-    - name: clientId
-      type: StorageClientId
-    - name: clientType
+    - name: client_id
+      type: StorageClientID
+    - name: client_type
       type: StorageProviderType
     - name: encryption
       type: ServerSideEncryptionConfiguration
@@ -52,20 +52,20 @@ definition:
       type: ObjectLifecycleConfiguration
     - name: name
       type: String!
-    - name: objectLock
+    - name: object_lock
       type: SetStorageObjectLockConfig
-    - name: secretAccessKey
+    - name: secret_access_key
       type: String
     - name: tags
       type: "[StorageKeyValue!]"
-    - name: versioningEnabled
+    - name: versioning_enabled
       type: Boolean
   source:
     dataConnectorName: storage
     dataConnectorCommand:
-      procedure: updateStorageBucket
+      procedure: update_storage_bucket
   graphql:
-    rootFieldName: updateStorageBucket
+    rootFieldName: update_storage_bucket
     rootFieldKind: Mutation
   description: updates the bucket's configuration.
 
@@ -73,7 +73,7 @@ definition:
 kind: CommandPermissions
 version: v1
 definition:
-  commandName: UpdateStorageBucket
+  commandName: update_storage_bucket
   permissions:
     - role: admin
       allowExecution: true

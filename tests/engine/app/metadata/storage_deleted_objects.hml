@@ -11,7 +11,7 @@ definition:
       type: StoragePaginationInfo!
   graphql:
     typeName: StorageObjectListResults
-    inputTypeName: StorageObjectListResultsInput
+    inputTypeName: StorageObjectListResults_input
   dataConnectorTypeMapping:
     - dataConnectorName: storage
       dataConnectorObjectType: StorageObjectListResults
@@ -32,35 +32,35 @@ definition:
 kind: Command
 version: v1
 definition:
-  name: StorageDeletedObjects
+  name: storage_deleted_objects
   outputType: StorageObjectListResults!
   arguments:
-    - name: accessKeyId
+    - name: access_key_id
       type: String
     - name: after
       type: String
     - name: bucket
       type: String
-    - name: clientId
-      type: StorageClientId
-    - name: clientType
+    - name: client_id
+      type: StorageClientID
+    - name: client_type
       type: StorageProviderType
     - name: endpoint
       type: String
     - name: first
       type: Int32
-    - name: hierarchy
-      type: Boolean
     - name: prefix
       type: String
-    - name: secretAccessKey
+    - name: recursive
+      type: Boolean
+    - name: secret_access_key
       type: String
   source:
     dataConnectorName: storage
     dataConnectorCommand:
-      function: storageDeletedObjects
+      function: storage_deleted_objects
   graphql:
-    rootFieldName: storageDeletedObjects
+    rootFieldName: storage_deleted_objects
     rootFieldKind: Query
   description: list deleted objects in a bucket.
 
@@ -68,7 +68,7 @@ definition:
 kind: CommandPermissions
 version: v1
 definition:
-  commandName: StorageDeletedObjects
+  commandName: storage_deleted_objects
   permissions:
     - role: admin
       allowExecution: true

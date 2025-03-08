@@ -9,7 +9,7 @@ definition:
       type: Boolean!
   graphql:
     typeName: SuccessResponse
-    inputTypeName: SuccessResponseInput
+    inputTypeName: SuccessResponse_input
   dataConnectorTypeMapping:
     - dataConnectorName: storage
       dataConnectorObjectType: SuccessResponse
@@ -29,33 +29,33 @@ definition:
 kind: Command
 version: v1
 definition:
-  name: CreateStorageBucket
+  name: create_storage_bucket
   outputType: SuccessResponse!
   arguments:
-    - name: accessKeyId
+    - name: access_key_id
       type: String
-    - name: clientId
-      type: StorageClientId
-    - name: clientType
+    - name: client_id
+      type: StorageClientID
+    - name: client_type
       type: StorageProviderType
     - name: endpoint
       type: String
     - name: name
       type: String!
-    - name: objectLock
+    - name: object_lock
       type: Boolean
     - name: region
       type: String
-    - name: secretAccessKey
+    - name: secret_access_key
       type: String
     - name: tags
       type: "[StorageKeyValue!]"
   source:
     dataConnectorName: storage
     dataConnectorCommand:
-      procedure: createStorageBucket
+      procedure: create_storage_bucket
   graphql:
-    rootFieldName: createStorageBucket
+    rootFieldName: create_storage_bucket
     rootFieldKind: Mutation
   description: creates a new bucket.
 
@@ -63,7 +63,7 @@ definition:
 kind: CommandPermissions
 version: v1
 definition:
-  commandName: CreateStorageBucket
+  commandName: create_storage_bucket
   permissions:
     - role: admin
       allowExecution: true

@@ -13,7 +13,7 @@
                   {
                     "entity": "projectOwner-test-project",
                     "role": "OWNER",
-                    "projectTeam": {}
+                    "project_team": {}
                   }
                 ],
                 "archive_status": null,

@@ -2,27 +2,27 @@
 kind: Command
 version: v1
 definition:
-  name: StorageBucket
+  name: storage_bucket
   outputType: StorageBucket
   arguments:
-    - name: accessKeyId
+    - name: access_key_id
       type: String
-    - name: clientId
-      type: StorageClientId
-    - name: clientType
+    - name: client_id
+      type: StorageClientID
+    - name: client_type
       type: StorageProviderType
     - name: endpoint
       type: String
     - name: name
       type: String!
-    - name: secretAccessKey
+    - name: secret_access_key
       type: String
   source:
     dataConnectorName: storage
     dataConnectorCommand:
-      function: storageBucket
+      function: storage_bucket
   graphql:
-    rootFieldName: storageBucket
+    rootFieldName: storage_bucket
     rootFieldKind: Query
   description: gets a bucket by name.
 
@@ -30,7 +30,7 @@ definition:
 kind: CommandPermissions
 version: v1
 definition:
-  commandName: StorageBucket
+  commandName: storage_bucket
   permissions:
     - role: admin
       allowExecution: true

@@ -1284,7 +1284,7 @@ func GetConnectorSchema() *schema.SchemaResponse {
 		},
 		Functions: []schema.FunctionInfo{
 			{
-				Name:        "download_storage_object_as_base_64",
+				Name:        "download_storage_object_as_base64",
 				Description: toPtr("returns a stream of the object data. Most of the common errors occur when reading the stream."),
 				ResultType:  schema.NewNullableType(schema.NewNamedType("DownloadStorageObjectResponse")).Encode(),
 				Arguments: map[string]schema.ArgumentInfo{
@@ -2012,7 +2012,7 @@ func GetConnectorSchema() *schema.SchemaResponse {
 				},
 			},
 			{
-				Name:        "upload_storage_object_as_base_64",
+				Name:        "upload_storage_object_as_base64",
 				Description: toPtr("uploads object that are less than 128MiB in a single PUT operation. For objects that are greater than 128MiB in size, PutObject seamlessly uploads the object as parts of 128MiB or more depending on the actual file size. The max upload size for an object is 5TB."),
 				ResultType:  schema.NewNamedType("StorageUploadInfo").Encode(),
 				Arguments: map[string]schema.ArgumentInfo{

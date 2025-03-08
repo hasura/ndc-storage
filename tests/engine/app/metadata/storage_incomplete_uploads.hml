@@ -6,18 +6,18 @@ definition:
   description: container for multipart object metadata.
   fields:
     - name: initiated
-      type: TimestampTz
+      type: TimestampTZ
     - name: name
       type: String
     - name: size
       type: Int64
-    - name: storageClass
+    - name: storage_class
       type: String
-    - name: uploadId
+    - name: upload_id
       type: String
   graphql:
     typeName: StorageObjectMultipartInfo
-    inputTypeName: StorageObjectMultipartInfoInput
+    inputTypeName: StorageObjectMultipartInfo_input
   dataConnectorTypeMapping:
     - dataConnectorName: storage
       dataConnectorObjectType: StorageObjectMultipartInfo
@@ -34,36 +34,36 @@ definition:
           - initiated
           - name
           - size
-          - storageClass
-          - uploadId
+          - storage_class
+          - upload_id
 
 ---
 kind: Command
 version: v1
 definition:
-  name: StorageIncompleteUploads
+  name: storage_incomplete_uploads
   outputType: "[StorageObjectMultipartInfo!]!"
   arguments:
-    - name: accessKeyId
+    - name: access_key_id
       type: String
     - name: bucket
       type: String
-    - name: clientId
-      type: StorageClientId
-    - name: clientType
+    - name: client_id
+      type: StorageClientID
+    - name: client_type
       type: StorageProviderType
     - name: endpoint
       type: String
     - name: prefix
       type: String
-    - name: secretAccessKey
+    - name: secret_access_key
       type: String
   source:
     dataConnectorName: storage
     dataConnectorCommand:
-      function: storageIncompleteUploads
+      function: storage_incomplete_uploads
   graphql:
-    rootFieldName: storageIncompleteUploads
+    rootFieldName: storage_incomplete_uploads
     rootFieldKind: Query
   description: list partially uploaded objects in a bucket.
 
@@ -71,7 +71,7 @@ definition:
 kind: CommandPermissions
 version: v1
 definition:
-  commandName: StorageIncompleteUploads
+  commandName: storage_incomplete_uploads
   permissions:
     - role: admin
       allowExecution: true

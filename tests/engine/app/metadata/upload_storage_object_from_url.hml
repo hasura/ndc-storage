@@ -2,39 +2,39 @@
 kind: Command
 version: v1
 definition:
-  name: UploadStorageObjectFromUrl
+  name: upload_storage_object_from_url
   outputType: StorageUploadInfo!
   arguments:
-    - name: accessKeyId
+    - name: access_key_id
       type: String
-    - name: bodyText
+    - name: body_text
       type: String
     - name: bucket
       type: String
-    - name: clientId
-      type: StorageClientId
-    - name: clientType
+    - name: client_id
+      type: StorageClientID
+    - name: client_type
       type: StorageProviderType
     - name: endpoint
       type: String
     - name: headers
       type: "[StorageKeyValue!]"
     - name: method
-      type: DownloadHttpMethod
+      type: DownloadHTTPMethod
     - name: name
       type: String!
     - name: options
       type: PutStorageObjectOptions
-    - name: secretAccessKey
+    - name: secret_access_key
       type: String
     - name: url
       type: String!
   source:
     dataConnectorName: storage
     dataConnectorCommand:
-      procedure: uploadStorageObjectFromUrl
+      procedure: upload_storage_object_from_url
   graphql:
-    rootFieldName: uploadStorageObjectFromUrl
+    rootFieldName: upload_storage_object_from_url
     rootFieldKind: Mutation
   description: uploads an object from a remote file that is downloaded from an
     HTTP URL. The HTTP clients download the file and upload it to the storage
@@ -44,7 +44,7 @@ definition:
 kind: CommandPermissions
 version: v1
 definition:
-  commandName: UploadStorageObjectFromUrl
+  commandName: upload_storage_object_from_url
   permissions:
     - role: admin
       allowExecution: true

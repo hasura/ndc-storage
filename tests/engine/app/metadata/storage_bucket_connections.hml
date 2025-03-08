@@ -2,57 +2,7 @@
 kind: ObjectType
 version: v1
 definition:
-  name: StorageBucketFilter
-  fields:
-    - name: clientId
-      type: StorageClientId!
-    - name: name
-      type: StorageStringFilter!
-  graphql:
-    typeName: StorageBucketFilter
-    inputTypeName: StorageBucketFilterInput
-  dataConnectorTypeMapping:
-    - dataConnectorName: storage
-      dataConnectorObjectType: StorageBucketFilter
-
----
-kind: TypePermissions
-version: v1
-definition:
-  typeName: StorageBucketFilter
-  permissions:
-    - role: admin
-      output:
-        allowedFields:
-          - clientId
-          - name
-
----
-kind: BooleanExpressionType
-version: v1
-definition:
-  name: StorageBucketFilterBoolExp
-  operand:
-    object:
-      type: StorageBucketFilter
-      comparableFields:
-        - fieldName: clientId
-          booleanExpressionType: StorageClientIdBoolExp
-        - fieldName: name
-          booleanExpressionType: StorageStringFilterBoolExp
-      comparableRelationships: []
-  logicalOperators:
-    enable: true
-  isNull:
-    enable: true
-  graphql:
-    typeName: StorageBucketFilterBoolExp
-
----
-kind: ObjectType
-version: v1
-definition:
-  name: StorageConnectionEdgeStorageBucket
+  name: StorageConnectionEdge_StorageBucket
   description: the connection information of the relay pagination response.
   fields:
     - name: cursor
@@ -60,8 +10,8 @@ definition:
     - name: node
       type: StorageBucket!
   graphql:
-    typeName: StorageConnectionEdgeStorageBucket
-    inputTypeName: StorageConnectionEdgeStorageBucketInput
+    typeName: StorageConnectionEdge_StorageBucket
+    inputTypeName: StorageConnectionEdge_StorageBucket_input
   dataConnectorTypeMapping:
     - dataConnectorName: storage
       dataConnectorObjectType: StorageConnectionEdge_StorageBucket
@@ -70,7 +20,7 @@ definition:
 kind: TypePermissions
 version: v1
 definition:
-  typeName: StorageConnectionEdgeStorageBucket
+  typeName: StorageConnectionEdge_StorageBucket
   permissions:
     - role: admin
       output:
@@ -89,7 +39,7 @@ definition:
       type: Boolean!
   graphql:
     typeName: StoragePaginationInfo
-    inputTypeName: StoragePaginationInfoInput
+    inputTypeName: StoragePaginationInfo_input
   dataConnectorTypeMapping:
     - dataConnectorName: storage
       dataConnectorObjectType: StoragePaginationInfo
@@ -109,15 +59,15 @@ definition:
 kind: ObjectType
 version: v1
 definition:
-  name: StorageConnectionStorageBucket
+  name: StorageConnection_StorageBucket
   fields:
     - name: edges
-      type: "[StorageConnectionEdgeStorageBucket!]!"
+      type: "[StorageConnectionEdge_StorageBucket!]!"
     - name: pageInfo
       type: StoragePaginationInfo!
   graphql:
-    typeName: StorageConnectionStorageBucket
-    inputTypeName: StorageConnectionStorageBucketInput
+    typeName: StorageConnection_StorageBucket
+    inputTypeName: StorageConnection_StorageBucket_input
   dataConnectorTypeMapping:
     - dataConnectorName: storage
       dataConnectorObjectType: StorageConnection_StorageBucket
@@ -126,7 +76,7 @@ definition:
 kind: TypePermissions
 version: v1
 definition:
-  typeName: StorageConnectionStorageBucket
+  typeName: StorageConnection_StorageBucket
   permissions:
     - role: admin
       output:
@@ -138,16 +88,16 @@ definition:
 kind: Command
 version: v1
 definition:
-  name: StorageBucketConnections
-  outputType: StorageConnectionStorageBucket!
+  name: storage_bucket_connections
+  outputType: StorageConnection_StorageBucket!
   arguments:
-    - name: accessKeyId
+    - name: access_key_id
       type: String
     - name: after
       type: String
-    - name: clientId
-      type: StorageClientId
-    - name: clientType
+    - name: client_id
+      type: StorageClientID
+    - name: client_type
       type: StorageProviderType
     - name: endpoint
       type: String
@@ -155,16 +105,14 @@ definition:
       type: Int32
     - name: prefix
       type: String
-    - name: secretAccessKey
+    - name: secret_access_key
       type: String
-    - name: where
-      type: StorageBucketFilterBoolExp
   source:
     dataConnectorName: storage
     dataConnectorCommand:
-      function: storageBucketConnections
+      function: storage_bucket_connections
   graphql:
-    rootFieldName: storageBucketConnections
+    rootFieldName: storage_bucket_connections
     rootFieldKind: Query
   description: list all buckets using the relay style.
 
@@ -172,7 +120,7 @@ definition:
 kind: CommandPermissions
 version: v1
 definition:
-  commandName: StorageBucketConnections
+  commandName: storage_bucket_connections
   permissions:
     - role: admin
       allowExecution: true

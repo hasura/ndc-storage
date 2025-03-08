@@ -24,7 +24,7 @@
           "legal_hold": true,
           "retention": {
             "mode": "Unlocked",
-            "retainUntilDate": "2099-01-01T00:00:02Z"
+            "retain_until_date": "2099-01-01T00:00:02Z"
           },
           "num_threads": 2,
           "part_size": 35739157156577,

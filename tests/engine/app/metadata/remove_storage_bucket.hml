@@ -2,37 +2,35 @@
 kind: Command
 version: v1
 definition:
-  name: RemoveIncompleteStorageUpload
+  name: remove_storage_bucket
   outputType: SuccessResponse!
   arguments:
-    - name: accessKeyId
+    - name: access_key_id
       type: String
-    - name: bucket
-      type: String
-    - name: clientId
-      type: StorageClientId
-    - name: clientType
+    - name: client_id
+      type: StorageClientID
+    - name: client_type
       type: StorageProviderType
     - name: endpoint
       type: String
     - name: name
       type: String!
-    - name: secretAccessKey
+    - name: secret_access_key
       type: String
   source:
     dataConnectorName: storage
     dataConnectorCommand:
-      procedure: removeIncompleteStorageUpload
+      procedure: remove_storage_bucket
   graphql:
-    rootFieldName: removeIncompleteStorageUpload
+    rootFieldName: remove_storage_bucket
     rootFieldKind: Mutation
-  description: removes a partially uploaded object.
+  description: removes a bucket, bucket should be empty to be successfully removed.
 
 ---
 kind: CommandPermissions
 version: v1
 definition:
-  commandName: RemoveIncompleteStorageUpload
+  commandName: remove_storage_bucket
   permissions:
     - role: admin
       allowExecution: true

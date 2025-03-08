@@ -2,16 +2,16 @@
 kind: Command
 version: v1
 definition:
-  name: StoragePresignedUploadUrl
-  outputType: PresignedUrlResponse
+  name: storage_presigned_upload_url
+  outputType: PresignedURLResponse
   arguments:
-    - name: accessKeyId
+    - name: access_key_id
       type: String
     - name: bucket
       type: String
-    - name: clientId
-      type: StorageClientId
-    - name: clientType
+    - name: client_id
+      type: StorageClientID
+    - name: client_type
       type: StorageProviderType
     - name: endpoint
       type: String
@@ -19,14 +19,14 @@ definition:
       type: DurationString
     - name: name
       type: String!
-    - name: secretAccessKey
+    - name: secret_access_key
       type: String
   source:
     dataConnectorName: storage
     dataConnectorCommand:
-      function: storagePresignedUploadUrl
+      function: storage_presigned_upload_url
   graphql:
-    rootFieldName: storagePresignedUploadUrl
+    rootFieldName: storage_presigned_upload_url
     rootFieldKind: Query
   description: generates a presigned URL for HTTP PUT operations. Browsers/Mobile
     clients may point to this URL to upload objects directly to a bucket even if
@@ -38,7 +38,7 @@ definition:
 kind: CommandPermissions
 version: v1
 definition:
-  commandName: StoragePresignedUploadUrl
+  commandName: storage_presigned_upload_url
   permissions:
     - role: admin
       allowExecution: true

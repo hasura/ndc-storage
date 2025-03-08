@@ -5,15 +5,15 @@ definition:
   name: SetStorageObjectRetentionOptions
   description: represents options specified by user for PutObject call.
   fields:
-    - name: governanceBypass
+    - name: governance_bypass
       type: Boolean
     - name: mode
       type: StorageRetentionMode
-    - name: retainUntilDate
-      type: TimestampTz
+    - name: retain_until_date
+      type: TimestampTZ
   graphql:
     typeName: SetStorageObjectRetentionOptions
-    inputTypeName: SetStorageObjectRetentionOptionsInput
+    inputTypeName: SetStorageObjectRetentionOptions_input
   dataConnectorTypeMapping:
     - dataConnectorName: storage
       dataConnectorObjectType: SetStorageObjectRetentionOptions
@@ -27,28 +27,28 @@ definition:
     - role: admin
       output:
         allowedFields:
-          - governanceBypass
+          - governance_bypass
           - mode
-          - retainUntilDate
+          - retain_until_date
 
 ---
 kind: Command
 version: v1
 definition:
-  name: UpdateStorageObject
+  name: update_storage_object
   outputType: SuccessResponse!
   arguments:
-    - name: accessKeyId
+    - name: access_key_id
       type: String
     - name: bucket
       type: String
-    - name: clientId
-      type: StorageClientId
-    - name: clientType
+    - name: client_id
+      type: StorageClientID
+    - name: client_type
       type: StorageProviderType
     - name: endpoint
       type: String
-    - name: legalHold
+    - name: legal_hold
       type: Boolean
     - name: metadata
       type: "[StorageKeyValue!]"
@@ -56,18 +56,18 @@ definition:
       type: String!
     - name: retention
       type: SetStorageObjectRetentionOptions
-    - name: secretAccessKey
+    - name: secret_access_key
       type: String
     - name: tags
       type: "[StorageKeyValue!]"
-    - name: versionId
+    - name: version_id
       type: String
   source:
     dataConnectorName: storage
     dataConnectorCommand:
-      procedure: updateStorageObject
+      procedure: update_storage_object
   graphql:
-    rootFieldName: updateStorageObject
+    rootFieldName: update_storage_object
     rootFieldKind: Mutation
   description: updates the object's configuration.
 
@@ -75,7 +75,7 @@ definition:
 kind: CommandPermissions
 version: v1
 definition:
-  commandName: UpdateStorageObject
+  commandName: update_storage_object
   permissions:
     - role: admin
       allowExecution: true

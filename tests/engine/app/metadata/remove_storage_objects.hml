@@ -7,13 +7,13 @@ definition:
   fields:
     - name: error
       type: String!
-    - name: objectName
+    - name: object_name
       type: String!
-    - name: versionId
+    - name: version_id
       type: String!
   graphql:
     typeName: RemoveStorageObjectError
-    inputTypeName: RemoveStorageObjectErrorInput
+    inputTypeName: RemoveStorageObjectError_input
   dataConnectorTypeMapping:
     - dataConnectorName: storage
       dataConnectorObjectType: RemoveStorageObjectError
@@ -28,44 +28,44 @@ definition:
       output:
         allowedFields:
           - error
-          - objectName
-          - versionId
+          - object_name
+          - version_id
 
 ---
 kind: Command
 version: v1
 definition:
-  name: RemoveStorageObjects
+  name: remove_storage_objects
   outputType: "[RemoveStorageObjectError!]!"
   arguments:
-    - name: accessKeyId
+    - name: access_key_id
       type: String
     - name: after
       type: String
     - name: bucket
       type: String
-    - name: clientId
-      type: StorageClientId
-    - name: clientType
+    - name: client_id
+      type: StorageClientID
+    - name: client_type
       type: StorageProviderType
     - name: endpoint
       type: String
     - name: first
       type: Int32
-    - name: governanceBypass
-      type: Boolean
-    - name: hierarchy
+    - name: governance_bypass
       type: Boolean
     - name: prefix
       type: String
-    - name: secretAccessKey
+    - name: recursive
+      type: Boolean
+    - name: secret_access_key
       type: String
   source:
     dataConnectorName: storage
     dataConnectorCommand:
-      procedure: removeStorageObjects
+      procedure: remove_storage_objects
   graphql:
-    rootFieldName: removeStorageObjects
+    rootFieldName: remove_storage_objects
     rootFieldKind: Mutation
   description: remove a list of objects obtained from an input channel. The call
     sends a delete request to the server up to 1000 objects at a time. The
@@ -75,7 +75,7 @@ definition:
 kind: CommandPermissions
 version: v1
 definition:
-  commandName: RemoveStorageObjects
+  commandName: remove_storage_objects
   permissions:
     - role: admin
       allowExecution: true

@@ -2,35 +2,37 @@
 kind: Command
 version: v1
 definition:
-  name: RemoveStorageBucket
+  name: restore_storage_object
   outputType: SuccessResponse!
   arguments:
-    - name: accessKeyId
+    - name: access_key_id
       type: String
-    - name: clientId
-      type: StorageClientId
-    - name: clientType
+    - name: bucket
+      type: String
+    - name: client_id
+      type: StorageClientID
+    - name: client_type
       type: StorageProviderType
     - name: endpoint
       type: String
     - name: name
       type: String!
-    - name: secretAccessKey
+    - name: secret_access_key
       type: String
   source:
     dataConnectorName: storage
     dataConnectorCommand:
-      procedure: removeStorageBucket
+      procedure: restore_storage_object
   graphql:
-    rootFieldName: removeStorageBucket
+    rootFieldName: restore_storage_object
     rootFieldKind: Mutation
-  description: removes a bucket, bucket should be empty to be successfully removed.
+  description: restore a soft-deleted object.
 
 ---
 kind: CommandPermissions
 version: v1
 definition:
-  commandName: RemoveStorageBucket
+  commandName: restore_storage_object
   permissions:
     - role: admin
       allowExecution: true

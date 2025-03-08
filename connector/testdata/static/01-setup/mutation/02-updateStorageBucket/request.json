@@ -6,7 +6,7 @@
       "name": "update_storage_bucket",
       "arguments": {
         "name": "minio-bucket-test",
-        "versioningEnabled": true,
+        "versioning_enabled": true,
         "lifecycle": {
           "rules": [
             {

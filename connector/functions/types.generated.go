@@ -81,7 +81,7 @@ func (dch DataConnectorHandler) execQuery(ctx context.Context, state *types.Stat
 	span := trace.SpanFromContext(ctx)
 	logger := connector.GetLogger(ctx)
 	switch request.Collection {
-	case "download_storage_object_as_base_64":
+	case "download_storage_object_as_base64":
 
 		selection, err := queryFields.AsObject()
 		if err != nil {
@@ -478,7 +478,7 @@ func (dch DataConnectorHandler) execQuery(ctx context.Context, state *types.Stat
 	}
 }
 
-var enumValues_FunctionName = []string{"download_storage_object_as_base_64", "download_storage_object_as_text", "storage_bucket", "storage_bucket_connections", "storage_bucket_exists", "storage_deleted_objects", "storage_incomplete_uploads", "storage_object", "storage_object_connections", "storage_presigned_download_url", "storage_presigned_upload_url"}
+var enumValues_FunctionName = []string{"download_storage_object_as_base64", "download_storage_object_as_text", "storage_bucket", "storage_bucket_connections", "storage_bucket_exists", "storage_deleted_objects", "storage_incomplete_uploads", "storage_object", "storage_object_connections", "storage_presigned_download_url", "storage_presigned_upload_url"}
 
 // MutationExists check if the mutation name exists
 func (dch DataConnectorHandler) MutationExists(name string) bool {
@@ -803,7 +803,7 @@ func (dch DataConnectorHandler) Mutation(ctx context.Context, state *types.State
 		}
 		return schema.NewProcedureResult(result).Encode(), nil
 
-	case "upload_storage_object_as_base_64":
+	case "upload_storage_object_as_base64":
 
 		selection, err := operation.Fields.AsObject()
 		if err != nil {
@@ -901,7 +901,7 @@ func (dch DataConnectorHandler) Mutation(ctx context.Context, state *types.State
 	}
 }
 
-var enumValues_ProcedureName = []string{"compose_storage_object", "copy_storage_object", "create_storage_bucket", "remove_incomplete_storage_upload", "remove_storage_bucket", "remove_storage_object", "remove_storage_objects", "restore_storage_object", "update_storage_bucket", "update_storage_object", "upload_storage_object_as_base_64", "upload_storage_object_as_text", "upload_storage_object_from_url"}
+var enumValues_ProcedureName = []string{"compose_storage_object", "copy_storage_object", "create_storage_bucket", "remove_incomplete_storage_upload", "remove_storage_bucket", "remove_storage_object", "remove_storage_objects", "restore_storage_object", "update_storage_bucket", "update_storage_object", "upload_storage_object_as_base64", "upload_storage_object_as_text", "upload_storage_object_from_url"}
 
 func connector_addSpanEvent(span trace.Span, logger *slog.Logger, name string, data map[string]any, options ...trace.EventOption) {
 	logger.Debug(name, slog.Any("data", data))

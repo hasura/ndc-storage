@@ -9,7 +9,7 @@ definition:
       type: String!
   graphql:
     typeName: DownloadStorageObjectTextResponse
-    inputTypeName: DownloadStorageObjectTextResponseInput
+    inputTypeName: DownloadStorageObjectTextResponse_input
   dataConnectorTypeMapping:
     - dataConnectorName: storage
       dataConnectorObjectType: DownloadStorageObjectTextResponse
@@ -29,16 +29,16 @@ definition:
 kind: Command
 version: v1
 definition:
-  name: DownloadStorageObjectAsText
+  name: download_storage_object_as_text
   outputType: DownloadStorageObjectTextResponse
   arguments:
-    - name: accessKeyId
+    - name: access_key_id
       type: String
     - name: bucket
       type: String
-    - name: clientId
-      type: StorageClientId
-    - name: clientType
+    - name: client_id
+      type: StorageClientID
+    - name: client_type
       type: StorageProviderType
     - name: endpoint
       type: String
@@ -46,20 +46,20 @@ definition:
       type: "[StorageKeyValue!]"
     - name: name
       type: String!
-    - name: partNumber
+    - name: part_number
       type: Int32
-    - name: requestParams
+    - name: request_params
       type: "[StorageKeyValue!]"
-    - name: secretAccessKey
+    - name: secret_access_key
       type: String
-    - name: versionId
+    - name: version_id
       type: String
   source:
     dataConnectorName: storage
     dataConnectorCommand:
-      function: downloadStorageObjectAsText
+      function: download_storage_object_as_text
   graphql:
-    rootFieldName: downloadStorageObjectAsText
+    rootFieldName: download_storage_object_as_text
     rootFieldKind: Query
   description: returns the object content in plain text. Use this function only if
     you know exactly the file as an text file.
@@ -68,7 +68,7 @@ definition:
 kind: CommandPermissions
 version: v1
 definition:
-  commandName: DownloadStorageObjectAsText
+  commandName: download_storage_object_as_text
   permissions:
     - role: admin
       allowExecution: true

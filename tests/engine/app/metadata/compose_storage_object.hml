@@ -7,7 +7,7 @@ definition:
   fields:
     - name: bucket
       type: String
-    - name: legalHold
+    - name: legal_hold
       type: Boolean
     - name: metadata
       type: "[StorageKeyValue!]"
@@ -15,15 +15,15 @@ definition:
       type: StorageRetentionMode
     - name: name
       type: String!
-    - name: retainUntilDate
-      type: TimestampTz
+    - name: retain_until_date
+      type: TimestampTZ
     - name: size
       type: Int64
     - name: tags
       type: "[StorageKeyValue!]"
   graphql:
     typeName: StorageCopyDestOptions
-    inputTypeName: StorageCopyDestOptionsInput
+    inputTypeName: StorageCopyDestOptions_input
   dataConnectorTypeMapping:
     - dataConnectorName: storage
       dataConnectorObjectType: StorageCopyDestOptions
@@ -38,11 +38,11 @@ definition:
       output:
         allowedFields:
           - bucket
-          - legalHold
+          - legal_hold
           - metadata
           - mode
           - name
-          - retainUntilDate
+          - retain_until_date
           - size
           - tags
 
@@ -57,25 +57,25 @@ definition:
       type: String
     - name: end
       type: Int64
-    - name: matchETag
+    - name: match_etag
       type: String
-    - name: matchModifiedSince
-      type: TimestampTz
-    - name: matchRange
+    - name: match_modified_since
+      type: TimestampTZ
+    - name: match_range
       type: Boolean
-    - name: matchUnmodifiedSince
-      type: TimestampTz
+    - name: match_unmodified_since
+      type: TimestampTZ
     - name: name
       type: String!
-    - name: noMatchETag
+    - name: no_match_etag
       type: String
     - name: start
       type: Int64
-    - name: versionId
+    - name: version_id
       type: String
   graphql:
     typeName: StorageCopySrcOptions
-    inputTypeName: StorageCopySrcOptionsInput
+    inputTypeName: StorageCopySrcOptions_input
   dataConnectorTypeMapping:
     - dataConnectorName: storage
       dataConnectorObjectType: StorageCopySrcOptions
@@ -91,14 +91,14 @@ definition:
         allowedFields:
           - bucket
           - end
-          - matchETag
-          - matchModifiedSince
-          - matchRange
-          - matchUnmodifiedSince
+          - match_etag
+          - match_modified_since
+          - match_range
+          - match_unmodified_since
           - name
-          - noMatchETag
+          - no_match_etag
           - start
-          - versionId
+          - version_id
 
 ---
 kind: ObjectType
@@ -109,39 +109,39 @@ definition:
   fields:
     - name: bucket
       type: String!
-    - name: checksumCrc32
+    - name: checksum_crc32
       type: String
-    - name: checksumCrc32C
+    - name: checksum_crc32c
       type: String
-    - name: checksumCrc64Nvme
+    - name: checksum_crc64_nvme
       type: String
-    - name: checksumSha1
+    - name: checksum_sha1
       type: String
-    - name: checksumSha256
+    - name: checksum_sha256
       type: String
-    - name: clientId
+    - name: client_id
       type: String!
-    - name: contentMd5
+    - name: content_md5
       type: String
     - name: etag
       type: String
     - name: expiration
-      type: TimestampTz
-    - name: expirationRuleId
+      type: TimestampTZ
+    - name: expiration_rule_id
       type: String
-    - name: lastModified
-      type: TimestampTz
+    - name: last_modified
+      type: TimestampTZ
     - name: location
       type: String
     - name: name
       type: String!
     - name: size
       type: Int64
-    - name: versionId
+    - name: version_id
       type: String
   graphql:
     typeName: StorageUploadInfo
-    inputTypeName: StorageUploadInfoInput
+    inputTypeName: StorageUploadInfo_input
   dataConnectorTypeMapping:
     - dataConnectorName: storage
       dataConnectorObjectType: StorageUploadInfo
@@ -156,31 +156,31 @@ definition:
       output:
         allowedFields:
           - bucket
-          - checksumCrc32
-          - checksumCrc32C
-          - checksumCrc64Nvme
-          - checksumSha1
-          - checksumSha256
-          - clientId
-          - contentMd5
+          - checksum_crc32
+          - checksum_crc32c
+          - checksum_crc64_nvme
+          - checksum_sha1
+          - checksum_sha256
+          - client_id
+          - content_md5
           - etag
           - expiration
-          - expirationRuleId
-          - lastModified
+          - expiration_rule_id
+          - last_modified
           - location
           - name
           - size
-          - versionId
+          - version_id
 
 ---
 kind: Command
 version: v1
 definition:
-  name: ComposeStorageObject
+  name: compose_storage_object
   outputType: StorageUploadInfo!
   arguments:
-    - name: clientId
-      type: StorageClientId
+    - name: client_id
+      type: StorageClientID
     - name: dest
       type: StorageCopyDestOptions!
     - name: sources
@@ -188,9 +188,9 @@ definition:
   source:
     dataConnectorName: storage
     dataConnectorCommand:
-      procedure: composeStorageObject
+      procedure: compose_storage_object
   graphql:
-    rootFieldName: composeStorageObject
+    rootFieldName: compose_storage_object
     rootFieldKind: Mutation
   description: creates an object by concatenating a list of source objects using
     server-side copying.
@@ -199,7 +199,7 @@ definition:
 kind: CommandPermissions
 version: v1
 definition:
-  commandName: ComposeStorageObject
+  commandName: compose_storage_object
   permissions:
     - role: admin
       allowExecution: true

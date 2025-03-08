@@ -2,11 +2,11 @@
 kind: Command
 version: v1
 definition:
-  name: CopyStorageObject
+  name: copy_storage_object
   outputType: StorageUploadInfo!
   arguments:
-    - name: clientId
-      type: StorageClientId
+    - name: client_id
+      type: StorageClientID
     - name: dest
       type: StorageCopyDestOptions!
     - name: source
@@ -14,9 +14,9 @@ definition:
   source:
     dataConnectorName: storage
     dataConnectorCommand:
-      procedure: copyStorageObject
+      procedure: copy_storage_object
   graphql:
-    rootFieldName: copyStorageObject
+    rootFieldName: copy_storage_object
     rootFieldKind: Mutation
   description: creates or replaces an object through server-side copying of an
     existing object. It supports conditional copying, copying a part of an
@@ -28,7 +28,7 @@ definition:
 kind: CommandPermissions
 version: v1
 definition:
-  commandName: CopyStorageObject
+  commandName: copy_storage_object
   permissions:
     - role: admin
       allowExecution: true

@@ -1,0 +1,104 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: StorageConnectionEdge_StorageObject
+  description: the connection information of the relay pagination response.
+  fields:
+    - name: cursor
+      type: String!
+    - name: node
+      type: StorageObject!
+  graphql:
+    typeName: StorageConnectionEdge_StorageObject
+    inputTypeName: StorageConnectionEdge_StorageObject_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: storage
+      dataConnectorObjectType: StorageConnectionEdge_StorageObject
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: StorageConnectionEdge_StorageObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - cursor
+          - node
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: StorageConnection_StorageObject
+  fields:
+    - name: edges
+      type: "[StorageConnectionEdge_StorageObject!]!"
+    - name: pageInfo
+      type: StoragePaginationInfo!
+  graphql:
+    typeName: StorageConnection_StorageObject
+    inputTypeName: StorageConnection_StorageObject_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: storage
+      dataConnectorObjectType: StorageConnection_StorageObject
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: StorageConnection_StorageObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - edges
+          - pageInfo
+
+---
+kind: Command
+version: v1
+definition:
+  name: storage_object_connections
+  outputType: StorageConnection_StorageObject!
+  arguments:
+    - name: access_key_id
+      type: String
+    - name: after
+      type: String
+    - name: bucket
+      type: String
+    - name: client_id
+      type: StorageClientID
+    - name: client_type
+      type: StorageProviderType
+    - name: endpoint
+      type: String
+    - name: first
+      type: Int32
+    - name: prefix
+      type: String
+    - name: recursive
+      type: Boolean
+    - name: secret_access_key
+      type: String
+  source:
+    dataConnectorName: storage
+    dataConnectorCommand:
+      function: storage_object_connections
+  graphql:
+    rootFieldName: storage_object_connections
+    rootFieldKind: Query
+  description: lists objects in a bucket using the relay style.
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: storage_object_connections
+  permissions:
+    - role: admin
+      allowExecution: true
+

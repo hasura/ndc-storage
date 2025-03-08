@@ -2,16 +2,16 @@
 kind: ObjectType
 version: v1
 definition:
-  name: PresignedUrlResponse
+  name: PresignedURLResponse
   description: holds the presigned URL and expiry information.
   fields:
-    - name: expiredAt
-      type: TimestampTz!
+    - name: expired_at
+      type: TimestampTZ!
     - name: url
       type: String!
   graphql:
-    typeName: PresignedUrlResponse
-    inputTypeName: PresignedUrlResponseInput
+    typeName: PresignedURLResponse
+    inputTypeName: PresignedURLResponse_input
   dataConnectorTypeMapping:
     - dataConnectorName: storage
       dataConnectorObjectType: PresignedURLResponse
@@ -20,28 +20,28 @@ definition:
 kind: TypePermissions
 version: v1
 definition:
-  typeName: PresignedUrlResponse
+  typeName: PresignedURLResponse
   permissions:
     - role: admin
       output:
         allowedFields:
-          - expiredAt
+          - expired_at
           - url
 
 ---
 kind: Command
 version: v1
 definition:
-  name: StoragePresignedDownloadUrl
-  outputType: PresignedUrlResponse
+  name: storage_presigned_download_url
+  outputType: PresignedURLResponse
   arguments:
-    - name: accessKeyId
+    - name: access_key_id
       type: String
     - name: bucket
       type: String
-    - name: clientId
-      type: StorageClientId
-    - name: clientType
+    - name: client_id
+      type: StorageClientID
+    - name: client_type
       type: StorageProviderType
     - name: endpoint
       type: String
@@ -49,16 +49,16 @@ definition:
       type: DurationString
     - name: name
       type: String!
-    - name: requestParams
+    - name: request_params
       type: "[StorageKeyValue!]"
-    - name: secretAccessKey
+    - name: secret_access_key
       type: String
   source:
     dataConnectorName: storage
     dataConnectorCommand:
-      function: storagePresignedDownloadUrl
+      function: storage_presigned_download_url
   graphql:
-    rootFieldName: storagePresignedDownloadUrl
+    rootFieldName: storage_presigned_download_url
     rootFieldKind: Query
   description: generates a presigned URL for HTTP GET operations. Browsers/Mobile
     clients may point to this URL to directly download objects even if the
@@ -70,7 +70,7 @@ definition:
 kind: CommandPermissions
 version: v1
 definition:
-  commandName: StoragePresignedDownloadUrl
+  commandName: storage_presigned_download_url
   permissions:
     - role: admin
       allowExecution: true
