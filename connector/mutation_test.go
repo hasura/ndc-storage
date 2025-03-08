@@ -62,11 +62,11 @@ func TestMaxUploadSizeValidation(t *testing.T) {
 		Content string
 	}{
 		{
-			Name:    "uploadStorageObjectAsText",
+			Name:    "upload_storage_object_as_text",
 			Content: dataText,
 		},
 		{
-			Name:    "uploadStorageObjectAsBase64",
+			Name:    "upload_storage_object_as_base64",
 			Content: dataTextBase64,
 		},
 	}
@@ -99,7 +99,7 @@ func TestMaxUploadSizeURLValidation(t *testing.T) {
 		"operations": [
 			{
 			"type": "procedure",
-			"name": "uploadStorageObjectFromUrl",
+			"name": "upload_storage_object_from_url",
 			"arguments": {
 				"bucket": "minio-bucket-test",
 				"name": "movies-2000s.json",

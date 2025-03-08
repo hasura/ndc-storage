@@ -248,7 +248,7 @@ func serializeObjectInfo(obj *storage.ObjectAttrs) common.StorageObject { //noli
 
 func (c *Client) validateListObjectsOptions(span trace.Span, opts *common.ListStorageObjectsOptions, includeDeleted bool) *storage.Query {
 	span.SetAttributes(
-		attribute.Bool("storage.options.hierarchy", opts.Hierarchy),
+		attribute.Bool("storage.options.recursive", opts.Recursive),
 		attribute.Bool("storage.options.with_deleted", includeDeleted),
 		attribute.Bool("storage.options.with_versions", opts.Include.Versions),
 	)
@@ -272,7 +272,7 @@ func (c *Client) validateListObjectsOptions(span trace.Span, opts *common.ListSt
 		SoftDeleted: includeDeleted,
 	}
 
-	if opts.Hierarchy {
+	if !opts.Recursive {
 		result.Delimiter = "/"
 	}
 

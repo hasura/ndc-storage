@@ -103,7 +103,7 @@ type StorageBucketListResults struct {
 // StorageBucket the container for bucket metadata.
 type StorageBucket struct {
 	// Client ID
-	ClientID string `json:"clientId"`
+	ClientID string `json:"client_id"`
 	// The name of the bucket.
 	Name string `json:"name"`
 	// Bucket tags or metadata.
@@ -118,32 +118,32 @@ type StorageBucket struct {
 	// Retention policy enforces a minimum retention time for all objects
 	// contained in the bucket. A RetentionPolicy of nil implies the bucket
 	// has no minimum data retention.
-	ObjectLock *StorageObjectLockConfig `json:"objectLock"`
+	ObjectLock *StorageObjectLockConfig `json:"object_lock"`
 
 	// The location of the bucket.
 	Region *string `json:"region"`
 
 	// The bucket's custom placement configuration that holds a list of
 	// regional locations for custom dual regions.
-	CustomPlacementConfig *CustomPlacementConfig `json:"customPlacementConfig"`
+	CustomPlacementConfig *CustomPlacementConfig `json:"custom_placement_config"`
 
 	// DefaultEventBasedHold is the default value for event-based hold on newly created objects in this bucket. It defaults to false.
-	DefaultEventBasedHold *bool `json:"defaultEventBasedHold"`
+	DefaultEventBasedHold *bool `json:"default_event_based_hold"`
 
 	// StorageClass is the default storage class of the bucket. This defines
 	// how objects in the bucket are stored and determines the SLA and the cost of storage.
-	StorageClass *string `json:"storageClass"`
+	StorageClass *string `json:"storage_class"`
 
 	// Date time the bucket was created.
-	CreationTime *time.Time `json:"creationTime"`
+	CreationTime *time.Time `json:"creation_time"`
 	// Date time the bucket was created.
-	LastModified *time.Time `json:"lastModified"`
+	LastModified *time.Time `json:"last_modified"`
 
 	// RequesterPays reports whether the bucket is a Requester Pays bucket.
 	// Clients performing operations on Requester Pays buckets must provide
 	// a user project (see BucketHandle.UserProject), which will be billed
 	// for the operations.
-	RequesterPays *bool `json:"requesterPays"`
+	RequesterPays *bool `json:"requester_pays"`
 
 	// The bucket's Cross-Origin Resource Sharing (CORS) configuration.
 	CORS []BucketCors `json:"cors,omitempty"`
@@ -160,7 +160,7 @@ type StorageBucket struct {
 
 	// LocationType describes how data is stored and replicated.
 	// Typical values are "multi-region", "region" and "dual-region".
-	LocationType *string `json:"locationType"`
+	LocationType *string `json:"location_type"`
 
 	// RPO configures the Recovery Point Objective (RPO) policy of the bucket.
 	// Set to RPOAsyncTurbo to turn on Turbo Replication for a bucket.
@@ -176,14 +176,14 @@ type StorageBucket struct {
 	// SoftDeletePolicy contains the bucket's soft delete policy, which defines
 	// the period of time that soft-deleted objects will be retained, and cannot
 	// be permanently deleted.
-	SoftDeletePolicy *StorageObjectSoftDeletePolicy `json:"softDeletePolicy"`
+	SoftDeletePolicy *StorageObjectSoftDeletePolicy `json:"soft_delete_policy"`
 
 	// HierarchicalNamespace contains the bucket's hierarchical namespace
 	// configuration. Hierarchical namespace enabled buckets can contain
 	// [cloud.google.com/go/storage/control/apiv2/controlpb.Folder] resources.
 	// It cannot be modified after bucket creation time.
 	// UniformBucketLevelAccess must also be enabled on the bucket.
-	HierarchicalNamespace *BucketHierarchicalNamespace `json:"hierarchicalNamespace"`
+	HierarchicalNamespace *BucketHierarchicalNamespace `json:"hierarchical_namespace"`
 }
 
 // HierarchicalNamespace contains the bucket's hierarchical namespace
@@ -200,10 +200,10 @@ type BucketHierarchicalNamespace struct {
 type BucketLogging struct {
 	// The destination bucket where the current bucket's logs
 	// should be placed.
-	LogBucket string `json:"logBucket"`
+	LogBucket string `json:"log_bucket"`
 
 	// A prefix for log object names.
-	LogObjectPrefix string `json:"logObjectPrefix"`
+	LogObjectPrefix string `json:"log_object_prefix"`
 }
 
 // GoogleStorageRPO (Recovery Point Objective) configures the turbo replication feature. See
@@ -215,7 +215,7 @@ type GoogleStorageRPO string
 type BucketCors struct {
 	// MaxAge is the value to return in the Access-Control-Max-Age
 	// header used in preflight responses.
-	MaxAge scalar.DurationString `json:"maxAge"`
+	MaxAge scalar.DurationString `json:"max_age"`
 
 	// Methods is the list of HTTP methods on which to include CORS response
 	// headers, (GET, OPTIONS, POST, etc) Note: "*" is permitted in the list
@@ -230,7 +230,7 @@ type BucketCors struct {
 	// ResponseHeaders is the list of HTTP headers other than the simple
 	// response headers to give permission for the user-agent to share
 	// across domains.
-	ResponseHeaders []string `json:"responseHeaders"`
+	ResponseHeaders []string `json:"response_headers"`
 }
 
 // BucketWebsite holds the bucket's website configuration, controlling how the
@@ -241,12 +241,12 @@ type BucketWebsite struct {
 	// a trailing '/', append this suffix, and attempt to retrieve the resulting
 	// object. This allows the creation of index.html objects to represent directory
 	// pages.
-	MainPageSuffix string `json:"mainPageSuffix"`
+	MainPageSuffix string `json:"main_page_suffix"`
 
 	// If the requested object path is missing, and any mainPageSuffix object is
 	// missing, if applicable, the service will return the named object from this
 	// bucket as the content for a 404 Not Found result.
-	NotFoundPage *string `json:"notFoundPage,omitempty"`
+	NotFoundPage *string `json:"not_found_page,omitempty"`
 }
 
 // CustomPlacementConfig holds the bucket's custom placement
@@ -255,7 +255,7 @@ type BucketWebsite struct {
 type CustomPlacementConfig struct {
 	// The list of regional locations in which data is placed.
 	// Custom Dual Regions require exactly 2 regional locations.
-	DataLocations []string
+	DataLocations []string `json:"data_locations"`
 }
 
 // Autoclass holds the bucket's autoclass configuration. If enabled,
@@ -269,15 +269,15 @@ type BucketAutoclass struct {
 	// ToggleTime is the time from which Autoclass was last toggled.
 	// If Autoclass is enabled when the bucket is created, the ToggleTime
 	// is set to the bucket creation time. This field is read-only.
-	ToggleTime time.Time `json:"toggleTime"`
+	ToggleTime time.Time `json:"toggle_time"`
 	// TerminalStorageClass: The storage class that objects in the bucket
 	// eventually transition to if they are not read for a certain length of
 	// time. Valid values are NEARLINE and ARCHIVE.
 	// To modify TerminalStorageClass, Enabled must be set to true.
-	TerminalStorageClass string `json:"terminalStorageClass"`
+	TerminalStorageClass string `json:"terminal_storage_class"`
 	// TerminalStorageClassUpdateTime represents the time of the most recent
 	// update to "TerminalStorageClass".
-	TerminalStorageClassUpdateTime time.Time `json:"terminalStorageClassUpdateTime"`
+	TerminalStorageClassUpdateTime time.Time `json:"terminal_storage_class_update_time"`
 }
 
 // StorageObjectSoftDeletePolicy contains the bucket's soft delete policy, which defines the
@@ -286,11 +286,11 @@ type BucketAutoclass struct {
 type StorageObjectSoftDeletePolicy struct {
 	// EffectiveTime indicates the time from which the policy, or one with a
 	// greater retention, was effective. This field is read-only.
-	EffectiveTime time.Time `json:"effectiveTime"`
+	EffectiveTime time.Time `json:"effective_time"`
 
 	// RetentionDuration is the amount of time that soft-deleted objects in the
 	// bucket will be retained and cannot be permanently deleted.
-	RetentionDuration scalar.DurationString `json:"retentionDuration"`
+	RetentionDuration scalar.DurationString `json:"retention_duration"`
 }
 
 // StorageOwner name.
@@ -302,7 +302,7 @@ type StorageOwner struct {
 // StorageGrantee represents the person being granted permissions.
 type StorageGrantee struct {
 	ID          *string `json:"id"`
-	DisplayName *string `json:"displayName"`
+	DisplayName *string `json:"display_name"`
 	URI         *string `json:"uri"`
 }
 
@@ -315,9 +315,9 @@ type StorageGrant struct {
 // StorageRestoreInfo contains information of the restore operation of an archived object.
 type StorageRestoreInfo struct {
 	// Is the restoring operation is still ongoing
-	OngoingRestore bool `json:"ongoingRestore"`
+	OngoingRestore bool `json:"ongoing_restore"`
 	// When the restored copy of the archived object will be removed
-	ExpiryTime *time.Time `json:"expiryTime"`
+	ExpiryTime *time.Time `json:"expiry_time"`
 }
 
 // StorageObject container for object metadata.
@@ -327,31 +327,31 @@ type StorageObject struct {
 	// each parts concatenated into one string.
 	ETag *string `json:"etag"`
 
-	ClientID           string     `json:"clientId"`     // Client ID
-	Bucket             string     `json:"bucket"`       // Name of the bucket
-	Name               string     `json:"name"`         // Name of the object
-	LastModified       time.Time  `json:"lastModified"` // Date and time the object was last modified.
-	Size               *int64     `json:"size"`         // Size in bytes of the object.
-	ContentType        *string    `json:"contentType"`  // A standard MIME type describing the format of the object data.
-	ContentEncoding    *string    `json:"contentEncoding,omitempty"`
-	ContentDisposition *string    `json:"contentDisposition,omitempty"`
-	ContentLanguage    *string    `json:"contentLanguage,omitempty"`
-	CacheControl       *string    `json:"cacheControl,omitempty"`
+	ClientID           string     `json:"client_id"`     // Client ID
+	Bucket             string     `json:"bucket"`        // Name of the bucket
+	Name               string     `json:"name"`          // Name of the object
+	LastModified       time.Time  `json:"last_modified"` // Date and time the object was last modified.
+	Size               *int64     `json:"size"`          // Size in bytes of the object.
+	ContentType        *string    `json:"content_type"`  // A standard MIME type describing the format of the object data.
+	ContentEncoding    *string    `json:"content_encoding,omitempty"`
+	ContentDisposition *string    `json:"content_disposition,omitempty"`
+	ContentLanguage    *string    `json:"content_language,omitempty"`
+	CacheControl       *string    `json:"cache_control,omitempty"`
 	Expires            *time.Time `json:"expires"` // The date and time at which the object is no longer able to be cached.
-	IsDirectory        bool       `json:"isDirectory"`
+	IsDirectory        bool       `json:"is_directory"`
 
 	// Collection of additional metadata on the object.
 	// In MinIO and S3, x-amz-meta-* headers stripped "x-amz-meta-" prefix containing the first value.
 	Metadata []StorageKeyValue `json:"metadata,omitempty"`
 
 	// Raw metadata headers, eg: x-amz-meta-*, content-encoding etc... Only returned by MinIO servers.
-	RawMetadata []StorageKeyValue `json:"rawMetadata,omitempty"`
+	RawMetadata []StorageKeyValue `json:"raw_metadata,omitempty"`
 
 	// User tags
 	Tags []StorageKeyValue `json:"tags,omitempty"`
 
 	// The total count value of tags
-	TagCount int `json:"tagCount,omitempty"`
+	TagCount int `json:"tag_count,omitempty"`
 
 	// Owner name.
 	Owner *StorageOwner `json:"owner"`
@@ -360,21 +360,21 @@ type StorageObject struct {
 	Grant []StorageGrant `json:"grant,omitempty"`
 
 	// The class of storage used to store the object or the access tier on Azure blob storage.
-	StorageClass *string `json:"storageClass,omitempty"`
+	StorageClass *string `json:"storage_class,omitempty"`
 
 	// Versioning related information
-	IsLatest  *bool   `json:"isLatest"`
+	IsLatest  *bool   `json:"is_latest"`
 	Deleted   *bool   `json:"deleted"`
-	VersionID *string `json:"versionId,omitempty"`
+	VersionID *string `json:"version_id,omitempty"`
 
 	// x-amz-replication-status value is either in one of the following states
-	ReplicationStatus *StorageObjectReplicationStatus `json:"replicationStatus"`
+	ReplicationStatus *StorageObjectReplicationStatus `json:"replication_status"`
 	// set to true if delete marker has backing object version on target, and eligible to replicate
-	ReplicationReady *bool `json:"replicationReady"`
+	ReplicationReady *bool `json:"replication_ready"`
 	// Lifecycle expiry-date and ruleID associated with the expiry
 	// not to be confused with `Expires` HTTP header.
 	Expiration       *time.Time `json:"expiration"`
-	ExpirationRuleID *string    `json:"expirationRuleId"`
+	ExpirationRuleID *string    `json:"expiration_rule_id"`
 
 	Restore *StorageRestoreInfo `json:"restore"`
 
@@ -383,48 +383,48 @@ type StorageObject struct {
 
 	// Azure Blob Store properties
 	ACL                       any                    `json:"acl,omitempty"`
-	AccessTierChangeTime      *time.Time             `json:"accessTierChangeTime"`
-	AccessTierInferred        *bool                  `json:"accessTierInferred"`
-	ArchiveStatus             *string                `json:"archiveStatus"`
-	BlobSequenceNumber        *int64                 `json:"blobSequenceNumber"`
-	BlobType                  *string                `json:"blobType"`
-	ContentMD5                *string                `json:"contentMd5"`
+	AccessTierChangeTime      *time.Time             `json:"access_tier_change_time"`
+	AccessTierInferred        *bool                  `json:"access_tier_inferred"`
+	ArchiveStatus             *string                `json:"archive_status"`
+	BlobSequenceNumber        *int64                 `json:"blob_sequence_number"`
+	BlobType                  *string                `json:"blob_type"`
+	ContentMD5                *string                `json:"content_md5"`
 	Copy                      *StorageObjectCopyInfo `json:"copy"`
-	CreationTime              *time.Time             `json:"creationTime"`
-	DeletedTime               *time.Time             `json:"deletedTime"`
-	CustomerProvidedKeySHA256 *string                `json:"customerProvidedKeySha256"`
-	DestinationSnapshot       *string                `json:"destinationSnapshot"`
-	MediaLink                 *string                `json:"mediaLink"`
+	CreationTime              *time.Time             `json:"creation_time"`
+	DeletedTime               *time.Time             `json:"deleted_time"`
+	CustomerProvidedKeySHA256 *string                `json:"customer_provided_key_sha256"`
+	DestinationSnapshot       *string                `json:"destination_snapshot"`
+	MediaLink                 *string                `json:"media_link"`
 	// The name of the encryption scope under which the blob is encrypted.
-	KMSKeyName         *string    `json:"kmsKeyName"`
-	ServerEncrypted    *bool      `json:"serverEncrypted"`
+	KMSKeyName         *string    `json:"kms_key_name"`
+	ServerEncrypted    *bool      `json:"server_encrypted"`
 	Group              *string    `json:"group"`
-	RetentionUntilDate *time.Time `json:"retentionUntilDate"`
-	RetentionMode      *string    `json:"retentionMode"`
-	IncrementalCopy    *bool      `json:"incrementalCopy"`
+	RetentionUntilDate *time.Time `json:"retention_until_date"`
+	RetentionMode      *string    `json:"retention_mode"`
+	IncrementalCopy    *bool      `json:"incremental_copy"`
 	IsSealed           *bool      `json:"sealed"`
-	LastAccessTime     *time.Time `json:"lastAccessTime"`
-	LeaseDuration      *string    `json:"leaseDuration"`
-	LeaseState         *string    `json:"leaseState"`
-	LeaseStatus        *string    `json:"leaseStatus"`
-	LegalHold          *bool      `json:"legalHold"`
+	LastAccessTime     *time.Time `json:"last_access_time"`
+	LeaseDuration      *string    `json:"lease_duration"`
+	LeaseState         *string    `json:"lease_state"`
+	LeaseStatus        *string    `json:"lease_status"`
+	LegalHold          *bool      `json:"legal_hold"`
 	Permissions        *string    `json:"permissions"`
 
 	// If an object is in rehydrate pending state then this header is returned with priority of rehydrate. Valid values are High
 	// and Standard.
-	RehydratePriority      *string `json:"rehydratePriority"`
-	RemainingRetentionDays *int32  `json:"remainingRetentionDays"`
-	ResourceType           *string `json:"resourceType"`
+	RehydratePriority      *string `json:"rehydrate_priority"`
+	RemainingRetentionDays *int32  `json:"remaining_retention_days"`
+	ResourceType           *string `json:"resource_type"`
 }
 
 // StorageObjectCopyInfo holds the copy information if the object was copied from another object.
 type StorageObjectCopyInfo struct {
 	ID                string     `json:"id"`
-	CompletionTime    *time.Time `json:"completionTime"`
+	CompletionTime    *time.Time `json:"completion_time"`
 	Progress          *string    `json:"progress"`
 	Source            *string    `json:"source"`
 	Status            *string    `json:"status"`
-	StatusDescription *string    `json:"statusDescription"`
+	StatusDescription *string    `json:"status_description"`
 }
 
 // StoragePaginationInfo holds the pagination information.
@@ -444,11 +444,11 @@ type StorageObjectReplicationStatus string
 
 // StorageObjectChecksum represents checksum values of the object.
 type StorageObjectChecksum struct {
-	ChecksumCRC32     *string `json:"checksumCrc32,omitempty"`
-	ChecksumCRC32C    *string `json:"checksumCrc32C,omitempty"`
-	ChecksumSHA1      *string `json:"checksumSha1,omitempty"`
-	ChecksumSHA256    *string `json:"checksumSha256,omitempty"`
-	ChecksumCRC64NVME *string `json:"checksumCrc64Nvme,omitempty"`
+	ChecksumCRC32     *string `json:"checksum_crc32,omitempty"`
+	ChecksumCRC32C    *string `json:"checksum_crc32c,omitempty"`
+	ChecksumSHA1      *string `json:"checksum_sha1,omitempty"`
+	ChecksumSHA256    *string `json:"checksum_sha256,omitempty"`
+	ChecksumCRC64NVME *string `json:"checksum_crc64_nvme,omitempty"`
 }
 
 // StorageUploadInfo represents the information of the uploaded object.
@@ -458,19 +458,19 @@ type StorageUploadInfo struct {
 	// each parts concatenated into one string.
 	ETag *string `json:"etag"`
 
-	ClientID     string     `json:"clientId"`     // Client ID
-	Bucket       string     `json:"bucket"`       // Name of the bucket
-	Name         string     `json:"name"`         // Name of the object
-	LastModified *time.Time `json:"lastModified"` // Date and time the object was last modified.
-	Size         *int64     `json:"size"`         // Size in bytes of the object.
+	ClientID     string     `json:"client_id"`     // Client ID
+	Bucket       string     `json:"bucket"`        // Name of the bucket
+	Name         string     `json:"name"`          // Name of the object
+	LastModified *time.Time `json:"last_modified"` // Date and time the object was last modified.
+	Size         *int64     `json:"size"`          // Size in bytes of the object.
 	Location     *string    `json:"location"`
-	VersionID    *string    `json:"versionId"`
-	ContentMD5   *string    `json:"contentMd5"`
+	VersionID    *string    `json:"version_id"`
+	ContentMD5   *string    `json:"content_md5"`
 
 	// Lifecycle expiry-date and ruleID associated with the expiry
 	// not to be confused with `Expires` HTTP header.
 	Expiration       *time.Time `json:"expiration"`
-	ExpirationRuleID *string    `json:"expirationRuleId"`
+	ExpirationRuleID *string    `json:"expiration_rule_id"`
 
 	// Checksum values
 	StorageObjectChecksum
@@ -482,7 +482,7 @@ type StorageObjectMultipartInfo struct {
 	Initiated *time.Time `json:"initiated"`
 
 	// The type of storage to use for the object. Defaults to 'STANDARD'.
-	StorageClass *string `json:"storageClass"`
+	StorageClass *string `json:"storage_class"`
 
 	// Key of the object for which the multipart upload was initiated.
 	Name *string `json:"name"`
@@ -491,7 +491,7 @@ type StorageObjectMultipartInfo struct {
 	Size *int64 `json:"size"`
 
 	// Upload ID that identifies the multipart upload.
-	UploadID *string `json:"uploadId"`
+	UploadID *string `json:"upload_id"`
 }
 
 // EncryptionMethod represents a server-side-encryption method enum.
@@ -504,8 +504,8 @@ type StorageRetentionMode string
 
 // RemoveStorageObjectError the container of Multi Delete S3 API error.
 type RemoveStorageObjectError struct {
-	ObjectName string `json:"objectName"`
-	VersionID  string `json:"versionId"`
+	ObjectName string `json:"object_name"`
+	VersionID  string `json:"version_id"`
 	Error      string `json:"error"`
 }
 
@@ -537,19 +537,19 @@ type NotificationQueueConfig struct {
 // NotificationLambdaConfig carries one single cloudfunction notification configuration
 type NotificationLambdaConfig struct {
 	NotificationCommonConfig
-	Lambda string `json:"cloudFunction"`
+	Lambda string `json:"cloud_function"`
 }
 
 // NotificationConfig the struct that represents a notification configuration object.
 type NotificationConfig struct {
-	LambdaConfigs []NotificationLambdaConfig `json:"cloudFunctionConfigurations"`
-	TopicConfigs  []NotificationTopicConfig  `json:"topicConfigurations"`
-	QueueConfigs  []NotificationQueueConfig  `json:"queueConfigurations"`
+	LambdaConfigs []NotificationLambdaConfig `json:"cloud_function_configurations"`
+	TopicConfigs  []NotificationTopicConfig  `json:"topic_configurations"`
+	QueueConfigs  []NotificationQueueConfig  `json:"queue_configurations"`
 }
 
 // NotificationFilter - a tag in the notification xml structure which carries suffix/prefix filters
 type NotificationFilter struct {
-	S3Key *NotificationS3Key `json:"s3Key,omitempty"`
+	S3Key *NotificationS3Key `json:"s3_key,omitempty"`
 }
 
 // NotificationFilterRule child of S3Key, a tag in the notification xml which
@@ -562,20 +562,20 @@ type NotificationFilterRule struct {
 // NotificationS3Key child of Filter, a tag in the notification xml which
 // carries suffix/prefix filters
 type NotificationS3Key struct {
-	FilterRules []NotificationFilterRule `json:"filterRule,omitempty"`
+	FilterRules []NotificationFilterRule `json:"filter_rule,omitempty"`
 }
 
 // ObjectLifecycleRule represents a single rule in lifecycle configuration
 type ObjectLifecycleRule struct {
 	ID                             string                                      `json:"id,omitempty"`
 	Enabled                        bool                                        `json:"enabled,omitempty"`
-	AbortIncompleteMultipartUpload *ObjectAbortIncompleteMultipartUpload       `json:"abortIncompleteMultipartUpload"`
+	AbortIncompleteMultipartUpload *ObjectAbortIncompleteMultipartUpload       `json:"abort_incomplete_multipart_upload"`
 	Expiration                     *ObjectLifecycleExpiration                  `json:"expiration,omitempty"`
-	DelMarkerExpiration            *ObjectLifecycleDelMarkerExpiration         `json:"delMarkerExpiration,omitempty"`
-	AllVersionsExpiration          *ObjectLifecycleAllVersionsExpiration       `json:"allVersionsExpiration,omitempty"`
+	DelMarkerExpiration            *ObjectLifecycleDelMarkerExpiration         `json:"del_marker_expiration,omitempty"`
+	AllVersionsExpiration          *ObjectLifecycleAllVersionsExpiration       `json:"all_versions_expiration,omitempty"`
 	RuleFilter                     []ObjectLifecycleFilter                     `json:"filter,omitempty"`
-	NoncurrentVersionExpiration    *ObjectLifecycleNoncurrentVersionExpiration `json:"noncurrentVersionExpiration,omitempty"`
-	NoncurrentVersionTransition    *ObjectLifecycleNoncurrentVersionTransition `json:"noncurrentVersionTransition,omitempty"`
+	NoncurrentVersionExpiration    *ObjectLifecycleNoncurrentVersionExpiration `json:"noncurrent_version_expiration,omitempty"`
+	NoncurrentVersionTransition    *ObjectLifecycleNoncurrentVersionTransition `json:"noncurrent_version_transition,omitempty"`
 	Prefix                         *string                                     `json:"prefix,omitempty"`
 	Transition                     *ObjectLifecycleTransition                  `json:"transition,omitempty"`
 }
@@ -587,15 +587,15 @@ type ObjectLifecycleConfiguration struct {
 
 // AbortIncompleteMultipartUpload structure, not supported yet on MinIO
 type ObjectAbortIncompleteMultipartUpload struct {
-	DaysAfterInitiation *int `json:"daysAfterInitiation"`
+	DaysAfterInitiation *int `json:"days_after_initiation"`
 }
 
 // ObjectLifecycleExpiration expiration details of lifecycle configuration
 type ObjectLifecycleExpiration struct {
 	Date         *scalar.Date `json:"date,omitempty"`
 	Days         *int         `json:"days,omitempty"`
-	DeleteMarker *bool        `json:"expiredObjectDeleteMarker,omitempty"`
-	DeleteAll    *bool        `json:"expiredObjectAllVersions,omitempty"`
+	DeleteMarker *bool        `json:"expired_object_delete_marker,omitempty"`
+	DeleteAll    *bool        `json:"expired_object_all_versions,omitempty"`
 }
 
 // IsEmpty checks if all properties of the object are empty.
@@ -606,7 +606,7 @@ func (fe ObjectLifecycleExpiration) IsEmpty() bool {
 // ObjectLifecycleTransition transition details of lifecycle configuration
 type ObjectLifecycleTransition struct {
 	Date         *scalar.Date `json:"date"`
-	StorageClass *string      `json:"storageClass"`
+	StorageClass *string      `json:"storage_class"`
 	Days         *int         `json:"days"`
 }
 
@@ -618,29 +618,29 @@ type ObjectLifecycleDelMarkerExpiration struct {
 // ObjectLifecycleAllVersionsExpiration represents AllVersionsExpiration actions element in an ILM policy
 type ObjectLifecycleAllVersionsExpiration struct {
 	Days         *int  `json:"days"`
-	DeleteMarker *bool `json:"deleteMarker"`
+	DeleteMarker *bool `json:"delete_marker"`
 }
 
 // ObjectLifecycleFilter will be used in selecting rule(s) for lifecycle configuration
 type ObjectLifecycleFilter struct {
 	// MatchesPrefix is the condition matching an object if any of the
 	// matches_prefix strings are an exact prefix of the object's name.
-	MatchesPrefix []string `json:"matchesPrefix,omitempty"`
+	MatchesPrefix []string `json:"matches_prefix,omitempty"`
 
 	// MatchesStorageClasses is the condition matching the object's storage
 	// class.
 	//
 	// Values include "STANDARD", "NEARLINE", "COLDLINE" and "ARCHIVE".
-	MatchesStorageClasses []string `json:"matchesStorageClasses,omitempty"`
+	MatchesStorageClasses []string `json:"matches_storage_classes,omitempty"`
 
 	// MatchesSuffix is the condition matching an object if any of the
 	// matches_suffix strings are an exact suffix of the object's name.
-	MatchesSuffix []string `json:"matchesSuffix,omitempty"`
+	MatchesSuffix []string `json:"matches_suffix,omitempty"`
 
 	// Tags structure key/value pair representing an object tag to apply configuration
 	Tags                  []StorageKeyValue `json:"tags,omitempty"`
-	ObjectSizeLessThan    *int64            `json:"objectSizeLessThan,omitempty"`
-	ObjectSizeGreaterThan *int64            `json:"objectSizeGreaterThan,omitempty"`
+	ObjectSizeLessThan    *int64            `json:"object_size_less_than,omitempty"`
+	ObjectSizeGreaterThan *int64            `json:"object_size_greater_than,omitempty"`
 }
 
 // ObjectLifecycleNoncurrentVersionExpiration - Specifies when noncurrent object versions expire.
@@ -649,23 +649,23 @@ type ObjectLifecycleFilter struct {
 // (or suspended) to request server delete noncurrent object versions at a
 // specific period in the object's lifetime.
 type ObjectLifecycleNoncurrentVersionExpiration struct {
-	NoncurrentDays          *int `json:"noncurrentDays,omitempty"`
-	NewerNoncurrentVersions *int `json:"newerNoncurrentVersions,omitempty"`
+	NoncurrentDays          *int `json:"noncurrent_days,omitempty"`
+	NewerNoncurrentVersions *int `json:"newer_noncurrent_versions,omitempty"`
 }
 
 // ObjectLifecycleNoncurrentVersionTransition sets this action to request server to
 // transition noncurrent object versions to different set storage classes
 // at a specific period in the object's lifetime.
 type ObjectLifecycleNoncurrentVersionTransition struct {
-	StorageClass            *string `json:"storageClass,omitempty"`
-	NoncurrentDays          *int    `json:"noncurrentDays"`
-	NewerNoncurrentVersions *int    `json:"newerNoncurrentVersions,omitempty"`
+	StorageClass            *string `json:"storage_class,omitempty"`
+	NoncurrentDays          *int    `json:"noncurrent_days"`
+	NewerNoncurrentVersions *int    `json:"newer_noncurrent_versions,omitempty"`
 }
 
 // ServerSideEncryptionConfiguration is the default encryption configuration structure.
 type ServerSideEncryptionConfiguration struct {
-	KmsMasterKeyID string `json:"kmsMasterKeyId,omitempty"`
-	SSEAlgorithm   string `json:"sseAlgorithm,omitempty"`
+	KmsMasterKeyID string `json:"kms_master_key_id,omitempty"`
+	SSEAlgorithm   string `json:"sse_algorithm,omitempty"`
 }
 
 // IsEmpty checks if the configuration is empty.
@@ -694,11 +694,11 @@ type StorageRetentionValidityUnit string
 // StorageBucketVersioningConfiguration is the versioning configuration structure
 type StorageBucketVersioningConfiguration struct {
 	Enabled   bool    `json:"enabled"`
-	MFADelete *string `json:"mfaDelete"`
+	MFADelete *string `json:"mfa_delete"`
 	// MinIO extension - allows selective, prefix-level versioning exclusion.
 	// Requires versioning to be enabled
-	ExcludedPrefixes []string `json:"excludedPrefixes,omitempty"`
-	ExcludeFolders   *bool    `json:"excludeFolders"`
+	ExcludedPrefixes []string `json:"excluded_prefixes,omitempty"`
+	ExcludeFolders   *bool    `json:"exclude_folders"`
 }
 
 // StorageReplicationConfig replication configuration specified in
@@ -713,18 +713,18 @@ type StorageReplicationRule struct {
 	ID                        *string                        `json:"id,omitempty"`
 	Status                    StorageReplicationRuleStatus   `json:"status"`
 	Priority                  int                            `json:"priority"`
-	DeleteMarkerReplication   *DeleteMarkerReplication       `json:"deleteMarkerReplication"`
-	DeleteReplication         *DeleteReplication             `json:"deleteReplication"`
+	DeleteMarkerReplication   *DeleteMarkerReplication       `json:"delete_marker_replication"`
+	DeleteReplication         *DeleteReplication             `json:"delete_replication"`
 	Destination               *StorageReplicationDestination `json:"destination"`
 	Filter                    StorageReplicationFilter       `json:"filter"`
-	SourceSelectionCriteria   *SourceSelectionCriteria       `json:"sourceSelectionCriteria"`
-	ExistingObjectReplication *ExistingObjectReplication     `json:"existingObjectReplication,omitempty"`
+	SourceSelectionCriteria   *SourceSelectionCriteria       `json:"source_selection_criteria"`
+	ExistingObjectReplication *ExistingObjectReplication     `json:"existing_object_replication,omitempty"`
 }
 
 // Destination the destination in ReplicationConfiguration.
 type StorageReplicationDestination struct {
 	Bucket       string  `json:"bucket"`
-	StorageClass *string `json:"storageClass,omitempty"`
+	StorageClass *string `json:"storage_class,omitempty"`
 }
 
 // ExistingObjectReplication whether existing object replication is enabled
@@ -754,7 +754,7 @@ type ReplicaModifications struct {
 
 // SourceSelectionCriteria specifies additional source selection criteria in ReplicationConfiguration.
 type SourceSelectionCriteria struct {
-	ReplicaModifications *ReplicaModifications `json:"replicaModifications"`
+	ReplicaModifications *ReplicaModifications `json:"replica_modifications"`
 }
 
 // StorageReplicationFilter a filter for a replication configuration Rule.

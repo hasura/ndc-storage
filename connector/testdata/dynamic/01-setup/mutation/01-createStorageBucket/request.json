@@ -3,14 +3,14 @@
   "operations": [
     {
       "type": "procedure",
-      "name": "createStorageBucket",
+      "name": "create_storage_bucket",
       "arguments": {
-        "clientType": "azblob",
+        "client_type": "azblob",
         "endpoint": "http://local.hasura.dev:10000",
-        "accessKeyId": "local",
-        "secretAccessKey": "Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==",
+        "access_key_id": "local",
+        "secret_access_key": "Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==",
         "name": "azblob-dynamic",
-        "objectLock": false,
+        "object_lock": false,
         "region": "us-east-1",
         "tags": [
           {

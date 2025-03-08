@@ -3,9 +3,9 @@
   "operations": [
     {
       "type": "procedure",
-      "name": "createStorageBucket",
+      "name": "create_storage_bucket",
       "arguments": {
-        "clientId": "minio",
+        "client_id": "minio",
         "name": "minio-bucket-empty",
         "region": "us-east-1"
       },

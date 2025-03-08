@@ -210,7 +210,7 @@ func (mc *Client) validateListObjectsOptions(span trace.Span, opts *common.ListS
 	}
 
 	span.SetAttributes(
-		attribute.Bool("storage.options.recursive", !opts.Hierarchy),
+		attribute.Bool("storage.options.recursive", opts.Recursive),
 		attribute.Bool("storage.options.with_versions", opts.Include.Versions),
 		attribute.Bool("storage.options.with_metadata", opts.Include.Metadata),
 	)
@@ -231,7 +231,7 @@ func (mc *Client) validateListObjectsOptions(span trace.Span, opts *common.ListS
 		WithVersions: opts.Include.Versions,
 		WithMetadata: opts.Include.Metadata,
 		Prefix:       opts.Prefix,
-		Recursive:    !opts.Hierarchy,
+		Recursive:    opts.Recursive,
 		StartAfter:   opts.StartAfter,
 	}
 }

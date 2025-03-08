@@ -164,7 +164,7 @@ func (pe *PredicateEvaluator) EvalSelection(selection schema.NestedField) error 
 }
 
 func (pe *PredicateEvaluator) evalQuerySelectionFields(fields map[string]schema.Field) {
-	for _, key := range []string{"metadata", "rawMetadata"} {
+	for _, key := range []string{"metadata", "raw_metadata"} {
 		if _, ok := fields[key]; ok {
 			pe.Include.Metadata = true
 
@@ -188,7 +188,7 @@ func (pe *PredicateEvaluator) evalQuerySelectionFields(fields map[string]schema.
 		pe.Include.Copy = true
 	}
 
-	for _, key := range []string{"versionId", "versioning"} {
+	for _, key := range []string{"version_id", "versioning"} {
 		if _, ok := fields[key]; ok {
 			pe.Include.Versions = true
 
@@ -196,7 +196,7 @@ func (pe *PredicateEvaluator) evalQuerySelectionFields(fields map[string]schema.
 		}
 	}
 
-	if _, legalHoldExists := fields["legalHold"]; legalHoldExists {
+	if _, legalHoldExists := fields["legal_hold"]; legalHoldExists {
 		pe.Include.LegalHold = true
 	}
 
@@ -208,7 +208,7 @@ func (pe *PredicateEvaluator) evalQuerySelectionFields(fields map[string]schema.
 		pe.Include.Encryption = true
 	}
 
-	if _, ok := fields["objectLock"]; ok {
+	if _, ok := fields["object_lock"]; ok {
 		pe.IncludeObjectLock = true
 	}
 }
@@ -298,7 +298,7 @@ func (pe *PredicateEvaluator) evalPredicateClientID(expr *schema.ExpressionBinar
 	case OperatorEqual:
 		value, err := getComparisonValueString(expr.Value, pe.variables)
 		if err != nil {
-			return false, fmt.Errorf("clientId: %w", err)
+			return false, fmt.Errorf("client_id: %w", err)
 		}
 
 		if value == nil {
@@ -314,7 +314,7 @@ func (pe *PredicateEvaluator) evalPredicateClientID(expr *schema.ExpressionBinar
 
 		return string(*pe.ClientID) == *value, nil
 	default:
-		return false, fmt.Errorf("unsupported operator `%s` for clientId", expr.Operator)
+		return false, fmt.Errorf("unsupported operator `%s` for client_id", expr.Operator)
 	}
 }
 

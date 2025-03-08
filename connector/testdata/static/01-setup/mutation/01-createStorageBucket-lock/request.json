@@ -3,11 +3,11 @@
   "operations": [
     {
       "type": "procedure",
-      "name": "createStorageBucket",
+      "name": "create_storage_bucket",
       "arguments": {
-        "clientId": "minio",
+        "client_id": "minio",
         "name": "minio-bucket-lock",
-        "objectLock": true,
+        "object_lock": true,
         "region": "us-east-1"
       },
       "fields": {

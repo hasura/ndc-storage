@@ -9,7 +9,7 @@
       "value": ""
     }
   },
-  "collection": "storageIncompleteUploads",
+  "collection": "storage_incomplete_uploads",
   "collection_relationships": {},
   "query": {
     "fields": {
@@ -30,8 +30,8 @@
                 "column": "size",
                 "type": "column"
               },
-              "storageClass": {
-                "column": "storageClass",
+              "storage_class": {
+                "column": "storage_class",
                 "type": "column"
               },
               "uploadId": {
