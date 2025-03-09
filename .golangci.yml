@@ -56,7 +56,12 @@ linters-settings:
     checks:
       - all
       - -ST1003
-
+  exhaustive:
+    check:
+      - switch
+      - map
+    check-generated: true
+    default-signifies-exhaustive: true
 issues:
   exclude-files:
     - ".*_test\\.go$"

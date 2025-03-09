@@ -1,14 +1,17 @@
 package fs
 
 import (
+	"encoding/json"
 	"fmt"
 
+	"github.com/hasura/ndc-sdk-go/utils"
 	"github.com/hasura/ndc-storage/connector/storage/common"
+	"github.com/invopop/jsonschema"
 )
 
 var defaultFilePermissions FilePermissionConfig = FilePermissionConfig{
-	Directory: 644,
-	File:      644,
+	Directory: 0o755,
+	File:      0o644,
 }
 
 // ClientConfig represent the raw configuration of a MinIO client.
@@ -26,18 +29,69 @@ type ClientConfig struct {
 }
 
 // Validate checks if the configuration is valid.
-func (fpc ClientConfig) Validate() error {
-	if fpc.Permissions == nil {
+func (cc ClientConfig) Validate() error {
+	if cc.Permissions == nil {
 		return nil
 	}
 
-	return fpc.Permissions.Validate()
+	return cc.Permissions.Validate()
+}
+
+// ToBaseConfig creates a BaseClientConfig instance.
+func (cc ClientConfig) ToBaseConfig() *common.BaseClientConfig {
+	return &common.BaseClientConfig{
+		ID:   cc.ID,
+		Type: cc.Type,
+		DefaultBucket: utils.EnvString{
+			Value: &cc.DefaultDirectory,
+		},
+		AllowedBuckets: cc.AllowedDirectories,
+	}
+}
+
+// JSONSchema is used to generate a custom jsonschema.
+func (cc ClientConfig) JSONSchema() *jsonschema.Schema {
+	properties := jsonschema.NewProperties()
+
+	properties.Set("type", &jsonschema.Schema{
+		Description: "Cloud provider type of the storage client",
+		Type:        "string",
+		Enum:        []any{common.StorageProviderTypeFs},
+	})
+
+	properties.Set("id", &jsonschema.Schema{
+		Description: "The unique identity of a client. Use this setting if there are many configured clients",
+		Type:        "string",
+	})
+
+	properties.Set("defaultDirectory", &jsonschema.Schema{
+		Description: "Default directory location to be set if the user doesn't specify any bucket",
+		Type:        "string",
+	})
+
+	properties.Set("allowedDirectories", &jsonschema.Schema{
+		Description: "Allowed directories. This setting prevents users to browse files outside the list",
+		Type:        "array",
+		Items: &jsonschema.Schema{
+			Type: "string",
+		},
+	})
+
+	properties.Set("permissions", FilePermissionConfig{}.JSONSchema())
+
+	return &jsonschema.Schema{
+		Type:       "object",
+		Properties: properties,
+		Required:   []string{"type", "defaultDirectory"},
+	}
 }
 
 // FilePermissionConfig the default file permission configuration.
 type FilePermissionConfig struct {
-	Directory int `json:"directory" jsonschema:"default=644,min=0,max=777" mapstructure:"directory" yaml:"directory"`
-	File      int `json:"file"      jsonschema:"default=644,min=0,max=777" mapstructure:"file"      yaml:"file"`
+	// Default directory permission.
+	Directory int `json:"directory" mapstructure:"directory" yaml:"directory"`
+	// Default file permission.
+	File int `json:"file" mapstructure:"file" yaml:"file"`
 }
 
 // Validate checks if the configuration is valid.
@@ -59,4 +113,31 @@ func (fpc FilePermissionConfig) validatePermission(key string, perm int) error {
 	}
 
 	return nil
+}
+
+// JSONSchema is used to generate a custom jsonschema.
+func (fpc FilePermissionConfig) JSONSchema() *jsonschema.Schema {
+	properties := jsonschema.NewProperties()
+
+	properties.Set("directory", &jsonschema.Schema{
+		Description: "Default directory permission",
+		Type:        "integer",
+		Default:     644,
+		Minimum:     json.Number("0"),
+		Maximum:     json.Number("777"),
+	})
+
+	properties.Set("file", &jsonschema.Schema{
+		Description: "Default file permission",
+		Type:        "integer",
+		Default:     644,
+		Minimum:     json.Number("0"),
+		Maximum:     json.Number("777"),
+	})
+
+	return &jsonschema.Schema{
+		Type:       "object",
+		Properties: properties,
+		Required:   []string{"directory", "file"},
+	}
 }

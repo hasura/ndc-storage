@@ -33,7 +33,7 @@ type ClientConfig struct {
 func (cc ClientConfig) JSONSchema() *jsonschema.Schema {
 	envStringRef := "#/$defs/EnvString"
 
-	result := cc.BaseClientConfig.GetJSONSchema([]any{common.S3})
+	result := cc.BaseClientConfig.GetJSONSchema([]any{common.StorageProviderTypeS3})
 	result.Required = append(result.Required, "authentication")
 
 	result.Properties.Set("region", &jsonschema.Schema{
@@ -81,14 +81,12 @@ func (cc ClientConfig) toMinioOptions(providerType common.StorageProviderType, l
 
 	if endpointURL == nil {
 		switch providerType {
-		case common.S3:
+		case common.StorageProviderTypeS3:
 			endpoint = "s3.amazonaws.com"
 			useSSL = true
-		case common.GoogleStorage:
+		case common.StorageProviderTypeGcs:
 			endpoint = "storage.googleapis.com"
 			useSSL = true
-		case common.AzureBlobStore:
-			return nil, "", errRequireStorageEndpoint
 		default:
 			return nil, "", errRequireStorageEndpoint
 		}

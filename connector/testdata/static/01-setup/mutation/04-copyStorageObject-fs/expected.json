@@ -1,0 +1,12 @@
+{
+  "operation_results": [
+    {
+      "result": {
+        "bucket": "/home/nonroot/data",
+        "name": "public/hello2.txt",
+        "size": -1
+      },
+      "type": "procedure"
+    }
+  ]
+}

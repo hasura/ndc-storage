@@ -1,0 +1,22 @@
+{
+  "operation_results": [
+    {
+      "result": {
+        "bucket": "/home/nonroot/data",
+        "checksum_crc32": null,
+        "checksum_crc32c": null,
+        "checksum_crc64_nvme": null,
+        "checksum_sha1": null,
+        "checksum_sha256": null,
+        "etag": null,
+        "expiration": null,
+        "expiration_rule_id": null,
+        "last_modified": null,
+        "location": null,
+        "name": "hello.txt",
+        "size": 10
+      },
+      "type": "procedure"
+    }
+  ]
+}

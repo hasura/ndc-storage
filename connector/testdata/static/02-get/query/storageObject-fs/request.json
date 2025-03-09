@@ -1,0 +1,59 @@
+{
+  "arguments": {
+    "client_id": {
+      "type": "literal",
+      "value": "fs"
+    },
+    "name": {
+      "type": "literal",
+      "value": "public/hello2.txt"
+    },
+    "where": {
+      "type": "literal",
+      "value": {
+        "type": "and",
+        "expressions": [
+          {
+            "type": "binary_comparison_operator",
+            "column": { "type": "column", "name": "name", "path": [] },
+            "operator": "_starts_with",
+            "value": { "type": "scalar", "value": "public" }
+          },
+          {
+            "type": "binary_comparison_operator",
+            "column": { "type": "column", "name": "bucket", "path": [] },
+            "operator": "_eq",
+            "value": { "type": "scalar", "value": "/home/nonroot/data" }
+          }
+        ]
+      }
+    }
+  },
+  "collection": "storage_object",
+  "collection_relationships": {},
+  "query": {
+    "fields": {
+      "__value": {
+        "column": "__value",
+        "fields": {
+          "fields": {
+            "bucket": {
+              "column": "bucket",
+              "type": "column"
+            },
+            "name": {
+              "column": "name",
+              "type": "column"
+            },
+            "size": {
+              "column": "size",
+              "type": "column"
+            }
+          },
+          "type": "object"
+        },
+        "type": "column"
+      }
+    }
+  }
+}

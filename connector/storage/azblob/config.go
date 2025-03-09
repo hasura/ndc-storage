@@ -35,7 +35,7 @@ type ClientConfig struct {
 
 // JSONSchema is used to generate a custom jsonschema.
 func (cc ClientConfig) JSONSchema() *jsonschema.Schema {
-	result := cc.BaseClientConfig.GetJSONSchema([]any{common.AzureBlobStore})
+	result := cc.BaseClientConfig.GetJSONSchema([]any{common.StorageProviderTypeAzblob})
 	result.Required = append(result.Required, "authentication")
 	result.Properties.Set("authentication", cc.Authentication.JSONSchema())
 

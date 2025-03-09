@@ -2,11 +2,12 @@ package fs
 
 import (
 	"context"
-	"log/slog"
+	"os"
 	"slices"
 
 	"github.com/hasura/ndc-sdk-go/connector"
 	"github.com/hasura/ndc-storage/connector/storage/common"
+	"github.com/spf13/afero"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/trace"
 )
@@ -15,6 +16,8 @@ var tracer = connector.NewTracer("connector/storage/fs")
 
 // Client represents a file system client wrapper.
 type Client struct {
+	client             afero.Fs
+	clientType         string
 	defaultDirectory   string
 	allowedDirectories []string
 	permissions        FilePermissionConfig
@@ -22,9 +25,11 @@ type Client struct {
 
 var _ common.StorageClient = &Client{}
 
-// New creates a new Minio client.
-func New(ctx context.Context, config *ClientConfig, logger *slog.Logger) (*Client, error) {
+// New creates a new generic filesystem client.
+func New(client afero.Fs, config *ClientConfig) (*Client, error) {
 	mc := &Client{
+		clientType:         string(config.Type),
+		client:             client,
 		defaultDirectory:   config.DefaultDirectory,
 		allowedDirectories: config.AllowedDirectories,
 		permissions:        defaultFilePermissions,
@@ -43,11 +48,16 @@ func New(ctx context.Context, config *ClientConfig, logger *slog.Logger) (*Clien
 	return mc, nil
 }
 
+// NewOSFileSystem creates a new OS file system client.
+func NewOSFileSystem(config *ClientConfig) (*Client, error) {
+	return New(afero.NewOsFs(), config)
+}
+
 func (c *Client) startOtelSpan(ctx context.Context, name string, bucketName string) (context.Context, trace.Span) {
 	ctx, span := tracer.Start(ctx, name, trace.WithSpanKind(trace.SpanKindClient))
 	span.SetAttributes(
 		common.NewDBSystemAttribute(),
-		attribute.String("rpc.system", "fs"),
+		attribute.String("rpc.system", c.clientType),
 	)
 
 	if bucketName != "" {
@@ -55,4 +65,14 @@ func (c *Client) startOtelSpan(ctx context.Context, name string, bucketName stri
 	}
 
 	return ctx, span
+}
+
+func (c *Client) lstatIfPossible(name string) (os.FileInfo, error) {
+	if lstater, ok := c.client.(afero.Lstater); ok {
+		result, _, err := lstater.LstatIfPossible(name)
+
+		return result, err
+	}
+
+	return c.client.Stat(name)
 }

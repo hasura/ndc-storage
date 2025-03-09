@@ -1,0 +1,22 @@
+{
+  "collection_relationships": {},
+  "operations": [
+    {
+      "type": "procedure",
+      "name": "create_storage_bucket",
+      "arguments": {
+        "client_id": "fs",
+        "name": "/home/nonroot/test"
+      },
+      "fields": {
+        "fields": {
+          "success": {
+            "column": "success",
+            "type": "column"
+          }
+        },
+        "type": "object"
+      }
+    }
+  ]
+}

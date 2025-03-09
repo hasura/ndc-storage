@@ -176,7 +176,7 @@ func (m *Manager) createTemporaryClient(ctx context.Context, arguments common.St
 	_, span := tracer.Start(ctx, "createTemporaryClient")
 	defer span.End()
 
-	clientType := common.S3
+	clientType := common.StorageProviderTypeS3
 
 	if arguments.ClientType != nil && *arguments.ClientType != "" {
 		clientType = *arguments.ClientType
@@ -188,7 +188,7 @@ func (m *Manager) createTemporaryClient(ctx context.Context, arguments common.St
 	span.SetAttributes(attribute.String("storage.client.type", string(clientType)))
 
 	switch clientType {
-	case common.AzureBlobStore:
+	case common.StorageProviderTypeAzblob:
 		if arguments.Endpoint == "" {
 			return nil, schema.UnprocessableContentError("endpoint is required for azblob", nil)
 		}
@@ -232,7 +232,7 @@ func (m *Manager) createTemporaryClient(ctx context.Context, arguments common.St
 			StorageClient:          client,
 			defaultPresignedExpiry: &defaultPresignedExpiry,
 		}, nil
-	case common.S3, common.GoogleStorage:
+	case common.StorageProviderTypeS3, common.StorageProviderTypeGcs:
 		fallthrough
 	default:
 		if arguments.AccessKeyID == "" && arguments.SecretAccessKey == "" {

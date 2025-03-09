@@ -2196,7 +2196,7 @@ func GetConnectorSchema() *schema.SchemaResponse {
 			"StorageProviderType": schema.ScalarType{
 				AggregateFunctions:  schema.ScalarTypeAggregateFunctions{},
 				ComparisonOperators: map[string]schema.ComparisonOperatorDefinition{},
-				Representation:      schema.NewTypeRepresentationEnum([]string{"s3", "gcs", "azblob"}).Encode(),
+				Representation:      schema.NewTypeRepresentationEnum([]string{"s3", "gcs", "azblob", "fs"}).Encode(),
 			},
 			"StorageRetentionMode": schema.ScalarType{
 				AggregateFunctions:  schema.ScalarTypeAggregateFunctions{},

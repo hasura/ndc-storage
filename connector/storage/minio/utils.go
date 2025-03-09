@@ -204,7 +204,7 @@ func serializeObjectInfo(obj *minio.ObjectInfo, fromList bool) common.StorageObj
 }
 
 func (mc *Client) validateListObjectsOptions(span trace.Span, opts *common.ListStorageObjectsOptions) minio.ListObjectsOptions {
-	if mc.providerType == common.GoogleStorage && opts.Include.Versions {
+	if mc.providerType == common.StorageProviderTypeGcs && opts.Include.Versions {
 		// Force versioning off. GCS doesn't support AWS S3 compatible versioning API.
 		opts.Include.Versions = false
 	}

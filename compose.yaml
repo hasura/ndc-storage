@@ -9,6 +9,8 @@ services:
     volumes:
       - ./tests/configuration:/etc/connector:ro
       - ./tests/certs/service_account.json:/service_account.json
+      - fs_data:/home/nonroot/data
+    user: "65532:65532"
     extra_hosts:
       - local.hasura.dev=host-gateway
     environment:
@@ -92,3 +94,4 @@ services:
 volumes:
   minio_data:
   s3_data:
+  fs_data:

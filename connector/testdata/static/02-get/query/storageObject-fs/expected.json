@@ -1,0 +1,13 @@
+[
+  {
+    "rows": [
+      {
+        "__value": {
+          "bucket": "/home/nonroot/data",
+          "name": "public/hello2.txt",
+          "size": 10
+        }
+      }
+    ]
+  }
+]

@@ -1342,15 +1342,16 @@ const (
 	StorageProviderTypeS3     StorageProviderType = "s3"
 	StorageProviderTypeGcs    StorageProviderType = "gcs"
 	StorageProviderTypeAzblob StorageProviderType = "azblob"
+	StorageProviderTypeFs     StorageProviderType = "fs"
 )
 
-var enumValues_StorageProviderType = []StorageProviderType{StorageProviderTypeS3, StorageProviderTypeGcs, StorageProviderTypeAzblob}
+var enumValues_StorageProviderType = []StorageProviderType{StorageProviderTypeS3, StorageProviderTypeGcs, StorageProviderTypeAzblob, StorageProviderTypeFs}
 
 // ParseStorageProviderType parses a StorageProviderType enum from string
 func ParseStorageProviderType(input string) (StorageProviderType, error) {
 	result := StorageProviderType(input)
 	if !slices.Contains(enumValues_StorageProviderType, result) {
-		return StorageProviderType(""), errors.New("failed to parse StorageProviderType, expect one of [s3, gcs, azblob]")
+		return StorageProviderType(""), errors.New("failed to parse StorageProviderType, expect one of [s3, gcs, azblob, fs]")
 	}
 
 	return result, nil

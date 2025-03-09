@@ -9,6 +9,7 @@ import (
 
 	"github.com/hasura/ndc-sdk-go/schema"
 	"github.com/hasura/ndc-storage/connector/storage/common"
+	"github.com/spf13/afero"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/codes"
 )
@@ -18,7 +19,7 @@ func (c *Client) MakeBucket(ctx context.Context, args *common.MakeStorageBucketO
 	_, span := c.startOtelSpan(ctx, "MakeBucket", args.Name)
 	defer span.End()
 
-	err := os.MkdirAll(args.Name, os.FileMode(c.permissions.Directory))
+	err := c.client.MkdirAll(args.Name, os.FileMode(c.permissions.Directory))
 	if err != nil {
 		span.SetStatus(codes.Error, err.Error())
 		span.RecordError(err)
@@ -116,9 +117,9 @@ func (c *Client) RemoveBucket(ctx context.Context, bucketName string) error {
 	_, span := c.startOtelSpan(ctx, "RemoveBucket", bucketName)
 	defer span.End()
 
-	dirInfo, err := os.Lstat(bucketName)
+	dirInfo, err := c.lstatIfPossible(bucketName)
 	if err != nil {
-		if os.IsNotExist(err) {
+		if errors.Is(err, afero.ErrFileNotFound) {
 			return nil
 		}
 
@@ -135,7 +136,7 @@ func (c *Client) RemoveBucket(ctx context.Context, bucketName string) error {
 		return schema.UnprocessableContentError(err.Error(), nil)
 	}
 
-	err = os.RemoveAll(bucketName)
+	err = c.client.RemoveAll(bucketName)
 	if err != nil {
 		span.SetStatus(codes.Error, err.Error())
 		span.RecordError(err)

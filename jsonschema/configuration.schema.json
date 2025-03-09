@@ -417,6 +417,60 @@
             "authentication",
             "projectId"
           ]
+        },
+        {
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": [
+                "fs"
+              ],
+              "description": "Cloud provider type of the storage client"
+            },
+            "id": {
+              "type": "string",
+              "description": "The unique identity of a client. Use this setting if there are many configured clients"
+            },
+            "defaultDirectory": {
+              "type": "string",
+              "description": "Default directory location to be set if the user doesn't specify any bucket"
+            },
+            "allowedDirectories": {
+              "items": {
+                "type": "string"
+              },
+              "type": "array",
+              "description": "Allowed directories. This setting prevents users to browse files outside the list"
+            },
+            "permissions": {
+              "properties": {
+                "directory": {
+                  "type": "integer",
+                  "maximum": 777,
+                  "minimum": 0,
+                  "description": "Default directory permission",
+                  "default": 644
+                },
+                "file": {
+                  "type": "integer",
+                  "maximum": 777,
+                  "minimum": 0,
+                  "description": "Default file permission",
+                  "default": 644
+                }
+              },
+              "type": "object",
+              "required": [
+                "directory",
+                "file"
+              ]
+            }
+          },
+          "type": "object",
+          "required": [
+            "type",
+            "defaultDirectory"
+          ]
         }
       ]
     },

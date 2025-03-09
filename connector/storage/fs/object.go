@@ -3,15 +3,18 @@ package fs
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"io"
 	"log/slog"
 	"os"
 	"path/filepath"
+	"slices"
 	"strings"
 	"time"
 
 	"github.com/hasura/ndc-sdk-go/schema"
 	"github.com/hasura/ndc-storage/connector/storage/common"
+	"github.com/spf13/afero"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/codes"
 	"golang.org/x/sync/errgroup"
@@ -23,51 +26,136 @@ func (c *Client) ListObjects(ctx context.Context, bucketName string, opts *commo
 	defer span.End()
 
 	var count int
-	maxResults := opts.MaxResults
-	objects := make([]common.StorageObject, 0)
+	result := &common.StorageObjectListResults{
+		Objects: make([]common.StorageObject, 0),
+	}
 
-	files, err := filepath.Glob(bucketName)
-	if err != nil {
+	root := filepath.Clean(opts.Prefix)
+	prefixPath := filepath.Join(bucketName, root)
+
+	span.SetAttributes(
+		attribute.String("storage.object.prefix", prefixPath),
+		attribute.Bool("storage.option.recursive", opts.Recursive),
+	)
+
+	prefixFile, err := c.lstatIfPossible(prefixPath)
+	if err != nil && !errors.Is(err, afero.ErrFileNotFound) {
 		span.SetStatus(codes.Error, err.Error())
 		span.RecordError(err)
 
 		return nil, schema.UnprocessableContentError(err.Error(), nil)
 	}
 
-	pageInfo := common.StoragePaginationInfo{}
-	started := opts.StartAfter == ""
+	if prefixFile == nil {
+		baseDir := filepath.Dir(prefixPath)
 
-	for _, objectName := range files {
-		if !started {
-			started = strings.TrimRight(objectName, "/") == strings.TrimRight(opts.StartAfter, "/")
+		filterFn := func(name string) bool {
+			if root != "" && !strings.HasPrefix(name, root) {
+				return false
+			}
 
-			continue
+			return predicate == nil || predicate(name)
 		}
 
-		if predicate == nil || predicate(objectName) {
-			result := common.StorageObject{
-				Bucket: bucketName,
-				Name:   objectName,
-			}
-			objects = append(objects, result)
-			count++
+		if err := c.walkDir(result, bucketName, baseDir, opts, filterFn); err != nil {
+			span.SetStatus(codes.Error, err.Error())
+			span.RecordError(err)
 
-			if maxResults > 0 && count >= maxResults {
-				pageInfo.HasNextPage = len(files) > maxResults
-
-				break
-			}
+			return nil, schema.UnprocessableContentError(err.Error(), nil)
 		}
+
+		return result, nil
+	}
+
+	if !prefixFile.IsDir() {
+		if predicate == nil || predicate(root) {
+			result.Objects = append(result.Objects, serializeStorageObject(root, prefixFile))
+		}
+
+		return result, nil
+	}
+
+	if err := c.walkDirInfo(result, bucketName, root, opts, predicate); err != nil {
+		span.SetStatus(codes.Error, err.Error())
+		span.RecordError(err)
+
+		return nil, schema.UnprocessableContentError(err.Error(), nil)
 	}
 
 	span.SetAttributes(attribute.Int("storage.object_count", count))
 
-	results := &common.StorageObjectListResults{
-		Objects:  objects,
-		PageInfo: pageInfo,
+	return result, nil
+}
+
+func (c *Client) walkDir(result *common.StorageObjectListResults, bucketName string, root string, opts *common.ListStorageObjectsOptions, predicate func(string) bool) error {
+	rootStat, err := c.lstatIfPossible(filepath.Join(bucketName, root))
+	if err != nil {
+		if errors.Is(err, afero.ErrFileNotFound) {
+			return nil
+		}
+
+		return err
 	}
 
-	return results, nil
+	if !rootStat.IsDir() {
+		if predicate == nil || predicate(root) {
+			result.Objects = append(result.Objects, serializeStorageObject(root, rootStat))
+		}
+
+		return nil
+	}
+
+	return c.walkDirInfo(result, bucketName, root, opts, predicate)
+}
+
+func (c *Client) walkDirInfo(result *common.StorageObjectListResults, bucketName string, root string, opts *common.ListStorageObjectsOptions, predicate func(string) bool) error {
+	dir, err := c.client.Open(filepath.Join(bucketName, root))
+	if err != nil {
+		return err
+	}
+
+	names, err := dir.Readdirnames(-1)
+	dir.Close()
+
+	if err != nil {
+		return err
+	}
+
+	slices.Sort(names)
+
+	for i, name := range names {
+		relPath := filepath.Join(root, name)
+		if predicate != nil && !predicate(relPath) {
+			continue
+		}
+
+		absPath := filepath.Join(bucketName, relPath)
+		stat, err := c.lstatIfPossible(absPath)
+
+		switch {
+		case err != nil:
+			if errors.Is(err, afero.ErrFileNotFound) {
+				continue
+			}
+
+			result.Objects = append(result.Objects, common.StorageObject{
+				Bucket: bucketName,
+				Name:   relPath,
+			})
+		case !opts.Recursive || !stat.IsDir():
+			result.Objects = append(result.Objects, serializeStorageObject(relPath, stat))
+		default:
+			_ = c.walkDir(result, bucketName, relPath, opts, predicate)
+		}
+
+		if opts.MaxResults > 0 && len(result.Objects) >= opts.MaxResults {
+			result.PageInfo.HasNextPage = result.PageInfo.HasNextPage || i < len(names)-1
+
+			break
+		}
+	}
+
+	return nil
 }
 
 // ListIncompleteUploads list partially uploaded objects in a bucket.
@@ -101,9 +189,9 @@ func (c *Client) GetObject(ctx context.Context, bucketName, objectName string, o
 
 	filePath := filepath.Join(bucketName, objectName)
 
-	object, err := os.Open(filePath)
+	object, err := c.client.Open(filePath)
 	if err != nil {
-		if os.IsNotExist(err) {
+		if errors.Is(err, afero.ErrFileNotFound) {
 			return nil, nil
 		}
 
@@ -128,10 +216,10 @@ func (c *Client) PutObject(ctx context.Context, bucketName string, objectName st
 	)
 
 	filePath := filepath.Join(bucketName, objectName)
-	if strings.Contains(objectName, "/") {
+	if strings.Contains(objectName, "/") || strings.Contains(objectName, "\\") {
 		// ensure that the directory exists
 		baseDir := filepath.Dir(filePath)
-		if err := os.MkdirAll(baseDir, os.FileMode(c.permissions.Directory)); err != nil {
+		if err := c.client.MkdirAll(baseDir, os.FileMode(c.permissions.Directory)); err != nil {
 			span.SetStatus(codes.Error, err.Error())
 			span.RecordError(err)
 
@@ -139,7 +227,7 @@ func (c *Client) PutObject(ctx context.Context, bucketName string, objectName st
 		}
 	}
 
-	file, err := os.OpenFile(filePath, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, os.FileMode(c.permissions.File))
+	file, err := c.client.OpenFile(filePath, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, os.FileMode(c.permissions.File))
 	if err != nil {
 		span.SetStatus(codes.Error, err.Error())
 		span.RecordError(err)
@@ -177,7 +265,7 @@ func (c *Client) CopyObject(ctx context.Context, dest common.StorageCopyDestOpti
 
 	srcPath := filepath.Join(src.Bucket, src.Name)
 
-	srcFile, err := os.Open(srcPath)
+	srcFile, err := c.client.Open(srcPath)
 	if err != nil {
 		span.SetStatus(codes.Error, err.Error())
 		span.RecordError(err)
@@ -212,9 +300,9 @@ func (c *Client) StatObject(ctx context.Context, bucketName, objectName string, 
 
 	filePath := filepath.Join(bucketName, objectName)
 
-	object, err := os.Lstat(filePath)
+	object, err := c.lstatIfPossible(filePath)
 	if err != nil {
-		if os.IsNotExist(err) {
+		if errors.Is(err, afero.ErrFileNotFound) {
 			return nil, nil
 		}
 
@@ -253,7 +341,7 @@ func (c *Client) RemoveObject(ctx context.Context, bucketName string, objectName
 
 	filePath := filepath.Join(bucketName, objectName)
 
-	err := os.RemoveAll(filePath)
+	err := c.client.RemoveAll(filePath)
 	if err != nil {
 		span.SetStatus(codes.Error, err.Error())
 		span.RecordError(err)
@@ -290,7 +378,7 @@ func (c *Client) RemoveObjects(ctx context.Context, bucketName string, opts *com
 		for _, object := range objects.Objects {
 			filePath := filepath.Join(object.Bucket, object.Name)
 
-			err := os.RemoveAll(filePath)
+			err := c.client.RemoveAll(filePath)
 			if err != nil {
 				errs = append(errs, common.RemoveStorageObjectError{
 					ObjectName: object.Name,
@@ -306,7 +394,7 @@ func (c *Client) RemoveObjects(ctx context.Context, bucketName string, opts *com
 			eg.Go(func() error {
 				filePath := filepath.Join(bucketName, name)
 
-				err := os.RemoveAll(filePath)
+				err := c.client.RemoveAll(filePath)
 				if err != nil {
 					errs = append(errs, common.RemoveStorageObjectError{
 						ObjectName: name,
