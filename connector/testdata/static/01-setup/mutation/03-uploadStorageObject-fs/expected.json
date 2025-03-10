@@ -2,7 +2,7 @@
   "operation_results": [
     {
       "result": {
-        "bucket": "/home/nonroot/data",
+        "bucket": "../tmp/data",
         "checksum_crc32": null,
         "checksum_crc32c": null,
         "checksum_crc64_nvme": null,

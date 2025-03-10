@@ -7,7 +7,7 @@
             {
               "cursor": "hello.txt",
               "node": {
-                "bucket": "/home/nonroot/data",
+                "bucket": "../tmp/data",
                 "client_id": "fs",
                 "is_directory": false,
                 "name": "hello.txt",
@@ -17,7 +17,7 @@
             {
               "cursor": "public/hello2.txt",
               "node": {
-                "bucket": "/home/nonroot/data",
+                "bucket": "../tmp/data",
                 "client_id": "fs",
                 "is_directory": false,
                 "name": "public/hello2.txt",

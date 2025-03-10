@@ -179,7 +179,8 @@ clients:
         env: GOOGLE_STORAGE_CREDENTIALS_FILE
   - id: fs
     type: fs
-    defaultDirectory: /home/nonroot/data
+    defaultDirectory:
+      env: STORAGE_FS_DEFAULT_DIRECTORY
 concurrency:
   query: 10
   mutation: 10

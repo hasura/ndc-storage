@@ -18,7 +18,6 @@ var tracer = connector.NewTracer("connector/storage/fs")
 type Client struct {
 	client             afero.Fs
 	clientType         string
-	defaultDirectory   string
 	allowedDirectories []string
 	permissions        FilePermissionConfig
 }
@@ -27,16 +26,20 @@ var _ common.StorageClient = &Client{}
 
 // New creates a new generic filesystem client.
 func New(client afero.Fs, config *ClientConfig) (*Client, error) {
+	defaultDirectory, err := config.DefaultDirectory.GetOrDefault("")
+	if err != nil {
+		return nil, err
+	}
+
 	mc := &Client{
 		clientType:         string(config.Type),
 		client:             client,
-		defaultDirectory:   config.DefaultDirectory,
 		allowedDirectories: config.AllowedDirectories,
 		permissions:        defaultFilePermissions,
 	}
 
-	if !slices.Contains(mc.allowedDirectories, mc.defaultDirectory) {
-		mc.allowedDirectories = append(mc.allowedDirectories, mc.defaultDirectory)
+	if defaultDirectory != "" && !slices.Contains(mc.allowedDirectories, defaultDirectory) {
+		mc.allowedDirectories = append(mc.allowedDirectories, defaultDirectory)
 	}
 
 	slices.Sort(mc.allowedDirectories)

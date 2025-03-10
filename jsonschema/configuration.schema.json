@@ -432,7 +432,7 @@
               "description": "The unique identity of a client. Use this setting if there are many configured clients"
             },
             "defaultDirectory": {
-              "type": "string",
+              "$ref": "#/$defs/EnvString",
               "description": "Default directory location to be set if the user doesn't specify any bucket"
             },
             "allowedDirectories": {

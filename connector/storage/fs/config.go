@@ -23,7 +23,7 @@ type ClientConfig struct {
 	// Default directory for storage files.
 	Permissions *FilePermissionConfig `json:"permissions,omitempty" mapstructure:"permissions" yaml:"permissions"`
 	// Default directory for storage files.
-	DefaultDirectory string `json:"defaultDirectory" mapstructure:"defaultDirectory" yaml:"defaultDirectory"`
+	DefaultDirectory utils.EnvString `json:"defaultDirectory" mapstructure:"defaultDirectory" yaml:"defaultDirectory"`
 	// Allowed directories. This setting prevents users to browse files outside the list.
 	AllowedDirectories []string `json:"allowedDirectories,omitempty" mapstructure:"allowedDirectories" yaml:"allowedDirectories,omitempty"`
 }
@@ -40,17 +40,16 @@ func (cc ClientConfig) Validate() error {
 // ToBaseConfig creates a BaseClientConfig instance.
 func (cc ClientConfig) ToBaseConfig() *common.BaseClientConfig {
 	return &common.BaseClientConfig{
-		ID:   cc.ID,
-		Type: cc.Type,
-		DefaultBucket: utils.EnvString{
-			Value: &cc.DefaultDirectory,
-		},
+		ID:             cc.ID,
+		Type:           cc.Type,
+		DefaultBucket:  cc.DefaultDirectory,
 		AllowedBuckets: cc.AllowedDirectories,
 	}
 }
 
 // JSONSchema is used to generate a custom jsonschema.
 func (cc ClientConfig) JSONSchema() *jsonschema.Schema {
+	envStringRefName := "#/$defs/EnvString"
 	properties := jsonschema.NewProperties()
 
 	properties.Set("type", &jsonschema.Schema{
@@ -66,7 +65,7 @@ func (cc ClientConfig) JSONSchema() *jsonschema.Schema {
 
 	properties.Set("defaultDirectory", &jsonschema.Schema{
 		Description: "Default directory location to be set if the user doesn't specify any bucket",
-		Type:        "string",
+		Ref:         envStringRefName,
 	})
 
 	properties.Set("allowedDirectories", &jsonschema.Schema{

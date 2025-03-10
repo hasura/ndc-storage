@@ -3,7 +3,7 @@
   "operations": [
     {
       "type": "procedure",
-      "name": "create_storage_bucket",
+      "name": "remove_storage_bucket",
       "arguments": {
         "client_id": "fs",
         "name": "../tmp/data"
