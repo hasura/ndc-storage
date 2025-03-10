@@ -51,7 +51,7 @@
                 "lease_state": null,
                 "lease_status": null,
                 "legal_hold": false,
-                "media_link": "http://0.0.0.0:4443/download/storage/v1/b/gcs-bucket/o/public%2Fhello.txt?alt=media",
+                "media_link": "https://0.0.0.0:4443/download/storage/v1/b/gcs-bucket/o/public%2Fhello.txt?alt=media",
                 "metadata": [
                   { "key": "Foo", "value": "gcp-baz" },
                   { "key": "UserID", "value": "3" }

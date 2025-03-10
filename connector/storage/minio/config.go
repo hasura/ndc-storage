@@ -52,6 +52,9 @@ func (cc ClientConfig) JSONSchema() *jsonschema.Schema {
 		Description: "TrailingHeaders indicates server support of trailing headers. Only supported for v4 signatures",
 		Type:        "boolean",
 	})
+	result.Properties.Set("http", &jsonschema.Schema{
+		Ref: "#/$defs/HTTPTransportTLSConfig",
+	})
 
 	return result
 }

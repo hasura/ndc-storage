@@ -109,6 +109,9 @@
             "trailingHeaders": {
               "type": "boolean",
               "description": "TrailingHeaders indicates server support of trailing headers. Only supported for v4 signatures"
+            },
+            "http": {
+              "$ref": "#/$defs/HTTPTransportTLSConfig"
             }
           },
           "type": "object",
@@ -299,6 +302,9 @@
                   }
                 }
               ]
+            },
+            "http": {
+              "$ref": "#/$defs/HTTPTransportTLSConfig"
             }
           },
           "type": "object",
@@ -408,6 +414,9 @@
             "projectId": {
               "$ref": "#/$defs/EnvString",
               "description": "Project ID of the Google Cloud account"
+            },
+            "http": {
+              "$ref": "#/$defs/HTTPTransportTLSConfig"
             }
           },
           "type": "object",

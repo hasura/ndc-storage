@@ -38,6 +38,9 @@ func (cc ClientConfig) JSONSchema() *jsonschema.Schema {
 	result := cc.BaseClientConfig.GetJSONSchema([]any{common.StorageProviderTypeAzblob})
 	result.Required = append(result.Required, "authentication")
 	result.Properties.Set("authentication", cc.Authentication.JSONSchema())
+	result.Properties.Set("http", &jsonschema.Schema{
+		Ref: "#/$defs/HTTPTransportTLSConfig",
+	})
 
 	return result
 }

@@ -6,7 +6,7 @@
       "name": "upload_storage_object_as_base64",
       "arguments": {
         "client_type": "azblob",
-        "endpoint": "http://local.hasura.dev:10000",
+        "endpoint": "https://local.hasura.dev:10000",
         "access_key_id": "local",
         "secret_access_key": "Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==",
         "bucket": "azblob-dynamic",

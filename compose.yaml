@@ -9,6 +9,7 @@ services:
     volumes:
       - ./tests/configuration:/etc/connector:ro
       - ./tests/certs/service_account.json:/service_account.json
+      - ./tests/certs/tls:/certs:ro
       - fs_data:/home/nonroot/data
     user: "65532:65532"
     extra_hosts:
@@ -25,7 +26,7 @@ services:
       S3_ACCESS_KEY_ID: $S3_ACCESS_KEY_ID
       S3_SECRET_ACCESS_KEY: $S3_SECRET_ACCESS_KEY
       AZURE_STORAGE_ENDPOINT: $AZURE_STORAGE_ENDPOINT
-      AZURE_STORAGE_CONNECTION_STRING: DefaultEndpointsProtocol=http;AccountName=${AZURE_STORAGE_ACCOUNT_NAME};AccountKey=${AZURE_STORAGE_ACCOUNT_KEY};BlobEndpoint=${AZURE_STORAGE_ENDPOINT}
+      AZURE_STORAGE_CONNECTION_STRING: DefaultEndpointsProtocol=https;AccountName=${AZURE_STORAGE_ACCOUNT_NAME};AccountKey=${AZURE_STORAGE_ACCOUNT_KEY};BlobEndpoint=${AZURE_STORAGE_ENDPOINT}
       AZURE_STORAGE_DEFAULT_BUCKET: $AZURE_STORAGE_DEFAULT_BUCKET
       AZURE_STORAGE_ACCOUNT_NAME: $AZURE_STORAGE_ACCOUNT_NAME
       AZURE_STORAGE_ACCOUNT_KEY: $AZURE_STORAGE_ACCOUNT_KEY
@@ -38,6 +39,9 @@ services:
       OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4317
       OTEL_METRICS_EXPORTER: prometheus
       STORAGE_FS_DEFAULT_DIRECTORY: /home/nonroot/data
+      TLS_CERT_FILE: /certs/client.crt
+      TLS_KEY_FILE: /certs/client.key
+      TLS_CA_FILE: /certs/ca.crt
 
   minio:
     image: minio/minio:RELEASE.2024-12-18T13-15-44Z
@@ -69,11 +73,24 @@ services:
   azurite:
     image: mcr.microsoft.com/azure-storage/azurite
     restart: always
-    command: ["azurite-blob", "--blobHost", "0.0.0.0", "-d", "/debug.log"]
+    command:
+      [
+        "azurite-blob",
+        "--blobHost",
+        "0.0.0.0",
+        "-d",
+        "/debug.log",
+        "--cert",
+        "/certs/server.crt",
+        "--key",
+        "/certs/server.key",
+      ]
     extra_hosts:
       - local.hasura.dev=host-gateway
     ports:
       - "10000:10000"
+    volumes:
+      - ./tests/certs/tls:/certs:ro
     environment:
       AZURITE_ACCOUNTS: "${AZURE_STORAGE_ACCOUNT_NAME}:${AZURE_STORAGE_ACCOUNT_KEY}"
 
@@ -82,15 +99,21 @@ services:
     image: fsouza/fake-gcs-server:1.52.1
     command:
       [
-        "-scheme",
-        "http",
         "-public-host",
-        "http://localhost:10010",
+        "https://local.hasura.dev:4443",
         "-log-level",
         "debug",
+        "--cert-location",
+        "/certs/server.crt",
+        "--private-key-location",
+        "/certs/server.key",
       ]
     ports:
-      - "10010:4443"
+      - "4443:4443"
+    extra_hosts:
+      - local.hasura.dev=host-gateway
+    volumes:
+      - ./tests/certs/tls:/certs:ro
 
 volumes:
   minio_data:

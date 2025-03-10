@@ -4,7 +4,7 @@
     "client_type": { "type": "literal", "value": "azblob" },
     "endpoint": {
       "type": "literal",
-      "value": "DefaultEndpointsProtocol=http;AccountName=local;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://local.hasura.dev:10000"
+      "value": "DefaultEndpointsProtocol=https;AccountName=local;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=https://local.hasura.dev:10000"
     },
     "first": { "type": "literal", "value": 1 },
     "recursive": { "type": "literal", "value": true },

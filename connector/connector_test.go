@@ -64,7 +64,7 @@ func TestConnectorDynamicCredentials(t *testing.T) {
 }
 
 func setConnectorTestEnv(t *testing.T) {
-	azureBlobEndpoint := "http://local.hasura.dev:10000"
+	azureBlobEndpoint := "https://local.hasura.dev:10000"
 	azureAccountName := "local"
 	azureAccountKey := "Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw=="
 
@@ -80,10 +80,13 @@ func setConnectorTestEnv(t *testing.T) {
 	t.Setenv("AZURE_STORAGE_DEFAULT_BUCKET", "azure-test")
 	t.Setenv("AZURE_STORAGE_ACCOUNT_NAME", azureAccountName)
 	t.Setenv("AZURE_STORAGE_ACCOUNT_KEY", azureAccountKey)
-	t.Setenv("AZURE_STORAGE_CONNECTION_STRING", fmt.Sprintf("DefaultEndpointsProtocol=http;AccountName=%s;AccountKey=%s;BlobEndpoint=%s", azureAccountName, azureAccountKey, azureBlobEndpoint))
+	t.Setenv("AZURE_STORAGE_CONNECTION_STRING", fmt.Sprintf("DefaultEndpointsProtocol=https;AccountName=%s;AccountKey=%s;BlobEndpoint=%s", azureAccountName, azureAccountKey, azureBlobEndpoint))
 	t.Setenv("GOOGLE_STORAGE_DEFAULT_BUCKET", "gcp-bucket")
 	t.Setenv("GOOGLE_PROJECT_ID", "test-local-project")
-	t.Setenv("GOOGLE_STORAGE_ENDPOINT", "http://localhost:10010/storage/v1/")
+	t.Setenv("GOOGLE_STORAGE_ENDPOINT", "https://local.hasura.dev:4443/storage/v1/")
 	t.Setenv("GOOGLE_STORAGE_CREDENTIALS_FILE", "../tests/certs/service_account.json")
 	t.Setenv("STORAGE_FS_DEFAULT_DIRECTORY", "../tmp/data")
+	t.Setenv("TLS_CERT_FILE", "../tests/certs/tls/client.crt")
+	t.Setenv("TLS_KEY_FILE", "../tests/certs/tls/client.key")
+	t.Setenv("TLS_CA_FILE", "../tests/certs/tls/ca.crt")
 }

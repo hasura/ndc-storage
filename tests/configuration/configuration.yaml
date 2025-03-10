@@ -149,6 +149,14 @@ clients:
       type: connectionString
       connectionString:
         env: AZURE_STORAGE_CONNECTION_STRING
+    http:
+      tls:
+        certFile:
+          env: TLS_CERT_FILE
+        keyFile:
+          env: TLS_KEY_FILE
+        caFile:
+          env: TLS_CA_FILE
     defaultPresignedExpiry: "1h"
   - id: gcs
     type: gcs
@@ -163,6 +171,14 @@ clients:
     authentication:
       type: anonymous
     defaultPresignedExpiry: "1h"
+    http:
+      tls:
+        certFile:
+          env: TLS_CERT_FILE
+        keyFile:
+          env: TLS_KEY_FILE
+        caFile:
+          env: TLS_CA_FILE
   - id: gcs-cred
     type: gcs
     defaultBucket:
@@ -177,6 +193,14 @@ clients:
       type: credentials
       credentialsFile:
         env: GOOGLE_STORAGE_CREDENTIALS_FILE
+    http:
+      tls:
+        certFile:
+          env: TLS_CERT_FILE
+        keyFile:
+          env: TLS_KEY_FILE
+        caFile:
+          env: TLS_CA_FILE
   - id: fs
     type: fs
     defaultDirectory:

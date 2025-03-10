@@ -89,7 +89,7 @@ Add the `azblob` client type, `endpoint`, `accessKeyId` and `secretAccessKey` to
 query DownloadStorageObjectAsText {
   downloadStorageObjectAsText(
     clientType: "azblob"
-    endpoint: "http://local.hasura.dev:10000"
+    endpoint: "https://local.hasura.dev:10000"
     accessKeyId: "local"
     secretAccessKey: "xxxx"
     name: "people-1000.csv"

@@ -18,10 +18,10 @@ var tracer = connector.NewTracer("connector/storage/gcs")
 
 // Client represents a Minio client wrapper.
 type Client struct {
-	publicHost *url.URL
-	client     *storage.Client
-	projectID  string
-	isDebug    bool
+	publicHost      *url.URL
+	client          *storage.Client
+	projectID       string
+	useCustomClient bool
 }
 
 var _ common.StorageClient = &Client{}
@@ -48,9 +48,9 @@ func New(ctx context.Context, config *ClientConfig, logger *slog.Logger) (*Clien
 	}
 
 	mc := &Client{
-		publicHost: publicHost,
-		projectID:  projectID,
-		isDebug:    utils.IsDebug(logger),
+		publicHost:      publicHost,
+		projectID:       projectID,
+		useCustomClient: config.HTTP != nil || utils.IsDebug(logger),
 	}
 
 	if config.UseGRPC {
@@ -68,7 +68,7 @@ func New(ctx context.Context, config *ClientConfig, logger *slog.Logger) (*Clien
 
 func (c *Client) startOtelSpan(ctx context.Context, name string, bucketName string) (context.Context, trace.Span) {
 	spanKind := trace.SpanKindClient
-	if c.isDebug {
+	if c.useCustomClient {
 		spanKind = trace.SpanKindInternal
 	}
 
