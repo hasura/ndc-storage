@@ -21,14 +21,8 @@ const (
 type StorageClientID string
 
 // StorageProviderType represents a storage provider type enum.
-// @enum s3,gcs,azblob
+// @enum s3,gcs,azblob,fs
 type StorageProviderType string
-
-const (
-	S3             StorageProviderType = "s3"
-	GoogleStorage  StorageProviderType = "gcs"
-	AzureBlobStore StorageProviderType = "azblob"
-)
 
 // Validate checks if the provider type is valid.
 func (spt StorageProviderType) Validate() error {

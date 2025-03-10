@@ -3,9 +3,9 @@
   "operations": [
     {
       "type": "procedure",
-      "name": "updateStorageBucket",
+      "name": "update_storage_bucket",
       "arguments": {
-        "clientId": "azblob",
+        "client_id": "azblob",
         "name": "azblob-bucket-test",
         "tags": [
           {

@@ -16,20 +16,20 @@
       "type": "literal",
       "value": "public/hello.txt"
     },
-    "partNumber": {
+    "part_number": {
       "type": "literal",
       "value": 1
     },
-    "requestParams": {
+    "request_params": {
       "type": "literal",
       "value": null
     },
-    "versionId": {
+    "version_id": {
       "type": "literal",
       "value": null
     }
   },
-  "collection": "downloadStorageObjectAsBase64",
+  "collection": "download_storage_object_as_base64",
   "collection_relationships": {},
   "query": {
     "fields": {

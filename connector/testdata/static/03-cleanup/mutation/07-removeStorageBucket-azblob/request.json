@@ -3,7 +3,7 @@
   "operations": [
     {
       "type": "procedure",
-      "name": "removeStorageBucket",
+      "name": "remove_storage_bucket",
       "arguments": {
         "name": "azblob-bucket-test"
       },

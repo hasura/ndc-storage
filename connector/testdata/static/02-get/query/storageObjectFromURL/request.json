@@ -23,7 +23,7 @@
       }
     }
   },
-  "collection": "storageObject",
+  "collection": "storage_object",
   "collection_relationships": {},
   "query": {
     "fields": {
@@ -35,28 +35,28 @@
               "column": "bucket",
               "type": "column"
             },
-            "clientId": {
-              "column": "clientId",
+            "client_id": {
+              "column": "client_id",
               "type": "column"
             },
-            "contentDisposition": {
-              "column": "contentDisposition",
+            "content_disposition": {
+              "column": "content_disposition",
               "type": "column"
             },
-            "contentEncoding": {
-              "column": "contentEncoding",
+            "content_encoding": {
+              "column": "content_encoding",
               "type": "column"
             },
-            "contentLanguage": {
-              "column": "contentLanguage",
+            "content_language": {
+              "column": "content_language",
               "type": "column"
             },
-            "contentMd5": {
-              "column": "contentMd5",
+            "content_md5": {
+              "column": "content_md5",
               "type": "column"
             },
-            "contentType": {
-              "column": "contentType",
+            "content_type": {
+              "column": "content_type",
               "type": "column"
             },
             "metadata": {
@@ -87,12 +87,12 @@
               "column": "size",
               "type": "column"
             },
-            "storageClass": {
-              "column": "storageClass",
+            "storage_class": {
+              "column": "storage_class",
               "type": "column"
             },
-            "tagCount": {
-              "column": "tagCount",
+            "tag_count": {
+              "column": "tag_count",
               "type": "column"
             },
             "tags": {

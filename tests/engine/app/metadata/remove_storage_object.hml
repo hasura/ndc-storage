@@ -1,0 +1,47 @@
+---
+kind: Command
+version: v1
+definition:
+  name: remove_storage_object
+  outputType: SuccessResponse!
+  arguments:
+    - name: access_key_id
+      type: String
+    - name: bucket
+      type: String
+    - name: client_id
+      type: StorageClientID
+    - name: client_type
+      type: StorageProviderType
+    - name: endpoint
+      type: String
+    - name: force_delete
+      type: Boolean
+    - name: governance_bypass
+      type: Boolean
+    - name: name
+      type: String!
+    - name: secret_access_key
+      type: String
+    - name: soft_delete
+      type: Boolean
+    - name: version_id
+      type: String
+  source:
+    dataConnectorName: storage
+    dataConnectorCommand:
+      procedure: remove_storage_object
+  graphql:
+    rootFieldName: remove_storage_object
+    rootFieldKind: Mutation
+  description: removes an object with some specified options.
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: remove_storage_object
+  permissions:
+    - role: admin
+      allowExecution: true
+

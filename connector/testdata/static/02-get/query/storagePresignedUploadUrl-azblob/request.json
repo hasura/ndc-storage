@@ -13,7 +13,7 @@
       "value": "8UFsTfY9bI"
     }
   },
-  "collection": "storagePresignedUploadUrl",
+  "collection": "storage_presigned_upload_url",
   "collection_relationships": {},
   "query": {
     "fields": {
@@ -26,8 +26,8 @@
               "column": "url",
               "type": "column"
             },
-            "expiredAt": {
-              "column": "expiredAt",
+            "expired_at": {
+              "column": "expired_at",
               "type": "column"
             }
           },

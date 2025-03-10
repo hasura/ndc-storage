@@ -3,9 +3,9 @@
   "operations": [
     {
       "type": "procedure",
-      "name": "updateStorageBucket",
+      "name": "update_storage_bucket",
       "arguments": {
-        "clientId": "gcs",
+        "client_id": "gcs",
         "name": "gcs-bucket",
         "tags": [
           {

@@ -9,10 +9,12 @@ import (
 	"slices"
 	"time"
 
+	"github.com/hasura/ndc-http/exhttp"
 	"github.com/hasura/ndc-sdk-go/schema"
 	"github.com/hasura/ndc-sdk-go/utils"
 	"github.com/hasura/ndc-storage/connector/storage/azblob"
 	"github.com/hasura/ndc-storage/connector/storage/common"
+	"github.com/hasura/ndc-storage/connector/storage/fs"
 	"github.com/hasura/ndc-storage/connector/storage/gcs"
 	"github.com/hasura/ndc-storage/connector/storage/minio"
 	"github.com/invopop/jsonschema"
@@ -63,22 +65,29 @@ func (cc ClientConfig) Validate() error {
 	}
 
 	switch storageType {
-	case common.S3:
+	case common.StorageProviderTypeS3:
 		var config minio.ClientConfig
 		if err := json.Unmarshal(rawConfig, &config); err != nil {
 			return err
 		}
 
 		return config.Validate()
-	case common.GoogleStorage:
+	case common.StorageProviderTypeGcs:
 		var config gcs.ClientConfig
 		if err := json.Unmarshal(rawConfig, &config); err != nil {
 			return err
 		}
 
 		return config.Validate()
-	case common.AzureBlobStore:
+	case common.StorageProviderTypeAzblob:
 		var config azblob.ClientConfig
+		if err := json.Unmarshal(rawConfig, &config); err != nil {
+			return err
+		}
+
+		return config.Validate()
+	case common.StorageProviderTypeFs:
+		var config fs.ClientConfig
 		if err := json.Unmarshal(rawConfig, &config); err != nil {
 			return err
 		}
@@ -119,7 +128,7 @@ func (cc ClientConfig) toStorageClient(ctx context.Context, logger *slog.Logger)
 	}
 
 	switch storageType {
-	case common.S3:
+	case common.StorageProviderTypeS3:
 		var config minio.ClientConfig
 		if err := json.Unmarshal(rawConfig, &config); err != nil {
 			return nil, nil, err
@@ -128,7 +137,7 @@ func (cc ClientConfig) toStorageClient(ctx context.Context, logger *slog.Logger)
 		client, err := minio.New(ctx, config.Type, &config, logger)
 
 		return &config.BaseClientConfig, client, err
-	case common.GoogleStorage:
+	case common.StorageProviderTypeGcs:
 		var config gcs.ClientConfig
 		if err := json.Unmarshal(rawConfig, &config); err != nil {
 			return nil, nil, err
@@ -137,7 +146,7 @@ func (cc ClientConfig) toStorageClient(ctx context.Context, logger *slog.Logger)
 		client, err := gcs.New(ctx, &config, logger)
 
 		return &config.BaseClientConfig, client, err
-	case common.AzureBlobStore:
+	case common.StorageProviderTypeAzblob:
 		var azConfig azblob.ClientConfig
 		if err := json.Unmarshal(rawConfig, &azConfig); err != nil {
 			return nil, nil, err
@@ -146,6 +155,15 @@ func (cc ClientConfig) toStorageClient(ctx context.Context, logger *slog.Logger)
 		client, err := azblob.New(ctx, &azConfig, logger)
 
 		return &azConfig.BaseClientConfig, client, err
+	case common.StorageProviderTypeFs:
+		var fsConfig fs.ClientConfig
+		if err := json.Unmarshal(rawConfig, &fsConfig); err != nil {
+			return nil, nil, err
+		}
+
+		client, err := fs.NewOSFileSystem(&fsConfig)
+
+		return fsConfig.ToBaseConfig(), client, err
 	}
 
 	return nil, nil, errors.New("unsupported storage client: " + string(storageType))
@@ -158,6 +176,19 @@ func (cc ClientConfig) JSONSchema() *jsonschema.Schema {
 			minio.ClientConfig{}.JSONSchema(),
 			azblob.ClientConfig{}.JSONSchema(),
 			gcs.ClientConfig{}.JSONSchema(),
+			fs.ClientConfig{}.JSONSchema(),
 		},
 	}
+}
+
+// RuntimeSettings hold runtime settings for the connector.
+type RuntimeSettings struct {
+	// Maximum size in MB of the object is allowed to download the content in the GraphQL response
+	// to avoid memory leaks. Pre-signed URLs are recommended for large files.
+	MaxDownloadSizeMBs int64 `json:"maxDownloadSizeMBs" jsonschema:"min=1,default=20" yaml:"maxDownloadSizeMBs"`
+	// Maximum size in MB of the object is allowed to upload the content from HTTP URL
+	// to avoid memory leaks. Pre-signed URLs are recommended for large files.
+	MaxUploadSizeMBs int64 `json:"maxUploadSizeMBs" jsonschema:"min=1,default=20" yaml:"maxUploadSizeMBs"`
+	// Configuration for the http client that is used for uploading files from URL.
+	HTTP *exhttp.HTTPTransportTLSConfig `json:"http,omitempty" yaml:"http"`
 }

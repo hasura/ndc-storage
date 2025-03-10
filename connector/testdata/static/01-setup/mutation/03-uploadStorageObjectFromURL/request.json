@@ -2,7 +2,7 @@
   "operations": [
     {
       "type": "procedure",
-      "name": "uploadStorageObjectFromUrl",
+      "name": "upload_storage_object_from_url",
       "arguments": {
         "bucket": "minio-bucket-test",
         "name": "country-by-name.json",

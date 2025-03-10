@@ -3,14 +3,14 @@
   "operations": [
     {
       "type": "procedure",
-      "name": "updateStorageObject",
+      "name": "update_storage_object",
       "arguments": {
         "bucket": "minio-bucket-lock",
         "name": "SiKBc6ifDC",
         "retention": {
-          "governanceBypass": true,
+          "governance_bypass": true,
           "mode": "Locked",
-          "retainUntilDate": "2099-01-01T00:00:00Z"
+          "retain_until_date": "2099-01-01T00:00:00Z"
         }
       },
       "fields": {

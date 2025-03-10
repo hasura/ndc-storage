@@ -1,0 +1,35 @@
+{
+  "collection_relationships": {},
+  "operations": [
+    {
+      "type": "procedure",
+      "name": "copy_storage_object",
+      "arguments": {
+        "client_id": "fs",
+        "dest": {
+          "name": "public/hello2.txt"
+        },
+        "source": {
+          "name": "hello.txt"
+        }
+      },
+      "fields": {
+        "fields": {
+          "bucket": {
+            "column": "bucket",
+            "type": "column"
+          },
+          "name": {
+            "column": "name",
+            "type": "column"
+          },
+          "size": {
+            "column": "size",
+            "type": "column"
+          }
+        },
+        "type": "object"
+      }
+    }
+  ]
+}

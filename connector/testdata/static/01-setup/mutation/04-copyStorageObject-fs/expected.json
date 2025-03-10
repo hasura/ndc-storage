@@ -1,0 +1,12 @@
+{
+  "operation_results": [
+    {
+      "result": {
+        "bucket": "../tmp/data",
+        "name": "public/hello2.txt",
+        "size": -1
+      },
+      "type": "procedure"
+    }
+  ]
+}

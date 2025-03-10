@@ -12,11 +12,14 @@ RUN CGO_ENABLED=0 go build \
   -ldflags "-X github.com/hasura/ndc-storage/configuration/version.BuildVersion=${VERSION}" \
   -v -o ndc-cli ./server
 
+RUN mkdir /data && chmod 755 -R /data
+
 # stage 2: production image
 FROM gcr.io/distroless/static-debian12:nonroot
 
 # Copy the binary to the production image from the builder stage.
 COPY --from=builder /app/ndc-cli /ndc-cli
+COPY --from=builder --chown=65532:65532 /data /home/nonroot/data
 
 ENV HASURA_CONFIGURATION_DIRECTORY=/etc/connector
 

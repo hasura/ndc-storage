@@ -8,7 +8,6 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/hasura/ndc-http/exhttp"
 	"github.com/hasura/ndc-sdk-go/connector"
 	"github.com/hasura/ndc-sdk-go/schema"
 	"github.com/hasura/ndc-sdk-go/utils"
@@ -19,18 +18,6 @@ import (
 )
 
 var tracer = connector.NewTracer("connector/storage")
-
-// RuntimeSettings hold runtime settings for the connector.
-type RuntimeSettings struct {
-	// Maximum size in MB of the object is allowed to download the content in the GraphQL response
-	// to avoid memory leaks. Pre-signed URLs are recommended for large files.
-	MaxDownloadSizeMBs int64 `json:"maxDownloadSizeMBs" jsonschema:"min=1,default=20" yaml:"maxDownloadSizeMBs"`
-	// Maximum size in MB of the object is allowed to upload the content from HTTP URL
-	// to avoid memory leaks. Pre-signed URLs are recommended for large files.
-	MaxUploadSizeMBs int64 `json:"maxUploadSizeMBs" jsonschema:"min=1,default=20" yaml:"maxUploadSizeMBs"`
-	// Configuration for the http client that is used for uploading files from URL.
-	HTTP *exhttp.HTTPTransportTLSConfig `json:"http,omitempty" yaml:"http"`
-}
 
 // Manager represents the high-level client that manages internal clients and configurations.
 type Manager struct {
@@ -189,7 +176,7 @@ func (m *Manager) createTemporaryClient(ctx context.Context, arguments common.St
 	_, span := tracer.Start(ctx, "createTemporaryClient")
 	defer span.End()
 
-	clientType := common.S3
+	clientType := common.StorageProviderTypeS3
 
 	if arguments.ClientType != nil && *arguments.ClientType != "" {
 		clientType = *arguments.ClientType
@@ -201,7 +188,7 @@ func (m *Manager) createTemporaryClient(ctx context.Context, arguments common.St
 	span.SetAttributes(attribute.String("storage.client.type", string(clientType)))
 
 	switch clientType {
-	case common.AzureBlobStore:
+	case common.StorageProviderTypeAzblob:
 		if arguments.Endpoint == "" {
 			return nil, schema.UnprocessableContentError("endpoint is required for azblob", nil)
 		}
@@ -245,7 +232,7 @@ func (m *Manager) createTemporaryClient(ctx context.Context, arguments common.St
 			StorageClient:          client,
 			defaultPresignedExpiry: &defaultPresignedExpiry,
 		}, nil
-	case common.S3, common.GoogleStorage:
+	case common.StorageProviderTypeS3, common.StorageProviderTypeGcs:
 		fallthrough
 	default:
 		if arguments.AccessKeyID == "" && arguments.SecretAccessKey == "" {

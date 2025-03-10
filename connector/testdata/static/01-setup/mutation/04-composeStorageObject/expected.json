@@ -3,16 +3,16 @@
     {
       "result": {
         "bucket": "minio-bucket-test",
-        "checksumCrc32": null,
-        "checksumCrc32C": null,
-        "checksumCrc64Nvme": null,
-        "checksumSha1": null,
-        "checksumSha256": null,
+        "checksum_crc32": null,
+        "checksum_crc32c": null,
+        "checksum_crc64_nvme": null,
+        "checksum_sha1": null,
+        "checksum_sha256": null,
         "etag": "64372db0af1ea1279271d7d4dcedbe3d-1",
         "expiration": null,
-        "expirationRuleId": null,
+        "expiration_rule_id": null,
         "expires": null,
-        "lastModified": null,
+        "last_modified": null,
         "location": "http://localhost:9000/minio-bucket-test/a9cSGZGzM2",
         "name": "a9cSGZGzM2",
         "size": 10

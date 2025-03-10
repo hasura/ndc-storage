@@ -3,27 +3,27 @@
     "rows": [
       {
         "bucket": "dummy-bucket-0",
-        "clientId": "minio",
-        "isDirectory": false,
+        "client_id": "minio",
+        "is_directory": false,
         "name": "movies/1930s/movies.json",
         "size": 2921862,
-        "storageClass": "STANDARD"
+        "storage_class": "STANDARD"
       },
       {
         "bucket": "dummy-bucket-0",
-        "clientId": "minio",
-        "isDirectory": false,
+        "client_id": "minio",
+        "is_directory": false,
         "name": "movies/1940s/movies.json",
         "size": 2972875,
-        "storageClass": "STANDARD"
+        "storage_class": "STANDARD"
       },
       {
         "bucket": "dummy-bucket-0",
-        "clientId": "minio",
-        "isDirectory": false,
+        "client_id": "minio",
+        "is_directory": false,
         "name": "movies/1950s/movies.json",
         "size": 2123294,
-        "storageClass": "STANDARD"
+        "storage_class": "STANDARD"
       }
     ]
   },
@@ -31,27 +31,27 @@
     "rows": [
       {
         "bucket": "dummy-bucket-0",
-        "clientId": "azblob",
-        "isDirectory": false,
+        "client_id": "azblob",
+        "is_directory": false,
         "name": "movies/1930s/movies.json",
         "size": 2921862,
-        "storageClass": "Hot"
+        "storage_class": "Hot"
       },
       {
         "bucket": "dummy-bucket-0",
-        "clientId": "azblob",
-        "isDirectory": false,
+        "client_id": "azblob",
+        "is_directory": false,
         "name": "movies/1940s/movies.json",
         "size": 2972875,
-        "storageClass": "Hot"
+        "storage_class": "Hot"
       },
       {
         "bucket": "dummy-bucket-0",
-        "clientId": "azblob",
-        "isDirectory": false,
+        "client_id": "azblob",
+        "is_directory": false,
         "name": "movies/1950s/movies.json",
         "size": 2123294,
-        "storageClass": "Hot"
+        "storage_class": "Hot"
       }
     ]
   },
@@ -59,27 +59,27 @@
     "rows": [
       {
         "bucket": "dummy-bucket-0",
-        "clientId": "gcs",
-        "isDirectory": false,
+        "client_id": "gcs",
+        "is_directory": false,
         "name": "movies/1930s/movies.json",
         "size": 2921862,
-        "storageClass": "STANDARD"
+        "storage_class": "STANDARD"
       },
       {
         "bucket": "dummy-bucket-0",
-        "clientId": "gcs",
-        "isDirectory": false,
+        "client_id": "gcs",
+        "is_directory": false,
         "name": "movies/1940s/movies.json",
         "size": 2972875,
-        "storageClass": "STANDARD"
+        "storage_class": "STANDARD"
       },
       {
         "bucket": "dummy-bucket-0",
-        "clientId": "gcs",
-        "isDirectory": false,
+        "client_id": "gcs",
+        "is_directory": false,
         "name": "movies/1950s/movies.json",
         "size": 2123294,
-        "storageClass": "STANDARD"
+        "storage_class": "STANDARD"
       }
     ]
   }

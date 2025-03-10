@@ -3,32 +3,32 @@
   "operations": [
     {
       "type": "procedure",
-      "name": "uploadStorageObjectAsText",
+      "name": "upload_storage_object_as_text",
       "arguments": {
-        "clientType": "azblob",
+        "client_type": "azblob",
         "endpoint": "http://local.hasura.dev:10000",
-        "accessKeyId": "local",
-        "secretAccessKey": "Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==",
+        "access_key_id": "local",
+        "secret_access_key": "Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==",
         "bucket": "azblob-dynamic",
         "data": "SGVsbG8gd29ybGQK",
         "name": "SiKBc6ifDC",
         "options": {
-          "autoChecksum": "SHA256",
-          "cacheControl": "max-age=180, public",
+          "auto_checksum": "SHA256",
+          "cache_control": "max-age=180, public",
           "checksum": "SHA256",
-          "clientId": "s3",
-          "concurrentStreamParts": false,
-          "contentDisposition": "attachment",
-          "contentEncoding": "gzip",
-          "contentLanguage": "en-US",
-          "contentType": "text/plain",
-          "disableContentSha256": false,
-          "disableMultipart": false,
+          "client_id": "s3",
+          "concurrent_stream_parts": false,
+          "content_disposition": "attachment",
+          "content_encoding": "gzip",
+          "content_language": "en-US",
+          "content_type": "text/plain",
+          "disable_content_sha256": false,
+          "disable_multipart": false,
           "expires": "2099-01-01T00:00:00Z",
-          "numThreads": 1,
-          "partSize": 1024000000,
-          "sendContentMd5": true,
-          "storageClass": "Cool",
+          "num_threads": 1,
+          "part_size": 1024000000,
+          "send_content_md5": true,
+          "storage_class": "Cool",
           "metadata": [
             {
               "key": "Foo",
@@ -41,7 +41,7 @@
               "value": "1"
             }
           ],
-          "websiteRedirectLocation": "http://localhost:9001"
+          "website_redirect_location": "http://localhost:9001"
         }
       },
       "fields": {
@@ -50,32 +50,32 @@
             "column": "bucket",
             "type": "column"
           },
-          "checksumCrc32": {
-            "column": "checksumCrc32",
+          "checksum_crc32": {
+            "column": "checksum_crc32",
             "type": "column"
           },
-          "checksumCrc32C": {
-            "column": "checksumCrc32C",
+          "checksum_crc32c": {
+            "column": "checksum_crc32c",
             "type": "column"
           },
-          "checksumCrc64Nvme": {
-            "column": "checksumCrc64Nvme",
+          "checksum_crc64_nvme": {
+            "column": "checksum_crc64_nvme",
             "type": "column"
           },
-          "checksumSha1": {
-            "column": "checksumSha1",
+          "checksum_sha1": {
+            "column": "checksum_sha1",
             "type": "column"
           },
-          "checksumSha256": {
-            "column": "checksumSha256",
+          "checksum_sha256": {
+            "column": "checksum_sha256",
             "type": "column"
           },
           "expiration": {
             "column": "expiration",
             "type": "column"
           },
-          "expirationRuleId": {
-            "column": "expirationRuleId",
+          "expiration_rule_id": {
+            "column": "expiration_rule_id",
             "type": "column"
           },
           "location": {

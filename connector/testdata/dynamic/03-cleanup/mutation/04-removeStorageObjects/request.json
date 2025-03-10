@@ -3,17 +3,15 @@
   "operations": [
     {
       "type": "procedure",
-      "name": "removeStorageObjects",
+      "name": "remove_storage_objects",
       "arguments": {
-        "clientType": "azblob",
+        "client_type": "azblob",
         "endpoint": "http://local.hasura.dev:10000",
-        "accessKeyId": "local",
-        "secretAccessKey": "Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==",
-        "governanceBypass": false,
-        "maxKeys": 385252679,
+        "access_key_id": "local",
+        "secret_access_key": "Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==",
+        "governance_bypass": false,
+        "max_keys": 385252679,
         "prefix": "",
-        "withMetadata": true,
-        "withVersions": true,
         "where": {
           "type": "and",
           "expressions": [
@@ -33,12 +31,12 @@
               "column": "error",
               "type": "column"
             },
-            "objectName": {
-              "column": "objectName",
+            "object_name": {
+              "column": "object_name",
               "type": "column"
             },
-            "versionId": {
-              "column": "versionId",
+            "version_id": {
+              "column": "version_id",
               "type": "column"
             }
           },

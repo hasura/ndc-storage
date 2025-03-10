@@ -3,15 +3,15 @@
   "operations": [
     {
       "type": "procedure",
-      "name": "removeStorageObject",
+      "name": "remove_storage_object",
       "arguments": {
-        "clientType": "azblob",
+        "client_type": "azblob",
         "endpoint": "http://local.hasura.dev:10000",
-        "accessKeyId": "local",
-        "secretAccessKey": "Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==",
+        "access_key_id": "local",
+        "secret_access_key": "Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==",
         "bucket": "azblob-dynamic",
-        "forceDelete": true,
-        "governanceBypass": true,
+        "force_delete": true,
+        "governance_bypass": true,
         "name": "public/hello.txt"
       },
       "fields": {

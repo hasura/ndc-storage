@@ -5,69 +5,69 @@
         "__value": {
           "autoclass": null,
           "cors": [],
-          "customPlacementConfig": null,
-          "defaultEventBasedHold": null,
+          "custom_placement_config": null,
+          "default_event_based_hold": null,
           "encryption": null,
           "etag": null,
-          "hierarchicalNamespace": null,
-          "lastModified": null,
+          "hierarchical_namespace": null,
+          "last_modified": null,
           "lifecycle": {
             "rules": [
               {
-                "abortIncompleteMultipartUpload": null,
-                "allVersionsExpiration": null,
-                "delMarkerExpiration": null,
+                "abort_incomplete_multipart_upload": null,
+                "all_versions_expiration": null,
+                "del_marker_expiration": null,
                 "enabled": true,
                 "expiration": {
                   "date": null,
                   "days": 4,
-                  "expiredObjectAllVersions": null,
-                  "expiredObjectDeleteMarker": false
+                  "expired_object_all_versions": null,
+                  "expired_object_delete_marker": false
                 },
                 "filter": [
                   {
-                    "matchesPrefix": null,
-                    "matchesStorageClasses": null,
-                    "matchesSuffix": null,
-                    "objectSizeGreaterThan": null,
-                    "objectSizeLessThan": null,
+                    "matches_prefix": null,
+                    "matches_storage_classes": null,
+                    "matches_suffix": null,
+                    "object_size_greater_than": null,
+                    "object_size_less_than": null,
                     "tags": []
                   },
                   {
-                    "matchesPrefix": ["JSqXP0pJZF"],
-                    "matchesStorageClasses": null,
-                    "matchesSuffix": null,
-                    "objectSizeGreaterThan": 1000000,
-                    "objectSizeLessThan": 1,
+                    "matches_prefix": ["JSqXP0pJZF"],
+                    "matches_storage_classes": null,
+                    "matches_suffix": null,
+                    "object_size_greater_than": 1000000,
+                    "object_size_less_than": 1,
                     "tags": [{ "key": "7Uw1or2jrq", "value": "00sA2cRTCB" }]
                   }
                 ],
                 "id": "aXD6eFi5JE",
-                "noncurrentVersionExpiration": {
-                  "newerNoncurrentVersions": 108,
-                  "noncurrentDays": 12
+                "noncurrent_version_expiration": {
+                  "newer_noncurrent_versions": 108,
+                  "noncurrent_days": 12
                 },
-                "noncurrentVersionTransition": null,
+                "noncurrent_version_transition": null,
                 "prefix": "GPJel0xa2s",
                 "transition": null
               }
             ]
           },
-          "locationType": null,
+          "location_type": null,
           "logging": null,
           "name": "minio-bucket-test",
-          "objectLock": null,
+          "object_lock": null,
           "region": null,
-          "requesterPays": null,
+          "requester_pays": null,
           "rpo": null,
-          "softDeletePolicy": null,
-          "storageClass": null,
+          "soft_delete_policy": null,
+          "storage_class": null,
           "tags": [{ "key": "Foo", "value": "bar" }],
           "versioning": {
             "enabled": true,
-            "excludeFolders": false,
-            "excludedPrefixes": [],
-            "mfaDelete": null
+            "exclude_folders": false,
+            "excluded_prefixes": [],
+            "mfa_delete": null
           },
           "website": null
         }

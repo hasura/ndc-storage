@@ -149,10 +149,14 @@ query DownloadObjectAsText {
 
 You can use either `clientId`, `bucket`, `prefix`, or `where` boolean expression to filter object results. The `where` argument is mainly used for permissions. The filter expression is evaluated twice, before and after fetching the results. Cloud storage APIs usually support filtering by the name prefix only. Other operators (`_contains`, `_icontains`) are filtered from fetched results by pure logic.
 
+> [!INFO]
+> If you want to filter objects recursively, set the argument `recursive: true`.
+
 ```graphql
 query RelayListObjects {
   storageObjectConnections(
     prefix: "hello"
+    recursive: true
     where: { name: { _contains: "world" } }
   ) {
     edges {
@@ -172,6 +176,7 @@ In `storageObjects` query, the `prefix` argument doesn't exist. You should use t
 ```graphql
 query ListObjects {
   storageObjects(
+    args: { recursive: true }
     where: { name: { _starts_with: "hello", _contains: "world" } }
   ) {
     clientId
@@ -188,7 +193,7 @@ Relay style suits object listing because most cloud storage services only suppor
 
 ```graphql
 query RelayListObjects {
-  storageObjectConnections(after: "hello.txt", first: 3) {
+  storageObjectConnections(recursive: true, after: "hello.txt", first: 3) {
     pageInfo {
       hasNextPage
     }
@@ -231,8 +236,9 @@ query RelayListObjects {
 
 The `storageObjects` collection doesn't return pagination information. You need to get the `name` in the last object to paginate by the `after` cursor.
 
-> [!NOTE] > **Why do `storageObjects` and `storageObjectConnections` operations exist?**
+> [!NOTE]
 >
+> **Why do `storageObjects` and `storageObjectConnections` operations exist?**
 > The `storageObjects` collection provides a simpler response structure that PromptQL can query easily. The `storageObjectConnections` function returns a better cursor-based pagination response on but the schema is complicated for PromptQL to understand.
 
 > [!NOTE]

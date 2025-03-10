@@ -9,6 +9,8 @@ services:
     volumes:
       - ./tests/configuration:/etc/connector:ro
       - ./tests/certs/service_account.json:/service_account.json
+      - fs_data:/home/nonroot/data
+    user: "65532:65532"
     extra_hosts:
       - local.hasura.dev=host-gateway
     environment:
@@ -35,6 +37,7 @@ services:
       HASURA_LOG_LEVEL: debug
       OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4317
       OTEL_METRICS_EXPORTER: prometheus
+      STORAGE_FS_DEFAULT_DIRECTORY: /home/nonroot/data
 
   minio:
     image: minio/minio:RELEASE.2024-12-18T13-15-44Z
@@ -92,3 +95,4 @@ services:
 volumes:
   minio_data:
   s3_data:
+  fs_data:

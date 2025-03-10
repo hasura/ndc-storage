@@ -1,0 +1,75 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DownloadStorageObjectTextResponse
+  description: represents the object data response in string format.
+  fields:
+    - name: data
+      type: String!
+  graphql:
+    typeName: DownloadStorageObjectTextResponse
+    inputTypeName: DownloadStorageObjectTextResponse_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: storage
+      dataConnectorObjectType: DownloadStorageObjectTextResponse
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DownloadStorageObjectTextResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - data
+
+---
+kind: Command
+version: v1
+definition:
+  name: download_storage_object_as_text
+  outputType: DownloadStorageObjectTextResponse
+  arguments:
+    - name: access_key_id
+      type: String
+    - name: bucket
+      type: String
+    - name: client_id
+      type: StorageClientID
+    - name: client_type
+      type: StorageProviderType
+    - name: endpoint
+      type: String
+    - name: headers
+      type: "[StorageKeyValue!]"
+    - name: name
+      type: String!
+    - name: part_number
+      type: Int32
+    - name: request_params
+      type: "[StorageKeyValue!]"
+    - name: secret_access_key
+      type: String
+    - name: version_id
+      type: String
+  source:
+    dataConnectorName: storage
+    dataConnectorCommand:
+      function: download_storage_object_as_text
+  graphql:
+    rootFieldName: download_storage_object_as_text
+    rootFieldKind: Query
+  description: returns the object content in plain text. Use this function only if
+    you know exactly the file as an text file.
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: download_storage_object_as_text
+  permissions:
+    - role: admin
+      allowExecution: true
+

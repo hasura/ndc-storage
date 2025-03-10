@@ -204,13 +204,13 @@ func serializeObjectInfo(obj *minio.ObjectInfo, fromList bool) common.StorageObj
 }
 
 func (mc *Client) validateListObjectsOptions(span trace.Span, opts *common.ListStorageObjectsOptions) minio.ListObjectsOptions {
-	if mc.providerType == common.GoogleStorage && opts.Include.Versions {
+	if mc.providerType == common.StorageProviderTypeGcs && opts.Include.Versions {
 		// Force versioning off. GCS doesn't support AWS S3 compatible versioning API.
 		opts.Include.Versions = false
 	}
 
 	span.SetAttributes(
-		attribute.Bool("storage.options.recursive", !opts.Hierarchy),
+		attribute.Bool("storage.options.recursive", opts.Recursive),
 		attribute.Bool("storage.options.with_versions", opts.Include.Versions),
 		attribute.Bool("storage.options.with_metadata", opts.Include.Metadata),
 	)
@@ -231,7 +231,7 @@ func (mc *Client) validateListObjectsOptions(span trace.Span, opts *common.ListS
 		WithVersions: opts.Include.Versions,
 		WithMetadata: opts.Include.Metadata,
 		Prefix:       opts.Prefix,
-		Recursive:    !opts.Hierarchy,
+		Recursive:    opts.Recursive,
 		StartAfter:   opts.StartAfter,
 	}
 }

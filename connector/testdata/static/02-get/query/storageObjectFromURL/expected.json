@@ -4,17 +4,17 @@
       {
         "__value": {
           "bucket": "minio-bucket-test",
-          "clientId": "minio",
-          "contentDisposition": null,
-          "contentEncoding": null,
-          "contentLanguage": null,
-          "contentMd5": null,
-          "contentType": "application/json",
+          "client_id": "minio",
+          "content_disposition": null,
+          "content_encoding": null,
+          "content_language": null,
+          "content_md5": null,
+          "content_type": "application/json",
           "metadata": [],
           "name": "country-by-name.json",
           "size": 11148,
-          "storageClass": null,
-          "tagCount": 0,
+          "storage_class": null,
+          "tag_count": 0,
           "tags": []
         }
       }
