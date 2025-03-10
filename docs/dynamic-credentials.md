@@ -21,7 +21,7 @@ The following credential arguments will be presented in all operations:
 - `secretAccessKey`: Secret access key of S3, GCS or the account key of Azure Blob Storage.
 - `endpoint`: Endpoint of the storage service. Required for other S3-compatible services such as MinIO, R2, etc... and Azure Blob Storage.
 
-## Examples
+## GraphQL Examples
 
 ### S3-compatible Storage
 
@@ -34,7 +34,7 @@ query DownloadStorageObjectAsText {
     endpoint: "http://minio:9000"
     accessKeyId: "test-key"
     secretAccessKey: "randomsecret"
-    object: "people-1000.csv"
+    name: "people-1000.csv"
     bucket: "default"
   ) {
     data
@@ -52,7 +52,7 @@ query DownloadStorageObjectAsText {
     clientType: "gcs"
     accessKeyId: "test-key"
     secretAccessKey: "randomsecret"
-    object: "people-1000.csv"
+    name: "people-1000.csv"
     bucket: "default"
   ) {
     data
@@ -73,7 +73,7 @@ query DownloadStorageObjectAsText {
   downloadStorageObjectAsText(
     clientType: "azblob"
     endpoint: "AccountName=local;AccountKey=xxx;BlobEndpoint=default"
-    object: "people-1000.csv"
+    name: "people-1000.csv"
     bucket: "default"
   ) {
     data
@@ -92,10 +92,14 @@ query DownloadStorageObjectAsText {
     endpoint: "http://local.hasura.dev:10000"
     accessKeyId: "local"
     secretAccessKey: "xxxx"
-    object: "people-1000.csv"
+    name: "people-1000.csv"
     bucket: "default"
   ) {
     data
   }
 }
 ```
+
+## PromptQL Examples
+
+See [Dynamic Credentials example in PromptQL](./promptql.md).

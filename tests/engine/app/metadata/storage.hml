@@ -94,6 +94,7 @@ definition:
               - azblob-connstr
               - gcs
               - gcs-cred
+              - fs
           aggregate_functions: {}
           comparison_operators:
             _eq:
@@ -115,6 +116,7 @@ definition:
               - s3
               - gcs
               - azblob
+              - fs
           aggregate_functions: {}
           comparison_operators: {}
         StorageRetentionMode:
