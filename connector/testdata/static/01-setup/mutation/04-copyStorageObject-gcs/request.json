@@ -3,9 +3,9 @@
   "operations": [
     {
       "type": "procedure",
-      "name": "copyStorageObject",
+      "name": "copy_storage_object",
       "arguments": {
-        "clientId": "gcs",
+        "client_id": "gcs",
         "dest": {
           "bucket": "gcs-bucket",
           "name": "public/hello2.txt",
@@ -40,32 +40,32 @@
             "column": "bucket",
             "type": "column"
           },
-          "checksumCrc32": {
-            "column": "checksumCrc32",
+          "checksum_crc32": {
+            "column": "checksum_crc32",
             "type": "column"
           },
-          "checksumCrc32C": {
-            "column": "checksumCrc32C",
+          "checksum_crc32c": {
+            "column": "checksum_crc32c",
             "type": "column"
           },
-          "checksumCrc64Nvme": {
-            "column": "checksumCrc64Nvme",
+          "checksum_crc64_nvme": {
+            "column": "checksum_crc64_nvme",
             "type": "column"
           },
-          "checksumSha1": {
-            "column": "checksumSha1",
+          "checksum_sha1": {
+            "column": "checksum_sha1",
             "type": "column"
           },
-          "checksumSha256": {
-            "column": "checksumSha256",
+          "checksum_sha256": {
+            "column": "checksum_sha256",
             "type": "column"
           },
           "expiration": {
             "column": "expiration",
             "type": "column"
           },
-          "expirationRuleId": {
-            "column": "expirationRuleId",
+          "expiration_rule_id": {
+            "column": "expiration_rule_id",
             "type": "column"
           },
           "expires": {

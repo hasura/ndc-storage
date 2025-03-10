@@ -30,9 +30,9 @@ func TestConnectorQueries(t *testing.T) {
 			for i := range 10 {
 				procedureRequest.Operations = append(procedureRequest.Operations, schema.MutationOperation{
 					Type: schema.MutationOperationProcedure,
-					Name: "createStorageBucket",
+					Name: "create_storage_bucket",
 					Arguments: []byte(fmt.Sprintf(`{
-					"clientId": "%s",
+					"client_id": "%s",
 					"name": "dummy-bucket-%d"
 				}`, cid, i)),
 					Fields: schema.NewNestedObject(map[string]schema.FieldEncoder{
@@ -76,10 +76,10 @@ func TestConnectorQueries(t *testing.T) {
 		for _, cid := range clientIDs {
 			t.Run(fmt.Sprintf("upload_object_%s/%s", cid, key), func(t *testing.T) {
 				arguments := map[string]any{
-					"clientId": cid,
-					"bucket":   "dummy-bucket-0",
-					"data":     string(rawBody),
-					"name":     key,
+					"client_id": cid,
+					"bucket":    "dummy-bucket-0",
+					"data":      string(rawBody),
+					"name":      key,
 					"options": map[string]any{
 						"cacheControl":       "max-age=100",
 						"contentDisposition": "attachment",
@@ -110,7 +110,7 @@ func TestConnectorQueries(t *testing.T) {
 					Operations: []schema.MutationOperation{
 						{
 							Type:      schema.MutationOperationProcedure,
-							Name:      "uploadStorageObjectAsText",
+							Name:      "upload_storage_object_as_text",
 							Arguments: rawArguments,
 							Fields: schema.NewNestedObject(map[string]schema.FieldEncoder{
 								"name": schema.NewColumnField("name", nil),
@@ -195,11 +195,11 @@ func TestMaxDownloadSizeValidation(t *testing.T) {
 		MaxDownloadSizeMBs int
 	}{
 		{
-			Name:               "downloadStorageObjectAsBase64",
+			Name:               "download_storage_object_as_base64",
 			MaxDownloadSizeMBs: 2,
 		},
 		{
-			Name:               "downloadStorageObjectAsText",
+			Name:               "download_storage_object_as_text",
 			MaxDownloadSizeMBs: 2,
 		},
 	}

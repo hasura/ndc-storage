@@ -7,30 +7,30 @@
             {
               "cursor": "dummy-bucket-0",
               "node": {
-                "clientId": "minio",
+                "client_id": "minio",
                 "etag": null,
                 "name": "dummy-bucket-0",
-                "storageClass": null,
+                "storage_class": null,
                 "tags": []
               }
             },
             {
               "cursor": "dummy-bucket-1",
               "node": {
-                "clientId": "minio",
+                "client_id": "minio",
                 "etag": null,
                 "name": "dummy-bucket-1",
-                "storageClass": null,
+                "storage_class": null,
                 "tags": []
               }
             },
             {
               "cursor": "dummy-bucket-2",
               "node": {
-                "clientId": "minio",
+                "client_id": "minio",
                 "etag": null,
                 "name": "dummy-bucket-2",
-                "storageClass": null,
+                "storage_class": null,
                 "tags": []
               }
             }
@@ -48,30 +48,30 @@
             {
               "cursor": "dummy-bucket-0",
               "node": {
-                "clientId": "azblob",
+                "client_id": "azblob",
                 "etag": null,
                 "name": "dummy-bucket-0",
-                "storageClass": null,
+                "storage_class": null,
                 "tags": []
               }
             },
             {
               "cursor": "dummy-bucket-1",
               "node": {
-                "clientId": "azblob",
+                "client_id": "azblob",
                 "etag": null,
                 "name": "dummy-bucket-1",
-                "storageClass": null,
+                "storage_class": null,
                 "tags": []
               }
             },
             {
               "cursor": "dummy-bucket-2",
               "node": {
-                "clientId": "azblob",
+                "client_id": "azblob",
                 "etag": null,
                 "name": "dummy-bucket-2",
-                "storageClass": null,
+                "storage_class": null,
                 "tags": []
               }
             }
@@ -89,30 +89,30 @@
             {
               "cursor": "dummy-bucket-0",
               "node": {
-                "clientId": "gcs",
+                "client_id": "gcs",
                 "etag": "RVRhZw==",
                 "name": "dummy-bucket-0",
-                "storageClass": "STANDARD",
+                "storage_class": "STANDARD",
                 "tags": []
               }
             },
             {
               "cursor": "dummy-bucket-1",
               "node": {
-                "clientId": "gcs",
+                "client_id": "gcs",
                 "etag": "RVRhZw==",
                 "name": "dummy-bucket-1",
-                "storageClass": "STANDARD",
+                "storage_class": "STANDARD",
                 "tags": []
               }
             },
             {
               "cursor": "dummy-bucket-2",
               "node": {
-                "clientId": "gcs",
+                "client_id": "gcs",
                 "etag": "RVRhZw==",
                 "name": "dummy-bucket-2",
-                "storageClass": "STANDARD",
+                "storage_class": "STANDARD",
                 "tags": []
               }
             }

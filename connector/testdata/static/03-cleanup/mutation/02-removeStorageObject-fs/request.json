@@ -1,0 +1,22 @@
+{
+  "collection_relationships": {},
+  "operations": [
+    {
+      "type": "procedure",
+      "name": "remove_storage_object",
+      "arguments": {
+        "client_id": "fs",
+        "name": "public/hello2.txt"
+      },
+      "fields": {
+        "fields": {
+          "success": {
+            "column": "success",
+            "type": "column"
+          }
+        },
+        "type": "object"
+      }
+    }
+  ]
+}

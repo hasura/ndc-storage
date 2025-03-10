@@ -85,4 +85,5 @@ func setConnectorTestEnv(t *testing.T) {
 	t.Setenv("GOOGLE_PROJECT_ID", "test-local-project")
 	t.Setenv("GOOGLE_STORAGE_ENDPOINT", "http://localhost:10010/storage/v1/")
 	t.Setenv("GOOGLE_STORAGE_CREDENTIALS_FILE", "../tests/certs/service_account.json")
+	t.Setenv("STORAGE_FS_DEFAULT_DIRECTORY", "../tmp/data")
 }

@@ -2,24 +2,24 @@
   {
     "rows": [
       {
-        "clientId": "minio",
+        "client_id": "minio",
         "etag": null,
         "name": "dummy-bucket-0",
-        "storageClass": null,
+        "storage_class": null,
         "tags": []
       },
       {
-        "clientId": "minio",
+        "client_id": "minio",
         "etag": null,
         "name": "dummy-bucket-1",
-        "storageClass": null,
+        "storage_class": null,
         "tags": []
       },
       {
-        "clientId": "minio",
+        "client_id": "minio",
         "etag": null,
         "name": "dummy-bucket-2",
-        "storageClass": null,
+        "storage_class": null,
         "tags": []
       }
     ]
@@ -27,24 +27,24 @@
   {
     "rows": [
       {
-        "clientId": "azblob",
+        "client_id": "azblob",
         "etag": null,
         "name": "dummy-bucket-0",
-        "storageClass": null,
+        "storage_class": null,
         "tags": []
       },
       {
-        "clientId": "azblob",
+        "client_id": "azblob",
         "etag": null,
         "name": "dummy-bucket-1",
-        "storageClass": null,
+        "storage_class": null,
         "tags": []
       },
       {
-        "clientId": "azblob",
+        "client_id": "azblob",
         "etag": null,
         "name": "dummy-bucket-2",
-        "storageClass": null,
+        "storage_class": null,
         "tags": []
       }
     ]
@@ -52,24 +52,24 @@
   {
     "rows": [
       {
-        "clientId": "gcs",
+        "client_id": "gcs",
         "etag": "RVRhZw==",
         "name": "dummy-bucket-0",
-        "storageClass": "STANDARD",
+        "storage_class": "STANDARD",
         "tags": []
       },
       {
-        "clientId": "gcs",
+        "client_id": "gcs",
         "etag": "RVRhZw==",
         "name": "dummy-bucket-1",
-        "storageClass": "STANDARD",
+        "storage_class": "STANDARD",
         "tags": []
       },
       {
-        "clientId": "gcs",
+        "client_id": "gcs",
         "etag": "RVRhZw==",
         "name": "dummy-bucket-2",
-        "storageClass": "STANDARD",
+        "storage_class": "STANDARD",
         "tags": []
       }
     ]

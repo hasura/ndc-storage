@@ -3,7 +3,7 @@
   "operations": [
     {
       "type": "procedure",
-      "name": "updateStorageObject",
+      "name": "update_storage_object",
       "arguments": {
         "bucket": "minio-bucket-test",
         "name": "public/workd2.txt",

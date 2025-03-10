@@ -3,11 +3,11 @@
     "rows": [
       {
         "bucket": "dummy-bucket-0",
-        "clientId": "minio",
-        "isDirectory": true,
+        "client_id": "minio",
+        "is_directory": true,
         "name": "movies/2000s/",
         "size": 0,
-        "storageClass": null
+        "storage_class": null
       }
     ]
   },
@@ -15,11 +15,11 @@
     "rows": [
       {
         "bucket": "dummy-bucket-0",
-        "clientId": "azblob",
-        "isDirectory": true,
+        "client_id": "azblob",
+        "is_directory": true,
         "name": "movies/2000s/",
         "size": null,
-        "storageClass": null
+        "storage_class": null
       }
     ]
   },
@@ -27,11 +27,11 @@
     "rows": [
       {
         "bucket": "dummy-bucket-0",
-        "clientId": "gcs",
-        "isDirectory": true,
+        "client_id": "gcs",
+        "is_directory": true,
         "name": "movies/2000s/",
         "size": 0,
-        "storageClass": null
+        "storage_class": null
       }
     ]
   }

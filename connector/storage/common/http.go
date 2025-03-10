@@ -20,7 +20,7 @@ type HTTPRequestOptions struct {
 	URL      string              `json:"url"`
 	Method   *DownloadHTTPMethod `json:"method"`
 	Headers  []StorageKeyValue   `json:"headers,omitempty"`
-	BodyText string              `json:"bodyText,omitempty"`
+	BodyText string              `json:"body_text,omitempty"`
 }
 
 // HTTPClient extends the native http.Client with custom configurations and methods

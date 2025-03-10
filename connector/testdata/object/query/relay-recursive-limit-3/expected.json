@@ -8,33 +8,33 @@
               "cursor": "movies/1900s/movies.json",
               "node": {
                 "bucket": "dummy-bucket-0",
-                "clientId": "minio",
-                "isDirectory": false,
+                "client_id": "minio",
+                "is_directory": false,
                 "name": "movies/1900s/movies.json",
                 "size": 100041,
-                "storageClass": "STANDARD"
+                "storage_class": "STANDARD"
               }
             },
             {
               "cursor": "movies/1910s/movies.json",
               "node": {
                 "bucket": "dummy-bucket-0",
-                "clientId": "minio",
-                "isDirectory": false,
+                "client_id": "minio",
+                "is_directory": false,
                 "name": "movies/1910s/movies.json",
                 "size": 2007693,
-                "storageClass": "STANDARD"
+                "storage_class": "STANDARD"
               }
             },
             {
               "cursor": "movies/1920s/movies.json",
               "node": {
                 "bucket": "dummy-bucket-0",
-                "clientId": "minio",
-                "isDirectory": false,
+                "client_id": "minio",
+                "is_directory": false,
                 "name": "movies/1920s/movies.json",
                 "size": 3463423,
-                "storageClass": "STANDARD"
+                "storage_class": "STANDARD"
               }
             }
           ],
@@ -52,33 +52,33 @@
               "cursor": "movies/1900s/movies.json",
               "node": {
                 "bucket": "dummy-bucket-0",
-                "clientId": "azblob",
-                "isDirectory": false,
+                "client_id": "azblob",
+                "is_directory": false,
                 "name": "movies/1900s/movies.json",
                 "size": 100041,
-                "storageClass": "Hot"
+                "storage_class": "Hot"
               }
             },
             {
               "cursor": "movies/1910s/movies.json",
               "node": {
                 "bucket": "dummy-bucket-0",
-                "clientId": "azblob",
-                "isDirectory": false,
+                "client_id": "azblob",
+                "is_directory": false,
                 "name": "movies/1910s/movies.json",
                 "size": 2007693,
-                "storageClass": "Hot"
+                "storage_class": "Hot"
               }
             },
             {
               "cursor": "movies/1920s/movies.json",
               "node": {
                 "bucket": "dummy-bucket-0",
-                "clientId": "azblob",
-                "isDirectory": false,
+                "client_id": "azblob",
+                "is_directory": false,
                 "name": "movies/1920s/movies.json",
                 "size": 3463423,
-                "storageClass": "Hot"
+                "storage_class": "Hot"
               }
             }
           ],
@@ -96,33 +96,33 @@
               "cursor": "movies/1900s/movies.json",
               "node": {
                 "bucket": "dummy-bucket-0",
-                "clientId": "gcs",
-                "isDirectory": false,
+                "client_id": "gcs",
+                "is_directory": false,
                 "name": "movies/1900s/movies.json",
                 "size": 100041,
-                "storageClass": "STANDARD"
+                "storage_class": "STANDARD"
               }
             },
             {
               "cursor": "movies/1910s/movies.json",
               "node": {
                 "bucket": "dummy-bucket-0",
-                "clientId": "gcs",
-                "isDirectory": false,
+                "client_id": "gcs",
+                "is_directory": false,
                 "name": "movies/1910s/movies.json",
                 "size": 2007693,
-                "storageClass": "STANDARD"
+                "storage_class": "STANDARD"
               }
             },
             {
               "cursor": "movies/1920s/movies.json",
               "node": {
                 "bucket": "dummy-bucket-0",
-                "clientId": "gcs",
-                "isDirectory": false,
+                "client_id": "gcs",
+                "is_directory": false,
                 "name": "movies/1920s/movies.json",
                 "size": 3463423,
-                "storageClass": "STANDARD"
+                "storage_class": "STANDARD"
               }
             }
           ],

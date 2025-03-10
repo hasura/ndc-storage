@@ -3,9 +3,9 @@
   "operations": [
     {
       "type": "procedure",
-      "name": "updateStorageObject",
+      "name": "update_storage_object",
       "arguments": {
-        "clientId": "gcs",
+        "client_id": "gcs",
         "bucket": "gcs-bucket",
         "name": "public/hello.txt",
         "metadata": [

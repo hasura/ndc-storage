@@ -81,7 +81,7 @@ func (dch DataConnectorHandler) execQuery(ctx context.Context, state *types.Stat
 	span := trace.SpanFromContext(ctx)
 	logger := connector.GetLogger(ctx)
 	switch request.Collection {
-	case "downloadStorageObjectAsBase64":
+	case "download_storage_object_as_base64":
 
 		selection, err := queryFields.AsObject()
 		if err != nil {
@@ -118,7 +118,7 @@ func (dch DataConnectorHandler) execQuery(ctx context.Context, state *types.Stat
 		}
 		return result, nil
 
-	case "downloadStorageObjectAsText":
+	case "download_storage_object_as_text":
 
 		selection, err := queryFields.AsObject()
 		if err != nil {
@@ -155,7 +155,7 @@ func (dch DataConnectorHandler) execQuery(ctx context.Context, state *types.Stat
 		}
 		return result, nil
 
-	case "storageBucket":
+	case "storage_bucket":
 
 		selection, err := queryFields.AsObject()
 		if err != nil {
@@ -192,7 +192,7 @@ func (dch DataConnectorHandler) execQuery(ctx context.Context, state *types.Stat
 		}
 		return result, nil
 
-	case "storageBucketConnections":
+	case "storage_bucket_connections":
 
 		selection, err := queryFields.AsObject()
 		if err != nil {
@@ -226,7 +226,7 @@ func (dch DataConnectorHandler) execQuery(ctx context.Context, state *types.Stat
 		}
 		return result, nil
 
-	case "storageBucketExists":
+	case "storage_bucket_exists":
 
 		selection, err := queryFields.AsObject()
 		if err != nil {
@@ -260,7 +260,7 @@ func (dch DataConnectorHandler) execQuery(ctx context.Context, state *types.Stat
 		}
 		return result, nil
 
-	case "storageDeletedObjects":
+	case "storage_deleted_objects":
 
 		selection, err := queryFields.AsObject()
 		if err != nil {
@@ -294,7 +294,7 @@ func (dch DataConnectorHandler) execQuery(ctx context.Context, state *types.Stat
 		}
 		return result, nil
 
-	case "storageIncompleteUploads":
+	case "storage_incomplete_uploads":
 
 		selection, err := queryFields.AsArray()
 		if err != nil {
@@ -328,7 +328,7 @@ func (dch DataConnectorHandler) execQuery(ctx context.Context, state *types.Stat
 		}
 		return result, nil
 
-	case "storageObject":
+	case "storage_object":
 
 		selection, err := queryFields.AsObject()
 		if err != nil {
@@ -365,7 +365,7 @@ func (dch DataConnectorHandler) execQuery(ctx context.Context, state *types.Stat
 		}
 		return result, nil
 
-	case "storageObjectConnections":
+	case "storage_object_connections":
 
 		selection, err := queryFields.AsObject()
 		if err != nil {
@@ -399,7 +399,7 @@ func (dch DataConnectorHandler) execQuery(ctx context.Context, state *types.Stat
 		}
 		return result, nil
 
-	case "storagePresignedDownloadUrl":
+	case "storage_presigned_download_url":
 
 		selection, err := queryFields.AsObject()
 		if err != nil {
@@ -436,7 +436,7 @@ func (dch DataConnectorHandler) execQuery(ctx context.Context, state *types.Stat
 		}
 		return result, nil
 
-	case "storagePresignedUploadUrl":
+	case "storage_presigned_upload_url":
 
 		selection, err := queryFields.AsObject()
 		if err != nil {
@@ -478,7 +478,7 @@ func (dch DataConnectorHandler) execQuery(ctx context.Context, state *types.Stat
 	}
 }
 
-var enumValues_FunctionName = []string{"downloadStorageObjectAsBase64", "downloadStorageObjectAsText", "storageBucket", "storageBucketConnections", "storageBucketExists", "storageDeletedObjects", "storageIncompleteUploads", "storageObject", "storageObjectConnections", "storagePresignedDownloadUrl", "storagePresignedUploadUrl"}
+var enumValues_FunctionName = []string{"download_storage_object_as_base64", "download_storage_object_as_text", "storage_bucket", "storage_bucket_connections", "storage_bucket_exists", "storage_deleted_objects", "storage_incomplete_uploads", "storage_object", "storage_object_connections", "storage_presigned_download_url", "storage_presigned_upload_url"}
 
 // MutationExists check if the mutation name exists
 func (dch DataConnectorHandler) MutationExists(name string) bool {
@@ -493,7 +493,7 @@ func (dch DataConnectorHandler) Mutation(ctx context.Context, state *types.State
 	})
 
 	switch operation.Name {
-	case "composeStorageObject":
+	case "compose_storage_object":
 
 		selection, err := operation.Fields.AsObject()
 		if err != nil {
@@ -524,7 +524,7 @@ func (dch DataConnectorHandler) Mutation(ctx context.Context, state *types.State
 		}
 		return schema.NewProcedureResult(result).Encode(), nil
 
-	case "copyStorageObject":
+	case "copy_storage_object":
 
 		selection, err := operation.Fields.AsObject()
 		if err != nil {
@@ -555,7 +555,7 @@ func (dch DataConnectorHandler) Mutation(ctx context.Context, state *types.State
 		}
 		return schema.NewProcedureResult(result).Encode(), nil
 
-	case "createStorageBucket":
+	case "create_storage_bucket":
 
 		selection, err := operation.Fields.AsObject()
 		if err != nil {
@@ -586,7 +586,7 @@ func (dch DataConnectorHandler) Mutation(ctx context.Context, state *types.State
 		}
 		return schema.NewProcedureResult(result).Encode(), nil
 
-	case "removeIncompleteStorageUpload":
+	case "remove_incomplete_storage_upload":
 
 		selection, err := operation.Fields.AsObject()
 		if err != nil {
@@ -617,7 +617,7 @@ func (dch DataConnectorHandler) Mutation(ctx context.Context, state *types.State
 		}
 		return schema.NewProcedureResult(result).Encode(), nil
 
-	case "removeStorageBucket":
+	case "remove_storage_bucket":
 
 		selection, err := operation.Fields.AsObject()
 		if err != nil {
@@ -648,7 +648,7 @@ func (dch DataConnectorHandler) Mutation(ctx context.Context, state *types.State
 		}
 		return schema.NewProcedureResult(result).Encode(), nil
 
-	case "removeStorageObject":
+	case "remove_storage_object":
 
 		selection, err := operation.Fields.AsObject()
 		if err != nil {
@@ -679,7 +679,7 @@ func (dch DataConnectorHandler) Mutation(ctx context.Context, state *types.State
 		}
 		return schema.NewProcedureResult(result).Encode(), nil
 
-	case "removeStorageObjects":
+	case "remove_storage_objects":
 
 		selection, err := operation.Fields.AsArray()
 		if err != nil {
@@ -710,7 +710,7 @@ func (dch DataConnectorHandler) Mutation(ctx context.Context, state *types.State
 		}
 		return schema.NewProcedureResult(result).Encode(), nil
 
-	case "restoreStorageObject":
+	case "restore_storage_object":
 
 		selection, err := operation.Fields.AsObject()
 		if err != nil {
@@ -741,7 +741,7 @@ func (dch DataConnectorHandler) Mutation(ctx context.Context, state *types.State
 		}
 		return schema.NewProcedureResult(result).Encode(), nil
 
-	case "updateStorageBucket":
+	case "update_storage_bucket":
 
 		selection, err := operation.Fields.AsObject()
 		if err != nil {
@@ -772,7 +772,7 @@ func (dch DataConnectorHandler) Mutation(ctx context.Context, state *types.State
 		}
 		return schema.NewProcedureResult(result).Encode(), nil
 
-	case "updateStorageObject":
+	case "update_storage_object":
 
 		selection, err := operation.Fields.AsObject()
 		if err != nil {
@@ -803,7 +803,7 @@ func (dch DataConnectorHandler) Mutation(ctx context.Context, state *types.State
 		}
 		return schema.NewProcedureResult(result).Encode(), nil
 
-	case "uploadStorageObjectAsBase64":
+	case "upload_storage_object_as_base64":
 
 		selection, err := operation.Fields.AsObject()
 		if err != nil {
@@ -834,7 +834,7 @@ func (dch DataConnectorHandler) Mutation(ctx context.Context, state *types.State
 		}
 		return schema.NewProcedureResult(result).Encode(), nil
 
-	case "uploadStorageObjectAsText":
+	case "upload_storage_object_as_text":
 
 		selection, err := operation.Fields.AsObject()
 		if err != nil {
@@ -865,7 +865,7 @@ func (dch DataConnectorHandler) Mutation(ctx context.Context, state *types.State
 		}
 		return schema.NewProcedureResult(result).Encode(), nil
 
-	case "uploadStorageObjectFromUrl":
+	case "upload_storage_object_from_url":
 
 		selection, err := operation.Fields.AsObject()
 		if err != nil {
@@ -901,7 +901,7 @@ func (dch DataConnectorHandler) Mutation(ctx context.Context, state *types.State
 	}
 }
 
-var enumValues_ProcedureName = []string{"composeStorageObject", "copyStorageObject", "createStorageBucket", "removeIncompleteStorageUpload", "removeStorageBucket", "removeStorageObject", "removeStorageObjects", "restoreStorageObject", "updateStorageBucket", "updateStorageObject", "uploadStorageObjectAsBase64", "uploadStorageObjectAsText", "uploadStorageObjectFromUrl"}
+var enumValues_ProcedureName = []string{"compose_storage_object", "copy_storage_object", "create_storage_bucket", "remove_incomplete_storage_upload", "remove_storage_bucket", "remove_storage_object", "remove_storage_objects", "restore_storage_object", "update_storage_bucket", "update_storage_object", "upload_storage_object_as_base64", "upload_storage_object_as_text", "upload_storage_object_from_url"}
 
 func connector_addSpanEvent(span trace.Span, logger *slog.Logger, name string, data map[string]any, options ...trace.EventOption) {
 	logger.Debug(name, slog.Any("data", data))

@@ -6,11 +6,11 @@ import (
 )
 
 const (
-	CollectionStorageObjects    = "storageObjects"
-	CollectionStorageBuckets    = "storageBuckets"
+	CollectionStorageObjects    = "storage_objects"
+	CollectionStorageBuckets    = "storage_buckets"
 	StorageObjectName           = "StorageObject"
 	StorageBucketName           = "StorageBucket"
-	StorageObjectColumnClientID = "clientId"
+	StorageObjectColumnClientID = "client_id"
 	StorageObjectColumnBucket   = "bucket"
 	StorageObjectColumnName     = "name"
 )
@@ -32,14 +32,14 @@ const (
 
 const (
 	argumentAfter           = "after"
-	argumentHierarchy       = "hierarchy"
-	ArgumentClientType      = "clientType"
+	argumentRecursive       = "recursive"
+	ArgumentClientType      = "client_type"
 	ArgumentEndpoint        = "endpoint"
-	ArgumentAccessKeyID     = "accessKeyId"
-	ArgumentSecretAccessKey = "secretAccessKey"
+	ArgumentAccessKeyID     = "access_key_id"
+	ArgumentSecretAccessKey = "secret_access_key"
 )
 
-var checksumColumnNames = []string{"checksumCrc32", "checksumCrc32C", "checksumCrc64Nvme", "checksumSha1", "checksumSha256"}
+var checksumColumnNames = []string{"checksum_crc32", "checksum_crc32c", "checksum_crc64_nvme", "checksum_sha1", "checksum_sha256"}
 
 // StringComparisonOperator represents the explicit comparison expression for string columns.
 type StringComparisonOperator struct {
@@ -53,7 +53,7 @@ func GetConnectorSchema(clientIDs []string, dynamicCredentials bool) *schema.Sch
 		argumentAfter: {
 			Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
 		},
-		argumentHierarchy: {
+		argumentRecursive: {
 			Type: schema.NewNullableType(schema.NewNamedType("Boolean")).Encode(),
 		},
 	}, dynamicCredentials)

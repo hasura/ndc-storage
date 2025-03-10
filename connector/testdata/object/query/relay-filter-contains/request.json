@@ -1,7 +1,7 @@
 {
-  "collection": "storageObjectConnections",
+  "collection": "storage_object_connections",
   "arguments": {
-    "hierarchy": { "type": "literal", "value": false },
+    "recursive": { "type": "literal", "value": true },
     "first": { "type": "literal", "value": 3 },
     "after": {
       "type": "literal",
@@ -15,7 +15,7 @@
         "expressions": [
           {
             "type": "binary_comparison_operator",
-            "column": { "type": "column", "name": "clientId", "path": [] },
+            "column": { "type": "column", "name": "client_id", "path": [] },
             "operator": "_eq",
             "value": { "type": "variable", "name": "$clientId" }
           },
@@ -70,12 +70,12 @@
                             "column": "bucket",
                             "type": "column"
                           },
-                          "clientId": {
-                            "column": "clientId",
+                          "client_id": {
+                            "column": "client_id",
                             "type": "column"
                           },
-                          "isDirectory": {
-                            "column": "isDirectory",
+                          "is_directory": {
+                            "column": "is_directory",
                             "type": "column"
                           },
                           "name": {
@@ -86,8 +86,8 @@
                             "column": "size",
                             "type": "column"
                           },
-                          "storageClass": {
-                            "column": "storageClass",
+                          "storage_class": {
+                            "column": "storage_class",
                             "type": "column"
                           }
                         },

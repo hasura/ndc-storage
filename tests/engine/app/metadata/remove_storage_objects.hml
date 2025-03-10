@@ -1,0 +1,82 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: RemoveStorageObjectError
+  description: the container of Multi Delete S3 API error.
+  fields:
+    - name: error
+      type: String!
+    - name: object_name
+      type: String!
+    - name: version_id
+      type: String!
+  graphql:
+    typeName: RemoveStorageObjectError
+    inputTypeName: RemoveStorageObjectError_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: storage
+      dataConnectorObjectType: RemoveStorageObjectError
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: RemoveStorageObjectError
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - error
+          - object_name
+          - version_id
+
+---
+kind: Command
+version: v1
+definition:
+  name: remove_storage_objects
+  outputType: "[RemoveStorageObjectError!]!"
+  arguments:
+    - name: access_key_id
+      type: String
+    - name: after
+      type: String
+    - name: bucket
+      type: String
+    - name: client_id
+      type: StorageClientID
+    - name: client_type
+      type: StorageProviderType
+    - name: endpoint
+      type: String
+    - name: first
+      type: Int32
+    - name: governance_bypass
+      type: Boolean
+    - name: prefix
+      type: String
+    - name: recursive
+      type: Boolean
+    - name: secret_access_key
+      type: String
+  source:
+    dataConnectorName: storage
+    dataConnectorCommand:
+      procedure: remove_storage_objects
+  graphql:
+    rootFieldName: remove_storage_objects
+    rootFieldKind: Mutation
+  description: remove a list of objects obtained from an input channel. The call
+    sends a delete request to the server up to 1000 objects at a time. The
+    errors observed are sent over the error channel.
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: remove_storage_objects
+  permissions:
+    - role: admin
+      allowExecution: true
+

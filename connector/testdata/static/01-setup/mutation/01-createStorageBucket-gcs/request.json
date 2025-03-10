@@ -3,11 +3,11 @@
   "operations": [
     {
       "type": "procedure",
-      "name": "createStorageBucket",
+      "name": "create_storage_bucket",
       "arguments": {
-        "clientId": "gcs",
+        "client_id": "gcs",
         "name": "gcs-bucket",
-        "objectLock": true,
+        "object_lock": true,
         "tags": [
           {
             "key": "provider",

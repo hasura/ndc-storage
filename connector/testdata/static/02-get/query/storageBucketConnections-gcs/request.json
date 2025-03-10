@@ -19,7 +19,7 @@
         "expressions": [
           {
             "type": "binary_comparison_operator",
-            "column": { "type": "column", "name": "clientId", "path": [] },
+            "column": { "type": "column", "name": "client_id", "path": [] },
             "operator": "_eq",
             "value": { "type": "scalar", "value": "gcs" }
           },
@@ -33,7 +33,7 @@
       }
     }
   },
-  "collection": "storageBucketConnections",
+  "collection": "storage_bucket_connections",
   "collection_relationships": {},
   "query": {
     "fields": {
@@ -62,16 +62,16 @@
                                   "column": "enabled",
                                   "type": "column"
                                 },
-                                "terminalStorageClass": {
-                                  "column": "terminalStorageClass",
+                                "terminal_storage_class": {
+                                  "column": "terminal_storage_class",
                                   "type": "column"
                                 },
-                                "terminalStorageClassUpdateTime": {
-                                  "column": "terminalStorageClassUpdateTime",
+                                "terminal_storage_class_update_time": {
+                                  "column": "terminal_storage_class_update_time",
                                   "type": "column"
                                 },
-                                "toggleTime": {
-                                  "column": "toggleTime",
+                                "toggle_time": {
+                                  "column": "toggle_time",
                                   "type": "column"
                                 }
                               },
@@ -79,8 +79,8 @@
                             },
                             "type": "column"
                           },
-                          "clientId": {
-                            "column": "clientId",
+                          "client_id": {
+                            "column": "client_id",
                             "type": "column"
                           },
                           "cors": {
@@ -88,8 +88,8 @@
                             "fields": {
                               "fields": {
                                 "fields": {
-                                  "maxAge": {
-                                    "column": "maxAge",
+                                  "max_age": {
+                                    "column": "max_age",
                                     "type": "column"
                                   },
                                   "methods": {
@@ -100,8 +100,8 @@
                                     "column": "origins",
                                     "type": "column"
                                   },
-                                  "responseHeaders": {
-                                    "column": "responseHeaders",
+                                  "response_headers": {
+                                    "column": "response_headers",
                                     "type": "column"
                                   }
                                 },
@@ -111,12 +111,12 @@
                             },
                             "type": "column"
                           },
-                          "customPlacementConfig": {
-                            "column": "customPlacementConfig",
+                          "custom_placement_config": {
+                            "column": "custom_placement_config",
                             "fields": {
                               "fields": {
-                                "DataLocations": {
-                                  "column": "DataLocations",
+                                "data_locations": {
+                                  "column": "data_locations",
                                   "type": "column"
                                 }
                               },
@@ -124,20 +124,20 @@
                             },
                             "type": "column"
                           },
-                          "defaultEventBasedHold": {
-                            "column": "defaultEventBasedHold",
+                          "default_event_based_hold": {
+                            "column": "default_event_based_hold",
                             "type": "column"
                           },
                           "encryption": {
                             "column": "encryption",
                             "fields": {
                               "fields": {
-                                "kmsMasterKeyId": {
-                                  "column": "kmsMasterKeyId",
+                                "kms_master_key_id": {
+                                  "column": "kms_master_key_id",
                                   "type": "column"
                                 },
-                                "sseAlgorithm": {
-                                  "column": "sseAlgorithm",
+                                "sse_algorithm": {
+                                  "column": "sse_algorithm",
                                   "type": "column"
                                 }
                               },
@@ -149,8 +149,8 @@
                             "column": "etag",
                             "type": "column"
                           },
-                          "hierarchicalNamespace": {
-                            "column": "hierarchicalNamespace",
+                          "hierarchical_namespace": {
+                            "column": "hierarchical_namespace",
                             "fields": {
                               "fields": {
                                 "enabled": {
@@ -171,12 +171,12 @@
                                   "fields": {
                                     "fields": {
                                       "fields": {
-                                        "abortIncompleteMultipartUpload": {
-                                          "column": "abortIncompleteMultipartUpload",
+                                        "abort_incomplete_multipart_upload": {
+                                          "column": "abort_incomplete_multipart_upload",
                                           "fields": {
                                             "fields": {
-                                              "daysAfterInitiation": {
-                                                "column": "daysAfterInitiation",
+                                              "days_after_initiation": {
+                                                "column": "days_after_initiation",
                                                 "type": "column"
                                               }
                                             },
@@ -184,16 +184,16 @@
                                           },
                                           "type": "column"
                                         },
-                                        "allVersionsExpiration": {
-                                          "column": "allVersionsExpiration",
+                                        "all_versions_expiration": {
+                                          "column": "all_versions_expiration",
                                           "fields": {
                                             "fields": {
                                               "days": {
                                                 "column": "days",
                                                 "type": "column"
                                               },
-                                              "deleteMarker": {
-                                                "column": "deleteMarker",
+                                              "delete_marker": {
+                                                "column": "delete_marker",
                                                 "type": "column"
                                               }
                                             },
@@ -201,8 +201,8 @@
                                           },
                                           "type": "column"
                                         },
-                                        "delMarkerExpiration": {
-                                          "column": "delMarkerExpiration",
+                                        "del_marker_expiration": {
+                                          "column": "del_marker_expiration",
                                           "fields": {
                                             "fields": {
                                               "days": {
@@ -230,12 +230,12 @@
                                                 "column": "days",
                                                 "type": "column"
                                               },
-                                              "expiredObjectAllVersions": {
-                                                "column": "expiredObjectAllVersions",
+                                              "expired_object_all_versions": {
+                                                "column": "expired_object_all_versions",
                                                 "type": "column"
                                               },
-                                              "expiredObjectDeleteMarker": {
-                                                "column": "expiredObjectDeleteMarker",
+                                              "expired_object_delete_marker": {
+                                                "column": "expired_object_delete_marker",
                                                 "type": "column"
                                               }
                                             },
@@ -248,24 +248,24 @@
                                           "fields": {
                                             "fields": {
                                               "fields": {
-                                                "matchesPrefix": {
-                                                  "column": "matchesPrefix",
+                                                "matches_prefix": {
+                                                  "column": "matches_prefix",
                                                   "type": "column"
                                                 },
-                                                "matchesStorageClasses": {
-                                                  "column": "matchesStorageClasses",
+                                                "matches_storage_classes": {
+                                                  "column": "matches_storage_classes",
                                                   "type": "column"
                                                 },
-                                                "matchesSuffix": {
-                                                  "column": "matchesSuffix",
+                                                "matches_suffix": {
+                                                  "column": "matches_suffix",
                                                   "type": "column"
                                                 },
-                                                "objectSizeGreaterThan": {
-                                                  "column": "objectSizeGreaterThan",
+                                                "object_size_greater_than": {
+                                                  "column": "object_size_greater_than",
                                                   "type": "column"
                                                 },
-                                                "objectSizeLessThan": {
-                                                  "column": "objectSizeLessThan",
+                                                "object_size_less_than": {
+                                                  "column": "object_size_less_than",
                                                   "type": "column"
                                                 },
                                                 "tags": {
@@ -299,16 +299,16 @@
                                           "column": "id",
                                           "type": "column"
                                         },
-                                        "noncurrentVersionExpiration": {
-                                          "column": "noncurrentVersionExpiration",
+                                        "noncurrent_version_expiration": {
+                                          "column": "noncurrent_version_expiration",
                                           "fields": {
                                             "fields": {
-                                              "newerNoncurrentVersions": {
-                                                "column": "newerNoncurrentVersions",
+                                              "newer_noncurrent_versions": {
+                                                "column": "newer_noncurrent_versions",
                                                 "type": "column"
                                               },
-                                              "noncurrentDays": {
-                                                "column": "noncurrentDays",
+                                              "noncurrent_days": {
+                                                "column": "noncurrent_days",
                                                 "type": "column"
                                               }
                                             },
@@ -316,20 +316,20 @@
                                           },
                                           "type": "column"
                                         },
-                                        "noncurrentVersionTransition": {
-                                          "column": "noncurrentVersionTransition",
+                                        "noncurrent_version_transition": {
+                                          "column": "noncurrent_version_transition",
                                           "fields": {
                                             "fields": {
-                                              "newerNoncurrentVersions": {
-                                                "column": "newerNoncurrentVersions",
+                                              "newer_noncurrent_versions": {
+                                                "column": "newer_noncurrent_versions",
                                                 "type": "column"
                                               },
-                                              "noncurrentDays": {
-                                                "column": "noncurrentDays",
+                                              "noncurrent_days": {
+                                                "column": "noncurrent_days",
                                                 "type": "column"
                                               },
-                                              "storageClass": {
-                                                "column": "storageClass",
+                                              "storage_class": {
+                                                "column": "storage_class",
                                                 "type": "column"
                                               }
                                             },
@@ -353,8 +353,8 @@
                                                 "column": "days",
                                                 "type": "column"
                                               },
-                                              "storageClass": {
-                                                "column": "storageClass",
+                                              "storage_class": {
+                                                "column": "storage_class",
                                                 "type": "column"
                                               }
                                             },
@@ -374,20 +374,20 @@
                             },
                             "type": "column"
                           },
-                          "locationType": {
-                            "column": "locationType",
+                          "location_type": {
+                            "column": "location_type",
                             "type": "column"
                           },
                           "logging": {
                             "column": "logging",
                             "fields": {
                               "fields": {
-                                "logBucket": {
-                                  "column": "logBucket",
+                                "log_bucket": {
+                                  "column": "log_bucket",
                                   "type": "column"
                                 },
-                                "logObjectPrefix": {
-                                  "column": "logObjectPrefix",
+                                "log_object_prefix": {
+                                  "column": "log_object_prefix",
                                   "type": "column"
                                 }
                               },
@@ -399,8 +399,8 @@
                             "column": "name",
                             "type": "column"
                           },
-                          "objectLock": {
-                            "column": "objectLock",
+                          "object_lock": {
+                            "column": "object_lock",
                             "fields": {
                               "fields": {
                                 "enabled": {
@@ -428,24 +428,24 @@
                             "column": "region",
                             "type": "column"
                           },
-                          "requesterPays": {
-                            "column": "requesterPays",
+                          "requester_pays": {
+                            "column": "requester_pays",
                             "type": "column"
                           },
                           "rpo": {
                             "column": "rpo",
                             "type": "column"
                           },
-                          "softDeletePolicy": {
-                            "column": "softDeletePolicy",
+                          "soft_delete_policy": {
+                            "column": "soft_delete_policy",
                             "fields": {
                               "fields": {
-                                "effectiveTime": {
-                                  "column": "effectiveTime",
+                                "effective_time": {
+                                  "column": "effective_time",
                                   "type": "column"
                                 },
-                                "retentionDuration": {
-                                  "column": "retentionDuration",
+                                "retention_duration": {
+                                  "column": "retention_duration",
                                   "type": "column"
                                 }
                               },
@@ -453,8 +453,8 @@
                             },
                             "type": "column"
                           },
-                          "storageClass": {
-                            "column": "storageClass",
+                          "storage_class": {
+                            "column": "storage_class",
                             "type": "column"
                           },
                           "tags": {
@@ -469,16 +469,16 @@
                                   "column": "enabled",
                                   "type": "column"
                                 },
-                                "excludeFolders": {
-                                  "column": "excludeFolders",
+                                "exclude_folders": {
+                                  "column": "exclude_folders",
                                   "type": "column"
                                 },
-                                "excludedPrefixes": {
-                                  "column": "excludedPrefixes",
+                                "excluded_prefixes": {
+                                  "column": "excluded_prefixes",
                                   "type": "column"
                                 },
-                                "mfaDelete": {
-                                  "column": "mfaDelete",
+                                "mfa_delete": {
+                                  "column": "mfa_delete",
                                   "type": "column"
                                 }
                               },
@@ -490,12 +490,12 @@
                             "column": "website",
                             "fields": {
                               "fields": {
-                                "mainPageSuffix": {
-                                  "column": "mainPageSuffix",
+                                "main_page_suffix": {
+                                  "column": "main_page_suffix",
                                   "type": "column"
                                 },
-                                "notFoundPage": {
-                                  "column": "notFoundPage",
+                                "not_found_page": {
+                                  "column": "not_found_page",
                                   "type": "column"
                                 }
                               },

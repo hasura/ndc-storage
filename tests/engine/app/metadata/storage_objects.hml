@@ -1,0 +1,675 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: StorageObjectCopyInfo
+  description: holds the copy information if the object was copied from another object.
+  fields:
+    - name: completion_time
+      type: TimestampTZ
+    - name: id
+      type: String!
+    - name: progress
+      type: String
+    - name: source
+      type: String
+    - name: status
+      type: String
+    - name: status_description
+      type: String
+  graphql:
+    typeName: StorageObjectCopyInfo
+    inputTypeName: StorageObjectCopyInfo_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: storage
+      dataConnectorObjectType: StorageObjectCopyInfo
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: StorageObjectCopyInfo
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - completion_time
+          - id
+          - progress
+          - source
+          - status
+          - status_description
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: StorageGrantee
+  description: represents the person being granted permissions.
+  fields:
+    - name: display_name
+      type: String
+    - name: id
+      type: String
+    - name: uri
+      type: String
+  graphql:
+    typeName: StorageGrantee
+    inputTypeName: StorageGrantee_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: storage
+      dataConnectorObjectType: StorageGrantee
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: StorageGrantee
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - display_name
+          - id
+          - uri
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: StorageGrant
+  description: holds grant information.
+  fields:
+    - name: grantee
+      type: StorageGrantee
+    - name: permission
+      type: String
+  graphql:
+    typeName: StorageGrant
+    inputTypeName: StorageGrant_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: storage
+      dataConnectorObjectType: StorageGrant
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: StorageGrant
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - grantee
+          - permission
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: StorageOwner
+  description: name.
+  fields:
+    - name: id
+      type: String
+    - name: name
+      type: String
+  graphql:
+    typeName: StorageOwner
+    inputTypeName: StorageOwner_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: storage
+      dataConnectorObjectType: StorageOwner
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: StorageOwner
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - id
+          - name
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: StorageRestoreInfo
+  description: contains information of the restore operation of an archived object.
+  fields:
+    - name: expiry_time
+      type: TimestampTZ
+    - name: ongoing_restore
+      type: Boolean!
+  graphql:
+    typeName: StorageRestoreInfo
+    inputTypeName: StorageRestoreInfo_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: storage
+      dataConnectorObjectType: StorageRestoreInfo
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: StorageRestoreInfo
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - expiry_time
+          - ongoing_restore
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: StorageObject
+  description: container for object metadata.
+  fields:
+    - name: access_tier_change_time
+      type: TimestampTZ
+    - name: access_tier_inferred
+      type: Boolean
+    - name: acl
+      type: JSON
+    - name: archive_status
+      type: String
+    - name: blob_sequence_number
+      type: Int64
+    - name: blob_type
+      type: String
+    - name: bucket
+      type: StorageBucketName!
+    - name: cache_control
+      type: String
+    - name: checksum_crc32
+      type: String
+    - name: checksum_crc32c
+      type: String
+    - name: checksum_crc64_nvme
+      type: String
+    - name: checksum_sha1
+      type: String
+    - name: checksum_sha256
+      type: String
+    - name: client_id
+      type: StorageClientID!
+    - name: content_disposition
+      type: String
+    - name: content_encoding
+      type: String
+    - name: content_language
+      type: String
+    - name: content_md5
+      type: String
+    - name: content_type
+      type: String
+    - name: copy
+      type: StorageObjectCopyInfo
+    - name: creation_time
+      type: TimestampTZ
+    - name: customer_provided_key_sha256
+      type: String
+    - name: deleted
+      type: Boolean
+    - name: deleted_time
+      type: TimestampTZ
+    - name: destination_snapshot
+      type: String
+    - name: etag
+      type: String
+    - name: expiration
+      type: TimestampTZ
+    - name: expiration_rule_id
+      type: String
+    - name: expires
+      type: TimestampTZ
+    - name: grant
+      type: "[StorageGrant!]"
+    - name: group
+      type: String
+    - name: incremental_copy
+      type: Boolean
+    - name: is_directory
+      type: Boolean!
+    - name: is_latest
+      type: Boolean
+    - name: kms_key_name
+      type: String
+    - name: last_access_time
+      type: TimestampTZ
+    - name: last_modified
+      type: TimestampTZ!
+    - name: lease_duration
+      type: String
+    - name: lease_state
+      type: String
+    - name: lease_status
+      type: String
+    - name: legal_hold
+      type: Boolean
+    - name: media_link
+      type: String
+    - name: metadata
+      type: "[StorageKeyValue!]"
+    - name: name
+      type: StorageStringFilter!
+    - name: owner
+      type: StorageOwner
+    - name: permissions
+      type: String
+    - name: raw_metadata
+      type: "[StorageKeyValue!]"
+    - name: rehydrate_priority
+      type: String
+    - name: remaining_retention_days
+      type: Int32
+    - name: replication_ready
+      type: Boolean
+    - name: replication_status
+      type: StorageObjectReplicationStatus
+    - name: resource_type
+      type: String
+    - name: restore
+      type: StorageRestoreInfo
+    - name: retention_mode
+      type: String
+    - name: retention_until_date
+      type: TimestampTZ
+    - name: sealed
+      type: Boolean
+    - name: server_encrypted
+      type: Boolean
+    - name: size
+      type: Int64
+    - name: storage_class
+      type: String
+    - name: tag_count
+      type: Int32
+    - name: tags
+      type: "[StorageKeyValue!]"
+    - name: version_id
+      type: String
+  graphql:
+    typeName: StorageObject
+    inputTypeName: StorageObject_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: storage
+      dataConnectorObjectType: StorageObject
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: StorageObject
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - access_tier_change_time
+          - access_tier_inferred
+          - acl
+          - archive_status
+          - blob_sequence_number
+          - blob_type
+          - bucket
+          - cache_control
+          - checksum_crc32
+          - checksum_crc32c
+          - checksum_crc64_nvme
+          - checksum_sha1
+          - checksum_sha256
+          - client_id
+          - content_disposition
+          - content_encoding
+          - content_language
+          - content_md5
+          - content_type
+          - copy
+          - creation_time
+          - customer_provided_key_sha256
+          - deleted
+          - deleted_time
+          - destination_snapshot
+          - etag
+          - expiration
+          - expiration_rule_id
+          - expires
+          - grant
+          - group
+          - incremental_copy
+          - is_directory
+          - is_latest
+          - kms_key_name
+          - last_access_time
+          - last_modified
+          - lease_duration
+          - lease_state
+          - lease_status
+          - legal_hold
+          - media_link
+          - metadata
+          - name
+          - owner
+          - permissions
+          - raw_metadata
+          - rehydrate_priority
+          - remaining_retention_days
+          - replication_ready
+          - replication_status
+          - resource_type
+          - restore
+          - retention_mode
+          - retention_until_date
+          - sealed
+          - server_encrypted
+          - size
+          - storage_class
+          - tag_count
+          - tags
+          - version_id
+
+---
+kind: BooleanExpressionType
+version: v1
+definition:
+  name: StorageObject_bool_exp
+  operand:
+    object:
+      type: StorageObject
+      comparableFields:
+        - fieldName: access_tier_change_time
+          booleanExpressionType: TimestampTZ_bool_exp
+        - fieldName: access_tier_inferred
+          booleanExpressionType: Boolean_bool_exp
+        - fieldName: acl
+          booleanExpressionType: JSON_bool_exp
+        - fieldName: archive_status
+          booleanExpressionType: String_bool_exp
+        - fieldName: blob_sequence_number
+          booleanExpressionType: Int64_bool_exp
+        - fieldName: blob_type
+          booleanExpressionType: String_bool_exp
+        - fieldName: bucket
+          booleanExpressionType: StorageBucketName_bool_exp
+        - fieldName: cache_control
+          booleanExpressionType: String_bool_exp
+        - fieldName: checksum_crc32
+          booleanExpressionType: String_bool_exp
+        - fieldName: checksum_crc32c
+          booleanExpressionType: String_bool_exp
+        - fieldName: checksum_crc64_nvme
+          booleanExpressionType: String_bool_exp
+        - fieldName: checksum_sha1
+          booleanExpressionType: String_bool_exp
+        - fieldName: checksum_sha256
+          booleanExpressionType: String_bool_exp
+        - fieldName: client_id
+          booleanExpressionType: StorageClientID_bool_exp
+        - fieldName: content_disposition
+          booleanExpressionType: String_bool_exp
+        - fieldName: content_encoding
+          booleanExpressionType: String_bool_exp
+        - fieldName: content_language
+          booleanExpressionType: String_bool_exp
+        - fieldName: content_md5
+          booleanExpressionType: String_bool_exp
+        - fieldName: content_type
+          booleanExpressionType: String_bool_exp
+        - fieldName: creation_time
+          booleanExpressionType: TimestampTZ_bool_exp
+        - fieldName: customer_provided_key_sha256
+          booleanExpressionType: String_bool_exp
+        - fieldName: deleted
+          booleanExpressionType: Boolean_bool_exp
+        - fieldName: deleted_time
+          booleanExpressionType: TimestampTZ_bool_exp
+        - fieldName: destination_snapshot
+          booleanExpressionType: String_bool_exp
+        - fieldName: etag
+          booleanExpressionType: String_bool_exp
+        - fieldName: expiration
+          booleanExpressionType: TimestampTZ_bool_exp
+        - fieldName: expiration_rule_id
+          booleanExpressionType: String_bool_exp
+        - fieldName: expires
+          booleanExpressionType: TimestampTZ_bool_exp
+        - fieldName: group
+          booleanExpressionType: String_bool_exp
+        - fieldName: incremental_copy
+          booleanExpressionType: Boolean_bool_exp
+        - fieldName: is_directory
+          booleanExpressionType: Boolean_bool_exp
+        - fieldName: is_latest
+          booleanExpressionType: Boolean_bool_exp
+        - fieldName: kms_key_name
+          booleanExpressionType: String_bool_exp
+        - fieldName: last_access_time
+          booleanExpressionType: TimestampTZ_bool_exp
+        - fieldName: last_modified
+          booleanExpressionType: TimestampTZ_bool_exp
+        - fieldName: lease_duration
+          booleanExpressionType: String_bool_exp
+        - fieldName: lease_state
+          booleanExpressionType: String_bool_exp
+        - fieldName: lease_status
+          booleanExpressionType: String_bool_exp
+        - fieldName: legal_hold
+          booleanExpressionType: Boolean_bool_exp
+        - fieldName: media_link
+          booleanExpressionType: String_bool_exp
+        - fieldName: name
+          booleanExpressionType: StorageStringFilter_bool_exp
+        - fieldName: permissions
+          booleanExpressionType: String_bool_exp
+        - fieldName: rehydrate_priority
+          booleanExpressionType: String_bool_exp
+        - fieldName: remaining_retention_days
+          booleanExpressionType: Int32_bool_exp
+        - fieldName: replication_ready
+          booleanExpressionType: Boolean_bool_exp
+        - fieldName: replication_status
+          booleanExpressionType: StorageObjectReplicationStatus_bool_exp
+        - fieldName: resource_type
+          booleanExpressionType: String_bool_exp
+        - fieldName: retention_mode
+          booleanExpressionType: String_bool_exp
+        - fieldName: retention_until_date
+          booleanExpressionType: TimestampTZ_bool_exp
+        - fieldName: sealed
+          booleanExpressionType: Boolean_bool_exp
+        - fieldName: server_encrypted
+          booleanExpressionType: Boolean_bool_exp
+        - fieldName: size
+          booleanExpressionType: Int64_bool_exp
+        - fieldName: storage_class
+          booleanExpressionType: String_bool_exp
+        - fieldName: tag_count
+          booleanExpressionType: Int32_bool_exp
+        - fieldName: version_id
+          booleanExpressionType: String_bool_exp
+      comparableRelationships: []
+  logicalOperators:
+    enable: true
+  isNull:
+    enable: true
+  graphql:
+    typeName: StorageObject_bool_exp
+
+---
+kind: OrderByExpression
+version: v1
+definition:
+  name: StorageObject_order_by_exp
+  operand:
+    object:
+      orderedType: StorageObject
+      orderableFields:
+        - fieldName: access_tier_change_time
+          orderByExpression: TimestampTZ_order_by_exp
+        - fieldName: access_tier_inferred
+          orderByExpression: Boolean_order_by_exp
+        - fieldName: acl
+          orderByExpression: JSON_order_by_exp
+        - fieldName: archive_status
+          orderByExpression: String_order_by_exp
+        - fieldName: blob_sequence_number
+          orderByExpression: Int64_order_by_exp
+        - fieldName: blob_type
+          orderByExpression: String_order_by_exp
+        - fieldName: bucket
+          orderByExpression: StorageBucketName_order_by_exp
+        - fieldName: cache_control
+          orderByExpression: String_order_by_exp
+        - fieldName: checksum_crc32
+          orderByExpression: String_order_by_exp
+        - fieldName: checksum_crc32c
+          orderByExpression: String_order_by_exp
+        - fieldName: checksum_crc64_nvme
+          orderByExpression: String_order_by_exp
+        - fieldName: checksum_sha1
+          orderByExpression: String_order_by_exp
+        - fieldName: checksum_sha256
+          orderByExpression: String_order_by_exp
+        - fieldName: client_id
+          orderByExpression: StorageClientID_order_by_exp
+        - fieldName: content_disposition
+          orderByExpression: String_order_by_exp
+        - fieldName: content_encoding
+          orderByExpression: String_order_by_exp
+        - fieldName: content_language
+          orderByExpression: String_order_by_exp
+        - fieldName: content_md5
+          orderByExpression: String_order_by_exp
+        - fieldName: content_type
+          orderByExpression: String_order_by_exp
+        - fieldName: creation_time
+          orderByExpression: TimestampTZ_order_by_exp
+        - fieldName: customer_provided_key_sha256
+          orderByExpression: String_order_by_exp
+        - fieldName: deleted
+          orderByExpression: Boolean_order_by_exp
+        - fieldName: deleted_time
+          orderByExpression: TimestampTZ_order_by_exp
+        - fieldName: destination_snapshot
+          orderByExpression: String_order_by_exp
+        - fieldName: etag
+          orderByExpression: String_order_by_exp
+        - fieldName: expiration
+          orderByExpression: TimestampTZ_order_by_exp
+        - fieldName: expiration_rule_id
+          orderByExpression: String_order_by_exp
+        - fieldName: expires
+          orderByExpression: TimestampTZ_order_by_exp
+        - fieldName: group
+          orderByExpression: String_order_by_exp
+        - fieldName: incremental_copy
+          orderByExpression: Boolean_order_by_exp
+        - fieldName: is_directory
+          orderByExpression: Boolean_order_by_exp
+        - fieldName: is_latest
+          orderByExpression: Boolean_order_by_exp
+        - fieldName: kms_key_name
+          orderByExpression: String_order_by_exp
+        - fieldName: last_access_time
+          orderByExpression: TimestampTZ_order_by_exp
+        - fieldName: last_modified
+          orderByExpression: TimestampTZ_order_by_exp
+        - fieldName: lease_duration
+          orderByExpression: String_order_by_exp
+        - fieldName: lease_state
+          orderByExpression: String_order_by_exp
+        - fieldName: lease_status
+          orderByExpression: String_order_by_exp
+        - fieldName: legal_hold
+          orderByExpression: Boolean_order_by_exp
+        - fieldName: media_link
+          orderByExpression: String_order_by_exp
+        - fieldName: name
+          orderByExpression: StorageStringFilter_order_by_exp
+        - fieldName: permissions
+          orderByExpression: String_order_by_exp
+        - fieldName: rehydrate_priority
+          orderByExpression: String_order_by_exp
+        - fieldName: remaining_retention_days
+          orderByExpression: Int32_order_by_exp
+        - fieldName: replication_ready
+          orderByExpression: Boolean_order_by_exp
+        - fieldName: replication_status
+          orderByExpression: StorageObjectReplicationStatus_order_by_exp
+        - fieldName: resource_type
+          orderByExpression: String_order_by_exp
+        - fieldName: retention_mode
+          orderByExpression: String_order_by_exp
+        - fieldName: retention_until_date
+          orderByExpression: TimestampTZ_order_by_exp
+        - fieldName: sealed
+          orderByExpression: Boolean_order_by_exp
+        - fieldName: server_encrypted
+          orderByExpression: Boolean_order_by_exp
+        - fieldName: size
+          orderByExpression: Int64_order_by_exp
+        - fieldName: storage_class
+          orderByExpression: String_order_by_exp
+        - fieldName: tag_count
+          orderByExpression: Int32_order_by_exp
+        - fieldName: version_id
+          orderByExpression: String_order_by_exp
+      orderableRelationships: []
+  graphql:
+    expressionTypeName: StorageObject_order_by_exp
+
+---
+kind: Model
+version: v2
+definition:
+  name: storage_objects
+  objectType: StorageObject
+  arguments:
+    - name: access_key_id
+      type: String
+      description: Access key ID or Account name credential
+    - name: after
+      type: String
+    - name: bucket
+      type: String
+    - name: client_type
+      type: StorageProviderType
+      description: The cloud storage provider type
+    - name: endpoint
+      type: String
+      description: Endpoint of the cloud storage service
+    - name: recursive
+      type: Boolean
+    - name: secret_access_key
+      type: String
+      description: Secret Access key ID or Account key credential
+  source:
+    dataConnectorName: storage
+    collection: storage_objects
+  filterExpressionType: StorageObject_bool_exp
+  orderByExpression: StorageObject_order_by_exp
+  graphql:
+    selectMany:
+      queryRootField: storage_objects
+      subscription:
+        rootField: storage_objects
+    selectUniques: []
+    argumentsInputType: storage_objects_arguments
+  description: List storage objects
+
+---
+kind: ModelPermissions
+version: v1
+definition:
+  modelName: storage_objects
+  permissions:
+    - role: admin
+      select:
+        filter: null
+        allowSubscriptions: true
+

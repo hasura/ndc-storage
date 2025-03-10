@@ -1,0 +1,80 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: SetStorageObjectLockConfig
+  description: represents the object lock configuration options in given bucket
+  fields:
+    - name: mode
+      type: StorageRetentionMode
+    - name: unit
+      type: StorageRetentionValidityUnit
+    - name: validity
+      type: Int32
+  graphql:
+    typeName: SetStorageObjectLockConfig
+    inputTypeName: SetStorageObjectLockConfig_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: storage
+      dataConnectorObjectType: SetStorageObjectLockConfig
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: SetStorageObjectLockConfig
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - mode
+          - unit
+          - validity
+
+---
+kind: Command
+version: v1
+definition:
+  name: update_storage_bucket
+  outputType: SuccessResponse!
+  arguments:
+    - name: access_key_id
+      type: String
+    - name: client_id
+      type: StorageClientID
+    - name: client_type
+      type: StorageProviderType
+    - name: encryption
+      type: ServerSideEncryptionConfiguration
+    - name: endpoint
+      type: String
+    - name: lifecycle
+      type: ObjectLifecycleConfiguration
+    - name: name
+      type: String!
+    - name: object_lock
+      type: SetStorageObjectLockConfig
+    - name: secret_access_key
+      type: String
+    - name: tags
+      type: "[StorageKeyValue!]"
+    - name: versioning_enabled
+      type: Boolean
+  source:
+    dataConnectorName: storage
+    dataConnectorCommand:
+      procedure: update_storage_bucket
+  graphql:
+    rootFieldName: update_storage_bucket
+    rootFieldKind: Mutation
+  description: updates the bucket's configuration.
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: update_storage_bucket
+  permissions:
+    - role: admin
+      allowExecution: true
+

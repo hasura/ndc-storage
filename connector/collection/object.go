@@ -65,10 +65,10 @@ func (coe *CollectionObjectExecutor) Execute(ctx context.Context) (*schema.RowSe
 		return nil, err
 	}
 
-	if hierarchy, err := utils.GetNullableBoolean(coe.Arguments, argumentHierarchy); err != nil {
+	if recursive, err := utils.GetNullableBoolean(coe.Arguments, argumentRecursive); err != nil {
 		return nil, schema.UnprocessableContentError(err.Error(), nil)
-	} else if hierarchy != nil {
-		options.Hierarchy = *hierarchy
+	} else if recursive != nil {
+		options.Recursive = *recursive
 	}
 
 	if after, err := utils.GetNullableString(coe.Arguments, argumentAfter); err != nil {

@@ -318,7 +318,9 @@ func (c *Client) RemoveObjects(ctx context.Context, bucketName string, opts *com
 	ctx, span := c.startOtelSpan(ctx, "RemoveObjects", bucketName)
 	defer span.End()
 
-	q := c.validateListObjectsOptions(span, &opts.ListStorageObjectsOptions, false)
+	listOptions := opts.ListStorageObjectsOptions
+	listOptions.Recursive = true
+	q := c.validateListObjectsOptions(span, &listOptions, false)
 	pager := c.client.Bucket(bucketName).Objects(ctx, q)
 	objects := []*storage.ObjectAttrs{}
 

@@ -3,11 +3,11 @@
   "operations": [
     {
       "type": "procedure",
-      "name": "createStorageBucket",
+      "name": "create_storage_bucket",
       "arguments": {
-        "clientId": "s3",
+        "client_id": "s3",
         "name": "s3-bucket-test",
-        "objectLock": true,
+        "object_lock": true,
         "region": "us-east-1"
       },
       "fields": {

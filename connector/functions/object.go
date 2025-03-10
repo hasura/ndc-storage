@@ -345,8 +345,6 @@ func ProcedureRemoveStorageObjects(ctx context.Context, state *types.State, args
 		predicate = nil
 	}
 
-	options.Hierarchy = false
-
 	return state.Storage.RemoveObjects(ctx, request.GetBucketArguments(), &common.RemoveStorageObjectsOptions{
 		ListStorageObjectsOptions: *options,
 		GovernanceBypass:          args.GovernanceBypass,
@@ -406,7 +404,7 @@ func evalStorageObjectsArguments(ctx context.Context, state *types.State, args *
 
 	options := &common.ListStorageObjectsOptions{
 		Prefix:     request.ObjectNamePredicate.GetPrefix(),
-		Hierarchy:  args.Hierarchy,
+		Recursive:  args.Recursive,
 		Include:    request.Include,
 		NumThreads: state.Concurrency.Query,
 	}

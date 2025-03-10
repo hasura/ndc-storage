@@ -6,16 +6,16 @@ import "cloud.google.com/go/storage"
 // Google Cloud Storage object or bucket.
 type ACLRule struct {
 	Entity      storage.ACLEntity `json:"entity,omitempty"`
-	EntityID    string            `json:"entityId,omitempty"`
+	EntityID    string            `json:"entity_id,omitempty"`
 	Role        storage.ACLRole   `json:"role,omitempty"`
 	Domain      string            `json:"domain,omitempty"`
 	Email       string            `json:"email,omitempty"`
-	ProjectTeam *ProjectTeam      `json:"projectTeam,omitempty"`
+	ProjectTeam *ProjectTeam      `json:"project_team,omitempty"`
 }
 
 // ProjectTeam is the project team associated with the entity, if any.
 type ProjectTeam struct {
-	ProjectNumber string `json:"projectNumber,omitempty"`
+	ProjectNumber string `json:"project_number,omitempty"`
 	Team          string `json:"team,omitempty"`
 }
 

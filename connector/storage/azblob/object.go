@@ -25,7 +25,7 @@ import (
 
 // ListObjects list objects in a bucket.
 func (c *Client) ListObjects(ctx context.Context, bucketName string, opts *common.ListStorageObjectsOptions, predicate func(string) bool) (*common.StorageObjectListResults, error) {
-	if opts.Hierarchy {
+	if !opts.Recursive {
 		return c.listHierarchyObjects(ctx, bucketName, opts, predicate)
 	}
 
@@ -578,7 +578,10 @@ func (c *Client) RemoveObjects(ctx context.Context, bucketName string, opts *com
 	ctx, span := c.startOtelSpan(ctx, "RemoveObjects", bucketName)
 	defer span.End()
 
-	results, err := c.ListObjects(ctx, bucketName, &opts.ListStorageObjectsOptions, predicate)
+	listOptions := opts.ListStorageObjectsOptions
+	listOptions.Recursive = true
+
+	results, err := c.ListObjects(ctx, bucketName, &listOptions, predicate)
 	if err != nil {
 		span.SetStatus(codes.Error, err.Error())
 		span.RecordError(err)

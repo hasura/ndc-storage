@@ -3,11 +3,11 @@
   "operations": [
     {
       "type": "procedure",
-      "name": "createStorageBucket",
+      "name": "create_storage_bucket",
       "arguments": {
-        "clientId": "azblob",
+        "client_id": "azblob",
         "name": "azblob-bucket-test",
-        "objectLock": true,
+        "object_lock": true,
         "tags": [
           {
             "key": "provider",

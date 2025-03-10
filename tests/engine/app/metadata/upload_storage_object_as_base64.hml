@@ -1,0 +1,163 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: PutStorageObjectRetentionOptions
+  description: represent options of object retention configuration.
+  fields:
+    - name: governance_bypass
+      type: Boolean
+    - name: mode
+      type: StorageRetentionMode!
+    - name: retain_until_date
+      type: TimestampTZ!
+  graphql:
+    typeName: PutStorageObjectRetentionOptions
+    inputTypeName: PutStorageObjectRetentionOptions_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: storage
+      dataConnectorObjectType: PutStorageObjectRetentionOptions
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: PutStorageObjectRetentionOptions
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - governance_bypass
+          - mode
+          - retain_until_date
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: PutStorageObjectOptions
+  description: represents options specified by user for PutObject call.
+  fields:
+    - name: auto_checksum
+      type: ChecksumType
+    - name: cache_control
+      type: String
+    - name: checksum
+      type: ChecksumType
+    - name: concurrent_stream_parts
+      type: Boolean
+    - name: content_disposition
+      type: String
+    - name: content_encoding
+      type: String
+    - name: content_language
+      type: String
+    - name: content_type
+      type: String
+    - name: disable_content_sha256
+      type: Boolean
+    - name: disable_multipart
+      type: Boolean
+    - name: expires
+      type: TimestampTZ
+    - name: legal_hold
+      type: Boolean
+    - name: metadata
+      type: "[StorageKeyValue!]"
+    - name: num_threads
+      type: Int32
+    - name: part_size
+      type: Int64
+    - name: retention
+      type: PutStorageObjectRetentionOptions
+    - name: send_content_md5
+      type: Boolean
+    - name: storage_class
+      type: String
+    - name: tags
+      type: "[StorageKeyValue!]"
+    - name: website_redirect_location
+      type: String
+  graphql:
+    typeName: PutStorageObjectOptions
+    inputTypeName: PutStorageObjectOptions_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: storage
+      dataConnectorObjectType: PutStorageObjectOptions
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: PutStorageObjectOptions
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - auto_checksum
+          - cache_control
+          - checksum
+          - concurrent_stream_parts
+          - content_disposition
+          - content_encoding
+          - content_language
+          - content_type
+          - disable_content_sha256
+          - disable_multipart
+          - expires
+          - legal_hold
+          - metadata
+          - num_threads
+          - part_size
+          - retention
+          - send_content_md5
+          - storage_class
+          - tags
+          - website_redirect_location
+
+---
+kind: Command
+version: v1
+definition:
+  name: upload_storage_object_as_base64
+  outputType: StorageUploadInfo!
+  arguments:
+    - name: access_key_id
+      type: String
+    - name: bucket
+      type: String
+    - name: client_id
+      type: StorageClientID
+    - name: client_type
+      type: StorageProviderType
+    - name: data
+      type: Bytes!
+    - name: endpoint
+      type: String
+    - name: name
+      type: String!
+    - name: options
+      type: PutStorageObjectOptions
+    - name: secret_access_key
+      type: String
+  source:
+    dataConnectorName: storage
+    dataConnectorCommand:
+      procedure: upload_storage_object_as_base64
+  graphql:
+    rootFieldName: upload_storage_object_as_base64
+    rootFieldKind: Mutation
+  description: uploads object that are less than 128MiB in a single PUT operation.
+    For objects that are greater than 128MiB in size, PutObject seamlessly
+    uploads the object as parts of 128MiB or more depending on the actual file
+    size. The max upload size for an object is 5TB.
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: upload_storage_object_as_base64
+  permissions:
+    - role: admin
+      allowExecution: true
+

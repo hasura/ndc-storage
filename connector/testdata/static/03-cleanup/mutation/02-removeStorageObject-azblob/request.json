@@ -3,11 +3,11 @@
   "operations": [
     {
       "type": "procedure",
-      "name": "removeStorageObject",
+      "name": "remove_storage_object",
       "arguments": {
         "bucket": "azblob-bucket-test",
-        "forceDelete": true,
-        "governanceBypass": true,
+        "force_delete": true,
+        "governance_bypass": true,
         "name": "public/hello.txt"
       },
       "fields": {

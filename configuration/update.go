@@ -69,7 +69,7 @@ var defaultConfiguration = types.Configuration{
 	},
 	Clients: []storage.ClientConfig{
 		{
-			"type":          common.S3,
+			"type":          common.StorageProviderTypeS3,
 			"endpoint":      utils.ToPtr(utils.NewEnvStringVariable("STORAGE_ENDPOINT")),
 			"defaultBucket": utils.NewEnvStringVariable("DEFAULT_BUCKET"),
 			"authentication": minio.AuthCredentials{

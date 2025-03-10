@@ -1,0 +1,70 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: SuccessResponse
+  description: represents a common successful response structure.
+  fields:
+    - name: success
+      type: Boolean!
+  graphql:
+    typeName: SuccessResponse
+    inputTypeName: SuccessResponse_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: storage
+      dataConnectorObjectType: SuccessResponse
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: SuccessResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - success
+
+---
+kind: Command
+version: v1
+definition:
+  name: create_storage_bucket
+  outputType: SuccessResponse!
+  arguments:
+    - name: access_key_id
+      type: String
+    - name: client_id
+      type: StorageClientID
+    - name: client_type
+      type: StorageProviderType
+    - name: endpoint
+      type: String
+    - name: name
+      type: String!
+    - name: object_lock
+      type: Boolean
+    - name: region
+      type: String
+    - name: secret_access_key
+      type: String
+    - name: tags
+      type: "[StorageKeyValue!]"
+  source:
+    dataConnectorName: storage
+    dataConnectorCommand:
+      procedure: create_storage_bucket
+  graphql:
+    rootFieldName: create_storage_bucket
+    rootFieldKind: Mutation
+  description: creates a new bucket.
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: create_storage_bucket
+  permissions:
+    - role: admin
+      allowExecution: true
+

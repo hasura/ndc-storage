@@ -3,15 +3,15 @@
     {
       "result": {
         "bucket": "minio-bucket-lock",
-        "checksumCrc32": "5qWdvg==",
-        "checksumCrc32C": null,
-        "checksumCrc64Nvme": null,
-        "checksumSha1": null,
-        "checksumSha256": null,
+        "checksum_crc32": "5qWdvg==",
+        "checksum_crc32c": null,
+        "checksum_crc64_nvme": null,
+        "checksum_sha1": null,
+        "checksum_sha256": null,
         "etag": "eaa542050b6be94b64f717af19071987",
         "expiration": null,
-        "expirationRuleId": null,
-        "lastModified": null,
+        "expiration_rule_id": null,
+        "last_modified": null,
         "location": null,
         "name": "SiKBc6ifDC",
         "size": 16

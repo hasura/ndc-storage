@@ -3,10 +3,10 @@
   "operations": [
     {
       "type": "procedure",
-      "name": "removeStorageObjects",
+      "name": "remove_storage_objects",
       "arguments": {
-        "governanceBypass": false,
-        "maxKeys": 385252679,
+        "governance_bypass": false,
+        "max_keys": 385252679,
         "prefix": "",
         "withMetadata": true,
         "withVersions": true,
@@ -29,12 +29,12 @@
               "column": "error",
               "type": "column"
             },
-            "objectName": {
-              "column": "objectName",
+            "object_name": {
+              "column": "object_name",
               "type": "column"
             },
-            "versionId": {
-              "column": "versionId",
+            "version_id": {
+              "column": "version_id",
               "type": "column"
             }
           },

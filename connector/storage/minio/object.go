@@ -411,9 +411,10 @@ func (mc *Client) RemoveObjects(ctx context.Context, bucketName string, opts *co
 	defer span.End()
 
 	listOptions := mc.validateListObjectsOptions(span, &opts.ListStorageObjectsOptions)
-	span.SetAttributes(attribute.Bool("storage.options.governance_bypass", opts.GovernanceBypass))
-
+	listOptions.Recursive = true
 	objectChan := mc.client.ListObjects(ctx, bucketName, listOptions)
+
+	span.SetAttributes(attribute.Bool("storage.options.governance_bypass", opts.GovernanceBypass))
 
 	options := minio.RemoveObjectsOptions{
 		GovernanceBypass: opts.GovernanceBypass,

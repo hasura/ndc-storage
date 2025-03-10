@@ -1,6 +1,6 @@
 {
   "arguments": {
-    "clientId": {
+    "client_id": {
       "type": "literal",
       "value": "minio"
     },
@@ -9,7 +9,7 @@
       "value": "minio-bucket-test"
     }
   },
-  "collection": "storageBucketExists",
+  "collection": "storage_bucket_exists",
   "collection_relationships": {},
   "query": {
     "fields": {

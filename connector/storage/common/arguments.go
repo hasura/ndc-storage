@@ -52,11 +52,11 @@ type StorageBucketArguments struct {
 
 // StorageClientCredentials hold common storage client credential arguments.
 type StorageClientCredentialArguments struct {
-	ClientID        *StorageClientID     `json:"clientId,omitempty"`
-	ClientType      *StorageProviderType `json:"clientType,omitempty"`
+	ClientID        *StorageClientID     `json:"client_id,omitempty"`
+	ClientType      *StorageProviderType `json:"client_type,omitempty"`
 	Endpoint        string               `json:"endpoint,omitempty"`
-	AccessKeyID     string               `json:"accessKeyId,omitempty"`
-	SecretAccessKey string               `json:"secretAccessKey,omitempty"`
+	AccessKeyID     string               `json:"access_key_id,omitempty"`
+	SecretAccessKey string               `json:"secret_access_key,omitempty"`
 }
 
 // IsEmpty checks if all properties are empty.
@@ -73,7 +73,7 @@ type MakeStorageBucketArguments struct {
 // CopyStorageObjectArguments represent input arguments of the CopyObject method.
 type CopyStorageObjectArguments struct {
 	// The storage client ID
-	ClientID *StorageClientID       `json:"clientId,omitempty"`
+	ClientID *StorageClientID       `json:"client_id,omitempty"`
 	Dest     StorageCopyDestOptions `json:"dest"`
 	Source   StorageCopySrcOptions  `json:"source"`
 }
@@ -81,7 +81,7 @@ type CopyStorageObjectArguments struct {
 // ComposeStorageObjectArguments represent input arguments of the ComposeObject method.
 type ComposeStorageObjectArguments struct {
 	// The storage client ID
-	ClientID *StorageClientID        `json:"clientId,omitempty"`
+	ClientID *StorageClientID        `json:"client_id,omitempty"`
 	Dest     StorageCopyDestOptions  `json:"dest"`
 	Sources  []StorageCopySrcOptions `json:"sources"`
 }
@@ -93,7 +93,7 @@ type MakeStorageBucketOptions struct {
 	// Bucket location
 	Region string `json:"region,omitempty"`
 	// Enable object locking
-	ObjectLock bool `json:"objectLock,omitempty"`
+	ObjectLock bool `json:"object_lock,omitempty"`
 	// Optional tags
 	Tags []StorageKeyValue `json:"tags,omitempty"`
 }
@@ -128,7 +128,7 @@ type PresignedGetStorageObjectArguments struct {
 // PresignedGetStorageObjectOptions represent the options for the PresignedGetObject method.
 type PresignedGetStorageObjectOptions struct {
 	Expiry        *scalar.DurationString `json:"expiry"`
-	RequestParams []StorageKeyValue      `json:"requestParams,omitempty"`
+	RequestParams []StorageKeyValue      `json:"request_params,omitempty"`
 }
 
 // PresignedPutStorageObjectArguments represent the input arguments for the PresignedPutObject method.
@@ -146,8 +146,8 @@ type ListStorageObjectsArguments struct {
 
 	// Returns the list of objects with the prefix.
 	Prefix string `json:"prefix,omitempty"`
-	// Returns objects in the hierarchical order.
-	Hierarchy bool `json:"hierarchy,omitempty"`
+	// Returns objects in the recursive order.
+	Recursive bool `json:"recursive,omitempty"`
 	// The maximum number of objects requested per batch.
 	First *int `json:"first"`
 	// After start listing lexically at this object onwards.
@@ -189,8 +189,8 @@ func (soi StorageObjectIncludeOptions) IsEmpty() bool {
 type ListStorageObjectsOptions struct {
 	// Only list objects with the prefix
 	Prefix string
-	// Returns objects in the hierarchical order.
-	Hierarchy bool
+	// Find objects recursively.
+	Recursive bool
 	// The maximum number of objects requested per
 	// batch, advanced use-case not useful for most
 	// applications
@@ -214,10 +214,10 @@ type GetStorageObjectArguments struct {
 // GetStorageObjectOptions are used to specify additional headers or options during GET requests.
 type GetStorageObjectOptions struct {
 	Headers       []StorageKeyValue `json:"headers,omitempty"`
-	RequestParams []StorageKeyValue `json:"requestParams,omitempty"`
+	RequestParams []StorageKeyValue `json:"request_params,omitempty"`
 	// ServerSideEncryption *ServerSideEncryptionMethod `json:"serverSideEncryption"`
-	VersionID  *string `json:"versionId"`
-	PartNumber *int    `json:"partNumber"`
+	VersionID  *string `json:"version_id"`
+	PartNumber *int    `json:"part_number"`
 	// Options to be included for the object information.
 	Include StorageObjectIncludeOptions `json:"-"`
 }
@@ -247,11 +247,11 @@ type StorageCopyDestOptions struct {
 	Tags []StorageKeyValue `json:"tags,omitempty"`
 
 	// Specifies whether you want to apply a Legal Hold to the copied object.
-	LegalHold *bool `json:"legalHold"`
+	LegalHold *bool `json:"legal_hold"`
 
 	// Object Retention related fields
 	Mode            *StorageRetentionMode `json:"mode"`
-	RetainUntilDate *time.Time            `json:"retainUntilDate"`
+	RetainUntilDate *time.Time            `json:"retain_until_date"`
 
 	// Needs to be specified if progress bar is specified.
 	Size int64 `json:"size,omitempty"`
@@ -264,12 +264,12 @@ type StorageCopySrcOptions struct {
 	// source object
 	Name string `json:"name"`
 
-	VersionID            string     `json:"versionId,omitempty"`
-	MatchETag            string     `json:"matchETag,omitempty"`
-	NoMatchETag          string     `json:"noMatchETag,omitempty"`
-	MatchModifiedSince   *time.Time `json:"matchModifiedSince"`
-	MatchUnmodifiedSince *time.Time `json:"matchUnmodifiedSince"`
-	MatchRange           bool       `json:"matchRange,omitempty"`
+	VersionID            string     `json:"version_id,omitempty"`
+	MatchETag            string     `json:"match_etag,omitempty"`
+	NoMatchETag          string     `json:"no_match_etag,omitempty"`
+	MatchModifiedSince   *time.Time `json:"match_modified_since"`
+	MatchUnmodifiedSince *time.Time `json:"match_unmodified_since"`
+	MatchRange           bool       `json:"match_range,omitempty"`
 	Start                int64      `json:"start,omitempty"`
 	End                  int64      `json:"end,omitempty"`
 	// Encryption           *ServerSideEncryptionMethod `json:"encryption"`
@@ -286,10 +286,10 @@ type RemoveStorageObjectArguments struct {
 
 // RemoveStorageObjectOptions represents options specified by user for RemoveObject call.
 type RemoveStorageObjectOptions struct {
-	SoftDelete       bool   `json:"softDelete,omitempty"`
-	ForceDelete      bool   `json:"forceDelete,omitempty"`
-	GovernanceBypass bool   `json:"governanceBypass,omitempty"`
-	VersionID        string `json:"versionId,omitempty"`
+	SoftDelete       bool   `json:"soft_delete,omitempty"`
+	ForceDelete      bool   `json:"force_delete,omitempty"`
+	GovernanceBypass bool   `json:"governance_bypass,omitempty"`
+	VersionID        string `json:"version_id,omitempty"`
 }
 
 // UpdateStorageObjectArguments represents options specified by user for updating object.
@@ -303,9 +303,9 @@ type UpdateStorageObjectArguments struct {
 
 // UpdateStorageObjectOptions represents options specified by user for updating object.
 type UpdateStorageObjectOptions struct {
-	VersionID string                            `json:"versionId,omitempty"`
+	VersionID string                            `json:"version_id,omitempty"`
 	Retention *SetStorageObjectRetentionOptions `json:"retention"`
-	LegalHold *bool                             `json:"legalHold"`
+	LegalHold *bool                             `json:"legal_hold"`
 	Metadata  *[]StorageKeyValue                `json:"metadata"`
 	Tags      *[]StorageKeyValue                `json:"tags"`
 }
@@ -322,8 +322,8 @@ func (ubo UpdateStorageObjectOptions) IsEmpty() bool {
 // SetStorageObjectRetentionOptions represents options specified by user for PutObject call.
 type SetStorageObjectRetentionOptions struct {
 	Mode             *StorageRetentionMode `json:"mode"`
-	GovernanceBypass bool                  `json:"governanceBypass,omitempty"`
-	RetainUntilDate  *time.Time            `json:"retainUntilDate,omitempty"`
+	GovernanceBypass bool                  `json:"governance_bypass,omitempty"`
+	RetainUntilDate  *time.Time            `json:"retain_until_date,omitempty"`
 }
 
 // RemoveStorageObjectsArguments represents arguments specified by user for RemoveObjects call.
@@ -331,7 +331,7 @@ type RemoveStorageObjectsArguments struct {
 	StorageBucketArguments
 	ListStorageObjectsArguments
 
-	GovernanceBypass bool `json:"governanceBypass,omitempty"`
+	GovernanceBypass bool `json:"governance_bypass,omitempty"`
 }
 
 // RemoveStorageObjectsOptions represents options specified by user for RemoveObjects call.
@@ -344,35 +344,35 @@ type RemoveStorageObjectsOptions struct {
 // PutStorageObjectRetentionOptions represent options of object retention configuration.
 type PutStorageObjectRetentionOptions struct {
 	Mode             StorageRetentionMode `json:"mode"`
-	RetainUntilDate  time.Time            `json:"retainUntilDate"`
-	GovernanceBypass bool                 `json:"governanceBypass,omitempty"`
+	RetainUntilDate  time.Time            `json:"retain_until_date"`
+	GovernanceBypass bool                 `json:"governance_bypass,omitempty"`
 }
 
 // PutStorageObjectOptions represents options specified by user for PutObject call.
 type PutStorageObjectOptions struct {
 	Metadata           []StorageKeyValue                 `json:"metadata,omitempty"`
 	Tags               []StorageKeyValue                 `json:"tags,omitempty"`
-	ContentType        string                            `json:"contentType,omitempty"`
-	ContentEncoding    string                            `json:"contentEncoding,omitempty"`
-	ContentDisposition string                            `json:"contentDisposition,omitempty"`
-	ContentLanguage    string                            `json:"contentLanguage,omitempty"`
-	CacheControl       string                            `json:"cacheControl,omitempty"`
+	ContentType        string                            `json:"content_type,omitempty"`
+	ContentEncoding    string                            `json:"content_encoding,omitempty"`
+	ContentDisposition string                            `json:"content_disposition,omitempty"`
+	ContentLanguage    string                            `json:"content_language,omitempty"`
+	CacheControl       string                            `json:"cache_control,omitempty"`
 	Expires            *time.Time                        `json:"expires,omitempty"`
 	Retention          *PutStorageObjectRetentionOptions `json:"retention,omitempty"`
 	// ServerSideEncryption    *ServerSideEncryptionMethod `json:"serverSideEncryption,omitempty"`
-	NumThreads              uint   `json:"numThreads,omitempty"`
-	StorageClass            string `json:"storageClass,omitempty"`
-	WebsiteRedirectLocation string `json:"websiteRedirectLocation,omitempty"`
-	PartSize                uint64 `json:"partSize,omitempty"`
-	LegalHold               *bool  `json:"legalHold"`
-	SendContentMd5          bool   `json:"sendContentMd5,omitempty"`
-	DisableContentSha256    bool   `json:"disableContentSha256,omitempty"`
-	DisableMultipart        bool   `json:"disableMultipart,omitempty"`
+	NumThreads              uint   `json:"num_threads,omitempty"`
+	StorageClass            string `json:"storage_class,omitempty"`
+	WebsiteRedirectLocation string `json:"website_redirect_location,omitempty"`
+	PartSize                uint64 `json:"part_size,omitempty"`
+	LegalHold               *bool  `json:"legal_hold"`
+	SendContentMd5          bool   `json:"send_content_md5,omitempty"`
+	DisableContentSha256    bool   `json:"disable_content_sha256,omitempty"`
+	DisableMultipart        bool   `json:"disable_multipart,omitempty"`
 
 	// AutoChecksum is the type of checksum that will be added if no other checksum is added,
 	// like MD5 or SHA256 streaming checksum, and it is feasible for the upload type.
 	// If none is specified CRC32C is used, since it is generally the fastest.
-	AutoChecksum *ChecksumType `json:"autoChecksum"`
+	AutoChecksum *ChecksumType `json:"auto_checksum"`
 
 	// Checksum will force a checksum of the specific type.
 	// This requires that the client was created with "TrailingHeaders:true" option,
@@ -384,13 +384,13 @@ type PutStorageObjectOptions struct {
 	// ConcurrentStreamParts will create NumThreads buffers of PartSize bytes,
 	// fill them serially and upload them in parallel.
 	// This can be used for faster uploads on non-seekable or slow-to-seek input.
-	ConcurrentStreamParts bool `json:"concurrentStreamParts,omitempty"`
+	ConcurrentStreamParts bool `json:"concurrent_stream_parts,omitempty"`
 }
 
 // PresignedURLResponse holds the presigned URL and expiry information.
 type PresignedURLResponse struct {
 	URL       string    `json:"url"`
-	ExpiredAt time.Time `json:"expiredAt"`
+	ExpiredAt time.Time `json:"expired_at"`
 }
 
 // UpdateBucketArguments hold update options for the bucket.
@@ -402,10 +402,10 @@ type UpdateBucketArguments struct {
 // UpdateStorageBucketOptions hold update options for the bucket.
 type UpdateStorageBucketOptions struct {
 	Tags              *[]StorageKeyValue                 `json:"tags"`
-	VersioningEnabled *bool                              `json:"versioningEnabled"`
+	VersioningEnabled *bool                              `json:"versioning_enabled"`
 	Lifecycle         *ObjectLifecycleConfiguration      `json:"lifecycle"`
 	Encryption        *ServerSideEncryptionConfiguration `json:"encryption"`
-	ObjectLock        *SetStorageObjectLockConfig        `json:"objectLock"`
+	ObjectLock        *SetStorageObjectLockConfig        `json:"object_lock"`
 }
 
 // IsEmpty checks if all elements in the option object is null.

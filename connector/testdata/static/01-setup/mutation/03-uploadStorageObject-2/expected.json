@@ -2,17 +2,17 @@
   "operation_results": [
     {
       "result": {
-        "clientId": "minio",
+        "client_id": "minio",
         "bucket": "minio-bucket-test",
-        "checksumCrc32": null,
-        "checksumCrc32C": null,
-        "checksumCrc64Nvme": null,
-        "checksumSha1": null,
-        "checksumSha256": "rUiPKiW98se3IJ8h0sXCX33z81tncK1sF4FXb09vrZM=",
+        "checksum_crc32": null,
+        "checksum_crc32c": null,
+        "checksum_crc64_nvme": null,
+        "checksum_sha1": null,
+        "checksum_sha256": "rUiPKiW98se3IJ8h0sXCX33z81tncK1sF4FXb09vrZM=",
         "etag": "299d2d913ceaa8377d22244db39723ca",
         "expiration": null,
-        "expirationRuleId": null,
-        "lastModified": null,
+        "expiration_rule_id": null,
+        "last_modified": null,
         "location": null,
         "name": "public/hello2.txt",
         "size": 10

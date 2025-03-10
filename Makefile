@@ -48,7 +48,7 @@ build-supergraph-test:
 
 .PHONY: generate-api-types
 generate-api-types:
-	hasura-ndc-go update --directories ./connector/functions,./connector/types,./connector/storage --connector-dir ./connector --schema-format go --type-only
+	hasura-ndc-go update --directories ./connector/functions,./connector/types,./connector/storage --connector-dir ./connector --schema-format go --type-only --style snake-case
 
 .PHONY: generate-test-config
 generate-test-config:

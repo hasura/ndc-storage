@@ -3,7 +3,7 @@
   "operations": [
     {
       "type": "procedure",
-      "name": "removeIncompleteStorageUpload",
+      "name": "remove_incomplete_storage_upload",
       "arguments": {
         "bucket": "minio-bucket-test",
         "name": "public/hello.txt-2"

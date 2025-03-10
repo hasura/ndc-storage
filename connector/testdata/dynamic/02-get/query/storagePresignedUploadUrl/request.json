@@ -1,6 +1,6 @@
 {
   "arguments": {
-    "clientType": {
+    "client_type": {
       "type": "literal",
       "value": "azblob"
     },
@@ -12,11 +12,11 @@
       "type": "literal",
       "value": "azblob-dynamic"
     },
-    "accessKeyId": {
+    "access_key_id": {
       "type": "literal",
       "value": "local"
     },
-    "secretAccessKey": {
+    "secret_access_key": {
       "type": "literal",
       "value": "Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw=="
     },
@@ -29,7 +29,7 @@
       "value": "8UFsTfY9bI"
     }
   },
-  "collection": "storagePresignedUploadUrl",
+  "collection": "storage_presigned_upload_url",
   "collection_relationships": {},
   "query": {
     "fields": {
@@ -42,8 +42,8 @@
               "column": "url",
               "type": "column"
             },
-            "expiredAt": {
-              "column": "expiredAt",
+            "expired_at": {
+              "column": "expired_at",
               "type": "column"
             }
           },

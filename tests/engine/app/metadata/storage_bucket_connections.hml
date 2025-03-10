@@ -1,0 +1,127 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: StorageConnectionEdge_StorageBucket
+  description: the connection information of the relay pagination response.
+  fields:
+    - name: cursor
+      type: String!
+    - name: node
+      type: StorageBucket!
+  graphql:
+    typeName: StorageConnectionEdge_StorageBucket
+    inputTypeName: StorageConnectionEdge_StorageBucket_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: storage
+      dataConnectorObjectType: StorageConnectionEdge_StorageBucket
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: StorageConnectionEdge_StorageBucket
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - cursor
+          - node
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: StoragePaginationInfo
+  description: holds the pagination information.
+  fields:
+    - name: hasNextPage
+      type: Boolean!
+  graphql:
+    typeName: StoragePaginationInfo
+    inputTypeName: StoragePaginationInfo_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: storage
+      dataConnectorObjectType: StoragePaginationInfo
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: StoragePaginationInfo
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - hasNextPage
+
+---
+kind: ObjectType
+version: v1
+definition:
+  name: StorageConnection_StorageBucket
+  fields:
+    - name: edges
+      type: "[StorageConnectionEdge_StorageBucket!]!"
+    - name: pageInfo
+      type: StoragePaginationInfo!
+  graphql:
+    typeName: StorageConnection_StorageBucket
+    inputTypeName: StorageConnection_StorageBucket_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: storage
+      dataConnectorObjectType: StorageConnection_StorageBucket
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: StorageConnection_StorageBucket
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - edges
+          - pageInfo
+
+---
+kind: Command
+version: v1
+definition:
+  name: storage_bucket_connections
+  outputType: StorageConnection_StorageBucket!
+  arguments:
+    - name: access_key_id
+      type: String
+    - name: after
+      type: String
+    - name: client_id
+      type: StorageClientID
+    - name: client_type
+      type: StorageProviderType
+    - name: endpoint
+      type: String
+    - name: first
+      type: Int32
+    - name: prefix
+      type: String
+    - name: secret_access_key
+      type: String
+  source:
+    dataConnectorName: storage
+    dataConnectorCommand:
+      function: storage_bucket_connections
+  graphql:
+    rootFieldName: storage_bucket_connections
+    rootFieldKind: Query
+  description: list all buckets using the relay style.
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: storage_bucket_connections
+  permissions:
+    - role: admin
+      allowExecution: true
+

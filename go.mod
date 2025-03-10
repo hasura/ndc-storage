@@ -16,6 +16,7 @@ require (
 	github.com/lmittmann/tint v1.0.7
 	github.com/minio/md5-simd v1.1.2
 	github.com/minio/minio-go/v7 v7.0.87
+	github.com/spf13/afero v1.10.0
 	go.opentelemetry.io/otel v1.34.0
 	go.opentelemetry.io/otel/trace v1.34.0
 	golang.org/x/sync v0.11.0

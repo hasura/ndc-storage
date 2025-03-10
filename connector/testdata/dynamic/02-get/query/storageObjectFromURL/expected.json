@@ -4,17 +4,17 @@
       {
         "__value": {
           "bucket": "azblob-dynamic",
-          "clientId": "azblob-temp",
-          "contentDisposition": null,
-          "contentEncoding": null,
-          "contentLanguage": null,
-          "contentMd5": "kPG2jgVM/Da4LB2fZ+ZLAw==",
-          "contentType": "application/octet-stream",
+          "client_id": "azblob-temp",
+          "content_disposition": null,
+          "content_encoding": null,
+          "content_language": null,
+          "content_md5": "kPG2jgVM/Da4LB2fZ+ZLAw==",
+          "content_type": "application/octet-stream",
           "metadata": [],
           "name": "country-by-name.json",
           "size": 11148,
-          "storageClass": "Hot",
-          "tagCount": 0,
+          "storage_class": "Hot",
+          "tag_count": 0,
           "tags": []
         }
       }

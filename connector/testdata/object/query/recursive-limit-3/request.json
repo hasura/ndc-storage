@@ -1,7 +1,7 @@
 {
-  "collection": "storageObjects",
+  "collection": "storage_objects",
   "arguments": {
-    "hierarchy": { "type": "literal", "value": false }
+    "recursive": { "type": "literal", "value": true }
   },
   "variables": [
     { "$clientId": "minio" },
@@ -15,12 +15,12 @@
         "column": "bucket",
         "type": "column"
       },
-      "clientId": {
-        "column": "clientId",
+      "client_id": {
+        "column": "client_id",
         "type": "column"
       },
-      "isDirectory": {
-        "column": "isDirectory",
+      "is_directory": {
+        "column": "is_directory",
         "type": "column"
       },
       "name": {
@@ -31,8 +31,8 @@
         "column": "size",
         "type": "column"
       },
-      "storageClass": {
-        "column": "storageClass",
+      "storage_class": {
+        "column": "storage_class",
         "type": "column"
       }
     },
@@ -42,7 +42,7 @@
       "expressions": [
         {
           "type": "binary_comparison_operator",
-          "column": { "type": "column", "name": "clientId", "path": [] },
+          "column": { "type": "column", "name": "client_id", "path": [] },
           "operator": "_eq",
           "value": { "type": "variable", "name": "$clientId" }
         },

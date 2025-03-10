@@ -6,7 +6,7 @@ definition:
   dataConnectorScalarType: String
   representation: String
   graphql:
-    comparisonExpressionTypeName: StringComparisonExp
+    comparisonExpressionTypeName: String_comparison_exp
 
 ---
 kind: ScalarType
@@ -20,7 +20,7 @@ definition:
 kind: BooleanExpressionType
 version: v1
 definition:
-  name: StorageProviderTypeBoolExp
+  name: StorageProviderType_bool_exp
   operand:
     scalar:
       type: StorageProviderType
@@ -34,7 +34,7 @@ definition:
   isNull:
     enable: true
   graphql:
-    typeName: StorageProviderTypeBoolExp
+    typeName: StorageProviderType_bool_exp
 
 ---
 kind: DataConnectorScalarRepresentation
@@ -44,7 +44,7 @@ definition:
   dataConnectorScalarType: StorageProviderType
   representation: StorageProviderType
   graphql:
-    comparisonExpressionTypeName: StorageProviderTypeComparisonExp
+    comparisonExpressionTypeName: StorageProviderType_comparison_exp
 
 ---
 kind: DataConnectorScalarRepresentation
@@ -54,24 +54,24 @@ definition:
   dataConnectorScalarType: Boolean
   representation: Boolean
   graphql:
-    comparisonExpressionTypeName: BooleanComparisonExp
+    comparisonExpressionTypeName: Boolean_comparison_exp
 
 ---
 kind: ScalarType
 version: v1
 definition:
-  name: TimestampTz
+  name: TimestampTZ
   graphql:
-    typeName: TimestampTz
+    typeName: TimestampTZ
 
 ---
 kind: BooleanExpressionType
 version: v1
 definition:
-  name: TimestampTzBoolExp
+  name: TimestampTZ_bool_exp
   operand:
     scalar:
-      type: TimestampTz
+      type: TimestampTZ
       comparisonOperators: []
       dataConnectorOperatorMapping:
         - dataConnectorName: storage
@@ -82,7 +82,7 @@ definition:
   isNull:
     enable: true
   graphql:
-    typeName: TimestampTzBoolExp
+    typeName: TimestampTZ_bool_exp
 
 ---
 kind: DataConnectorScalarRepresentation
@@ -90,29 +90,29 @@ version: v1
 definition:
   dataConnectorName: storage
   dataConnectorScalarType: TimestampTZ
-  representation: TimestampTz
+  representation: TimestampTZ
   graphql:
-    comparisonExpressionTypeName: TimestampTzComparisonExp
+    comparisonExpressionTypeName: TimestampTZ_comparison_exp
 
 ---
 kind: ScalarType
 version: v1
 definition:
-  name: StorageClientId
+  name: StorageClientID
   graphql:
-    typeName: StorageClientId
+    typeName: StorageClientID
 
 ---
 kind: BooleanExpressionType
 version: v1
 definition:
-  name: StorageClientIdBoolExp
+  name: StorageClientID_bool_exp
   operand:
     scalar:
-      type: StorageClientId
+      type: StorageClientID
       comparisonOperators:
         - name: _eq
-          argumentType: StorageClientId!
+          argumentType: StorageClientID!
       dataConnectorOperatorMapping:
         - dataConnectorName: storage
           dataConnectorScalarType: StorageClientID
@@ -122,7 +122,7 @@ definition:
   isNull:
     enable: true
   graphql:
-    typeName: StorageClientIdBoolExp
+    typeName: StorageClientID_bool_exp
 
 ---
 kind: DataConnectorScalarRepresentation
@@ -130,9 +130,9 @@ version: v1
 definition:
   dataConnectorName: storage
   dataConnectorScalarType: StorageClientID
-  representation: StorageClientId
+  representation: StorageClientID
   graphql:
-    comparisonExpressionTypeName: StorageClientIdComparisonExp
+    comparisonExpressionTypeName: StorageClientID_comparison_exp
 
 ---
 kind: ScalarType
@@ -146,7 +146,7 @@ definition:
 kind: BooleanExpressionType
 version: v1
 definition:
-  name: DurationStringBoolExp
+  name: DurationString_bool_exp
   operand:
     scalar:
       type: DurationString
@@ -160,7 +160,7 @@ definition:
   isNull:
     enable: true
   graphql:
-    typeName: DurationStringBoolExp
+    typeName: DurationString_bool_exp
 
 ---
 kind: DataConnectorScalarRepresentation
@@ -170,7 +170,7 @@ definition:
   dataConnectorScalarType: DurationString
   representation: DurationString
   graphql:
-    comparisonExpressionTypeName: DurationStringComparisonExp
+    comparisonExpressionTypeName: DurationString_comparison_exp
 
 ---
 kind: ScalarType
@@ -184,7 +184,7 @@ definition:
 kind: BooleanExpressionType
 version: v1
 definition:
-  name: Int32BoolExp
+  name: Int32_bool_exp
   operand:
     scalar:
       type: Int32
@@ -198,7 +198,7 @@ definition:
   isNull:
     enable: true
   graphql:
-    typeName: Int32BoolExp
+    typeName: Int32_bool_exp
 
 ---
 kind: DataConnectorScalarRepresentation
@@ -208,7 +208,7 @@ definition:
   dataConnectorScalarType: Int32
   representation: Int32
   graphql:
-    comparisonExpressionTypeName: Int32ComparisonExp
+    comparisonExpressionTypeName: Int32_comparison_exp
 
 ---
 kind: ScalarType
@@ -222,7 +222,7 @@ definition:
 kind: BooleanExpressionType
 version: v1
 definition:
-  name: DateBoolExp
+  name: Date_bool_exp
   operand:
     scalar:
       type: Date
@@ -236,7 +236,7 @@ definition:
   isNull:
     enable: true
   graphql:
-    typeName: DateBoolExp
+    typeName: Date_bool_exp
 
 ---
 kind: DataConnectorScalarRepresentation
@@ -246,7 +246,7 @@ definition:
   dataConnectorScalarType: Date
   representation: Date
   graphql:
-    comparisonExpressionTypeName: DateComparisonExp
+    comparisonExpressionTypeName: Date_comparison_exp
 
 ---
 kind: ScalarType
@@ -260,7 +260,7 @@ definition:
 kind: BooleanExpressionType
 version: v1
 definition:
-  name: Int64BoolExp
+  name: Int64_bool_exp
   operand:
     scalar:
       type: Int64
@@ -274,7 +274,7 @@ definition:
   isNull:
     enable: true
   graphql:
-    typeName: Int64BoolExp
+    typeName: Int64_bool_exp
 
 ---
 kind: DataConnectorScalarRepresentation
@@ -284,7 +284,7 @@ definition:
   dataConnectorScalarType: Int64
   representation: Int64
   graphql:
-    comparisonExpressionTypeName: Int64ComparisonExp
+    comparisonExpressionTypeName: Int64_comparison_exp
 
 ---
 kind: ScalarType
@@ -298,7 +298,7 @@ definition:
 kind: BooleanExpressionType
 version: v1
 definition:
-  name: StorageStringFilterBoolExp
+  name: StorageStringFilter_bool_exp
   operand:
     scalar:
       type: StorageStringFilter
@@ -320,7 +320,7 @@ definition:
   isNull:
     enable: true
   graphql:
-    typeName: StorageStringFilterBoolExp
+    typeName: StorageStringFilter_bool_exp
 
 ---
 kind: DataConnectorScalarRepresentation
@@ -330,7 +330,7 @@ definition:
   dataConnectorScalarType: StorageStringFilter
   representation: StorageStringFilter
   graphql:
-    comparisonExpressionTypeName: StorageStringFilterComparisonExp
+    comparisonExpressionTypeName: StorageStringFilter_comparison_exp
 
 ---
 kind: ScalarType
@@ -344,7 +344,7 @@ definition:
 kind: BooleanExpressionType
 version: v1
 definition:
-  name: StorageRetentionModeBoolExp
+  name: StorageRetentionMode_bool_exp
   operand:
     scalar:
       type: StorageRetentionMode
@@ -358,7 +358,7 @@ definition:
   isNull:
     enable: true
   graphql:
-    typeName: StorageRetentionModeBoolExp
+    typeName: StorageRetentionMode_bool_exp
 
 ---
 kind: DataConnectorScalarRepresentation
@@ -368,7 +368,7 @@ definition:
   dataConnectorScalarType: StorageRetentionMode
   representation: StorageRetentionMode
   graphql:
-    comparisonExpressionTypeName: StorageRetentionModeComparisonExp
+    comparisonExpressionTypeName: StorageRetentionMode_comparison_exp
 
 ---
 kind: ScalarType
@@ -382,7 +382,7 @@ definition:
 kind: BooleanExpressionType
 version: v1
 definition:
-  name: StorageRetentionValidityUnitBoolExp
+  name: StorageRetentionValidityUnit_bool_exp
   operand:
     scalar:
       type: StorageRetentionValidityUnit
@@ -396,7 +396,7 @@ definition:
   isNull:
     enable: true
   graphql:
-    typeName: StorageRetentionValidityUnitBoolExp
+    typeName: StorageRetentionValidityUnit_bool_exp
 
 ---
 kind: DataConnectorScalarRepresentation
@@ -406,24 +406,24 @@ definition:
   dataConnectorScalarType: StorageRetentionValidityUnit
   representation: StorageRetentionValidityUnit
   graphql:
-    comparisonExpressionTypeName: StorageRetentionValidityUnitComparisonExp
+    comparisonExpressionTypeName: StorageRetentionValidityUnit_comparison_exp
 
 ---
 kind: ScalarType
 version: v1
 definition:
-  name: GoogleStorageRpo
+  name: GoogleStorageRPO
   graphql:
-    typeName: GoogleStorageRpo
+    typeName: GoogleStorageRPO
 
 ---
 kind: BooleanExpressionType
 version: v1
 definition:
-  name: GoogleStorageRpoBoolExp
+  name: GoogleStorageRPO_bool_exp
   operand:
     scalar:
-      type: GoogleStorageRpo
+      type: GoogleStorageRPO
       comparisonOperators: []
       dataConnectorOperatorMapping:
         - dataConnectorName: storage
@@ -434,7 +434,7 @@ definition:
   isNull:
     enable: true
   graphql:
-    typeName: GoogleStorageRpoBoolExp
+    typeName: GoogleStorageRPO_bool_exp
 
 ---
 kind: DataConnectorScalarRepresentation
@@ -442,15 +442,15 @@ version: v1
 definition:
   dataConnectorName: storage
   dataConnectorScalarType: GoogleStorageRPO
-  representation: GoogleStorageRpo
+  representation: GoogleStorageRPO
   graphql:
-    comparisonExpressionTypeName: GoogleStorageRpoComparisonExp
+    comparisonExpressionTypeName: GoogleStorageRPO_comparison_exp
 
 ---
 kind: BooleanExpressionType
 version: v1
 definition:
-  name: BooleanBoolExp
+  name: Boolean_bool_exp
   operand:
     scalar:
       type: Boolean
@@ -464,13 +464,13 @@ definition:
   isNull:
     enable: true
   graphql:
-    typeName: BooleanBoolExp
+    typeName: Boolean_bool_exp
 
 ---
 kind: BooleanExpressionType
 version: v1
 definition:
-  name: StringBoolExp
+  name: String_bool_exp
   operand:
     scalar:
       type: String
@@ -484,102 +484,102 @@ definition:
   isNull:
     enable: true
   graphql:
-    typeName: StringBoolExp
+    typeName: String_bool_exp
 
 ---
 kind: OrderByExpression
 version: v1
 definition:
-  name: StorageClientIdOrderByExp
+  name: StorageClientID_order_by_exp
   operand:
     scalar:
-      orderedType: StorageClientId
+      orderedType: StorageClientID
       enableOrderByDirections:
         enableAll: true
   graphql:
-    expressionTypeName: StorageClientIdOrderByExp
+    expressionTypeName: StorageClientID_order_by_exp
 
 ---
 kind: OrderByExpression
 version: v1
 definition:
-  name: TimestampTzOrderByExp
+  name: TimestampTZ_order_by_exp
   operand:
     scalar:
-      orderedType: TimestampTz
+      orderedType: TimestampTZ
       enableOrderByDirections:
         enableAll: true
   graphql:
-    expressionTypeName: TimestampTzOrderByExp
+    expressionTypeName: TimestampTZ_order_by_exp
 
 ---
 kind: OrderByExpression
 version: v1
 definition:
-  name: BooleanOrderByExp
+  name: Boolean_order_by_exp
   operand:
     scalar:
       orderedType: Boolean
       enableOrderByDirections:
         enableAll: true
   graphql:
-    expressionTypeName: BooleanOrderByExp
+    expressionTypeName: Boolean_order_by_exp
 
 ---
 kind: OrderByExpression
 version: v1
 definition:
-  name: StringOrderByExp
+  name: String_order_by_exp
   operand:
     scalar:
       orderedType: String
       enableOrderByDirections:
         enableAll: true
   graphql:
-    expressionTypeName: StringOrderByExp
+    expressionTypeName: String_order_by_exp
 
 ---
 kind: OrderByExpression
 version: v1
 definition:
-  name: StorageStringFilterOrderByExp
+  name: StorageStringFilter_order_by_exp
   operand:
     scalar:
       orderedType: StorageStringFilter
       enableOrderByDirections:
         enableAll: true
   graphql:
-    expressionTypeName: StorageStringFilterOrderByExp
+    expressionTypeName: StorageStringFilter_order_by_exp
 
 ---
 kind: OrderByExpression
 version: v1
 definition:
-  name: GoogleStorageRpoOrderByExp
+  name: GoogleStorageRPO_order_by_exp
   operand:
     scalar:
-      orderedType: GoogleStorageRpo
+      orderedType: GoogleStorageRPO
       enableOrderByDirections:
         enableAll: true
   graphql:
-    expressionTypeName: GoogleStorageRpoOrderByExp
+    expressionTypeName: GoogleStorageRPO_order_by_exp
 
 ---
 kind: ScalarType
 version: v1
 definition:
-  name: Json
+  name: JSON
   graphql:
-    typeName: Json
+    typeName: JSON
 
 ---
 kind: BooleanExpressionType
 version: v1
 definition:
-  name: JsonBoolExp
+  name: JSON_bool_exp
   operand:
     scalar:
-      type: Json
+      type: JSON
       comparisonOperators: []
       dataConnectorOperatorMapping:
         - dataConnectorName: storage
@@ -590,7 +590,7 @@ definition:
   isNull:
     enable: true
   graphql:
-    typeName: JsonBoolExp
+    typeName: JSON_bool_exp
 
 ---
 kind: DataConnectorScalarRepresentation
@@ -598,9 +598,9 @@ version: v1
 definition:
   dataConnectorName: storage
   dataConnectorScalarType: JSON
-  representation: Json
+  representation: JSON
   graphql:
-    comparisonExpressionTypeName: JsonComparisonExp
+    comparisonExpressionTypeName: JSON_comparison_exp
 
 ---
 kind: ScalarType
@@ -614,7 +614,7 @@ definition:
 kind: BooleanExpressionType
 version: v1
 definition:
-  name: StorageBucketNameBoolExp
+  name: StorageBucketName_bool_exp
   operand:
     scalar:
       type: StorageBucketName
@@ -630,7 +630,7 @@ definition:
   isNull:
     enable: true
   graphql:
-    typeName: StorageBucketNameBoolExp
+    typeName: StorageBucketName_bool_exp
 
 ---
 kind: DataConnectorScalarRepresentation
@@ -640,7 +640,7 @@ definition:
   dataConnectorScalarType: StorageBucketName
   representation: StorageBucketName
   graphql:
-    comparisonExpressionTypeName: StorageBucketNameComparisonExp
+    comparisonExpressionTypeName: StorageBucketName_comparison_exp
 
 ---
 kind: ScalarType
@@ -654,7 +654,7 @@ definition:
 kind: BooleanExpressionType
 version: v1
 definition:
-  name: StorageObjectReplicationStatusBoolExp
+  name: StorageObjectReplicationStatus_bool_exp
   operand:
     scalar:
       type: StorageObjectReplicationStatus
@@ -668,7 +668,7 @@ definition:
   isNull:
     enable: true
   graphql:
-    typeName: StorageObjectReplicationStatusBoolExp
+    typeName: StorageObjectReplicationStatus_bool_exp
 
 ---
 kind: DataConnectorScalarRepresentation
@@ -678,72 +678,72 @@ definition:
   dataConnectorScalarType: StorageObjectReplicationStatus
   representation: StorageObjectReplicationStatus
   graphql:
-    comparisonExpressionTypeName: StorageObjectReplicationStatusComparisonExp
+    comparisonExpressionTypeName: StorageObjectReplicationStatus_comparison_exp
 
 ---
 kind: OrderByExpression
 version: v1
 definition:
-  name: JsonOrderByExp
+  name: JSON_order_by_exp
   operand:
     scalar:
-      orderedType: Json
+      orderedType: JSON
       enableOrderByDirections:
         enableAll: true
   graphql:
-    expressionTypeName: JsonOrderByExp
+    expressionTypeName: JSON_order_by_exp
 
 ---
 kind: OrderByExpression
 version: v1
 definition:
-  name: Int64OrderByExp
+  name: Int64_order_by_exp
   operand:
     scalar:
       orderedType: Int64
       enableOrderByDirections:
         enableAll: true
   graphql:
-    expressionTypeName: Int64OrderByExp
+    expressionTypeName: Int64_order_by_exp
 
 ---
 kind: OrderByExpression
 version: v1
 definition:
-  name: StorageBucketNameOrderByExp
+  name: StorageBucketName_order_by_exp
   operand:
     scalar:
       orderedType: StorageBucketName
       enableOrderByDirections:
         enableAll: true
   graphql:
-    expressionTypeName: StorageBucketNameOrderByExp
+    expressionTypeName: StorageBucketName_order_by_exp
 
 ---
 kind: OrderByExpression
 version: v1
 definition:
-  name: Int32OrderByExp
+  name: Int32_order_by_exp
   operand:
     scalar:
       orderedType: Int32
       enableOrderByDirections:
         enableAll: true
   graphql:
-    expressionTypeName: Int32OrderByExp
+    expressionTypeName: Int32_order_by_exp
 
 ---
 kind: OrderByExpression
 version: v1
 definition:
-  name: StorageObjectReplicationStatusOrderByExp
+  name: StorageObjectReplicationStatus_order_by_exp
   operand:
     scalar:
       orderedType: StorageObjectReplicationStatus
       enableOrderByDirections:
         enableAll: true
   graphql:
-    expressionTypeName: StorageObjectReplicationStatusOrderByExp
+    expressionTypeName: StorageObjectReplicationStatus_order_by_exp
 
 ---
 kind: ScalarType
@@ -757,7 +757,7 @@ definition:
 kind: BooleanExpressionType
 version: v1
 definition:
-  name: BytesBoolExp
+  name: Bytes_bool_exp
   operand:
     scalar:
       type: Bytes
@@ -771,7 +771,7 @@ definition:
   isNull:
     enable: true
   graphql:
-    typeName: BytesBoolExp
+    typeName: Bytes_bool_exp
 
 ---
 kind: DataConnectorScalarRepresentation
@@ -781,7 +781,7 @@ definition:
   dataConnectorScalarType: Bytes
   representation: Bytes
   graphql:
-    comparisonExpressionTypeName: BytesComparisonExp
+    comparisonExpressionTypeName: Bytes_comparison_exp
 
 ---
 kind: ScalarType
@@ -795,7 +795,7 @@ definition:
 kind: BooleanExpressionType
 version: v1
 definition:
-  name: ChecksumTypeBoolExp
+  name: ChecksumType_bool_exp
   operand:
     scalar:
       type: ChecksumType
@@ -809,7 +809,7 @@ definition:
   isNull:
     enable: true
   graphql:
-    typeName: ChecksumTypeBoolExp
+    typeName: ChecksumType_bool_exp
 
 ---
 kind: DataConnectorScalarRepresentation
@@ -819,24 +819,24 @@ definition:
   dataConnectorScalarType: ChecksumType
   representation: ChecksumType
   graphql:
-    comparisonExpressionTypeName: ChecksumTypeComparisonExp
+    comparisonExpressionTypeName: ChecksumType_comparison_exp
 
 ---
 kind: ScalarType
 version: v1
 definition:
-  name: DownloadHttpMethod
+  name: DownloadHTTPMethod
   graphql:
-    typeName: DownloadHttpMethod
+    typeName: DownloadHTTPMethod
 
 ---
 kind: BooleanExpressionType
 version: v1
 definition:
-  name: DownloadHttpMethodBoolExp
+  name: DownloadHTTPMethod_bool_exp
   operand:
     scalar:
-      type: DownloadHttpMethod
+      type: DownloadHTTPMethod
       comparisonOperators: []
       dataConnectorOperatorMapping:
         - dataConnectorName: storage
@@ -847,7 +847,7 @@ definition:
   isNull:
     enable: true
   graphql:
-    typeName: DownloadHttpMethodBoolExp
+    typeName: DownloadHTTPMethod_bool_exp
 
 ---
 kind: DataConnectorScalarRepresentation
@@ -855,7 +855,7 @@ version: v1
 definition:
   dataConnectorName: storage
   dataConnectorScalarType: DownloadHTTPMethod
-  representation: DownloadHttpMethod
+  representation: DownloadHTTPMethod
   graphql:
-    comparisonExpressionTypeName: DownloadHttpMethodComparisonExp
+    comparisonExpressionTypeName: DownloadHTTPMethod_comparison_exp
 

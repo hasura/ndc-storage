@@ -8,33 +8,33 @@
               "cursor": "movies/1930s/",
               "node": {
                 "bucket": "dummy-bucket-0",
-                "clientId": "minio",
-                "isDirectory": true,
+                "client_id": "minio",
+                "is_directory": true,
                 "name": "movies/1930s/",
                 "size": 0,
-                "storageClass": null
+                "storage_class": null
               }
             },
             {
               "cursor": "movies/1940s/",
               "node": {
                 "bucket": "dummy-bucket-0",
-                "clientId": "minio",
-                "isDirectory": true,
+                "client_id": "minio",
+                "is_directory": true,
                 "name": "movies/1940s/",
                 "size": 0,
-                "storageClass": null
+                "storage_class": null
               }
             },
             {
               "cursor": "movies/1950s/",
               "node": {
                 "bucket": "dummy-bucket-0",
-                "clientId": "minio",
-                "isDirectory": true,
+                "client_id": "minio",
+                "is_directory": true,
                 "name": "movies/1950s/",
                 "size": 0,
-                "storageClass": null
+                "storage_class": null
               }
             }
           ],
@@ -52,33 +52,33 @@
               "cursor": "movies/1930s/",
               "node": {
                 "bucket": "dummy-bucket-0",
-                "clientId": "azblob",
-                "isDirectory": true,
+                "client_id": "azblob",
+                "is_directory": true,
                 "name": "movies/1930s/",
                 "size": null,
-                "storageClass": null
+                "storage_class": null
               }
             },
             {
               "cursor": "movies/1940s/",
               "node": {
                 "bucket": "dummy-bucket-0",
-                "clientId": "azblob",
-                "isDirectory": true,
+                "client_id": "azblob",
+                "is_directory": true,
                 "name": "movies/1940s/",
                 "size": null,
-                "storageClass": null
+                "storage_class": null
               }
             },
             {
               "cursor": "movies/1950s/",
               "node": {
                 "bucket": "dummy-bucket-0",
-                "clientId": "azblob",
-                "isDirectory": true,
+                "client_id": "azblob",
+                "is_directory": true,
                 "name": "movies/1950s/",
                 "size": null,
-                "storageClass": null
+                "storage_class": null
               }
             }
           ],
@@ -96,33 +96,33 @@
               "cursor": "movies/1930s/",
               "node": {
                 "bucket": "dummy-bucket-0",
-                "clientId": "gcs",
-                "isDirectory": true,
+                "client_id": "gcs",
+                "is_directory": true,
                 "name": "movies/1930s/",
                 "size": 0,
-                "storageClass": null
+                "storage_class": null
               }
             },
             {
               "cursor": "movies/1940s/",
               "node": {
                 "bucket": "dummy-bucket-0",
-                "clientId": "gcs",
-                "isDirectory": true,
+                "client_id": "gcs",
+                "is_directory": true,
                 "name": "movies/1940s/",
                 "size": 0,
-                "storageClass": null
+                "storage_class": null
               }
             },
             {
               "cursor": "movies/1950s/",
               "node": {
                 "bucket": "dummy-bucket-0",
-                "clientId": "gcs",
-                "isDirectory": true,
+                "client_id": "gcs",
+                "is_directory": true,
                 "name": "movies/1950s/",
                 "size": 0,
-                "storageClass": null
+                "storage_class": null
               }
             }
           ],

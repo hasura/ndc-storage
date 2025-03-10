@@ -96,6 +96,10 @@ clients:
       type: credentials
       credentialsFile:
         env: GOOGLE_STORAGE_CREDENTIALS_FILE
+  - id: fs
+    type: fs
+    defaultDirectory:
+      env: STORAGE_FS_DEFAULT_DIRECTORY
 
 concurrency:
   query: 10

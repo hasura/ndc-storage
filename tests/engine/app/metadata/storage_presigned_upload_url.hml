@@ -1,0 +1,45 @@
+---
+kind: Command
+version: v1
+definition:
+  name: storage_presigned_upload_url
+  outputType: PresignedURLResponse
+  arguments:
+    - name: access_key_id
+      type: String
+    - name: bucket
+      type: String
+    - name: client_id
+      type: StorageClientID
+    - name: client_type
+      type: StorageProviderType
+    - name: endpoint
+      type: String
+    - name: expiry
+      type: DurationString
+    - name: name
+      type: String!
+    - name: secret_access_key
+      type: String
+  source:
+    dataConnectorName: storage
+    dataConnectorCommand:
+      function: storage_presigned_upload_url
+  graphql:
+    rootFieldName: storage_presigned_upload_url
+    rootFieldKind: Query
+  description: generates a presigned URL for HTTP PUT operations. Browsers/Mobile
+    clients may point to this URL to upload objects directly to a bucket even if
+    it is private. This presigned URL can have an associated expiration time in
+    seconds after which it is no longer operational. The default expiry is set
+    to 7 days.
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: storage_presigned_upload_url
+  permissions:
+    - role: admin
+      allowExecution: true
+

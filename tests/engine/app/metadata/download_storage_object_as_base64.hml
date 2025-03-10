@@ -1,0 +1,75 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DownloadStorageObjectResponse
+  description: represents the object data response in base64-encode string format.
+  fields:
+    - name: data
+      type: Bytes!
+  graphql:
+    typeName: DownloadStorageObjectResponse
+    inputTypeName: DownloadStorageObjectResponse_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: storage
+      dataConnectorObjectType: DownloadStorageObjectResponse
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DownloadStorageObjectResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - data
+
+---
+kind: Command
+version: v1
+definition:
+  name: download_storage_object_as_base64
+  outputType: DownloadStorageObjectResponse
+  arguments:
+    - name: access_key_id
+      type: String
+    - name: bucket
+      type: String
+    - name: client_id
+      type: StorageClientID
+    - name: client_type
+      type: StorageProviderType
+    - name: endpoint
+      type: String
+    - name: headers
+      type: "[StorageKeyValue!]"
+    - name: name
+      type: String!
+    - name: part_number
+      type: Int32
+    - name: request_params
+      type: "[StorageKeyValue!]"
+    - name: secret_access_key
+      type: String
+    - name: version_id
+      type: String
+  source:
+    dataConnectorName: storage
+    dataConnectorCommand:
+      function: download_storage_object_as_base64
+  graphql:
+    rootFieldName: download_storage_object_as_base64
+    rootFieldKind: Query
+  description: returns a stream of the object data. Most of the common errors
+    occur when reading the stream.
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: download_storage_object_as_base64
+  permissions:
+    - role: admin
+      allowExecution: true
+

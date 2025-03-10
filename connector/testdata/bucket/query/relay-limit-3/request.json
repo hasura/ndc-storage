@@ -18,7 +18,7 @@
         "expressions": [
           {
             "type": "binary_comparison_operator",
-            "column": { "type": "column", "name": "clientId", "path": [] },
+            "column": { "type": "column", "name": "client_id", "path": [] },
             "operator": "_eq",
             "value": { "type": "variable", "name": "$clientId" }
           }
@@ -32,7 +32,7 @@
     { "$clientId": "azblob" },
     { "$clientId": "gcs" }
   ],
-  "collection": "storageBucketConnections",
+  "collection": "storage_bucket_connections",
   "collection_relationships": {},
   "query": {
     "fields": {
@@ -53,8 +53,8 @@
                       "column": "node",
                       "fields": {
                         "fields": {
-                          "clientId": {
-                            "column": "clientId",
+                          "client_id": {
+                            "column": "client_id",
                             "type": "column"
                           },
                           "etag": {
@@ -65,8 +65,8 @@
                             "column": "name",
                             "type": "column"
                           },
-                          "storageClass": {
-                            "column": "storageClass",
+                          "storage_class": {
+                            "column": "storage_class",
                             "type": "column"
                           },
                           "tags": {

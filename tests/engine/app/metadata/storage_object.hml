@@ -1,0 +1,47 @@
+---
+kind: Command
+version: v1
+definition:
+  name: storage_object
+  outputType: StorageObject
+  arguments:
+    - name: access_key_id
+      type: String
+    - name: bucket
+      type: String
+    - name: client_id
+      type: StorageClientID
+    - name: client_type
+      type: StorageProviderType
+    - name: endpoint
+      type: String
+    - name: headers
+      type: "[StorageKeyValue!]"
+    - name: name
+      type: String!
+    - name: part_number
+      type: Int32
+    - name: request_params
+      type: "[StorageKeyValue!]"
+    - name: secret_access_key
+      type: String
+    - name: version_id
+      type: String
+  source:
+    dataConnectorName: storage
+    dataConnectorCommand:
+      function: storage_object
+  graphql:
+    rootFieldName: storage_object
+    rootFieldKind: Query
+  description: fetches metadata of an object.
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: storage_object
+  permissions:
+    - role: admin
+      allowExecution: true
+

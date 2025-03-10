@@ -12,12 +12,12 @@
       "type": "literal",
       "value": "public/hello.txt"
     },
-    "requestParams": {
+    "request_params": {
       "type": "literal",
       "value": null
     }
   },
-  "collection": "storagePresignedDownloadUrl",
+  "collection": "storage_presigned_download_url",
   "collection_relationships": {},
   "query": {
     "fields": {
@@ -30,8 +30,8 @@
               "column": "url",
               "type": "column"
             },
-            "expiredAt": {
-              "column": "expiredAt",
+            "expired_at": {
+              "column": "expired_at",
               "type": "column"
             }
           },

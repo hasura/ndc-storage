@@ -3,11 +3,11 @@
   "operations": [
     {
       "type": "procedure",
-      "name": "updateStorageBucket",
+      "name": "update_storage_bucket",
       "arguments": {
         "name": "minio-bucket-lock",
-        "legalHold": true,
-        "objectLock": {
+        "legal_hold": true,
+        "object_lock": {
           "mode": "Locked",
           "unit": "DAYS",
           "validity": 1

@@ -33,7 +33,7 @@
       }
     }
   },
-  "collection": "storageObject",
+  "collection": "storage_object",
   "collection_relationships": {},
   "query": {
     "fields": {
@@ -41,84 +41,84 @@
         "column": "__value",
         "fields": {
           "fields": {
-            "accessTierInferred": {
-              "column": "accessTierInferred",
+            "access_tier_inferred": {
+              "column": "access_tier_inferred",
               "type": "column"
             },
             "acl": {
               "column": "acl",
               "type": "column"
             },
-            "archiveStatus": {
-              "column": "archiveStatus",
+            "archive_status": {
+              "column": "archive_status",
               "type": "column"
             },
-            "blobSequenceNumber": {
-              "column": "blobSequenceNumber",
+            "blob_sequence_number": {
+              "column": "blob_sequence_number",
               "type": "column"
             },
-            "blobType": {
-              "column": "blobType",
+            "blob_type": {
+              "column": "blob_type",
               "type": "column"
             },
             "bucket": {
               "column": "bucket",
               "type": "column"
             },
-            "cacheControl": {
-              "column": "cacheControl",
+            "cache_control": {
+              "column": "cache_control",
               "type": "column"
             },
-            "checksumCrc32": {
-              "column": "checksumCrc32",
+            "checksum_crc32": {
+              "column": "checksum_crc32",
               "type": "column"
             },
-            "checksumCrc32C": {
-              "column": "checksumCrc32C",
+            "checksum_crc32c": {
+              "column": "checksum_crc32c",
               "type": "column"
             },
-            "checksumCrc64Nvme": {
-              "column": "checksumCrc64Nvme",
+            "checksum_crc64_nvme": {
+              "column": "checksum_crc64_nvme",
               "type": "column"
             },
-            "checksumSha1": {
-              "column": "checksumSha1",
+            "checksum_sha1": {
+              "column": "checksum_sha1",
               "type": "column"
             },
-            "checksumSha256": {
-              "column": "checksumSha256",
+            "checksum_sha256": {
+              "column": "checksum_sha256",
               "type": "column"
             },
-            "clientId": {
-              "column": "clientId",
+            "client_id": {
+              "column": "client_id",
               "type": "column"
             },
-            "contentDisposition": {
-              "column": "contentDisposition",
+            "content_disposition": {
+              "column": "content_disposition",
               "type": "column"
             },
-            "contentEncoding": {
-              "column": "contentEncoding",
+            "content_encoding": {
+              "column": "content_encoding",
               "type": "column"
             },
-            "contentLanguage": {
-              "column": "contentLanguage",
+            "content_language": {
+              "column": "content_language",
               "type": "column"
             },
-            "contentMd5": {
-              "column": "contentMd5",
+            "content_md5": {
+              "column": "content_md5",
               "type": "column"
             },
-            "contentType": {
-              "column": "contentType",
+            "content_type": {
+              "column": "content_type",
               "type": "column"
             },
             "copy": {
               "column": "copy",
               "fields": {
                 "fields": {
-                  "completionTime": {
-                    "column": "completionTime",
+                  "completion_time": {
+                    "column": "completion_time",
                     "type": "column"
                   },
                   "id": {
@@ -137,8 +137,8 @@
                     "column": "status",
                     "type": "column"
                   },
-                  "statusDescription": {
-                    "column": "statusDescription",
+                  "status_description": {
+                    "column": "status_description",
                     "type": "column"
                   }
                 },
@@ -146,28 +146,28 @@
               },
               "type": "column"
             },
-            "customerProvidedKeySha256": {
-              "column": "customerProvidedKeySha256",
+            "customer_provided_key_sha256": {
+              "column": "customer_provided_key_sha256",
               "type": "column"
             },
             "deleted": {
               "column": "deleted",
               "type": "column"
             },
-            "deletedTime": {
-              "column": "deletedTime",
+            "deleted_time": {
+              "column": "deleted_time",
               "type": "column"
             },
-            "destinationSnapshot": {
-              "column": "destinationSnapshot",
+            "destination_snapshot": {
+              "column": "destination_snapshot",
               "type": "column"
             },
             "expiration": {
               "column": "expiration",
               "type": "column"
             },
-            "expirationRuleId": {
-              "column": "expirationRuleId",
+            "expiration_rule_id": {
+              "column": "expiration_rule_id",
               "type": "column"
             },
             "expires": {
@@ -183,8 +183,8 @@
                       "column": "grantee",
                       "fields": {
                         "fields": {
-                          "displayName": {
-                            "column": "displayName",
+                          "display_name": {
+                            "column": "display_name",
                             "type": "column"
                           },
                           "id": {
@@ -215,36 +215,36 @@
               "column": "group",
               "type": "column"
             },
-            "incrementalCopy": {
-              "column": "incrementalCopy",
+            "incremental_copy": {
+              "column": "incremental_copy",
               "type": "column"
             },
-            "isLatest": {
-              "column": "isLatest",
+            "is_latest": {
+              "column": "is_latest",
               "type": "column"
             },
-            "kmsKeyName": {
-              "column": "kmsKeyName",
+            "kms_key_name": {
+              "column": "kms_key_name",
               "type": "column"
             },
-            "leaseDuration": {
-              "column": "leaseDuration",
+            "lease_duration": {
+              "column": "lease_duration",
               "type": "column"
             },
-            "leaseState": {
-              "column": "leaseState",
+            "lease_state": {
+              "column": "lease_state",
               "type": "column"
             },
-            "leaseStatus": {
-              "column": "leaseStatus",
+            "lease_status": {
+              "column": "lease_status",
               "type": "column"
             },
-            "legalHold": {
-              "column": "legalHold",
+            "legal_hold": {
+              "column": "legal_hold",
               "type": "column"
             },
-            "mediaLink": {
-              "column": "mediaLink",
+            "media_link": {
+              "column": "media_link",
               "type": "column"
             },
             "metadata": {
@@ -292,8 +292,8 @@
               "column": "permissions",
               "type": "column"
             },
-            "rawMetadata": {
-              "column": "rawMetadata",
+            "raw_metadata": {
+              "column": "raw_metadata",
               "fields": {
                 "fields": {
                   "fields": {
@@ -312,36 +312,36 @@
               },
               "type": "column"
             },
-            "rehydratePriority": {
-              "column": "rehydratePriority",
+            "rehydrate_priority": {
+              "column": "rehydrate_priority",
               "type": "column"
             },
-            "remainingRetentionDays": {
-              "column": "remainingRetentionDays",
+            "remaining_retention_days": {
+              "column": "remaining_retention_days",
               "type": "column"
             },
-            "replicationReady": {
-              "column": "replicationReady",
+            "replication_ready": {
+              "column": "replication_ready",
               "type": "column"
             },
-            "replicationStatus": {
-              "column": "replicationStatus",
+            "replication_status": {
+              "column": "replication_status",
               "type": "column"
             },
-            "resourceType": {
-              "column": "resourceType",
+            "resource_type": {
+              "column": "resource_type",
               "type": "column"
             },
             "restore": {
               "column": "restore",
               "fields": {
                 "fields": {
-                  "expiryTime": {
-                    "column": "expiryTime",
+                  "expiry_time": {
+                    "column": "expiry_time",
                     "type": "column"
                   },
-                  "ongoingRestore": {
-                    "column": "ongoingRestore",
+                  "ongoing_restore": {
+                    "column": "ongoing_restore",
                     "type": "column"
                   }
                 },
@@ -349,32 +349,32 @@
               },
               "type": "column"
             },
-            "retentionMode": {
-              "column": "retentionMode",
+            "retention_mode": {
+              "column": "retention_mode",
               "type": "column"
             },
-            "retentionUntilDate": {
-              "column": "retentionUntilDate",
+            "retention_until_date": {
+              "column": "retention_until_date",
               "type": "column"
             },
             "sealed": {
               "column": "sealed",
               "type": "column"
             },
-            "serverEncrypted": {
-              "column": "serverEncrypted",
+            "server_encrypted": {
+              "column": "server_encrypted",
               "type": "column"
             },
             "size": {
               "column": "size",
               "type": "column"
             },
-            "storageClass": {
-              "column": "storageClass",
+            "storage_class": {
+              "column": "storage_class",
               "type": "column"
             },
-            "tagCount": {
-              "column": "tagCount",
+            "tag_count": {
+              "column": "tag_count",
               "type": "column"
             },
             "tags": {
@@ -397,8 +397,8 @@
               },
               "type": "column"
             },
-            "versionId": {
-              "column": "versionId",
+            "version_id": {
+              "column": "version_id",
               "type": "column"
             }
           },
