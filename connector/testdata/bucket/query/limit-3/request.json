@@ -6,9 +6,10 @@
     }
   },
   "variables": [
-    { "$clientId": "minio" },
-    { "$clientId": "azblob" },
-    { "$clientId": "gcs" }
+    { "$clientId": "minio", "$bucket": "dummy" },
+    { "$clientId": "azblob", "$bucket": "dummy" },
+    { "$clientId": "gcs", "$bucket": "dummy" },
+    { "$clientId": "fs", "$bucket": "../tmp" }
   ],
   "collection": "storage_buckets",
   "collection_relationships": {},
@@ -64,7 +65,7 @@
           "column": { "type": "column", "name": "name" },
           "operator": "_starts_with",
           "type": "binary_comparison_operator",
-          "value": { "type": "scalar", "value": "dummy" }
+          "value": { "type": "variable", "name": "$bucket" }
         }
       ],
       "type": "and"

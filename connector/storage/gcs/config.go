@@ -11,6 +11,7 @@ import (
 	"strings"
 
 	"cloud.google.com/go/storage"
+	"github.com/hasura/ndc-http/exhttp"
 	"github.com/hasura/ndc-sdk-go/utils"
 	"github.com/hasura/ndc-storage/connector/storage/common"
 	"github.com/invopop/jsonschema"
@@ -45,6 +46,9 @@ func (cc ClientConfig) JSONSchema() *jsonschema.Schema {
 		Description: "Project ID of the Google Cloud account",
 		Ref:         envStringRef,
 	})
+	result.Properties.Set("http", &jsonschema.Schema{
+		Ref: "#/$defs/HTTPTransportTLSConfig",
+	})
 
 	return result
 }
@@ -60,6 +64,8 @@ type OtherConfig struct {
 	GRPCConnPoolSize int `json:"grpcConnPoolSize,omitempty" mapstructure:"grpcConnPoolSize" yaml:"grpcConnPoolSize,omitempty"`
 	// Authentication credentials.
 	Authentication AuthCredentials `json:"authentication" mapstructure:"authentication" yaml:"authentication"`
+	// Configuration for the http client that is used for uploading files from URL.
+	HTTP *exhttp.HTTPTransportTLSConfig `json:"http" mapstructure:"http" yaml:"http"`
 }
 
 func (cc ClientConfig) toClientOptions(ctx context.Context, logger *slog.Logger) ([]option.ClientOption, error) {
@@ -87,9 +93,18 @@ func (cc ClientConfig) toClientOptions(ctx context.Context, logger *slog.Logger)
 		if cc.GRPCConnPoolSize > 0 {
 			opts = append(opts, option.WithGRPCConnectionPool(cc.GRPCConnPoolSize))
 		}
-	} else if utils.IsDebug(logger) {
+	} else if utils.IsDebug(logger) || cc.HTTP != nil {
+		var baseTransport *http.Transport
+
+		if cc.HTTP != nil {
+			baseTransport, err = cc.HTTP.ToTransport(logger)
+			if err != nil {
+				return nil, err
+			}
+		}
+
 		httpTransport, err := ghttp.NewTransport(ctx,
-			common.NewTransport(nil, common.HTTPTransportOptions{
+			common.NewTransport(baseTransport, common.HTTPTransportOptions{
 				Logger:             logger,
 				Port:               port,
 				DisableCompression: true,

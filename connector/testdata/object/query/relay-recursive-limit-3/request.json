@@ -3,7 +3,7 @@
   "arguments": {
     "recursive": { "type": "literal", "value": true },
     "first": { "type": "literal", "value": 3 },
-    "bucket": { "type": "literal", "value": "dummy-bucket-0" },
+    "bucket": { "type": "variable", "name": "$bucket" },
     "prefix": { "type": "literal", "value": "movies" },
     "where": {
       "type": "literal",
@@ -21,9 +21,10 @@
     }
   },
   "variables": [
-    { "$clientId": "minio" },
-    { "$clientId": "azblob" },
-    { "$clientId": "gcs" }
+    { "$clientId": "minio", "$bucket": "dummy-bucket-0" },
+    { "$clientId": "azblob", "$bucket": "dummy-bucket-0" },
+    { "$clientId": "gcs", "$bucket": "dummy-bucket-0" },
+    { "$clientId": "fs", "$bucket": "../tmp/data" }
   ],
   "collection_relationships": {},
   "query": {

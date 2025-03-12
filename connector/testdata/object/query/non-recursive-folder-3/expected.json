@@ -34,5 +34,17 @@
         "storage_class": null
       }
     ]
+  },
+  {
+    "rows": [
+      {
+        "bucket": "../tmp/data",
+        "client_id": "fs",
+        "is_directory": true,
+        "name": "movies/2000s",
+        "size": null,
+        "storage_class": null
+      }
+    ]
   }
 ]

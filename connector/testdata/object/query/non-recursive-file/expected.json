@@ -34,5 +34,17 @@
         "storage_class": "STANDARD"
       }
     ]
+  },
+  {
+    "rows": [
+      {
+        "bucket": "../tmp/data",
+        "client_id": "fs",
+        "is_directory": false,
+        "name": "movies/1920s/movies.json",
+        "size": 3463423,
+        "storage_class": null
+      }
+    ]
   }
 ]

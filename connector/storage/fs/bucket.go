@@ -35,12 +35,6 @@ func (c *Client) ListBuckets(ctx context.Context, options *common.ListStorageBuc
 	_, span := c.startOtelSpan(ctx, "ListBuckets", "")
 	defer span.End()
 
-	if options.Prefix == "" {
-		return &common.StorageBucketListResults{
-			Buckets: make([]common.StorageBucket, 0),
-		}, nil
-	}
-
 	result := &common.StorageBucketListResults{
 		Buckets: make([]common.StorageBucket, 0),
 	}
@@ -52,8 +46,12 @@ func (c *Client) ListBuckets(ctx context.Context, options *common.ListStorageBuc
 	for ; index < total; index++ {
 		dir := c.allowedDirectories[index]
 
-		if !started && options.StartAfter == dir {
-			started = true
+		if !started {
+			if options.StartAfter == dir {
+				started = true
+			}
+
+			continue
 		}
 
 		if (options.Prefix != "" && !strings.HasPrefix(dir, options.Prefix)) || (predicate != nil && !predicate(dir)) {

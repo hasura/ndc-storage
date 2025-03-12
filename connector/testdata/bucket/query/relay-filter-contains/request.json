@@ -8,10 +8,6 @@
       "type": "literal",
       "value": null
     },
-    "prefix": {
-      "type": "literal",
-      "value": "dummy"
-    },
     "where": {
       "type": "literal",
       "value": {
@@ -20,7 +16,7 @@
             "column": { "type": "column", "name": "name" },
             "operator": "_icontains",
             "type": "binary_comparison_operator",
-            "value": { "type": "scalar", "value": "BUCKET" }
+            "value": { "type": "variable", "name": "$icontains" }
           },
           {
             "column": { "type": "column", "name": "name" },
@@ -40,9 +36,10 @@
     }
   },
   "variables": [
-    { "$clientId": "minio" },
-    { "$clientId": "azblob" },
-    { "$clientId": "gcs" }
+    { "$clientId": "minio", "$icontains": "BUCKET" },
+    { "$clientId": "azblob", "$icontains": "BUCKET" },
+    { "$clientId": "gcs", "$icontains": "BUCKET" },
+    { "$clientId": "fs", "$icontains": "DATA" }
   ],
   "collection": "storage_bucket_connections",
   "collection_relationships": {},

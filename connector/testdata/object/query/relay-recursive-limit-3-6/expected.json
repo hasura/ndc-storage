@@ -38,7 +38,9 @@
               }
             }
           ],
-          "pageInfo": { "hasNextPage": true }
+          "pageInfo": {
+            "hasNextPage": true
+          }
         }
       }
     ]
@@ -82,7 +84,9 @@
               }
             }
           ],
-          "pageInfo": { "hasNextPage": true }
+          "pageInfo": {
+            "hasNextPage": true
+          }
         }
       }
     ]
@@ -126,7 +130,55 @@
               }
             }
           ],
-          "pageInfo": { "hasNextPage": true }
+          "pageInfo": {
+            "hasNextPage": true
+          }
+        }
+      }
+    ]
+  },
+  {
+    "rows": [
+      {
+        "__value": {
+          "edges": [
+            {
+              "cursor": "movies/1930s/movies.json",
+              "node": {
+                "bucket": "../tmp/data",
+                "client_id": "fs",
+                "is_directory": false,
+                "name": "movies/1930s/movies.json",
+                "size": 2921862,
+                "storage_class": null
+              }
+            },
+            {
+              "cursor": "movies/1940s/movies.json",
+              "node": {
+                "bucket": "../tmp/data",
+                "client_id": "fs",
+                "is_directory": false,
+                "name": "movies/1940s/movies.json",
+                "size": 2972875,
+                "storage_class": null
+              }
+            },
+            {
+              "cursor": "movies/1950s/movies.json",
+              "node": {
+                "bucket": "../tmp/data",
+                "client_id": "fs",
+                "is_directory": false,
+                "name": "movies/1950s/movies.json",
+                "size": 2123294,
+                "storage_class": null
+              }
+            }
+          ],
+          "pageInfo": {
+            "hasNextPage": true
+          }
         }
       }
     ]

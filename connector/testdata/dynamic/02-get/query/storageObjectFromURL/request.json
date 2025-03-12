@@ -6,7 +6,7 @@
     },
     "endpoint": {
       "type": "literal",
-      "value": "http://local.hasura.dev:10000"
+      "value": "https://local.hasura.dev:10000"
     },
     "access_key_id": {
       "type": "literal",

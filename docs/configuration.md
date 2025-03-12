@@ -222,11 +222,28 @@ You must configure the endpoint URL along with [Access Key ID and Secret Access 
 
 See [Spaces API Reference Documentation](https://docs.digitalocean.com/reference/api/spaces-api/).
 
+### Filesystem
+
+The storage provider manages files and directories in local file system. The bucket will be the root directory. Only the mounted volume to `/home/nonroot/data` is writable. All other paths are read-only.
+
+```yaml
+clients:
+  - id: fs
+    type: fs
+    defaultDirectory:
+      value: /home/nonroot/data
+    # allowedDirectories:
+    #   - /data
+    #   - /foo/bar
+```
+
 ## Runtime Settings
 
-| Name                 | Description                                                               | Default |
-| -------------------- | ------------------------------------------------------------------------- | ------- |
-| `maxDownloadSizeMBs` | Limit the max download size in MBs for `downloadStorageObject*` functions | `10`    |
+| Name                 | Description                                                                                             | Default |
+| -------------------- | ------------------------------------------------------------------------------------------------------- | ------- |
+| `maxDownloadSizeMBs` | Limit the max download size in MBs for `downloadStorageObject*` functions                               | `20`    |
+| `maxUploadSizeMBs`   | Limit the max upload size in MBs for `uploadStorageObject*` functions                                   | `20`    |
+| `http`               | Default transport setting for the default HTTP client that is used for uploading or dynamic credentials |         |
 
 ## Concurrency Settings
 

@@ -15,7 +15,9 @@
               }
             }
           ],
-          "pageInfo": { "hasNextPage": false }
+          "pageInfo": {
+            "hasNextPage": false
+          }
         }
       }
     ]
@@ -36,7 +38,9 @@
               }
             }
           ],
-          "pageInfo": { "hasNextPage": false }
+          "pageInfo": {
+            "hasNextPage": false
+          }
         }
       }
     ]
@@ -57,7 +61,32 @@
               }
             }
           ],
-          "pageInfo": { "hasNextPage": false }
+          "pageInfo": {
+            "hasNextPage": false
+          }
+        }
+      }
+    ]
+  },
+  {
+    "rows": [
+      {
+        "__value": {
+          "edges": [
+            {
+              "cursor": "../tmp/data-9",
+              "node": {
+                "client_id": "fs",
+                "etag": null,
+                "name": "../tmp/data-9",
+                "storage_class": null,
+                "tags": []
+              }
+            }
+          ],
+          "pageInfo": {
+            "hasNextPage": false
+          }
         }
       }
     ]

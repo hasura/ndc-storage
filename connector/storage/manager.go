@@ -189,49 +189,7 @@ func (m *Manager) createTemporaryClient(ctx context.Context, arguments common.St
 
 	switch clientType {
 	case common.StorageProviderTypeAzblob:
-		if arguments.Endpoint == "" {
-			return nil, schema.UnprocessableContentError("endpoint is required for azblob", nil)
-		}
-
-		clientConfig := &azblob.ClientConfig{
-			BaseClientConfig: common.BaseClientConfig{
-				ID: string(clientId),
-			},
-		}
-
-		if arguments.AccessKeyID != "" || arguments.SecretAccessKey != "" {
-			clientConfig.Endpoint = &utils.EnvString{
-				Value: &arguments.Endpoint,
-			}
-
-			clientConfig.OtherConfig.Authentication = azblob.AuthCredentials{
-				Type: azblob.AuthTypeSharedKey,
-				AccountName: &utils.EnvString{
-					Value: utils.ToPtr(arguments.AccessKeyID),
-				},
-				AccountKey: &utils.EnvString{
-					Value: utils.ToPtr(arguments.SecretAccessKey),
-				},
-			}
-		} else {
-			clientConfig.OtherConfig.Authentication = azblob.AuthCredentials{
-				Type: azblob.AuthTypeConnectionString,
-				ConnectionString: &utils.EnvString{
-					Value: utils.ToPtr(arguments.Endpoint),
-				},
-			}
-		}
-
-		client, err := azblob.New(ctx, clientConfig, m.logger)
-		if err != nil {
-			return nil, err
-		}
-
-		return &Client{
-			id:                     clientId,
-			StorageClient:          client,
-			defaultPresignedExpiry: &defaultPresignedExpiry,
-		}, nil
+		return m.createTemporaryAzblobClient(ctx, arguments)
 	case common.StorageProviderTypeS3, common.StorageProviderTypeGcs:
 		fallthrough
 	default:
@@ -253,6 +211,7 @@ func (m *Manager) createTemporaryClient(ctx context.Context, arguments common.St
 						Value: utils.ToPtr(arguments.SecretAccessKey),
 					},
 				},
+				HTTP: m.runtime.HTTP,
 			},
 		}
 
@@ -273,4 +232,55 @@ func (m *Manager) createTemporaryClient(ctx context.Context, arguments common.St
 			defaultPresignedExpiry: &defaultPresignedExpiry,
 		}, nil
 	}
+}
+
+func (m *Manager) createTemporaryAzblobClient(ctx context.Context, arguments common.StorageClientCredentialArguments) (*Client, error) {
+	if arguments.Endpoint == "" {
+		return nil, schema.UnprocessableContentError("endpoint is required for azblob", nil)
+	}
+
+	clientId := "azblob-temp"
+	defaultPresignedExpiry := 24 * time.Hour
+	clientConfig := &azblob.ClientConfig{
+		BaseClientConfig: common.BaseClientConfig{
+			ID: clientId,
+		},
+		OtherConfig: azblob.OtherConfig{
+			HTTP: m.runtime.HTTP,
+		},
+	}
+
+	if arguments.AccessKeyID != "" || arguments.SecretAccessKey != "" {
+		clientConfig.Endpoint = &utils.EnvString{
+			Value: &arguments.Endpoint,
+		}
+
+		clientConfig.OtherConfig.Authentication = azblob.AuthCredentials{
+			Type: azblob.AuthTypeSharedKey,
+			AccountName: &utils.EnvString{
+				Value: utils.ToPtr(arguments.AccessKeyID),
+			},
+			AccountKey: &utils.EnvString{
+				Value: utils.ToPtr(arguments.SecretAccessKey),
+			},
+		}
+	} else {
+		clientConfig.OtherConfig.Authentication = azblob.AuthCredentials{
+			Type: azblob.AuthTypeConnectionString,
+			ConnectionString: &utils.EnvString{
+				Value: utils.ToPtr(arguments.Endpoint),
+			},
+		}
+	}
+
+	client, err := azblob.New(ctx, clientConfig, m.logger)
+	if err != nil {
+		return nil, err
+	}
+
+	return &Client{
+		id:                     common.StorageClientID(clientId),
+		StorageClient:          client,
+		defaultPresignedExpiry: &defaultPresignedExpiry,
+	}, nil
 }

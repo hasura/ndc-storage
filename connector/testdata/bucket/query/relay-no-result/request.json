@@ -32,7 +32,8 @@
   "variables": [
     { "$clientId": "minio" },
     { "$clientId": "azblob" },
-    { "$clientId": "gcs" }
+    { "$clientId": "gcs" },
+    { "$clientId": "fs" }
   ],
   "collection": "storage_bucket_connections",
   "collection_relationships": {},

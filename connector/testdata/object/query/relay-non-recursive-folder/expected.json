@@ -38,7 +38,9 @@
               }
             }
           ],
-          "pageInfo": { "hasNextPage": true }
+          "pageInfo": {
+            "hasNextPage": true
+          }
         }
       }
     ]
@@ -82,7 +84,9 @@
               }
             }
           ],
-          "pageInfo": { "hasNextPage": true }
+          "pageInfo": {
+            "hasNextPage": true
+          }
         }
       }
     ]
@@ -126,7 +130,55 @@
               }
             }
           ],
-          "pageInfo": { "hasNextPage": true }
+          "pageInfo": {
+            "hasNextPage": true
+          }
+        }
+      }
+    ]
+  },
+  {
+    "rows": [
+      {
+        "__value": {
+          "edges": [
+            {
+              "cursor": "movies/1900s",
+              "node": {
+                "bucket": "../tmp/data",
+                "client_id": "fs",
+                "is_directory": true,
+                "name": "movies/1900s",
+                "size": null,
+                "storage_class": null
+              }
+            },
+            {
+              "cursor": "movies/1910s",
+              "node": {
+                "bucket": "../tmp/data",
+                "client_id": "fs",
+                "is_directory": true,
+                "name": "movies/1910s",
+                "size": null,
+                "storage_class": null
+              }
+            },
+            {
+              "cursor": "movies/1920s",
+              "node": {
+                "bucket": "../tmp/data",
+                "client_id": "fs",
+                "is_directory": true,
+                "name": "movies/1920s",
+                "size": null,
+                "storage_class": null
+              }
+            }
+          ],
+          "pageInfo": {
+            "hasNextPage": true
+          }
         }
       }
     ]

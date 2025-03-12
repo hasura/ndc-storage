@@ -1,14 +1,15 @@
 {
   "arguments": {
     "after": {
-      "type": "literal",
-      "value": "dummy-bucket-2"
+      "type": "variable",
+      "name": "$after"
     }
   },
   "variables": [
-    { "$clientId": "minio" },
-    { "$clientId": "azblob" },
-    { "$clientId": "gcs" }
+    { "$clientId": "minio", "$bucket": "dummy", "$after": "dummy-bucket-2" },
+    { "$clientId": "azblob", "$bucket": "dummy", "$after": "dummy-bucket-2" },
+    { "$clientId": "gcs", "$bucket": "dummy", "$after": "dummy-bucket-2" },
+    { "$clientId": "fs", "$bucket": "../tmp", "$after": "../tmp/data-2" }
   ],
   "collection": "storage_buckets",
   "collection_relationships": {},
@@ -58,7 +59,7 @@
           "column": { "type": "column", "name": "name" },
           "operator": "_starts_with",
           "type": "binary_comparison_operator",
-          "value": { "type": "scalar", "value": "dummy" }
+          "value": { "type": "variable", "name": "$bucket" }
         },
         {
           "type": "binary_comparison_operator",

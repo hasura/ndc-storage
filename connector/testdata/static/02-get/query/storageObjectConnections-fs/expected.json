@@ -5,16 +5,6 @@
         "__value": {
           "edges": [
             {
-              "cursor": "hello.txt",
-              "node": {
-                "bucket": "../tmp/data",
-                "client_id": "fs",
-                "is_directory": false,
-                "name": "hello.txt",
-                "size": 10
-              }
-            },
-            {
               "cursor": "public/hello2.txt",
               "node": {
                 "bucket": "../tmp/data",

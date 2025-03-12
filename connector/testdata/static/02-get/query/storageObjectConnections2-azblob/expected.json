@@ -28,7 +28,7 @@
                 "content_type": "application/octet-stream",
                 "copy": {
                   "progress": "10/10",
-                  "source": "http://local.hasura.dev:10000/azblob-bucket-test/public%2Fhello.txt",
+                  "source": "https://local.hasura.dev:10000/azblob-bucket-test/public%2Fhello.txt",
                   "status": "success",
                   "status_description": null
                 },
