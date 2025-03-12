@@ -205,6 +205,17 @@ clients:
     type: fs
     defaultDirectory:
       env: STORAGE_FS_DEFAULT_DIRECTORY
+    allowedDirectories:
+      - ../tmp/data
+      - ../tmp/data-1
+      - ../tmp/data-2
+      - ../tmp/data-3
+      - ../tmp/data-4
+      - ../tmp/data-5
+      - ../tmp/data-6
+      - ../tmp/data-7
+      - ../tmp/data-8
+      - ../tmp/data-9
 concurrency:
   query: 10
   mutation: 10

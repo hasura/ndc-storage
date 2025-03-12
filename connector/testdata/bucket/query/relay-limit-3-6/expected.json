@@ -35,7 +35,9 @@
               }
             }
           ],
-          "pageInfo": { "hasNextPage": true }
+          "pageInfo": {
+            "hasNextPage": true
+          }
         }
       }
     ]
@@ -76,7 +78,9 @@
               }
             }
           ],
-          "pageInfo": { "hasNextPage": true }
+          "pageInfo": {
+            "hasNextPage": true
+          }
         }
       }
     ]
@@ -117,7 +121,52 @@
               }
             }
           ],
-          "pageInfo": { "hasNextPage": true }
+          "pageInfo": {
+            "hasNextPage": true
+          }
+        }
+      }
+    ]
+  },
+  {
+    "rows": [
+      {
+        "__value": {
+          "edges": [
+            {
+              "cursor": "../tmp/data-3",
+              "node": {
+                "client_id": "fs",
+                "etag": null,
+                "name": "../tmp/data-3",
+                "storage_class": null,
+                "tags": []
+              }
+            },
+            {
+              "cursor": "../tmp/data-4",
+              "node": {
+                "client_id": "fs",
+                "etag": null,
+                "name": "../tmp/data-4",
+                "storage_class": null,
+                "tags": []
+              }
+            },
+            {
+              "cursor": "../tmp/data-5",
+              "node": {
+                "client_id": "fs",
+                "etag": null,
+                "name": "../tmp/data-5",
+                "storage_class": null,
+                "tags": []
+              }
+            }
+          ],
+          "pageInfo": {
+            "hasNextPage": true
+          }
         }
       }
     ]

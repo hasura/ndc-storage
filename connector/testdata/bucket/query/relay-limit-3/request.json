@@ -8,10 +8,7 @@
       "type": "literal",
       "value": null
     },
-    "prefix": {
-      "type": "literal",
-      "value": "dummy"
-    },
+    "prefix": { "type": "variable", "name": "$bucket" },
     "where": {
       "type": "literal",
       "value": {
@@ -28,9 +25,10 @@
     }
   },
   "variables": [
-    { "$clientId": "minio" },
-    { "$clientId": "azblob" },
-    { "$clientId": "gcs" }
+    { "$clientId": "minio", "$bucket": "dummy" },
+    { "$clientId": "azblob", "$bucket": "dummy" },
+    { "$clientId": "gcs", "$bucket": "dummy" },
+    { "$clientId": "fs", "$bucket": "../tmp" }
   ],
   "collection": "storage_bucket_connections",
   "collection_relationships": {},

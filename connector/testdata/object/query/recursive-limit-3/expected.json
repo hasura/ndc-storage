@@ -82,5 +82,33 @@
         "storage_class": "STANDARD"
       }
     ]
+  },
+  {
+    "rows": [
+      {
+        "bucket": "../tmp/data",
+        "client_id": "fs",
+        "is_directory": false,
+        "name": "movies/1900s/movies.json",
+        "size": 100041,
+        "storage_class": null
+      },
+      {
+        "bucket": "../tmp/data",
+        "client_id": "fs",
+        "is_directory": false,
+        "name": "movies/1910s/movies.json",
+        "size": 2007693,
+        "storage_class": null
+      },
+      {
+        "bucket": "../tmp/data",
+        "client_id": "fs",
+        "is_directory": false,
+        "name": "movies/1920s/movies.json",
+        "size": 3463423,
+        "storage_class": null
+      }
+    ]
   }
 ]

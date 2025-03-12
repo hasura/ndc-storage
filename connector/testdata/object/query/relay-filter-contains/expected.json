@@ -16,7 +16,9 @@
               }
             }
           ],
-          "pageInfo": { "hasNextPage": false }
+          "pageInfo": {
+            "hasNextPage": false
+          }
         }
       }
     ]
@@ -38,7 +40,9 @@
               }
             }
           ],
-          "pageInfo": { "hasNextPage": false }
+          "pageInfo": {
+            "hasNextPage": false
+          }
         }
       }
     ]
@@ -60,7 +64,33 @@
               }
             }
           ],
-          "pageInfo": { "hasNextPage": false }
+          "pageInfo": {
+            "hasNextPage": false
+          }
+        }
+      }
+    ]
+  },
+  {
+    "rows": [
+      {
+        "__value": {
+          "edges": [
+            {
+              "cursor": "movies/2000s/movies.json",
+              "node": {
+                "bucket": "../tmp/data",
+                "client_id": "fs",
+                "is_directory": false,
+                "name": "movies/2000s/movies.json",
+                "size": 2472795,
+                "storage_class": null
+              }
+            }
+          ],
+          "pageInfo": {
+            "hasNextPage": false
+          }
         }
       }
     ]

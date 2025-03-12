@@ -121,5 +121,46 @@
         }
       }
     ]
+  },
+  {
+    "rows": [
+      {
+        "__value": {
+          "edges": [
+            {
+              "cursor": "../tmp/data",
+              "node": {
+                "client_id": "fs",
+                "etag": null,
+                "name": "../tmp/data",
+                "storage_class": null,
+                "tags": []
+              }
+            },
+            {
+              "cursor": "../tmp/data-1",
+              "node": {
+                "client_id": "fs",
+                "etag": null,
+                "name": "../tmp/data-1",
+                "storage_class": null,
+                "tags": []
+              }
+            },
+            {
+              "cursor": "../tmp/data-2",
+              "node": {
+                "client_id": "fs",
+                "etag": null,
+                "name": "../tmp/data-2",
+                "storage_class": null,
+                "tags": []
+              }
+            }
+          ],
+          "pageInfo": { "hasNextPage": true }
+        }
+      }
+    ]
   }
 ]

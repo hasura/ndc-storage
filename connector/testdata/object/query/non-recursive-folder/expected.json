@@ -82,5 +82,33 @@
         "storage_class": null
       }
     ]
+  },
+  {
+    "rows": [
+      {
+        "bucket": "../tmp/data",
+        "client_id": "fs",
+        "is_directory": true,
+        "name": "movies/1900s",
+        "size": null,
+        "storage_class": null
+      },
+      {
+        "bucket": "../tmp/data",
+        "client_id": "fs",
+        "is_directory": true,
+        "name": "movies/1910s",
+        "size": null,
+        "storage_class": null
+      },
+      {
+        "bucket": "../tmp/data",
+        "client_id": "fs",
+        "is_directory": true,
+        "name": "movies/1920s",
+        "size": null,
+        "storage_class": null
+      }
+    ]
   }
 ]

@@ -2,7 +2,8 @@
   "collection": "storage_object_connections",
   "arguments": {
     "recursive": { "type": "literal", "value": true },
-    "client_id": { "type": "literal", "value": "fs" }
+    "client_id": { "type": "literal", "value": "fs" },
+    "prefix": { "type": "literal", "value": "public" }
   },
   "collection_relationships": {},
   "query": {

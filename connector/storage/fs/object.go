@@ -8,7 +8,6 @@ import (
 	"log/slog"
 	"os"
 	"path/filepath"
-	"slices"
 	"strings"
 	"time"
 
@@ -57,7 +56,8 @@ func (c *Client) ListObjects(ctx context.Context, bucketName string, opts *commo
 			return predicate == nil || predicate(name)
 		}
 
-		if err := c.walkDir(result, bucketName, baseDir, opts, filterFn); err != nil {
+		result, err = NewObjectWalker(c.client, bucketName, opts, filterFn).WalkDir(baseDir)
+		if err != nil {
 			span.SetStatus(codes.Error, err.Error())
 			span.RecordError(err)
 
@@ -75,7 +75,8 @@ func (c *Client) ListObjects(ctx context.Context, bucketName string, opts *commo
 		return result, nil
 	}
 
-	if err := c.walkDirInfo(result, bucketName, root, opts, predicate); err != nil {
+	result, err = NewObjectWalker(c.client, bucketName, opts, predicate).WalkDirEntries(root)
+	if err != nil {
 		span.SetStatus(codes.Error, err.Error())
 		span.RecordError(err)
 
@@ -85,77 +86,6 @@ func (c *Client) ListObjects(ctx context.Context, bucketName string, opts *commo
 	span.SetAttributes(attribute.Int("storage.object_count", count))
 
 	return result, nil
-}
-
-func (c *Client) walkDir(result *common.StorageObjectListResults, bucketName string, root string, opts *common.ListStorageObjectsOptions, predicate func(string) bool) error {
-	rootStat, err := c.lstatIfPossible(filepath.Join(bucketName, root))
-	if err != nil {
-		if errors.Is(err, afero.ErrFileNotFound) {
-			return nil
-		}
-
-		return err
-	}
-
-	if !rootStat.IsDir() {
-		if predicate == nil || predicate(root) {
-			result.Objects = append(result.Objects, serializeStorageObject(root, rootStat))
-		}
-
-		return nil
-	}
-
-	return c.walkDirInfo(result, bucketName, root, opts, predicate)
-}
-
-func (c *Client) walkDirInfo(result *common.StorageObjectListResults, bucketName string, root string, opts *common.ListStorageObjectsOptions, predicate func(string) bool) error {
-	dir, err := c.client.Open(filepath.Join(bucketName, root))
-	if err != nil {
-		return err
-	}
-
-	names, err := dir.Readdirnames(-1)
-	dir.Close()
-
-	if err != nil {
-		return err
-	}
-
-	slices.Sort(names)
-
-	for i, name := range names {
-		relPath := filepath.Join(root, name)
-		if predicate != nil && !predicate(relPath) {
-			continue
-		}
-
-		absPath := filepath.Join(bucketName, relPath)
-		stat, err := c.lstatIfPossible(absPath)
-
-		switch {
-		case err != nil:
-			if errors.Is(err, afero.ErrFileNotFound) {
-				continue
-			}
-
-			result.Objects = append(result.Objects, common.StorageObject{
-				Bucket: bucketName,
-				Name:   relPath,
-			})
-		case !opts.Recursive || !stat.IsDir():
-			result.Objects = append(result.Objects, serializeStorageObject(relPath, stat))
-		default:
-			_ = c.walkDir(result, bucketName, relPath, opts, predicate)
-		}
-
-		if opts.MaxResults > 0 && len(result.Objects) >= opts.MaxResults {
-			result.PageInfo.HasNextPage = result.PageInfo.HasNextPage || i < len(names)-1
-
-			break
-		}
-	}
-
-	return nil
 }
 
 // ListIncompleteUploads list partially uploaded objects in a bucket.

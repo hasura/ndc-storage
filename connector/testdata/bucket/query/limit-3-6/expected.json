@@ -73,5 +73,30 @@
         "tags": []
       }
     ]
+  },
+  {
+    "rows": [
+      {
+        "client_id": "fs",
+        "etag": null,
+        "name": "../tmp/data-3",
+        "storage_class": null,
+        "tags": []
+      },
+      {
+        "client_id": "fs",
+        "etag": null,
+        "name": "../tmp/data-4",
+        "storage_class": null,
+        "tags": []
+      },
+      {
+        "client_id": "fs",
+        "etag": null,
+        "name": "../tmp/data-5",
+        "storage_class": null,
+        "tags": []
+      }
+    ]
   }
 ]

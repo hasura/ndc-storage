@@ -31,5 +31,16 @@
         "tags": []
       }
     ]
+  },
+  {
+    "rows": [
+      {
+        "client_id": "fs",
+        "etag": null,
+        "name": "../tmp/data-9",
+        "storage_class": null,
+        "tags": []
+      }
+    ]
   }
 ]

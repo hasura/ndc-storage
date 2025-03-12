@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"io"
 	"net/http"
 	"path/filepath"
 	"strings"
@@ -17,8 +16,17 @@ import (
 )
 
 func TestConnectorQueries(t *testing.T) {
-	connectorHost := "http://localhost:8080"
-	clientIDs := []string{"minio", "azblob", "gcs"}
+	setConnectorTestEnv(t)
+
+	c, err := connector.NewServer(&Connector{}, &connector.ServerOptions{
+		Configuration: "../tests/configuration",
+	})
+	assert.NilError(t, err)
+
+	server := c.BuildTestServer()
+	defer server.Close()
+
+	clientIDs := []string{"minio", "azblob", "gcs", "fs"}
 
 	for _, cid := range clientIDs {
 		t.Run("create_bucket_"+cid, func(t *testing.T) {
@@ -28,13 +36,21 @@ func TestConnectorQueries(t *testing.T) {
 			}
 
 			for i := range 10 {
+				bucketName := fmt.Sprintf("dummy-bucket-%d", i)
+				if cid == "fs" {
+					bucketName = "../tmp/data"
+					if i > 0 {
+						bucketName = fmt.Sprintf("%s-%d", bucketName, i)
+					}
+				}
+
 				procedureRequest.Operations = append(procedureRequest.Operations, schema.MutationOperation{
 					Type: schema.MutationOperationProcedure,
 					Name: "create_storage_bucket",
 					Arguments: []byte(fmt.Sprintf(`{
 					"client_id": "%s",
-					"name": "dummy-bucket-%d"
-				}`, cid, i)),
+					"name": "%s"
+				}`, cid, bucketName)),
 					Fields: schema.NewNestedObject(map[string]schema.FieldEncoder{
 						"success": schema.NewColumnField("success", nil),
 					}).Encode(),
@@ -44,7 +60,7 @@ func TestConnectorQueries(t *testing.T) {
 			rawBody, err := json.Marshal(procedureRequest)
 			assert.NilError(t, err)
 
-			resp, err := http.DefaultClient.Post(connectorHost+"/mutation", "application/json", bytes.NewReader(rawBody))
+			resp, err := http.DefaultClient.Post(server.URL+"/mutation", "application/json", bytes.NewReader(rawBody))
 			assert.NilError(t, err)
 			assert.Equal(t, http.StatusOK, resp.StatusCode)
 		})
@@ -65,20 +81,17 @@ func TestConnectorQueries(t *testing.T) {
 	}
 
 	for key, value := range objectFixtures {
-		resp, err := http.DefaultClient.Get(value)
-		assert.NilError(t, err)
-		assert.Equal(t, http.StatusOK, resp.StatusCode)
-
-		rawBody, err := io.ReadAll(resp.Body)
-		assert.NilError(t, err)
-		resp.Body.Close()
-
 		for _, cid := range clientIDs {
 			t.Run(fmt.Sprintf("upload_object_%s/%s", cid, key), func(t *testing.T) {
+				bucketName := "dummy-bucket-0"
+				if cid == "fs" {
+					bucketName = "../tmp/data"
+				}
+
 				arguments := map[string]any{
 					"client_id": cid,
-					"bucket":    "dummy-bucket-0",
-					"data":      string(rawBody),
+					"bucket":    bucketName,
+					"url":       value,
 					"name":      key,
 					"options": map[string]any{
 						"cacheControl":       "max-age=100",
@@ -110,7 +123,7 @@ func TestConnectorQueries(t *testing.T) {
 					Operations: []schema.MutationOperation{
 						{
 							Type:      schema.MutationOperationProcedure,
-							Name:      "upload_storage_object_as_text",
+							Name:      "upload_storage_object_from_url",
 							Arguments: rawArguments,
 							Fields: schema.NewNestedObject(map[string]schema.FieldEncoder{
 								"name": schema.NewColumnField("name", nil),
@@ -123,7 +136,7 @@ func TestConnectorQueries(t *testing.T) {
 				uploadBytes, err := json.Marshal(procedureRequest)
 				assert.NilError(t, err)
 
-				resp, err = http.DefaultClient.Post(connectorHost+"/mutation", "application/json", bytes.NewReader(uploadBytes))
+				resp, err := http.DefaultClient.Post(server.URL+"/mutation", "application/json", bytes.NewReader(uploadBytes))
 				assert.NilError(t, err)
 				resp.Body.Close()
 				assert.Equal(t, http.StatusOK, resp.StatusCode)
@@ -131,7 +144,7 @@ func TestConnectorQueries(t *testing.T) {
 		}
 	}
 
-	setConnectorTestEnv(t)
+	server.Close()
 
 	for _, dir := range []string{"bucket", "object"} {
 		ndctest.TestConnector(t, &Connector{}, ndctest.TestConnectorOptions{

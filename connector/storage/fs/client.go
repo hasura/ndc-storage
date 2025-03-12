@@ -71,11 +71,15 @@ func (c *Client) startOtelSpan(ctx context.Context, name string, bucketName stri
 }
 
 func (c *Client) lstatIfPossible(name string) (os.FileInfo, error) {
-	if lstater, ok := c.client.(afero.Lstater); ok {
+	return lstatIfPossible(c.client, name)
+}
+
+func lstatIfPossible(client afero.Fs, name string) (os.FileInfo, error) {
+	if lstater, ok := client.(afero.Lstater); ok {
 		result, _, err := lstater.LstatIfPossible(name)
 
 		return result, err
 	}
 
-	return c.client.Stat(name)
+	return client.Stat(name)
 }

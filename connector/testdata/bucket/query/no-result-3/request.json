@@ -3,7 +3,8 @@
   "variables": [
     { "$clientId": "minio" },
     { "$clientId": "azblob" },
-    { "$clientId": "gcs" }
+    { "$clientId": "gcs" },
+    { "$clientId": "fs" }
   ],
   "collection": "storage_buckets",
   "collection_relationships": {},

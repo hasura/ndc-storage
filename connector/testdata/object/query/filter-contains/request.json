@@ -1,16 +1,13 @@
 {
   "collection": "storage_objects",
   "arguments": {
-    "recursive": { "type": "literal", "value": true },
-    "after": {
-      "type": "literal",
-      "value": "movies/1920s/movies.json"
-    }
+    "recursive": { "type": "literal", "value": true }
   },
   "variables": [
-    { "$clientId": "minio" },
-    { "$clientId": "azblob" },
-    { "$clientId": "gcs" }
+    { "$clientId": "minio", "$bucket": "dummy-bucket-0" },
+    { "$clientId": "azblob", "$bucket": "dummy-bucket-0" },
+    { "$clientId": "gcs", "$bucket": "dummy-bucket-0" },
+    { "$clientId": "fs", "$bucket": "../tmp/data" }
   ],
   "collection_relationships": {},
   "query": {
@@ -54,7 +51,7 @@
           "type": "binary_comparison_operator",
           "column": { "type": "column", "name": "bucket", "path": [] },
           "operator": "_eq",
-          "value": { "type": "scalar", "value": "dummy-bucket-0" }
+          "value": { "type": "variable", "name": "$bucket" }
         },
         {
           "type": "binary_comparison_operator",

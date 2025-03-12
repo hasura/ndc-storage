@@ -16,7 +16,9 @@
               }
             }
           ],
-          "pageInfo": { "hasNextPage": false }
+          "pageInfo": {
+            "hasNextPage": false
+          }
         }
       }
     ]
@@ -38,7 +40,9 @@
               }
             }
           ],
-          "pageInfo": { "hasNextPage": false }
+          "pageInfo": {
+            "hasNextPage": false
+          }
         }
       }
     ]
@@ -60,7 +64,33 @@
               }
             }
           ],
-          "pageInfo": { "hasNextPage": false }
+          "pageInfo": {
+            "hasNextPage": false
+          }
+        }
+      }
+    ]
+  },
+  {
+    "rows": [
+      {
+        "__value": {
+          "edges": [
+            {
+              "cursor": "movies/2000s",
+              "node": {
+                "bucket": "../tmp/data",
+                "client_id": "fs",
+                "is_directory": true,
+                "name": "movies/2000s",
+                "size": null,
+                "storage_class": null
+              }
+            }
+          ],
+          "pageInfo": {
+            "hasNextPage": false
+          }
         }
       }
     ]
