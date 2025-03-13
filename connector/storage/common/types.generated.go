@@ -1086,13 +1086,13 @@ const (
 	ChecksumTypeSha1             ChecksumType = "SHA1"
 	ChecksumTypeCrc32            ChecksumType = "CRC32"
 	ChecksumTypeCrc32C           ChecksumType = "CRC32C"
-	ChecksumTypeCrc64Nvme        ChecksumType = "CRC64NVME"
-	ChecksumTypeFullObjectCrc32  ChecksumType = "FullObjectCRC32"
-	ChecksumTypeFullObjectCrc32C ChecksumType = "FullObjectCRC32C"
+	ChecksumTypeCrc64NVME        ChecksumType = "CRC64NVME"
+	ChecksumTypeFullObjectCRC32  ChecksumType = "FullObjectCRC32"
+	ChecksumTypeFullObjectCRC32C ChecksumType = "FullObjectCRC32C"
 	ChecksumTypeNone             ChecksumType = "None"
 )
 
-var enumValues_ChecksumType = []ChecksumType{ChecksumTypeSha256, ChecksumTypeSha1, ChecksumTypeCrc32, ChecksumTypeCrc32C, ChecksumTypeCrc64Nvme, ChecksumTypeFullObjectCrc32, ChecksumTypeFullObjectCrc32C, ChecksumTypeNone}
+var enumValues_ChecksumType = []ChecksumType{ChecksumTypeSha256, ChecksumTypeSha1, ChecksumTypeCrc32, ChecksumTypeCrc32C, ChecksumTypeCrc64NVME, ChecksumTypeFullObjectCRC32, ChecksumTypeFullObjectCRC32C, ChecksumTypeNone}
 
 // ParseChecksumType parses a ChecksumType enum from string
 func ParseChecksumType(input string) (ChecksumType, error) {
@@ -1149,16 +1149,16 @@ func (j DownloadHTTPMethod) ScalarName() string {
 }
 
 const (
-	DownloadHttpmethodGet  DownloadHTTPMethod = "GET"
-	DownloadHttpmethodPost DownloadHTTPMethod = "POST"
+	DownloadHTTPMethodGet  DownloadHTTPMethod = "GET"
+	DownloadHTTPMethodPost DownloadHTTPMethod = "POST"
 )
 
-var enumValues_DownloadHttpmethod = []DownloadHTTPMethod{DownloadHttpmethodGet, DownloadHttpmethodPost}
+var enumValues_DownloadHTTPMethod = []DownloadHTTPMethod{DownloadHTTPMethodGet, DownloadHTTPMethodPost}
 
-// ParseDownloadHttpmethod parses a DownloadHTTPMethod enum from string
-func ParseDownloadHttpmethod(input string) (DownloadHTTPMethod, error) {
+// ParseDownloadHTTPMethod parses a DownloadHTTPMethod enum from string
+func ParseDownloadHTTPMethod(input string) (DownloadHTTPMethod, error) {
 	result := DownloadHTTPMethod(input)
-	if !slices.Contains(enumValues_DownloadHttpmethod, result) {
+	if !slices.Contains(enumValues_DownloadHTTPMethod, result) {
 		return DownloadHTTPMethod(""), errors.New("failed to parse DownloadHTTPMethod, expect one of [GET, POST]")
 	}
 
@@ -1167,7 +1167,7 @@ func ParseDownloadHttpmethod(input string) (DownloadHTTPMethod, error) {
 
 // IsValid checks if the value is invalid
 func (j DownloadHTTPMethod) IsValid() bool {
-	return slices.Contains(enumValues_DownloadHttpmethod, j)
+	return slices.Contains(enumValues_DownloadHTTPMethod, j)
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
@@ -1177,7 +1177,7 @@ func (j *DownloadHTTPMethod) UnmarshalJSON(b []byte) error {
 		return err
 	}
 
-	value, err := ParseDownloadHttpmethod(rawValue)
+	value, err := ParseDownloadHTTPMethod(rawValue)
 	if err != nil {
 		return err
 	}
@@ -1195,7 +1195,7 @@ func (s *DownloadHTTPMethod) FromValue(value any) error {
 	if valueStr == nil {
 		return nil
 	}
-	result, err := ParseDownloadHttpmethod(*valueStr)
+	result, err := ParseDownloadHTTPMethod(*valueStr)
 	if err != nil {
 		return err
 	}
@@ -1210,16 +1210,16 @@ func (j GoogleStorageRPO) ScalarName() string {
 }
 
 const (
-	GoogleStorageRpoDefault    GoogleStorageRPO = "DEFAULT"
-	GoogleStorageRpoAsyncTurbo GoogleStorageRPO = "ASYNC_TURBO"
+	GoogleStorageRPODefault    GoogleStorageRPO = "DEFAULT"
+	GoogleStorageRPOAsyncTurbo GoogleStorageRPO = "ASYNC_TURBO"
 )
 
-var enumValues_GoogleStorageRpo = []GoogleStorageRPO{GoogleStorageRpoDefault, GoogleStorageRpoAsyncTurbo}
+var enumValues_GoogleStorageRPO = []GoogleStorageRPO{GoogleStorageRPODefault, GoogleStorageRPOAsyncTurbo}
 
-// ParseGoogleStorageRpo parses a GoogleStorageRPO enum from string
-func ParseGoogleStorageRpo(input string) (GoogleStorageRPO, error) {
+// ParseGoogleStorageRPO parses a GoogleStorageRPO enum from string
+func ParseGoogleStorageRPO(input string) (GoogleStorageRPO, error) {
 	result := GoogleStorageRPO(input)
-	if !slices.Contains(enumValues_GoogleStorageRpo, result) {
+	if !slices.Contains(enumValues_GoogleStorageRPO, result) {
 		return GoogleStorageRPO(""), errors.New("failed to parse GoogleStorageRPO, expect one of [DEFAULT, ASYNC_TURBO]")
 	}
 
@@ -1228,7 +1228,7 @@ func ParseGoogleStorageRpo(input string) (GoogleStorageRPO, error) {
 
 // IsValid checks if the value is invalid
 func (j GoogleStorageRPO) IsValid() bool {
-	return slices.Contains(enumValues_GoogleStorageRpo, j)
+	return slices.Contains(enumValues_GoogleStorageRPO, j)
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
@@ -1238,7 +1238,7 @@ func (j *GoogleStorageRPO) UnmarshalJSON(b []byte) error {
 		return err
 	}
 
-	value, err := ParseGoogleStorageRpo(rawValue)
+	value, err := ParseGoogleStorageRPO(rawValue)
 	if err != nil {
 		return err
 	}
@@ -1256,7 +1256,7 @@ func (s *GoogleStorageRPO) FromValue(value any) error {
 	if valueStr == nil {
 		return nil
 	}
-	result, err := ParseGoogleStorageRpo(*valueStr)
+	result, err := ParseGoogleStorageRPO(*valueStr)
 	if err != nil {
 		return err
 	}

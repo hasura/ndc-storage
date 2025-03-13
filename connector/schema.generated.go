@@ -84,6 +84,14 @@ func GetConnectorSchema() *schema.SchemaResponse {
 					},
 				},
 			},
+			"DownloadStorageObjectJsonResponse": schema.ObjectType{
+				Description: toPtr("represents the object data response in arbitrary JSON format."),
+				Fields: schema.ObjectTypeFields{
+					"data": schema.ObjectField{
+						Type: schema.NewNamedType("JSON").Encode(),
+					},
+				},
+			},
 			"DownloadStorageObjectResponse": schema.ObjectType{
 				Description: toPtr("represents the object data response in base64-encode string format."),
 				Fields: schema.ObjectTypeFields{
@@ -1287,6 +1295,49 @@ func GetConnectorSchema() *schema.SchemaResponse {
 				Name:        "download_storage_object_as_base64",
 				Description: toPtr("returns a stream of the object data. Most of the common errors occur when reading the stream."),
 				ResultType:  schema.NewNullableType(schema.NewNamedType("DownloadStorageObjectResponse")).Encode(),
+				Arguments: map[string]schema.ArgumentInfo{
+					"access_key_id": {
+						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
+					},
+					"bucket": {
+						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
+					},
+					"client_id": {
+						Type: schema.NewNullableType(schema.NewNamedType("StorageClientID")).Encode(),
+					},
+					"client_type": {
+						Type: schema.NewNullableType(schema.NewNamedType("StorageProviderType")).Encode(),
+					},
+					"endpoint": {
+						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
+					},
+					"headers": {
+						Type: schema.NewNullableType(schema.NewArrayType(schema.NewNamedType("StorageKeyValue"))).Encode(),
+					},
+					"name": {
+						Type: schema.NewNamedType("String").Encode(),
+					},
+					"part_number": {
+						Type: schema.NewNullableType(schema.NewNamedType("Int32")).Encode(),
+					},
+					"request_params": {
+						Type: schema.NewNullableType(schema.NewArrayType(schema.NewNamedType("StorageKeyValue"))).Encode(),
+					},
+					"secret_access_key": {
+						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
+					},
+					"version_id": {
+						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
+					},
+					"where": {
+						Type: schema.NewNullableType(schema.NewPredicateType("StorageObjectFilter")).Encode(),
+					},
+				},
+			},
+			{
+				Name:        "download_storage_object_as_json",
+				Description: toPtr("returns the object content in arbitrary json. Returns error if the content is unable to be decoded."),
+				ResultType:  schema.NewNullableType(schema.NewNamedType("DownloadStorageObjectJsonResponse")).Encode(),
 				Arguments: map[string]schema.ArgumentInfo{
 					"access_key_id": {
 						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),

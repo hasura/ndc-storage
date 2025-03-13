@@ -70,26 +70,28 @@ func (m *Manager) ListIncompleteUploads(ctx context.Context, bucketInfo common.S
 }
 
 // GetObject returns a stream of the object data. Most of the common errors occur when reading the stream.
-func (m *Manager) GetObject(ctx context.Context, bucketInfo common.StorageBucketArguments, objectName string, opts common.GetStorageObjectOptions) (io.ReadCloser, error) {
+func (m *Manager) GetObject(ctx context.Context, bucketInfo common.StorageBucketArguments, objectName string, opts common.GetStorageObjectOptions) (*common.StorageObject, io.ReadCloser, error) {
 	client, bucketName, err := m.GetClientAndBucket(ctx, bucketInfo)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	objectStat, err := m.statObject(ctx, client, bucketName, objectName, opts)
 	if err != nil || objectStat == nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	if objectStat.IsDirectory {
-		return nil, schema.UnprocessableContentError("cannot download directory: "+objectName, nil)
+		return nil, nil, schema.UnprocessableContentError("cannot download directory: "+objectName, nil)
 	}
 
 	if objectStat.Size == nil || *objectStat.Size > m.runtime.MaxDownloadSizeMBs*1024*1024 {
-		return nil, schema.UnprocessableContentError(fmt.Sprintf("file size > %d MB is not allowed to be downloaded directly. Please use presignedGetObject function for large files", m.runtime.MaxDownloadSizeMBs), nil)
+		return nil, nil, schema.UnprocessableContentError(fmt.Sprintf("file size > %d MB is not allowed to be downloaded directly. Please use presignedGetObject function for large files", m.runtime.MaxDownloadSizeMBs), nil)
 	}
 
-	return client.GetObject(ctx, bucketName, objectName, opts)
+	content, err := client.GetObject(ctx, bucketName, objectName, opts)
+
+	return objectStat, content, err
 }
 
 // PutObject uploads objects that are less than 128MiB in a single PUT operation. For objects that are greater than 128MiB in size,

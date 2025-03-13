@@ -9,6 +9,7 @@ import (
 	"github.com/hasura/ndc-sdk-go/utils"
 	"github.com/hasura/ndc-storage/connector/collection"
 	"github.com/hasura/ndc-storage/connector/storage/common"
+	"github.com/hasura/ndc-storage/connector/storage/common/encoding"
 	"github.com/hasura/ndc-storage/connector/types"
 )
 
@@ -104,7 +105,7 @@ func FunctionStorageObject(ctx context.Context, state *types.State, args *common
 
 // FunctionDownloadStorageObjectAsBase64 returns a stream of the object data. Most of the common errors occur when reading the stream.
 func FunctionDownloadStorageObjectAsBase64(ctx context.Context, state *types.State, args *common.GetStorageObjectArguments) (*DownloadStorageObjectResponse, error) {
-	reader, err := downloadStorageObject(ctx, state, args)
+	_, reader, err := downloadStorageObject(ctx, state, args)
 	if err != nil {
 		return nil, err
 	}
@@ -127,7 +128,7 @@ func FunctionDownloadStorageObjectAsBase64(ctx context.Context, state *types.Sta
 
 // FunctionDownloadStorageObjectAsText returns the object content in plain text. Use this function only if you know exactly the file as an text file.
 func FunctionDownloadStorageObjectAsText(ctx context.Context, state *types.State, args *common.GetStorageObjectArguments) (*DownloadStorageObjectTextResponse, error) {
-	reader, err := downloadStorageObject(ctx, state, args)
+	_, reader, err := downloadStorageObject(ctx, state, args)
 	if err != nil {
 		return nil, err
 	}
@@ -148,17 +149,43 @@ func FunctionDownloadStorageObjectAsText(ctx context.Context, state *types.State
 	return &DownloadStorageObjectTextResponse{Data: dataStr}, nil
 }
 
-func downloadStorageObject(ctx context.Context, state *types.State, args *common.GetStorageObjectArguments) (io.ReadCloser, error) {
+// FunctionDownloadStorageObjectAsJson returns the object content in arbitrary json. Returns error if the content is unable to be decoded.
+func FunctionDownloadStorageObjectAsJson(ctx context.Context, state *types.State, args *common.GetStorageObjectArguments) (*DownloadStorageObjectJsonResponse, error) {
+	stat, reader, err := downloadStorageObject(ctx, state, args)
+	if err != nil {
+		return nil, err
+	}
+
+	if reader == nil {
+		return nil, nil
+	}
+
+	defer reader.Close()
+
+	var contentType string
+	if stat.ContentType != nil {
+		contentType = *stat.ContentType
+	}
+
+	data, err := encoding.DecodeArbitraryData(stat.Name, contentType, reader)
+	if err != nil {
+		return nil, schema.UnprocessableContentError(err.Error(), nil)
+	}
+
+	return &DownloadStorageObjectJsonResponse{Data: data}, nil
+}
+
+func downloadStorageObject(ctx context.Context, state *types.State, args *common.GetStorageObjectArguments) (*common.StorageObject, io.ReadCloser, error) {
 	request, err := collection.EvalObjectPredicate(args.StorageBucketArguments, &collection.StringComparisonOperator{
 		Value:    args.Name,
 		Operator: collection.OperatorEqual,
 	}, args.Where, types.QueryVariablesFromContext(ctx))
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	if !request.IsValid {
-		return nil, nil
+		return nil, nil, nil
 	}
 
 	return state.Storage.GetObject(ctx, request.GetBucketArguments(), request.ObjectNamePredicate.GetPrefix(), args.GetStorageObjectOptions)

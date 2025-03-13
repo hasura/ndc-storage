@@ -1,0 +1,31 @@
+{
+  "arguments": {
+    "bucket": {
+      "type": "literal",
+      "value": "minio-bucket-test"
+    },
+    "name": {
+      "type": "literal",
+      "value": "public/hello.json"
+    }
+  },
+  "collection": "download_storage_object_as_json",
+  "collection_relationships": {},
+  "query": {
+    "fields": {
+      "__value": {
+        "column": "__value",
+        "fields": {
+          "fields": {
+            "data": {
+              "column": "data",
+              "type": "column"
+            }
+          },
+          "type": "object"
+        },
+        "type": "column"
+      }
+    }
+  }
+}

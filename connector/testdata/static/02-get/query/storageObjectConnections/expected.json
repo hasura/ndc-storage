@@ -5,6 +5,72 @@
         "__value": {
           "edges": [
             {
+              "cursor": "public/hello.json",
+              "node": {
+                "access_tier_change_time": null,
+                "access_tier_inferred": null,
+                "acl": null,
+                "archive_status": null,
+                "blob_sequence_number": null,
+                "blob_type": null,
+                "bucket": "minio-bucket-test",
+                "cache_control": null,
+                "checksum_crc32": null,
+                "checksum_crc32c": null,
+                "checksum_crc64_nvme": null,
+                "checksum_sha1": null,
+                "checksum_sha256": null,
+                "client_id": "minio",
+                "content_disposition": null,
+                "content_encoding": null,
+                "content_language": null,
+                "content_md5": null,
+                "content_type": null,
+                "copy": null,
+                "customer_provided_key_sha256": null,
+                "deleted": false,
+                "deleted_time": null,
+                "destination_snapshot": null,
+                "etag": "49dfdd54b01cbcd2d2ab5e9e5ee6b9b9",
+                "expiration": null,
+                "expiration_rule_id": null,
+                "expires": null,
+                "grant": [],
+                "group": null,
+                "incremental_copy": null,
+                "is_directory": false,
+                "is_latest": false,
+                "kms_key_name": null,
+                "lease_duration": null,
+                "lease_state": null,
+                "lease_status": null,
+                "legal_hold": null,
+                "media_link": null,
+                "metadata": [],
+                "name": "public/hello.json",
+                "owner": {
+                  "id": "minio",
+                  "name": "02d6176db174dc93cb1b899f7c6078f08654445fe8cf1b6ce98d8855f66bdbf4"
+                },
+                "permissions": null,
+                "raw_metadata": [],
+                "rehydrate_priority": null,
+                "remaining_retention_days": null,
+                "replication_ready": false,
+                "replication_status": null,
+                "resource_type": null,
+                "restore": null,
+                "retention_mode": null,
+                "retention_until_date": null,
+                "sealed": null,
+                "server_encrypted": null,
+                "size": 18,
+                "storage_class": "STANDARD",
+                "tag_count": 0,
+                "tags": []
+              }
+            },
+            {
               "cursor": "public/hello.txt",
               "node": {
                 "access_tier_change_time": null,
@@ -269,7 +335,9 @@
               }
             }
           ],
-          "pageInfo": { "hasNextPage": false }
+          "pageInfo": {
+            "hasNextPage": false
+          }
         }
       }
     ]
