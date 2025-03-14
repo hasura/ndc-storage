@@ -18,9 +18,9 @@ RUN mkdir /data && chmod 755 -R /data
 FROM gcr.io/distroless/static-debian12:nonroot
 
 # Copy the binary to the production image from the builder stage.
+COPY --from=builder /etc/mime.types /etc/mime.types
 COPY --from=builder /app/ndc-cli /ndc-cli
 COPY --from=builder --chown=65532:65532 /data /home/nonroot/data
-
 ENV HASURA_CONFIGURATION_DIRECTORY=/etc/connector
 
 ENTRYPOINT ["/ndc-cli"]

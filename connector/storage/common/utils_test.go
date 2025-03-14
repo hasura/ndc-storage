@@ -22,7 +22,15 @@ func TestContentTypeFromExtension(t *testing.T) {
 		},
 		{
 			Path:        "/path/to/file.csv",
-			ContentType: ContentTypeTextCSV,
+			ContentType: "text/csv",
+		},
+		{
+			Path:        "public/hello.csv",
+			ContentType: "text/csv",
+		},
+		{
+			Path:        "/path/to/file.tsv",
+			ContentType: "text/tab-separated-values",
 		},
 	}
 

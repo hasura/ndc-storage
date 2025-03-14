@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"mime"
+	"slices"
 	"strings"
 
 	"github.com/hasura/ndc-storage/connector/storage/common"
@@ -12,7 +13,7 @@ import (
 
 // DecodeArbitraryData guesses and decodes the arbitrary data of a file from the content type.
 func DecodeArbitraryData(name string, contentType string, reader io.Reader) (any, error) {
-	result, decoded, err := decodeArbitraryDataFromContentType(contentType, reader)
+	result, decoded, err := decodeArbitraryDataFromContentType(reader, contentType)
 	if err != nil {
 		return nil, err
 	}
@@ -23,7 +24,7 @@ func DecodeArbitraryData(name string, contentType string, reader io.Reader) (any
 
 	fileContentType := common.ContentTypeFromFilePath(name)
 
-	result, decoded, err = decodeArbitraryDataFromContentType(fileContentType, reader)
+	result, decoded, err = decodeArbitraryDataFromContentType(reader, fileContentType)
 	if err != nil {
 		return nil, err
 	}
@@ -40,20 +41,27 @@ func DecodeArbitraryData(name string, contentType string, reader io.Reader) (any
 	return result, nil
 }
 
-func decodeArbitraryDataFromContentType(contentType string, reader io.Reader) (any, bool, error) {
+func decodeArbitraryDataFromContentType(reader io.Reader, contentType string) (any, bool, error) {
 	if contentType == "" {
 		return nil, false, nil
 	}
 
 	mediaType, _, err := mime.ParseMediaType(contentType)
 	if err != nil {
-		return nil, false, nil
+		return nil, false, nil //nolint:nilerr
 	}
 
 	switch {
 	case mediaType == common.ContentTypeApplicationJSON || strings.Contains(mediaType, "+json"):
 		var result any
 		if err := json.NewDecoder(reader).Decode(&result); err != nil {
+			return nil, false, err
+		}
+
+		return result, true, nil
+	case slices.Contains(enums_contentTypeCSV, mediaType):
+		result, err := decodeArbitraryCSV(reader, contentType)
+		if err != nil {
 			return nil, false, err
 		}
 
