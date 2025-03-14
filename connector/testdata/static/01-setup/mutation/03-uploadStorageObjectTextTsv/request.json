@@ -3,10 +3,10 @@
   "operations": [
     {
       "type": "procedure",
-      "name": "upload_storage_object_as_text",
+      "name": "upload_storage_object_from_url",
       "arguments": {
         "bucket": "minio-bucket-test",
-        "data": "first_name\tlast_name\tusername\n\"Rob\"\t\"Pike\"\trob\nKen\tThompson\tken\n\"Robert\"\t\"Griesemer\"\t\"gri\"",
+        "url": "https://raw.githubusercontent.com/hasura/ndc-storage/f87b5266d415e3f5d918cd2027713287ab0a8001/connector/testdata/fixtures/hello.tsv",
         "name": "public/hello.tsv"
       },
       "fields": {
