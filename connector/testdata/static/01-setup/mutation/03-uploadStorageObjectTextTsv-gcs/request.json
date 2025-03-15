@@ -7,7 +7,7 @@
       "arguments": {
         "client_id": "gcs",
         "bucket": "gcs-bucket",
-        "url": "https://raw.githubusercontent.com/hasura/ndc-storage/be86124de03c6bc7fd30a70c08ac3d6489a2acb7/connector/testdata/fixtures/hello.tsv",
+        "url": "https://raw.githubusercontent.com/hasura/ndc-storage/1435d6b29bc5a1781afd484255cda64ccbaaf368/connector/testdata/fixtures/hello.tsv",
         "name": "public/hello.tsv"
       },
       "fields": {

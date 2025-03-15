@@ -60,7 +60,7 @@ func decodeArbitraryDataFromContentType(ctx context.Context, reader io.Reader, c
 		return result, true, nil
 	case slices.Contains(enums_contentTypeCSV, mediaType):
 		r := createDefaultCsvReader(reader)
-		r.Comma = evalCSVComma("", contentType)
+		r.Comma = evalCSVComma("", mediaType)
 
 		result, err := decodeCSVMatrix(ctx, r)
 		if err != nil {
