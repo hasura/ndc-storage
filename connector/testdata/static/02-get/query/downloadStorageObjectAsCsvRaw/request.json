@@ -15,7 +15,7 @@
     "options": {
       "type": "literal",
       "value": {
-        "lazy_quotes": false
+        "comma": ";"
       }
     }
   },
