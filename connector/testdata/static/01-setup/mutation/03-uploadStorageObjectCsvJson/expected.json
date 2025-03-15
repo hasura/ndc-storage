@@ -1,0 +1,12 @@
+{
+  "operation_results": [
+    {
+      "result": {
+        "bucket": "azblob-bucket-test",
+        "name": "public/types.csv",
+        "size": null
+      },
+      "type": "procedure"
+    }
+  ]
+}

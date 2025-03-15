@@ -5,15 +5,15 @@
         "__value": {
           "edges": [
             {
-              "cursor": "public/hello.txt",
+              "cursor": "public/hello.tsv",
               "node": {
                 "access_tier_change_time": null,
                 "access_tier_inferred": null,
                 "acl": [
                   {
                     "entity": "projectOwner-test-project",
-                    "role": "OWNER",
-                    "project_team": {}
+                    "project_team": {},
+                    "role": "OWNER"
                   }
                 ],
                 "archive_status": null,
@@ -27,17 +27,17 @@
                 "checksum_sha1": null,
                 "checksum_sha256": null,
                 "client_id": "gcs",
-                "content_disposition": "attachment",
-                "content_encoding": "gzip",
-                "content_language": "en-US",
-                "content_md5": "KZ0tkTzqqDd9IiRNs5cjyg==",
-                "content_type": "text/plain",
+                "content_disposition": null,
+                "content_encoding": null,
+                "content_language": null,
+                "content_md5": "Og5vaTJJBvtE/xFxD1jmqA==",
+                "content_type": "text/tab-separated-values; charset=utf-8",
                 "copy": null,
                 "customer_provided_key_sha256": null,
                 "deleted": null,
                 "deleted_time": null,
                 "destination_snapshot": null,
-                "etag": "KZ0tkTzqqDd9IiRNs5cjyg==",
+                "etag": "Og5vaTJJBvtE/xFxD1jmqA==",
                 "expiration": null,
                 "expiration_rule_id": null,
                 "expires": null,
@@ -51,12 +51,9 @@
                 "lease_state": null,
                 "lease_status": null,
                 "legal_hold": false,
-                "media_link": "https://0.0.0.0:4443/download/storage/v1/b/gcs-bucket/o/public%2Fhello.txt?alt=media",
-                "metadata": [
-                  { "key": "Foo", "value": "gcp-baz" },
-                  { "key": "UserID", "value": "3" }
-                ],
-                "name": "public/hello.txt",
+                "media_link": "https://0.0.0.0:4443/download/storage/v1/b/gcs-bucket/o/public%2Fhello.tsv?alt=media",
+                "metadata": [],
+                "name": "public/hello.tsv",
                 "owner": null,
                 "permissions": null,
                 "raw_metadata": [],
@@ -70,14 +67,16 @@
                 "retention_until_date": null,
                 "sealed": null,
                 "server_encrypted": null,
-                "size": 10,
-                "storage_class": "Cool",
+                "size": 81,
+                "storage_class": "STANDARD",
                 "tag_count": 0,
                 "tags": []
               }
             }
           ],
-          "pageInfo": { "hasNextPage": true }
+          "pageInfo": {
+            "hasNextPage": true
+          }
         }
       }
     ]

@@ -93,7 +93,11 @@ func (cc ClientConfig) toClientOptions(ctx context.Context, logger *slog.Logger)
 		if cc.GRPCConnPoolSize > 0 {
 			opts = append(opts, option.WithGRPCConnectionPool(cc.GRPCConnPoolSize))
 		}
-	} else if utils.IsDebug(logger) || cc.HTTP != nil {
+
+		return opts, nil
+	}
+
+	if utils.IsDebug(logger) || cc.HTTP != nil {
 		var baseTransport *http.Transport
 
 		if cc.HTTP != nil {
@@ -118,6 +122,8 @@ func (cc ClientConfig) toClientOptions(ctx context.Context, logger *slog.Logger)
 		httpClient := &http.Client{Transport: httpTransport}
 		opts = append(opts, option.WithHTTPClient(httpClient))
 	}
+
+	opts = append(opts, storage.WithJSONReads())
 
 	return opts, nil
 }

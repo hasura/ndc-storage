@@ -45,6 +45,11 @@ type DownloadStorageObjectTextResponse struct {
 	Data string `json:"data"`
 }
 
+// DownloadStorageObjectJsonResponse represents the object data response in arbitrary JSON format.
+type DownloadStorageObjectJsonResponse struct {
+	Data any `json:"data"`
+}
+
 // PutStorageObjectArguments represents input arguments of the PutObject method.
 type PutStorageObjectBase64Arguments struct {
 	common.PutStorageObjectArguments

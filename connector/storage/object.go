@@ -14,6 +14,7 @@ import (
 	"github.com/hasura/ndc-sdk-go/schema"
 	"github.com/hasura/ndc-sdk-go/utils"
 	"github.com/hasura/ndc-storage/connector/storage/common"
+	"github.com/hasura/ndc-storage/connector/storage/common/encoding"
 	"github.com/minio/minio-go/v7/pkg/s3utils"
 )
 
@@ -70,26 +71,34 @@ func (m *Manager) ListIncompleteUploads(ctx context.Context, bucketInfo common.S
 }
 
 // GetObject returns a stream of the object data. Most of the common errors occur when reading the stream.
-func (m *Manager) GetObject(ctx context.Context, bucketInfo common.StorageBucketArguments, objectName string, opts common.GetStorageObjectOptions) (io.ReadCloser, error) {
+func (m *Manager) GetObject(ctx context.Context, bucketInfo common.StorageBucketArguments, objectName string, opts common.GetStorageObjectOptions) (*common.StorageObject, io.ReadCloser, error) {
 	client, bucketName, err := m.GetClientAndBucket(ctx, bucketInfo)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	objectStat, err := m.statObject(ctx, client, bucketName, objectName, opts)
 	if err != nil || objectStat == nil {
-		return nil, err
+		return nil, nil, err
+	}
+
+	if opts.PreValidate != nil {
+		if err := opts.PreValidate(objectStat); err != nil {
+			return nil, nil, schema.UnprocessableContentError(err.Error(), nil)
+		}
 	}
 
 	if objectStat.IsDirectory {
-		return nil, schema.UnprocessableContentError("cannot download directory: "+objectName, nil)
+		return nil, nil, schema.UnprocessableContentError("cannot download directory: "+objectName, nil)
 	}
 
 	if objectStat.Size == nil || *objectStat.Size > m.runtime.MaxDownloadSizeMBs*1024*1024 {
-		return nil, schema.UnprocessableContentError(fmt.Sprintf("file size > %d MB is not allowed to be downloaded directly. Please use presignedGetObject function for large files", m.runtime.MaxDownloadSizeMBs), nil)
+		return nil, nil, schema.UnprocessableContentError(fmt.Sprintf("file size > %d MB is not allowed to be downloaded directly. Please use presignedGetObject function for large files", m.runtime.MaxDownloadSizeMBs), nil)
 	}
 
-	return client.GetObject(ctx, bucketName, objectName, opts)
+	content, err := client.GetObject(ctx, bucketName, objectName, opts)
+
+	return objectStat, content, err
 }
 
 // PutObject uploads objects that are less than 128MiB in a single PUT operation. For objects that are greater than 128MiB in size,
@@ -397,8 +406,8 @@ func (m *Manager) UploadObjectFromURL(ctx context.Context, bucketInfo common.Sto
 
 		opts.ContentType = contentType
 
-		if mediaType == common.ContentTypeTextPlain {
-			newContentType := common.ContentTypeFromFilePath(httpRequest.URL)
+		if mediaType == encoding.ContentTypeTextPlain {
+			newContentType := encoding.ContentTypeFromFilePath(httpRequest.URL)
 			if newContentType != "" {
 				opts.ContentType = newContentType
 			}

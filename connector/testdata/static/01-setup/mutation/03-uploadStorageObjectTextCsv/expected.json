@@ -1,0 +1,22 @@
+{
+  "operation_results": [
+    {
+      "result": {
+        "bucket": "minio-bucket-test",
+        "checksum_crc32": null,
+        "checksum_crc32c": null,
+        "checksum_crc64_nvme": null,
+        "checksum_sha1": null,
+        "checksum_sha256": null,
+        "etag": "8f397771e0f3a4d78f85d7cc81a5e418",
+        "expiration": null,
+        "expiration_rule_id": null,
+        "last_modified": null,
+        "location": null,
+        "name": "public/hello.csv",
+        "size": 90
+      },
+      "type": "procedure"
+    }
+  ]
+}

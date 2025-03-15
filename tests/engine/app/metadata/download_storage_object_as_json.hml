@@ -1,0 +1,75 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: DownloadStorageObjectJsonResponse
+  description: represents the object data response in arbitrary JSON format.
+  fields:
+    - name: data
+      type: JSON!
+  graphql:
+    typeName: DownloadStorageObjectJsonResponse
+    inputTypeName: DownloadStorageObjectJsonResponse_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: storage
+      dataConnectorObjectType: DownloadStorageObjectJsonResponse
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: DownloadStorageObjectJsonResponse
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - data
+
+---
+kind: Command
+version: v1
+definition:
+  name: download_storage_object_as_json
+  outputType: DownloadStorageObjectJsonResponse
+  arguments:
+    - name: access_key_id
+      type: String
+    - name: bucket
+      type: String
+    - name: client_id
+      type: StorageClientID
+    - name: client_type
+      type: StorageProviderType
+    - name: endpoint
+      type: String
+    - name: headers
+      type: "[StorageKeyValue!]"
+    - name: name
+      type: String!
+    - name: part_number
+      type: Int32
+    - name: request_params
+      type: "[StorageKeyValue!]"
+    - name: secret_access_key
+      type: String
+    - name: version_id
+      type: String
+  source:
+    dataConnectorName: storage
+    dataConnectorCommand:
+      function: download_storage_object_as_json
+  graphql:
+    rootFieldName: download_storage_object_as_json
+    rootFieldKind: Query
+  description: returns the object content in arbitrary json. Returns error if the
+    content is unable to be decoded.
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: download_storage_object_as_json
+  permissions:
+    - role: admin
+      allowExecution: true
+

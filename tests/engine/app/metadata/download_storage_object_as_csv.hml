@@ -1,0 +1,94 @@
+---
+kind: ObjectType
+version: v1
+definition:
+  name: CSVDecodeOptions
+  fields:
+    - name: comma
+      type: String
+    - name: comment
+      type: String
+    - name: lazy_quotes
+      type: Boolean
+    - name: no_header
+      type: Boolean
+    - name: parse_json
+      type: Boolean
+    - name: transpose
+      type: Boolean
+    - name: trim_leading_space
+      type: Boolean
+  graphql:
+    typeName: CSVDecodeOptions
+    inputTypeName: CSVDecodeOptions_input
+  dataConnectorTypeMapping:
+    - dataConnectorName: storage
+      dataConnectorObjectType: CSVDecodeOptions
+
+---
+kind: TypePermissions
+version: v1
+definition:
+  typeName: CSVDecodeOptions
+  permissions:
+    - role: admin
+      output:
+        allowedFields:
+          - comma
+          - comment
+          - lazy_quotes
+          - no_header
+          - parse_json
+          - transpose
+          - trim_leading_space
+
+---
+kind: Command
+version: v1
+definition:
+  name: download_storage_object_as_csv
+  outputType: DownloadStorageObjectJsonResponse
+  arguments:
+    - name: access_key_id
+      type: String
+    - name: bucket
+      type: String
+    - name: client_id
+      type: StorageClientID
+    - name: client_type
+      type: StorageProviderType
+    - name: endpoint
+      type: String
+    - name: headers
+      type: "[StorageKeyValue!]"
+    - name: name
+      type: String!
+    - name: options
+      type: CSVDecodeOptions
+    - name: part_number
+      type: Int32
+    - name: request_params
+      type: "[StorageKeyValue!]"
+    - name: secret_access_key
+      type: String
+    - name: version_id
+      type: String
+  source:
+    dataConnectorName: storage
+    dataConnectorCommand:
+      function: download_storage_object_as_csv
+  graphql:
+    rootFieldName: download_storage_object_as_csv
+    rootFieldKind: Query
+  description: downloads and decode the object content from CSV. Returns error if
+    the content is unable to be decoded.
+
+---
+kind: CommandPermissions
+version: v1
+definition:
+  commandName: download_storage_object_as_csv
+  permissions:
+    - role: admin
+      allowExecution: true
+
