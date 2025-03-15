@@ -15,7 +15,9 @@
     "options": {
       "type": "literal",
       "value": {
-        "comma": ";"
+        "comma": ";",
+        "comment": "#",
+        "lazy_quotes": true
       }
     }
   },
