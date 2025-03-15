@@ -14,7 +14,9 @@
     },
     "options": {
       "type": "literal",
-      "value": {}
+      "value": {
+        "lazy_quotes": false
+      }
     }
   },
   "collection": "download_storage_object_as_csv",
