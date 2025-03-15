@@ -6,53 +6,13 @@
       "name": "upload_storage_object_from_url",
       "arguments": {
         "bucket": "azblob-bucket-test",
-        "url": "https://raw.githubusercontent.com/hasura/ndc-storage/refs/heads/feat/download-object-as-json/connector/testdata/fixtures/hello.tsv",
-        "name": "public/hello.tsv"
+        "url": "https://raw.githubusercontent.com/hasura/ndc-storage/refs/heads/feat/download-object-as-json/connector/testdata/fixtures/types.csv",
+        "name": "public/types.csv"
       },
       "fields": {
         "fields": {
           "bucket": {
             "column": "bucket",
-            "type": "column"
-          },
-          "checksum_crc32": {
-            "column": "checksum_crc32",
-            "type": "column"
-          },
-          "checksum_crc32c": {
-            "column": "checksum_crc32c",
-            "type": "column"
-          },
-          "checksum_crc64_nvme": {
-            "column": "checksum_crc64_nvme",
-            "type": "column"
-          },
-          "checksum_sha1": {
-            "column": "checksum_sha1",
-            "type": "column"
-          },
-          "checksum_sha256": {
-            "column": "checksum_sha256",
-            "type": "column"
-          },
-          "etag": {
-            "column": "etag",
-            "type": "column"
-          },
-          "expiration": {
-            "column": "expiration",
-            "type": "column"
-          },
-          "expiration_rule_id": {
-            "column": "expiration_rule_id",
-            "type": "column"
-          },
-          "last_modified": {
-            "column": "last_modified",
-            "type": "column"
-          },
-          "location": {
-            "column": "location",
             "type": "column"
           },
           "name": {

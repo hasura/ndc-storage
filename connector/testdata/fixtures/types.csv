@@ -1,4 +1,4 @@
 id,name,active,tags,object
-1,Pike,true,"[1,\"abc\"]","{\"foo\":\"bar\"}"
-2,Thompson,false,"[true,\"abc\"]","{\"baz\":1}"
+1,Pike,true,[1,""abc""],{""foo"":""bar""}
+2,Thompson,false,"[true,""abc""]","{""baz"":1}"
 3,Griesemer,T,,NULL

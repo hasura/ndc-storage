@@ -2,21 +2,19 @@
   "arguments": {
     "client_id": {
       "type": "literal",
-      "value": "gcs"
+      "value": "azblob"
     },
     "bucket": {
       "type": "literal",
-      "value": "gcs-bucket"
+      "value": "azblob-bucket-test"
     },
     "name": {
       "type": "literal",
-      "value": "public/hello.tsv"
+      "value": "public/types.csv"
     },
     "options": {
       "type": "literal",
-      "value": {
-        "no_header": true
-      }
+      "value": {}
     }
   },
   "collection": "download_storage_object_as_csv",

@@ -4,10 +4,27 @@
       {
         "__value": {
           "data": [
-            ["first_name", "last_name", "username"],
-            ["Rob", "Pike", "rob"],
-            ["Ken", "Thompson", "ken"],
-            ["Robert", "Griesemer", "gri"]
+            {
+              "active": "true",
+              "id": "1",
+              "name": "Pike",
+              "object": "{\\\"foo\\\":\\\"bar\\\"}",
+              "tags": "[1,\\\"abc\\\"]"
+            },
+            {
+              "active": "false",
+              "id": "2",
+              "name": "Thompson",
+              "object": "{\\\"baz\\\":1}",
+              "tags": "[true,\\\"abc\\\"]"
+            },
+            {
+              "active": "T",
+              "id": "3",
+              "name": "Griesemer",
+              "object": "NULL",
+              "tags": ""
+            }
           ]
         }
       }
