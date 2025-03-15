@@ -17,7 +17,7 @@
       "value": {
         "comma": ";",
         "comment": "#",
-        "lazy_quotes": true
+        "lazy_quotes": false
       }
     }
   },
