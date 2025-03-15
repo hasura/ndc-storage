@@ -3,11 +3,14 @@ package encoding
 import (
 	"context"
 	"encoding/csv"
+	"encoding/json"
 	"errors"
 	"io"
 	"mime"
 	"path/filepath"
 	"slices"
+	"strconv"
+	"strings"
 )
 
 // CSVDecodeOptions hold decode options for CSV.
@@ -37,6 +40,7 @@ type CSVDecodeOptions struct {
 	TrimLeadingSpace *bool `json:"trim_leading_space"`
 }
 
+// NewReader creates a new CSV Reader instance from options.
 func (cdo CSVDecodeOptions) NewReader(reader io.Reader) *csv.Reader {
 	r := createDefaultCsvReader(reader)
 	r.Comma = evalCSVComma(cdo.Comma, "")
@@ -61,8 +65,29 @@ func DecodeCSV(ctx context.Context, reader io.Reader, options CSVDecodeOptions) 
 	matrix, err := decodeCSVMatrix(ctx, options.NewReader(reader))
 	matrixLen := len(matrix)
 
-	if options.NoHeader || err != nil || matrixLen == 0 {
+	if err != nil || matrixLen == 0 {
 		return matrix, err
+	}
+
+	if options.NoHeader {
+		if !options.ParseJSON {
+			return matrix, nil
+		}
+
+		results := make([][]any, matrixLen)
+
+		for i, row := range matrix {
+			result := make([]any, len(row))
+
+			for j, cell := range row {
+				value, _ := decodeCSVCellValue(cell)
+				result[j] = value
+			}
+
+			results[i] = result
+		}
+
+		return results, nil
 	}
 
 	headerRow := matrix[0]
@@ -73,7 +98,14 @@ func DecodeCSV(ctx context.Context, reader io.Reader, options CSVDecodeOptions) 
 		result := make(map[string]any)
 
 		for j, key := range headerRow {
-			result[key] = row[j]
+			if !options.ParseJSON {
+				result[key] = row[j]
+
+				continue
+			}
+
+			cell, _ := decodeCSVCellValue(row[j])
+			result[key] = cell
 		}
 
 		results[i-1] = result
@@ -102,6 +134,38 @@ func decodeCSVMatrix(ctx context.Context, r *csv.Reader) ([][]string, error) {
 			rows = append(rows, record)
 		}
 	}
+}
+
+func decodeCSVCellValue(cellValue string) (any, error) {
+	switch strings.ToLower(cellValue) {
+	case "":
+		return "", nil
+	case "null":
+		return nil, nil
+	case "true":
+		return true, nil
+	case "false":
+		return false, nil
+	}
+
+	if cellValue[0] == '[' || cellValue[0] == '{' || cellValue[0] == '"' {
+		var result any
+		if err := json.Unmarshal([]byte(cellValue), &result); err != nil {
+			return cellValue, err
+		}
+
+		return result, nil
+	}
+
+	// try to decode number
+	if cellValue[0] >= '0' || cellValue[0] <= '9' || cellValue[0] == '-' {
+		numberResult, err := strconv.ParseFloat(cellValue, 64)
+		if err == nil {
+			return numberResult, nil
+		}
+	}
+
+	return cellValue, nil
 }
 
 // IsValidCSVObject checks if the object is a valid CSV file.
