@@ -1,0 +1,27 @@
+[
+  {
+    "rows": [
+      {
+        "__value": {
+          "data": [
+            {
+              "first_name": "Rob",
+              "last_name": "Pike",
+              "username": "rob"
+            },
+            {
+              "first_name": "Ken",
+              "last_name": "Thompson",
+              "username": "ken"
+            },
+            {
+              "first_name": "Robert",
+              "last_name": "Griesemer",
+              "username": "gri"
+            }
+          ]
+        }
+      }
+    ]
+  }
+]

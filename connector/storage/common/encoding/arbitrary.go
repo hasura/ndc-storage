@@ -1,19 +1,18 @@
 package encoding
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"io"
 	"mime"
 	"slices"
 	"strings"
-
-	"github.com/hasura/ndc-storage/connector/storage/common"
 )
 
 // DecodeArbitraryData guesses and decodes the arbitrary data of a file from the content type.
-func DecodeArbitraryData(name string, contentType string, reader io.Reader) (any, error) {
-	result, decoded, err := decodeArbitraryDataFromContentType(reader, contentType)
+func DecodeArbitraryData(ctx context.Context, name string, contentType string, reader io.Reader) (any, error) {
+	result, decoded, err := decodeArbitraryDataFromContentType(ctx, reader, contentType)
 	if err != nil {
 		return nil, err
 	}
@@ -22,9 +21,9 @@ func DecodeArbitraryData(name string, contentType string, reader io.Reader) (any
 		return result, nil
 	}
 
-	fileContentType := common.ContentTypeFromFilePath(name)
+	fileContentType := ContentTypeFromFilePath(name)
 
-	result, decoded, err = decodeArbitraryDataFromContentType(reader, fileContentType)
+	result, decoded, err = decodeArbitraryDataFromContentType(ctx, reader, fileContentType)
 	if err != nil {
 		return nil, err
 	}
@@ -41,7 +40,7 @@ func DecodeArbitraryData(name string, contentType string, reader io.Reader) (any
 	return result, nil
 }
 
-func decodeArbitraryDataFromContentType(reader io.Reader, contentType string) (any, bool, error) {
+func decodeArbitraryDataFromContentType(ctx context.Context, reader io.Reader, contentType string) (any, bool, error) {
 	if contentType == "" {
 		return nil, false, nil
 	}
@@ -52,7 +51,7 @@ func decodeArbitraryDataFromContentType(reader io.Reader, contentType string) (a
 	}
 
 	switch {
-	case mediaType == common.ContentTypeApplicationJSON || strings.Contains(mediaType, "+json"):
+	case mediaType == ContentTypeApplicationJSON || strings.Contains(mediaType, "+json"):
 		var result any
 		if err := json.NewDecoder(reader).Decode(&result); err != nil {
 			return nil, false, err
@@ -60,7 +59,10 @@ func decodeArbitraryDataFromContentType(reader io.Reader, contentType string) (a
 
 		return result, true, nil
 	case slices.Contains(enums_contentTypeCSV, mediaType):
-		result, err := decodeArbitraryCSV(reader, contentType)
+		r := createDefaultCsvReader(reader)
+		r.Comma = evalCSVComma("", contentType)
+
+		result, err := decodeCSVMatrix(ctx, r)
 		if err != nil {
 			return nil, false, err
 		}

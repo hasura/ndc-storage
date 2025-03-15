@@ -96,7 +96,7 @@ services:
 
   # https://github.com/fsouza/fake-gcs-server
   gcp-storage-emulator:
-    image: fsouza/fake-gcs-server:1.52.1
+    image: fsouza/fake-gcs-server:1.52.2
     command:
       [
         "-public-host",

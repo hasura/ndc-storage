@@ -14,6 +14,7 @@ import (
 	"github.com/hasura/ndc-sdk-go/schema"
 	"github.com/hasura/ndc-sdk-go/utils"
 	"github.com/hasura/ndc-storage/connector/storage/common"
+	"github.com/hasura/ndc-storage/connector/storage/common/encoding"
 	"github.com/minio/minio-go/v7/pkg/s3utils"
 )
 
@@ -79,6 +80,12 @@ func (m *Manager) GetObject(ctx context.Context, bucketInfo common.StorageBucket
 	objectStat, err := m.statObject(ctx, client, bucketName, objectName, opts)
 	if err != nil || objectStat == nil {
 		return nil, nil, err
+	}
+
+	if opts.PreValidate != nil {
+		if err := opts.PreValidate(objectStat); err != nil {
+			return nil, nil, schema.UnprocessableContentError(err.Error(), nil)
+		}
 	}
 
 	if objectStat.IsDirectory {
@@ -399,8 +406,8 @@ func (m *Manager) UploadObjectFromURL(ctx context.Context, bucketInfo common.Sto
 
 		opts.ContentType = contentType
 
-		if mediaType == common.ContentTypeTextPlain {
-			newContentType := common.ContentTypeFromFilePath(httpRequest.URL)
+		if mediaType == encoding.ContentTypeTextPlain {
+			newContentType := encoding.ContentTypeFromFilePath(httpRequest.URL)
 			if newContentType != "" {
 				opts.ContentType = newContentType
 			}

@@ -2,6 +2,7 @@ package functions
 
 import (
 	"context"
+	"fmt"
 	"io"
 
 	"github.com/hasura/ndc-sdk-go/scalar"
@@ -167,7 +168,53 @@ func FunctionDownloadStorageObjectAsJson(ctx context.Context, state *types.State
 		contentType = *stat.ContentType
 	}
 
-	data, err := encoding.DecodeArbitraryData(stat.Name, contentType, reader)
+	data, err := encoding.DecodeArbitraryData(ctx, stat.Name, contentType, reader)
+	if err != nil {
+		return nil, schema.UnprocessableContentError(err.Error(), nil)
+	}
+
+	return &DownloadStorageObjectJsonResponse{Data: data}, nil
+}
+
+// FunctionDownloadStorageObjectAsCsv downloads and decode the object content from CSV. Returns error if the content is unable to be decoded.
+func FunctionDownloadStorageObjectAsCsv(ctx context.Context, state *types.State, args *common.DownloadStorageObjectAsCsvArguments) (*DownloadStorageObjectJsonResponse, error) {
+	getArgs := args.GetStorageObjectArguments
+	getArgs.PreValidate = func(so *common.StorageObject) error {
+		var contentType string
+		if so.ContentType != nil {
+			contentType = *so.ContentType
+		}
+
+		if !encoding.IsValidCSVObject(so.Name, contentType) {
+			return fmt.Errorf("failed to decode file %s to csv, unsupported content type %s", so.Name, contentType)
+		}
+
+		return nil
+	}
+
+	stat, reader, err := downloadStorageObject(ctx, state, &args.GetStorageObjectArguments)
+	if err != nil {
+		return nil, err
+	}
+
+	if reader == nil {
+		return nil, nil
+	}
+
+	defer reader.Close()
+
+	decodeOptions := args.Options
+
+	if decodeOptions.Comma == "" {
+		var contentType string
+		if stat.ContentType != nil {
+			contentType = *stat.ContentType
+		}
+
+		decodeOptions.Comma = encoding.CSVCommaFromContentType(stat.Name, contentType)
+	}
+
+	data, err := encoding.DecodeCSV(ctx, reader, decodeOptions)
 	if err != nil {
 		return nil, schema.UnprocessableContentError(err.Error(), nil)
 	}

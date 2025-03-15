@@ -5,7 +5,7 @@
       "type": "procedure",
       "name": "upload_storage_object_from_url",
       "arguments": {
-        "client_id": "fs",
+        "bucket": "azblob-bucket-test",
         "url": "https://raw.githubusercontent.com/hasura/ndc-storage/refs/heads/feat/download-object-as-json/connector/testdata/fixtures/hello.tsv",
         "name": "public/hello.tsv"
       },

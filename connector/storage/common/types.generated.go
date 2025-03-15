@@ -7,8 +7,23 @@ import (
 	"github.com/hasura/ndc-sdk-go/scalar"
 	"github.com/hasura/ndc-sdk-go/schema"
 	"github.com/hasura/ndc-sdk-go/utils"
+	"github.com/hasura/ndc-storage/connector/storage/common/encoding"
 	"slices"
 )
+
+// FromValue decodes values from map
+func (j *DownloadStorageObjectAsCsvArguments) FromValue(input map[string]any) error {
+	var err error
+	j.GetStorageObjectArguments, err = utils.DecodeObject[GetStorageObjectArguments](input)
+	if err != nil {
+		return err
+	}
+	j.Options, err = utils.DecodeObjectValueDefault[encoding.CSVDecodeOptions](input, "options")
+	if err != nil {
+		return err
+	}
+	return nil
+}
 
 // FromValue decodes values from map
 func (j *GetStorageBucketArguments) FromValue(input map[string]any) error {
@@ -324,6 +339,19 @@ func (j CustomPlacementConfig) ToMap() map[string]any {
 func (j GetStorageBucketArguments) ToMap() map[string]any {
 	r := make(map[string]any)
 	r = utils.MergeMap(r, j.StorageClientCredentialArguments.ToMap())
+	r["name"] = j.Name
+	if j.Where != nil {
+		r["where"] = j.Where
+	}
+
+	return r
+}
+
+// ToMap encodes the struct to a value map
+func (j GetStorageObjectArguments) ToMap() map[string]any {
+	r := make(map[string]any)
+	r = utils.MergeMap(r, j.GetStorageObjectOptions.ToMap())
+	r = utils.MergeMap(r, j.StorageBucketArguments.ToMap())
 	r["name"] = j.Name
 	if j.Where != nil {
 		r["where"] = j.Where
@@ -1086,13 +1114,13 @@ const (
 	ChecksumTypeSha1             ChecksumType = "SHA1"
 	ChecksumTypeCrc32            ChecksumType = "CRC32"
 	ChecksumTypeCrc32C           ChecksumType = "CRC32C"
-	ChecksumTypeCrc64NVME        ChecksumType = "CRC64NVME"
-	ChecksumTypeFullObjectCRC32  ChecksumType = "FullObjectCRC32"
-	ChecksumTypeFullObjectCRC32C ChecksumType = "FullObjectCRC32C"
+	ChecksumTypeCrc64Nvme        ChecksumType = "CRC64NVME"
+	ChecksumTypeFullObjectCrc32  ChecksumType = "FullObjectCRC32"
+	ChecksumTypeFullObjectCrc32C ChecksumType = "FullObjectCRC32C"
 	ChecksumTypeNone             ChecksumType = "None"
 )
 
-var enumValues_ChecksumType = []ChecksumType{ChecksumTypeSha256, ChecksumTypeSha1, ChecksumTypeCrc32, ChecksumTypeCrc32C, ChecksumTypeCrc64NVME, ChecksumTypeFullObjectCRC32, ChecksumTypeFullObjectCRC32C, ChecksumTypeNone}
+var enumValues_ChecksumType = []ChecksumType{ChecksumTypeSha256, ChecksumTypeSha1, ChecksumTypeCrc32, ChecksumTypeCrc32C, ChecksumTypeCrc64Nvme, ChecksumTypeFullObjectCrc32, ChecksumTypeFullObjectCrc32C, ChecksumTypeNone}
 
 // ParseChecksumType parses a ChecksumType enum from string
 func ParseChecksumType(input string) (ChecksumType, error) {
@@ -1149,16 +1177,16 @@ func (j DownloadHTTPMethod) ScalarName() string {
 }
 
 const (
-	DownloadHTTPMethodGet  DownloadHTTPMethod = "GET"
-	DownloadHTTPMethodPost DownloadHTTPMethod = "POST"
+	DownloadHttpmethodGet  DownloadHTTPMethod = "GET"
+	DownloadHttpmethodPost DownloadHTTPMethod = "POST"
 )
 
-var enumValues_DownloadHTTPMethod = []DownloadHTTPMethod{DownloadHTTPMethodGet, DownloadHTTPMethodPost}
+var enumValues_DownloadHttpmethod = []DownloadHTTPMethod{DownloadHttpmethodGet, DownloadHttpmethodPost}
 
-// ParseDownloadHTTPMethod parses a DownloadHTTPMethod enum from string
-func ParseDownloadHTTPMethod(input string) (DownloadHTTPMethod, error) {
+// ParseDownloadHttpmethod parses a DownloadHTTPMethod enum from string
+func ParseDownloadHttpmethod(input string) (DownloadHTTPMethod, error) {
 	result := DownloadHTTPMethod(input)
-	if !slices.Contains(enumValues_DownloadHTTPMethod, result) {
+	if !slices.Contains(enumValues_DownloadHttpmethod, result) {
 		return DownloadHTTPMethod(""), errors.New("failed to parse DownloadHTTPMethod, expect one of [GET, POST]")
 	}
 
@@ -1167,7 +1195,7 @@ func ParseDownloadHTTPMethod(input string) (DownloadHTTPMethod, error) {
 
 // IsValid checks if the value is invalid
 func (j DownloadHTTPMethod) IsValid() bool {
-	return slices.Contains(enumValues_DownloadHTTPMethod, j)
+	return slices.Contains(enumValues_DownloadHttpmethod, j)
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
@@ -1177,7 +1205,7 @@ func (j *DownloadHTTPMethod) UnmarshalJSON(b []byte) error {
 		return err
 	}
 
-	value, err := ParseDownloadHTTPMethod(rawValue)
+	value, err := ParseDownloadHttpmethod(rawValue)
 	if err != nil {
 		return err
 	}
@@ -1195,7 +1223,7 @@ func (s *DownloadHTTPMethod) FromValue(value any) error {
 	if valueStr == nil {
 		return nil
 	}
-	result, err := ParseDownloadHTTPMethod(*valueStr)
+	result, err := ParseDownloadHttpmethod(*valueStr)
 	if err != nil {
 		return err
 	}
@@ -1210,16 +1238,16 @@ func (j GoogleStorageRPO) ScalarName() string {
 }
 
 const (
-	GoogleStorageRPODefault    GoogleStorageRPO = "DEFAULT"
-	GoogleStorageRPOAsyncTurbo GoogleStorageRPO = "ASYNC_TURBO"
+	GoogleStorageRpoDefault    GoogleStorageRPO = "DEFAULT"
+	GoogleStorageRpoAsyncTurbo GoogleStorageRPO = "ASYNC_TURBO"
 )
 
-var enumValues_GoogleStorageRPO = []GoogleStorageRPO{GoogleStorageRPODefault, GoogleStorageRPOAsyncTurbo}
+var enumValues_GoogleStorageRpo = []GoogleStorageRPO{GoogleStorageRpoDefault, GoogleStorageRpoAsyncTurbo}
 
-// ParseGoogleStorageRPO parses a GoogleStorageRPO enum from string
-func ParseGoogleStorageRPO(input string) (GoogleStorageRPO, error) {
+// ParseGoogleStorageRpo parses a GoogleStorageRPO enum from string
+func ParseGoogleStorageRpo(input string) (GoogleStorageRPO, error) {
 	result := GoogleStorageRPO(input)
-	if !slices.Contains(enumValues_GoogleStorageRPO, result) {
+	if !slices.Contains(enumValues_GoogleStorageRpo, result) {
 		return GoogleStorageRPO(""), errors.New("failed to parse GoogleStorageRPO, expect one of [DEFAULT, ASYNC_TURBO]")
 	}
 
@@ -1228,7 +1256,7 @@ func ParseGoogleStorageRPO(input string) (GoogleStorageRPO, error) {
 
 // IsValid checks if the value is invalid
 func (j GoogleStorageRPO) IsValid() bool {
-	return slices.Contains(enumValues_GoogleStorageRPO, j)
+	return slices.Contains(enumValues_GoogleStorageRpo, j)
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
@@ -1238,7 +1266,7 @@ func (j *GoogleStorageRPO) UnmarshalJSON(b []byte) error {
 		return err
 	}
 
-	value, err := ParseGoogleStorageRPO(rawValue)
+	value, err := ParseGoogleStorageRpo(rawValue)
 	if err != nil {
 		return err
 	}
@@ -1256,7 +1284,7 @@ func (s *GoogleStorageRPO) FromValue(value any) error {
 	if valueStr == nil {
 		return nil
 	}
-	result, err := ParseGoogleStorageRPO(*valueStr)
+	result, err := ParseGoogleStorageRpo(*valueStr)
 	if err != nil {
 		return err
 	}

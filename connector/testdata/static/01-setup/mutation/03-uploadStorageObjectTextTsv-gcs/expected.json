@@ -2,7 +2,7 @@
   "operation_results": [
     {
       "result": {
-        "bucket": "../tmp/data",
+        "bucket": "gcs-bucket",
         "checksum_crc32": null,
         "checksum_crc32c": null,
         "checksum_crc64_nvme": null,
@@ -14,7 +14,7 @@
         "last_modified": null,
         "location": null,
         "name": "public/hello.tsv",
-        "size": 85
+        "size": null
       },
       "type": "procedure"
     }

@@ -76,6 +76,31 @@ func GetConnectorSchema() *schema.SchemaResponse {
 					},
 				},
 			},
+			"CSVDecodeOptions": schema.ObjectType{
+				Fields: schema.ObjectTypeFields{
+					"comma": schema.ObjectField{
+						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
+					},
+					"comment": schema.ObjectField{
+						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
+					},
+					"lazy_quotes": schema.ObjectField{
+						Type: schema.NewNullableType(schema.NewNamedType("Boolean")).Encode(),
+					},
+					"no_header": schema.ObjectField{
+						Type: schema.NewNullableType(schema.NewNamedType("Boolean")).Encode(),
+					},
+					"parse_json": schema.ObjectField{
+						Type: schema.NewNullableType(schema.NewNamedType("Boolean")).Encode(),
+					},
+					"transpose": schema.ObjectField{
+						Type: schema.NewNullableType(schema.NewNamedType("Boolean")).Encode(),
+					},
+					"trim_leading_space": schema.ObjectField{
+						Type: schema.NewNullableType(schema.NewNamedType("Boolean")).Encode(),
+					},
+				},
+			},
 			"CustomPlacementConfig": schema.ObjectType{
 				Description: toPtr("holds the bucket's custom placement configuration for Custom Dual Regions. See https://cloud.google.com/storage/docs/locations#location-dr for more information."),
 				Fields: schema.ObjectTypeFields{
@@ -138,6 +163,47 @@ func GetConnectorSchema() *schema.SchemaResponse {
 					},
 					"where": schema.ObjectField{
 						Type: schema.NewNullableType(schema.NewPredicateType("StorageBucketFilter")).Encode(),
+					},
+				},
+			},
+			"GetStorageObjectArguments": schema.ObjectType{
+				Description: toPtr("are used to specify additional headers or options during GET requests."),
+				Fields: schema.ObjectTypeFields{
+					"access_key_id": schema.ObjectField{
+						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
+					},
+					"bucket": schema.ObjectField{
+						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
+					},
+					"client_id": schema.ObjectField{
+						Type: schema.NewNullableType(schema.NewNamedType("StorageClientID")).Encode(),
+					},
+					"client_type": schema.ObjectField{
+						Type: schema.NewNullableType(schema.NewNamedType("StorageProviderType")).Encode(),
+					},
+					"endpoint": schema.ObjectField{
+						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
+					},
+					"headers": schema.ObjectField{
+						Type: schema.NewNullableType(schema.NewArrayType(schema.NewNamedType("StorageKeyValue"))).Encode(),
+					},
+					"name": schema.ObjectField{
+						Type: schema.NewNamedType("String").Encode(),
+					},
+					"part_number": schema.ObjectField{
+						Type: schema.NewNullableType(schema.NewNamedType("Int32")).Encode(),
+					},
+					"request_params": schema.ObjectField{
+						Type: schema.NewNullableType(schema.NewArrayType(schema.NewNamedType("StorageKeyValue"))).Encode(),
+					},
+					"secret_access_key": schema.ObjectField{
+						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
+					},
+					"version_id": schema.ObjectField{
+						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
+					},
+					"where": schema.ObjectField{
+						Type: schema.NewNullableType(schema.NewPredicateType("StorageObjectFilter")).Encode(),
 					},
 				},
 			},
@@ -1316,6 +1382,52 @@ func GetConnectorSchema() *schema.SchemaResponse {
 					},
 					"name": {
 						Type: schema.NewNamedType("String").Encode(),
+					},
+					"part_number": {
+						Type: schema.NewNullableType(schema.NewNamedType("Int32")).Encode(),
+					},
+					"request_params": {
+						Type: schema.NewNullableType(schema.NewArrayType(schema.NewNamedType("StorageKeyValue"))).Encode(),
+					},
+					"secret_access_key": {
+						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
+					},
+					"version_id": {
+						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
+					},
+					"where": {
+						Type: schema.NewNullableType(schema.NewPredicateType("StorageObjectFilter")).Encode(),
+					},
+				},
+			},
+			{
+				Name:        "download_storage_object_as_csv",
+				Description: toPtr("downloads and decode the object content from CSV. Returns error if the content is unable to be decoded."),
+				ResultType:  schema.NewNullableType(schema.NewNamedType("DownloadStorageObjectJsonResponse")).Encode(),
+				Arguments: map[string]schema.ArgumentInfo{
+					"access_key_id": {
+						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
+					},
+					"bucket": {
+						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
+					},
+					"client_id": {
+						Type: schema.NewNullableType(schema.NewNamedType("StorageClientID")).Encode(),
+					},
+					"client_type": {
+						Type: schema.NewNullableType(schema.NewNamedType("StorageProviderType")).Encode(),
+					},
+					"endpoint": {
+						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
+					},
+					"headers": {
+						Type: schema.NewNullableType(schema.NewArrayType(schema.NewNamedType("StorageKeyValue"))).Encode(),
+					},
+					"name": {
+						Type: schema.NewNamedType("String").Encode(),
+					},
+					"options": {
+						Type: schema.NewNullableType(schema.NewNamedType("CSVDecodeOptions")).Encode(),
 					},
 					"part_number": {
 						Type: schema.NewNullableType(schema.NewNamedType("Int32")).Encode(),

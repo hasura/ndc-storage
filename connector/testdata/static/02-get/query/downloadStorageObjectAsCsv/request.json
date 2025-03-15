@@ -6,10 +6,10 @@
     },
     "name": {
       "type": "literal",
-      "value": "public/hello.tsv"
+      "value": "public/hello.csv"
     }
   },
-  "collection": "download_storage_object_as_text",
+  "collection": "download_storage_object_as_csv",
   "collection_relationships": {},
   "query": {
     "fields": {

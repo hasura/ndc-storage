@@ -10,9 +10,6 @@ const (
 	HeaderContentDisposition string = "content-disposition"
 	HeaderContentEncoding    string = "content-encoding"
 	HeaderContentLanguage    string = "content-language"
-
-	ContentTypeTextPlain       string = "text/plain"
-	ContentTypeApplicationJSON string = "application/json"
 )
 
 // StorageClientID the storage client ID enum.
