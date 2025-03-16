@@ -1,0 +1,33 @@
+[
+  {
+    "rows": [
+      {
+        "__value": {
+          "data": [
+            {
+              "active": true,
+              "id": 1,
+              "name": "Pike",
+              "object": { "foo": "bar" },
+              "tags": [1, "abc"]
+            },
+            {
+              "active": false,
+              "id": 2,
+              "name": "Thompson",
+              "object": { "baz": 1, "foo": "baz" },
+              "tags": [true, 1]
+            },
+            {
+              "active": true,
+              "id": 3,
+              "name": "Griesemer",
+              "object": null,
+              "tags": ""
+            }
+          ]
+        }
+      }
+    ]
+  }
+]

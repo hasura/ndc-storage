@@ -45,7 +45,7 @@ run_test() {
   wait_services
 
   # go tests
-  CONFIG_DIR=$1 go test -v -coverpkg=./... -race -timeout 3m -coverprofile=coverage.out.tmp ./...
+  CONFIG_DIR=$1 go test -v -coverpkg=./... -race -timeout 5m -coverprofile=coverage.out.tmp ./...
   docker compose down -v
 }
 

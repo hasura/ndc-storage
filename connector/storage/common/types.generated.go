@@ -7,8 +7,23 @@ import (
 	"github.com/hasura/ndc-sdk-go/scalar"
 	"github.com/hasura/ndc-sdk-go/schema"
 	"github.com/hasura/ndc-sdk-go/utils"
+	"github.com/hasura/ndc-storage/connector/storage/common/encoding"
 	"slices"
 )
+
+// FromValue decodes values from map
+func (j *DownloadStorageObjectAsCsvArguments) FromValue(input map[string]any) error {
+	var err error
+	j.GetStorageObjectArguments, err = utils.DecodeObject[GetStorageObjectArguments](input)
+	if err != nil {
+		return err
+	}
+	j.Options, err = utils.DecodeObjectValueDefault[encoding.CSVDecodeOptions](input, "options")
+	if err != nil {
+		return err
+	}
+	return nil
+}
 
 // FromValue decodes values from map
 func (j *GetStorageBucketArguments) FromValue(input map[string]any) error {
@@ -324,6 +339,19 @@ func (j CustomPlacementConfig) ToMap() map[string]any {
 func (j GetStorageBucketArguments) ToMap() map[string]any {
 	r := make(map[string]any)
 	r = utils.MergeMap(r, j.StorageClientCredentialArguments.ToMap())
+	r["name"] = j.Name
+	if j.Where != nil {
+		r["where"] = j.Where
+	}
+
+	return r
+}
+
+// ToMap encodes the struct to a value map
+func (j GetStorageObjectArguments) ToMap() map[string]any {
+	r := make(map[string]any)
+	r = utils.MergeMap(r, j.GetStorageObjectOptions.ToMap())
+	r = utils.MergeMap(r, j.StorageBucketArguments.ToMap())
 	r["name"] = j.Name
 	if j.Where != nil {
 		r["where"] = j.Where

@@ -15,6 +15,14 @@ import (
 )
 
 // ToMap encodes the struct to a value map
+func (j DownloadStorageObjectJsonResponse) ToMap() map[string]any {
+	r := make(map[string]any)
+	r["data"] = j.Data
+
+	return r
+}
+
+// ToMap encodes the struct to a value map
 func (j DownloadStorageObjectResponse) ToMap() map[string]any {
 	r := make(map[string]any)
 	r["data"] = j.Data
@@ -101,6 +109,80 @@ func (dch DataConnectorHandler) execQuery(ctx context.Context, state *types.Stat
 			"arguments": args,
 		})
 		rawResult, err := FunctionDownloadStorageObjectAsBase64(ctx, state, &args)
+
+		if err != nil {
+			return nil, err
+		}
+
+		if rawResult == nil {
+			return nil, nil
+		}
+		connector_addSpanEvent(span, logger, "evaluate_response_selection", map[string]any{
+			"raw_result": rawResult,
+		})
+		result, err := utils.EvalNestedColumnObject(selection, rawResult)
+		if err != nil {
+			return nil, err
+		}
+		return result, nil
+
+	case "download_storage_object_as_csv":
+
+		selection, err := queryFields.AsObject()
+		if err != nil {
+			return nil, schema.UnprocessableContentError("the selection field type must be object", map[string]any{
+				"cause": err.Error(),
+			})
+		}
+		var args common.DownloadStorageObjectAsCsvArguments
+		parseErr := args.FromValue(rawArgs)
+		if parseErr != nil {
+			return nil, schema.UnprocessableContentError("failed to resolve arguments", map[string]any{
+				"cause": parseErr.Error(),
+			})
+		}
+
+		connector_addSpanEvent(span, logger, "execute_function", map[string]any{
+			"arguments": args,
+		})
+		rawResult, err := FunctionDownloadStorageObjectAsCsv(ctx, state, &args)
+
+		if err != nil {
+			return nil, err
+		}
+
+		if rawResult == nil {
+			return nil, nil
+		}
+		connector_addSpanEvent(span, logger, "evaluate_response_selection", map[string]any{
+			"raw_result": rawResult,
+		})
+		result, err := utils.EvalNestedColumnObject(selection, rawResult)
+		if err != nil {
+			return nil, err
+		}
+		return result, nil
+
+	case "download_storage_object_as_json":
+
+		selection, err := queryFields.AsObject()
+		if err != nil {
+			return nil, schema.UnprocessableContentError("the selection field type must be object", map[string]any{
+				"cause": err.Error(),
+			})
+		}
+		var args common.GetStorageObjectArguments
+		parseErr := args.FromValue(rawArgs)
+		if parseErr != nil {
+			return nil, schema.UnprocessableContentError("failed to resolve arguments", map[string]any{
+				"cause": parseErr.Error(),
+			})
+		}
+
+		connector_addSpanEvent(span, logger, "execute_function", map[string]any{
+			"arguments": args,
+		})
+		rawResult, err := FunctionDownloadStorageObjectAsJson(ctx, state, &args)
 
 		if err != nil {
 			return nil, err
@@ -478,7 +560,7 @@ func (dch DataConnectorHandler) execQuery(ctx context.Context, state *types.Stat
 	}
 }
 
-var enumValues_FunctionName = []string{"download_storage_object_as_base64", "download_storage_object_as_text", "storage_bucket", "storage_bucket_connections", "storage_bucket_exists", "storage_deleted_objects", "storage_incomplete_uploads", "storage_object", "storage_object_connections", "storage_presigned_download_url", "storage_presigned_upload_url"}
+var enumValues_FunctionName = []string{"download_storage_object_as_base64", "download_storage_object_as_csv", "download_storage_object_as_json", "download_storage_object_as_text", "storage_bucket", "storage_bucket_connections", "storage_bucket_exists", "storage_deleted_objects", "storage_incomplete_uploads", "storage_object", "storage_object_connections", "storage_presigned_download_url", "storage_presigned_upload_url"}
 
 // MutationExists check if the mutation name exists
 func (dch DataConnectorHandler) MutationExists(name string) bool {

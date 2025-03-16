@@ -1,0 +1,72 @@
+{
+  "collection_relationships": {},
+  "operations": [
+    {
+      "type": "procedure",
+      "name": "upload_storage_object_from_url",
+      "arguments": {
+        "client_id": "gcs",
+        "bucket": "gcs-bucket",
+        "url": "https://raw.githubusercontent.com/hasura/ndc-storage/a2860fab1def7d2969d8545fec8587a39ec9d749/connector/testdata/fixtures/hello.tsv",
+        "name": "public/hello.tsv"
+      },
+      "fields": {
+        "fields": {
+          "bucket": {
+            "column": "bucket",
+            "type": "column"
+          },
+          "checksum_crc32": {
+            "column": "checksum_crc32",
+            "type": "column"
+          },
+          "checksum_crc32c": {
+            "column": "checksum_crc32c",
+            "type": "column"
+          },
+          "checksum_crc64_nvme": {
+            "column": "checksum_crc64_nvme",
+            "type": "column"
+          },
+          "checksum_sha1": {
+            "column": "checksum_sha1",
+            "type": "column"
+          },
+          "checksum_sha256": {
+            "column": "checksum_sha256",
+            "type": "column"
+          },
+          "etag": {
+            "column": "etag",
+            "type": "column"
+          },
+          "expiration": {
+            "column": "expiration",
+            "type": "column"
+          },
+          "expiration_rule_id": {
+            "column": "expiration_rule_id",
+            "type": "column"
+          },
+          "last_modified": {
+            "column": "last_modified",
+            "type": "column"
+          },
+          "location": {
+            "column": "location",
+            "type": "column"
+          },
+          "name": {
+            "column": "name",
+            "type": "column"
+          },
+          "size": {
+            "column": "size",
+            "type": "column"
+          }
+        },
+        "type": "object"
+      }
+    }
+  ]
+}

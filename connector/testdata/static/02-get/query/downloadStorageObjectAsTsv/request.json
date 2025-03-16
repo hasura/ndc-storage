@@ -1,0 +1,41 @@
+{
+  "arguments": {
+    "client_id": {
+      "type": "literal",
+      "value": "gcs"
+    },
+    "bucket": {
+      "type": "literal",
+      "value": "gcs-bucket"
+    },
+    "name": {
+      "type": "literal",
+      "value": "public/hello.tsv"
+    },
+    "options": {
+      "type": "literal",
+      "value": {
+        "no_header": true
+      }
+    }
+  },
+  "collection": "download_storage_object_as_csv",
+  "collection_relationships": {},
+  "query": {
+    "fields": {
+      "__value": {
+        "column": "__value",
+        "fields": {
+          "fields": {
+            "data": {
+              "column": "data",
+              "type": "column"
+            }
+          },
+          "type": "object"
+        },
+        "type": "column"
+      }
+    }
+  }
+}

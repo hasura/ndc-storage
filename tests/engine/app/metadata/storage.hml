@@ -243,6 +243,50 @@ definition:
                 underlying_type:
                   type: named
                   name: String
+        CSVDecodeOptions:
+          fields:
+            delimiter:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
+            comment:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
+            lazy_quotes:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            no_header:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            parse_json:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            transpose:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
+            trim_leading_space:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Boolean
         CustomPlacementConfig:
           description: holds the bucket's custom placement configuration for Custom Dual Regions. See https://cloud.google.com/storage/docs/locations#location-dr for more information.
           fields:
@@ -252,6 +296,13 @@ definition:
                 element_type:
                   type: named
                   name: String
+        DownloadStorageObjectJsonResponse:
+          description: represents the object data response in arbitrary JSON format.
+          fields:
+            data:
+              type:
+                type: named
+                name: JSON
         DownloadStorageObjectResponse:
           description: represents the object data response in base64-encode string format.
           fields:
@@ -315,6 +366,83 @@ definition:
                 underlying_type:
                   type: predicate
                   object_type_name: StorageBucketFilter
+        GetStorageObjectArguments:
+          description: are used to specify additional headers or options during GET requests.
+          fields:
+            access_key_id:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
+            bucket:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
+            client_id:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: StorageClientID
+            client_type:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: StorageProviderType
+            endpoint:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
+            headers:
+              type:
+                type: nullable
+                underlying_type:
+                  type: array
+                  element_type:
+                    type: named
+                    name: StorageKeyValue
+            name:
+              type:
+                type: named
+                name: String
+            part_number:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Int32
+            request_params:
+              type:
+                type: nullable
+                underlying_type:
+                  type: array
+                  element_type:
+                    type: named
+                    name: StorageKeyValue
+            secret_access_key:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
+            version_id:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
+            where:
+              type:
+                type: nullable
+                underlying_type:
+                  type: predicate
+                  object_type_name: StorageObjectFilter
         GetStorageObjectOptions:
           description: are used to specify additional headers or options during GET requests.
           fields:
@@ -2417,6 +2545,164 @@ definition:
             underlying_type:
               type: named
               name: DownloadStorageObjectResponse
+        - name: download_storage_object_as_csv
+          description: downloads and decode the object content from CSV. Returns error if the content is unable to be decoded.
+          arguments:
+            access_key_id:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
+            bucket:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
+            client_id:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: StorageClientID
+            client_type:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: StorageProviderType
+            endpoint:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
+            headers:
+              type:
+                type: nullable
+                underlying_type:
+                  type: array
+                  element_type:
+                    type: named
+                    name: StorageKeyValue
+            name:
+              type:
+                type: named
+                name: String
+            options:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: CSVDecodeOptions
+            part_number:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Int32
+            request_params:
+              type:
+                type: nullable
+                underlying_type:
+                  type: array
+                  element_type:
+                    type: named
+                    name: StorageKeyValue
+            secret_access_key:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
+            version_id:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
+          result_type:
+            type: nullable
+            underlying_type:
+              type: named
+              name: DownloadStorageObjectJsonResponse
+        - name: download_storage_object_as_json
+          description: returns the object content in arbitrary json. Returns error if the content is unable to be decoded.
+          arguments:
+            access_key_id:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
+            bucket:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
+            client_id:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: StorageClientID
+            client_type:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: StorageProviderType
+            endpoint:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
+            headers:
+              type:
+                type: nullable
+                underlying_type:
+                  type: array
+                  element_type:
+                    type: named
+                    name: StorageKeyValue
+            name:
+              type:
+                type: named
+                name: String
+            part_number:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: Int32
+            request_params:
+              type:
+                type: nullable
+                underlying_type:
+                  type: array
+                  element_type:
+                    type: named
+                    name: StorageKeyValue
+            secret_access_key:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
+            version_id:
+              type:
+                type: nullable
+                underlying_type:
+                  type: named
+                  name: String
+          result_type:
+            type: nullable
+            underlying_type:
+              type: named
+              name: DownloadStorageObjectJsonResponse
         - name: download_storage_object_as_text
           description: returns the object content in plain text. Use this function only if you know exactly the file as an text file.
           arguments:

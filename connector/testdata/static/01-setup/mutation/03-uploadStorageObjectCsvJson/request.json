@@ -1,0 +1,31 @@
+{
+  "collection_relationships": {},
+  "operations": [
+    {
+      "type": "procedure",
+      "name": "upload_storage_object_from_url",
+      "arguments": {
+        "bucket": "azblob-bucket-test",
+        "url": "https://raw.githubusercontent.com/hasura/ndc-storage/a2860fab1def7d2969d8545fec8587a39ec9d749/connector/testdata/fixtures/types.csv",
+        "name": "public/types.csv"
+      },
+      "fields": {
+        "fields": {
+          "bucket": {
+            "column": "bucket",
+            "type": "column"
+          },
+          "name": {
+            "column": "name",
+            "type": "column"
+          },
+          "size": {
+            "column": "size",
+            "type": "column"
+          }
+        },
+        "type": "object"
+      }
+    }
+  ]
+}

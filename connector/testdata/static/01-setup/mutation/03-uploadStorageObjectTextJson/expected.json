@@ -1,0 +1,22 @@
+{
+  "operation_results": [
+    {
+      "result": {
+        "bucket": "minio-bucket-test",
+        "checksum_crc32": null,
+        "checksum_crc32c": null,
+        "checksum_crc64_nvme": null,
+        "checksum_sha1": null,
+        "checksum_sha256": null,
+        "etag": "49dfdd54b01cbcd2d2ab5e9e5ee6b9b9",
+        "expiration": null,
+        "expiration_rule_id": null,
+        "last_modified": null,
+        "location": null,
+        "name": "public/hello.json",
+        "size": 18
+      },
+      "type": "procedure"
+    }
+  ]
+}

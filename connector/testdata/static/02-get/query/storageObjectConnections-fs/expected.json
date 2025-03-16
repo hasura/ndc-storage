@@ -5,6 +5,16 @@
         "__value": {
           "edges": [
             {
+              "cursor": "public/hello.tsv",
+              "node": {
+                "bucket": "../tmp/data",
+                "client_id": "fs",
+                "is_directory": false,
+                "name": "public/hello.tsv",
+                "size": 81
+              }
+            },
+            {
               "cursor": "public/hello2.txt",
               "node": {
                 "bucket": "../tmp/data",
@@ -15,7 +25,9 @@
               }
             }
           ],
-          "pageInfo": { "hasNextPage": false }
+          "pageInfo": {
+            "hasNextPage": false
+          }
         }
       }
     ]

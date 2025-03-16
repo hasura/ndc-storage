@@ -5,6 +5,7 @@ import (
 
 	"github.com/hasura/ndc-sdk-go/scalar"
 	"github.com/hasura/ndc-sdk-go/schema"
+	"github.com/hasura/ndc-storage/connector/storage/common/encoding"
 )
 
 // StorageKeyValue represent a key-value string pair
@@ -219,7 +220,8 @@ type GetStorageObjectOptions struct {
 	VersionID  *string `json:"version_id"`
 	PartNumber *int    `json:"part_number"`
 	// Options to be included for the object information.
-	Include StorageObjectIncludeOptions `json:"-"`
+	Include     StorageObjectIncludeOptions `json:"-"`
+	PreValidate func(*StorageObject) error  `json:"-"`
 }
 
 // StorageCopyDestOptions represents options specified by user for CopyObject/ComposeObject APIs.
@@ -438,4 +440,11 @@ type PutStorageObjectArguments struct {
 type UploadStorageObjectFromURLArguments struct {
 	PutStorageObjectArguments
 	HTTPRequestOptions
+}
+
+// DownloadStorageObjectAsCsvArguments are used to specify additional headers or options during GET requests.
+type DownloadStorageObjectAsCsvArguments struct {
+	GetStorageObjectArguments
+
+	Options encoding.CSVDecodeOptions `json:"options,omitempty"`
 }
