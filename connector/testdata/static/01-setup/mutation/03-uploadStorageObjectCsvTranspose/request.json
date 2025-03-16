@@ -5,8 +5,8 @@
       "type": "procedure",
       "name": "upload_storage_object_from_url",
       "arguments": {
-        "bucket": "azblob-bucket-test",
-        "url": "https://raw.githubusercontent.com/hasura/ndc-storage/1435d6b29bc5a1781afd484255cda64ccbaaf368/connector/testdata/fixtures/transpose.csv",
+        "bucket": "minio-bucket-test",
+        "url": "https://raw.githubusercontent.com/hasura/ndc-storage/a2860fab1def7d2969d8545fec8587a39ec9d749/connector/testdata/fixtures/transpose.csv",
         "name": "public/transpose.csv"
       },
       "fields": {

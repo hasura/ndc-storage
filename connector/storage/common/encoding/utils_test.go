@@ -41,3 +41,33 @@ func TestContentTypeFromExtension(t *testing.T) {
 		})
 	}
 }
+
+func TestTransposeMatrixString(t *testing.T) {
+	testCases := []struct {
+		Input    [][]string
+		Expected [][]string
+	}{
+		{
+			Input:    [][]string{},
+			Expected: [][]string{},
+		},
+		{
+			Input: [][]string{
+				{"id", "1", "2", "3", "4"},
+				{"name", "Jack", "John", "Tom", "Jane"},
+				{"active", "true", "false", "true", "false"},
+			},
+			Expected: [][]string{
+				{"id", "name", "active"},
+				{"1", "Jack", "true"},
+				{"2", "John", "false"},
+				{"3", "Tom", "true"},
+				{"4", "Jane", "false"},
+			},
+		},
+	}
+
+	for _, tc := range testCases {
+		assert.DeepEqual(t, tc.Expected, transposeMatrixString(tc.Input))
+	}
+}

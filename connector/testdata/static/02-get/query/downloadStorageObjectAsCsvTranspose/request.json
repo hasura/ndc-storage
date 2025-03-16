@@ -11,7 +11,7 @@
     "options": {
       "type": "literal",
       "value": {
-        "comma": ",",
+        "delimiter": ",",
         "comment": "#",
         "lazy_quotes": false,
         "parse_json": true,

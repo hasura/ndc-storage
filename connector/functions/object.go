@@ -205,13 +205,13 @@ func FunctionDownloadStorageObjectAsCsv(ctx context.Context, state *types.State,
 
 	decodeOptions := args.Options
 
-	if decodeOptions.Comma == "" {
+	if decodeOptions.Delimiter == "" {
 		var contentType string
 		if stat.ContentType != nil {
 			contentType = *stat.ContentType
 		}
 
-		decodeOptions.Comma = encoding.CSVCommaFromContentType(stat.Name, contentType)
+		decodeOptions.Delimiter = encoding.CSVCommaFromContentType(stat.Name, contentType)
 	}
 
 	data, err := encoding.DecodeCSV(ctx, reader, decodeOptions)

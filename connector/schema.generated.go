@@ -78,10 +78,10 @@ func GetConnectorSchema() *schema.SchemaResponse {
 			},
 			"CSVDecodeOptions": schema.ObjectType{
 				Fields: schema.ObjectTypeFields{
-					"comma": schema.ObjectField{
+					"comment": schema.ObjectField{
 						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
 					},
-					"comment": schema.ObjectField{
+					"delimiter": schema.ObjectField{
 						Type: schema.NewNullableType(schema.NewNamedType("String")).Encode(),
 					},
 					"lazy_quotes": schema.ObjectField{

@@ -4,7 +4,7 @@ version: v1
 definition:
   name: CSVDecodeOptions
   fields:
-    - name: comma
+    - name: delimiter
       type: String
     - name: comment
       type: String
@@ -34,7 +34,7 @@ definition:
     - role: admin
       output:
         allowedFields:
-          - comma
+          - delimiter
           - comment
           - lazy_quotes
           - no_header

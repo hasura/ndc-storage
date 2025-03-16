@@ -120,7 +120,7 @@ query DownloadObject {
 # }
 ```
 
-### Download Text Objects
+### Download Objects as Text
 
 Use the `downloadStorageObjectAsText` query if you are confident that the object content is plain text.
 
@@ -142,6 +142,75 @@ query DownloadObjectAsText {
 #   }
 # }
 ```
+
+### Download and decode JSON files
+
+Use the `downloadStorageObjectAsJson` query to download and decode text files to arbitrary JSON.
+
+> [!NOTE]
+> The connector limits the maximum download size via the `runtime.maxDownloadSizeMBs` setting to avoid memory leaks. The GraphQL engine on Hasura Cloud also limits the max response size from connectors. The acceptable file size should be 30 MB in maximum.
+
+```gql
+query DownloadObjectAsJson {
+  downloadStorageObjectAsJson(name: "hello.json") {
+    data
+  }
+}
+
+# {
+#   "data": {
+#     "downloadStorageObjectAsJson": {
+#       "data": {
+#         "hello": "world"
+#       }
+#     }
+#   }
+# }
+```
+
+### Download and decode CSV files
+
+Use the `downloadStorageObjectAsCsv` query to download and decode CSV files. The file content must be in text.
+
+> [!NOTE]
+> The connector limits the maximum download size via the `runtime.maxDownloadSizeMBs` setting to avoid memory leaks. The GraphQL engine on Hasura Cloud also limits the max response size from connectors. The acceptable file size should be 30 MB in maximum.
+
+```gql
+query DownloadObjectAsCsv {
+  downloadStorageObjectAsCsv(name: "hello.csv", options: { parse_json: true }) {
+    data
+  }
+}
+
+# {
+#   "data": {
+#     "downloadStorageObjectAsCsv": {
+#       "data": [
+#         {
+#           "id": 1,
+#           "name": "Pike",
+#           "active": true
+#         },
+#         {
+#           "id": 2,
+#           "name": "Thompson",
+#           "active": true
+#         }
+#       ]
+#     }
+#   }
+# }
+```
+
+#### Options
+
+- `no_header`: the connect uses values of the first row as object properties. If this option is true the connector will assume that first row is not the header. The result will be a 2-dimension matrix.
+- `transpose`: transpose the matrix before converting.
+- `parse_json`: if this option is set the connector will try parsing cell values using JSON encoding.
+- `delimiter`: specify the delimiter character to decode CSV. The default delimiter is comma `,`.
+- `comment`: the comment character. If not empty lines beginning with the comment character without preceding whitespace are ignored.
+- `lazy_quotes`: the default is true. A quote may appear in an unquoted field and a non-doubled quote may appear in a quoted field.
+- `trim_leading_space`: the default is true. Leading white space in a field is ignored.
 
 ### List Objects
 

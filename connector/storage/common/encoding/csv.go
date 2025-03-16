@@ -24,8 +24,8 @@ type CSVDecodeOptions struct {
 	// Try to parse column values to JSON types.
 	ParseJSON bool `json:"parse_json,omitempty"`
 
-	// Comma is the field delimiter.
-	Comma string `json:"comma,omitempty"`
+	// The field delimiter.
+	Delimiter string `json:"delimiter,omitempty"`
 
 	// Comment, if not 0, is the comment character. Lines beginning with the
 	// Comment character without preceding whitespace are ignored.
@@ -43,7 +43,7 @@ type CSVDecodeOptions struct {
 // NewReader creates a new CSV Reader instance from options.
 func (cdo CSVDecodeOptions) NewReader(reader io.Reader) *csv.Reader {
 	r := createDefaultCsvReader(reader)
-	r.Comma = evalCSVComma(cdo.Comma, "")
+	r.Comma = evalCSVComma(cdo.Delimiter, "")
 
 	if cdo.LazyQuotes != nil {
 		r.LazyQuotes = *cdo.LazyQuotes
@@ -71,6 +71,7 @@ func DecodeCSV(ctx context.Context, reader io.Reader, options CSVDecodeOptions) 
 
 	if options.Transpose {
 		matrix = transposeMatrixString(matrix)
+		matrixLen = len(matrix)
 	}
 
 	if options.NoHeader {

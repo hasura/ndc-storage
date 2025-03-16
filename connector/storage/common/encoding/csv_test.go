@@ -26,7 +26,7 @@ id	title	date
 4	movie 4	2004
 `,
 			Options: CSVDecodeOptions{
-				Comma:      "tab",
+				Delimiter:  "tab",
 				LazyQuotes: utils.ToPtr(true),
 			},
 			Expected: [][]string{
@@ -41,7 +41,7 @@ id	title	date
 			Name:  "tsv2",
 			Input: "first_name\tlast_name\tusername\n\"Rob\"\t\"Pike\"\trob\nKen\tThompson\tken\n\"Robert\"\t\"Griesemer\"\t\"gri\"",
 			Options: CSVDecodeOptions{
-				Comma:      "tab",
+				Delimiter:  "tab",
 				LazyQuotes: utils.ToPtr(true),
 			},
 			Expected: [][]string{

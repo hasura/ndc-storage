@@ -8,11 +8,11 @@ import (
 // FromValue decodes values from map
 func (j *CSVDecodeOptions) FromValue(input map[string]any) error {
 	var err error
-	j.Comma, err = utils.GetStringDefault(input, "comma")
+	j.Comment, err = utils.GetStringDefault(input, "comment")
 	if err != nil {
 		return err
 	}
-	j.Comment, err = utils.GetStringDefault(input, "comment")
+	j.Delimiter, err = utils.GetStringDefault(input, "delimiter")
 	if err != nil {
 		return err
 	}
@@ -42,8 +42,8 @@ func (j *CSVDecodeOptions) FromValue(input map[string]any) error {
 // ToMap encodes the struct to a value map
 func (j CSVDecodeOptions) ToMap() map[string]any {
 	r := make(map[string]any)
-	r["comma"] = j.Comma
 	r["comment"] = j.Comment
+	r["delimiter"] = j.Delimiter
 	r["lazy_quotes"] = j.LazyQuotes
 	r["no_header"] = j.NoHeader
 	r["parse_json"] = j.ParseJSON

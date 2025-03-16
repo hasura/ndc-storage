@@ -245,7 +245,7 @@ definition:
                   name: String
         CSVDecodeOptions:
           fields:
-            comma:
+            delimiter:
               type:
                 type: nullable
                 underlying_type:
