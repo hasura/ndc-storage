@@ -1,0 +1,12 @@
+{
+  "operation_results": [
+    {
+      "result": {
+        "bucket": "minio-bucket-test",
+        "name": "public/transpose.csv",
+        "size": null
+      },
+      "type": "procedure"
+    }
+  ]
+}

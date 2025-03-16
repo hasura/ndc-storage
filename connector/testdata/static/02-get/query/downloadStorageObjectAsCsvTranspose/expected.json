@@ -1,0 +1,32 @@
+[
+  {
+    "rows": [
+      {
+        "__value": {
+          "data": [
+            {
+              "active": true,
+              "id": 1,
+              "name": "Jack"
+            },
+            {
+              "active": false,
+              "id": 2,
+              "name": "John"
+            },
+            {
+              "active": true,
+              "id": 3,
+              "name": "Tom"
+            },
+            {
+              "active": false,
+              "id": 4,
+              "name": "Jane"
+            }
+          ]
+        }
+      }
+    ]
+  }
+]

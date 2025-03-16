@@ -69,6 +69,10 @@ func DecodeCSV(ctx context.Context, reader io.Reader, options CSVDecodeOptions) 
 		return matrix, err
 	}
 
+	if options.Transpose {
+		matrix = transposeMatrixString(matrix)
+	}
+
 	if options.NoHeader {
 		if !options.ParseJSON {
 			return matrix, nil

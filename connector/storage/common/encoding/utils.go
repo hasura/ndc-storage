@@ -14,3 +14,25 @@ func ContentTypeFromFilePath(filePath string) string {
 
 	return mime.TypeByExtension(ext)
 }
+
+func transposeMatrixString(matrix [][]string) [][]string {
+	totalRows := len(matrix)
+	if totalRows == 0 {
+		return matrix
+	}
+
+	totalCols := len(matrix[0])
+	results := make([][]string, totalCols)
+
+	for y := range totalCols {
+		results[y] = make([]string, totalRows)
+	}
+
+	for y, row := range matrix {
+		for x, col := range row {
+			results[x][y] = col
+		}
+	}
+
+	return results
+}

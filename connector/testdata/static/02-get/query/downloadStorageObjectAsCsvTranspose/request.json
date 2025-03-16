@@ -1,0 +1,42 @@
+{
+  "arguments": {
+    "bucket": {
+      "type": "literal",
+      "value": "minio-bucket-test"
+    },
+    "name": {
+      "type": "literal",
+      "value": "public/transpose.csv"
+    },
+    "options": {
+      "type": "literal",
+      "value": {
+        "comma": ",",
+        "comment": "#",
+        "lazy_quotes": false,
+        "parse_json": true,
+        "trim_leading_space": true,
+        "transpose": true
+      }
+    }
+  },
+  "collection": "download_storage_object_as_csv",
+  "collection_relationships": {},
+  "query": {
+    "fields": {
+      "__value": {
+        "column": "__value",
+        "fields": {
+          "fields": {
+            "data": {
+              "column": "data",
+              "type": "column"
+            }
+          },
+          "type": "object"
+        },
+        "type": "column"
+      }
+    }
+  }
+}
