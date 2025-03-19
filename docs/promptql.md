@@ -13,7 +13,7 @@ The Storage connector can help PromptQL:
 This example list objects in the bucket, download a CSV file to decode and find items that have the first name Shelia.
 
 ```
-List all objects recursively.
+List all objects in the default client recursively.
 ```
 
 ```
