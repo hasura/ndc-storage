@@ -101,22 +101,17 @@ func (cc ClientConfig) toClientOptions(
 	}
 
 	if utils.IsDebug(logger) || cc.HTTP != nil {
-		var baseTransport *http.Transport
-
-		if cc.HTTP != nil {
-			baseTransport, err = cc.HTTP.ToTransport(logger)
-			if err != nil {
-				return nil, err
-			}
+		transport, err := common.NewTransport(cc.HTTP, exhttp.TelemetryConfig{
+			Logger: logger,
+			Port:   port,
+		})
+		if err != nil {
+			return nil, err
 		}
 
 		httpTransport, err := ghttp.NewTransport(
 			ctx,
-			common.NewTransport(baseTransport, common.HTTPTransportOptions{
-				Logger:             logger,
-				Port:               port,
-				DisableCompression: true,
-			}),
+			transport,
 			append(
 				opts,
 				option.WithScopes(

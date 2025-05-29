@@ -4,7 +4,6 @@ import (
 	"errors"
 	"fmt"
 	"log/slog"
-	"net/http"
 	"net/url"
 	"slices"
 	"strings"
@@ -100,20 +99,13 @@ func (cc ClientConfig) toMinioOptions(
 		endpoint = endpointURL.Host
 	}
 
-	var httpTransport *http.Transport
-
-	if cc.HTTP != nil {
-		httpTransport, err = cc.HTTP.ToTransport(logger)
-		if err != nil {
-			return nil, "", err
-		}
-	}
-
-	transport := common.NewTransport(httpTransport, common.HTTPTransportOptions{
-		Logger:             logger,
-		Port:               port,
-		DisableCompression: true,
+	transport, err := common.NewTransport(cc.HTTP, exhttp.TelemetryConfig{
+		Logger: logger,
+		Port:   port,
 	})
+	if err != nil {
+		return nil, "", err
+	}
 
 	opts := &minio.Options{
 		Secure:          useSSL,

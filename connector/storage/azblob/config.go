@@ -58,20 +58,13 @@ func (cc ClientConfig) toAzureBlobClient(logger *slog.Logger) (*azblob.Client, e
 
 	isDebug := utils.IsDebug(logger)
 
-	var httpTransport *http.Transport
-
-	if cc.HTTP != nil {
-		httpTransport, err = cc.HTTP.ToTransport(logger)
-		if err != nil {
-			return nil, err
-		}
-	}
-
-	transport := common.NewTransport(httpTransport, common.HTTPTransportOptions{
-		Logger:             logger,
-		Port:               port,
-		DisableCompression: true,
+	transport, err := common.NewTransport(cc.HTTP, exhttp.TelemetryConfig{
+		Logger: logger,
+		Port:   port,
 	})
+	if err != nil {
+		return nil, err
+	}
 
 	opts := &azblob.ClientOptions{
 		ClientOptions: policy.ClientOptions{
@@ -239,13 +232,15 @@ func (ac AuthCredentials) JSONSchema() *jsonschema.Schema {
 		Ref:         envStringRefName,
 	})
 	entraProps.Set("username", &jsonschema.Schema{
-		Description: "The username (usually an email address)",
+		Description: "The username (usually an email address).",
 		Ref:         envStringRefName,
+		Deprecated:  true,
 	})
 
 	entraProps.Set("password", &jsonschema.Schema{
 		Description: "The user's password",
 		Ref:         envStringRefName,
+		Deprecated:  true,
 	})
 
 	entraProps.Set("clientCertificate", &jsonschema.Schema{

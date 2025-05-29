@@ -27,26 +27,38 @@ type HTTPClient struct {
 	client *http.Client
 }
 
-// NewHTTPClient creates an HTTP client from an HTTP transport configuration.
-func NewHTTPClient(
-	config *exhttp.HTTPTransportTLSConfig,
-	logger *slog.Logger,
-) (*HTTPClient, error) {
+// NewTransport creates a new http transport from config.
+func NewTransport(config *exhttp.HTTPTransportTLSConfig, telemetry exhttp.TelemetryConfig) (http.RoundTripper, error) {
 	var httpTransport *http.Transport
 
 	if config != nil {
 		var err error
 
-		httpTransport, err = config.ToTransport(logger)
+		httpTransport, err = config.ToTransport(telemetry.Logger)
 		if err != nil {
 			return nil, err
 		}
+	} else {
+		httpTransport = exhttp.HTTPTransportConfig{}.ToTransport()
 	}
 
-	transport := NewTransport(httpTransport, HTTPTransportOptions{
+	httpTransport.DisableCompression = true
+
+	return exhttp.NewTelemetryTransport(httpTransport, telemetry), nil
+}
+
+// NewHTTPClient creates an HTTP client from an HTTP transport configuration.
+func NewHTTPClient(
+	config *exhttp.HTTPTransportTLSConfig,
+	logger *slog.Logger,
+) (*HTTPClient, error) {
+	transport, err := NewTransport(config, exhttp.TelemetryConfig{
 		Logger:                     logger,
 		DisableHighCardinalityPath: true,
 	})
+	if err != nil {
+		return nil, err
+	}
 
 	return &HTTPClient{
 		client: &http.Client{
