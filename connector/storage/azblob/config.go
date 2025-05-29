@@ -35,7 +35,7 @@ type ClientConfig struct {
 
 // JSONSchema is used to generate a custom jsonschema.
 func (cc ClientConfig) JSONSchema() *jsonschema.Schema {
-	result := cc.BaseClientConfig.GetJSONSchema([]any{common.StorageProviderTypeAzblob})
+	result := cc.GetJSONSchema([]any{common.StorageProviderTypeAzblob})
 	result.Required = append(result.Required, "authentication")
 	result.Properties.Set("authentication", cc.Authentication.JSONSchema())
 	result.Properties.Set("http", &jsonschema.Schema{
@@ -46,7 +46,7 @@ func (cc ClientConfig) JSONSchema() *jsonschema.Schema {
 }
 
 func (cc ClientConfig) toAzureBlobClient(logger *slog.Logger) (*azblob.Client, error) {
-	endpointURL, port, useSSL, err := cc.BaseClientConfig.ValidateEndpoint()
+	endpointURL, port, useSSL, err := cc.ValidateEndpoint()
 	if err != nil {
 		return nil, err
 	}
@@ -96,12 +96,12 @@ func (cc ClientConfig) toAzureBlobClient(logger *slog.Logger) (*azblob.Client, e
 	return cc.Authentication.toAzureBlobClient(endpoint, opts)
 }
 
-// OtherConfig holds MinIO-specific configurations
+// OtherConfig holds MinIO-specific configurations.
 type OtherConfig struct {
 	// Authentication credentials.
 	Authentication AuthCredentials `json:"authentication" mapstructure:"authentication" yaml:"authentication"`
 	// Configuration for the http client that is used for uploading files from URL.
-	HTTP *exhttp.HTTPTransportTLSConfig `json:"http" mapstructure:"http" yaml:"http"`
+	HTTP *exhttp.HTTPTransportTLSConfig `json:"http"           mapstructure:"http"           yaml:"http"`
 }
 
 // AuthType represents the authentication type enum.
@@ -125,7 +125,11 @@ var enumValues_AuthType = []AuthType{
 func ParseAuthType(input string) (AuthType, error) {
 	result := AuthType(input)
 	if !slices.Contains(enumValues_AuthType, result) {
-		return "", fmt.Errorf("invalid AuthType, expected one of %v, got: %s", enumValues_AuthType, input)
+		return "", fmt.Errorf(
+			"invalid AuthType, expected one of %v, got: %s",
+			enumValues_AuthType,
+			input,
+		)
 	}
 
 	return result, nil
@@ -141,48 +145,48 @@ func (at AuthType) Validate() error {
 // AuthCredentials represent the authentication credentials information.
 type AuthCredentials struct {
 	// The authentication type
-	Type AuthType `json:"type" mapstructure:"type" yaml:"type"`
+	Type AuthType `json:"type"                                 mapstructure:"type"                       yaml:"type"`
 	// Access Key ID.
-	AccountName *utils.EnvString `json:"accountName,omitempty" mapstructure:"accountName" yaml:"accountName,omitempty"`
+	AccountName *utils.EnvString `json:"accountName,omitempty"                mapstructure:"accountName"                yaml:"accountName,omitempty"`
 	// Secret Access Key.
-	AccountKey *utils.EnvString `json:"accountKey,omitempty" mapstructure:"accountKey" yaml:"accountKey,omitempty"`
+	AccountKey *utils.EnvString `json:"accountKey,omitempty"                 mapstructure:"accountKey"                 yaml:"accountKey,omitempty"`
 	// Connection String.
-	ConnectionString *utils.EnvString `json:"connectionString,omitempty" mapstructure:"connectionString" yaml:"connectionString,omitempty"`
+	ConnectionString *utils.EnvString `json:"connectionString,omitempty"           mapstructure:"connectionString"           yaml:"connectionString,omitempty"`
 	// Azure tenant ID.
-	TenantID *utils.EnvString `json:"tenantId,omitempty" mapstructure:"tenantId" yaml:"tenantId,omitempty"`
+	TenantID *utils.EnvString `json:"tenantId,omitempty"                   mapstructure:"tenantId"                   yaml:"tenantId,omitempty"`
 	// The service principal's client ID.
-	ClientID *utils.EnvString `json:"clientId,omitempty" mapstructure:"clientId" yaml:"clientId,omitempty"`
+	ClientID *utils.EnvString `json:"clientId,omitempty"                   mapstructure:"clientId"                   yaml:"clientId,omitempty"`
 	// One of the service principal's client secrets.
-	ClientSecret *utils.EnvString `json:"clientSecret,omitempty" mapstructure:"clientSecret" yaml:"clientSecret,omitempty"`
+	ClientSecret *utils.EnvString `json:"clientSecret,omitempty"               mapstructure:"clientSecret"               yaml:"clientSecret,omitempty"`
 	// The username (usually an email address).
-	Username *utils.EnvString `json:"username,omitempty" mapstructure:"username" yaml:"username,omitempty"`
+	Username *utils.EnvString `json:"username,omitempty"                   mapstructure:"username"                   yaml:"username,omitempty"`
 	// The user's password.
-	Password *utils.EnvString `json:"password,omitempty" mapstructure:"password" yaml:"password,omitempty"`
+	Password *utils.EnvString `json:"password,omitempty"                   mapstructure:"password"                   yaml:"password,omitempty"`
 	// Inline PEM or PKCS12 certificate of the private key in base64 format.
-	ClientCertificate *utils.EnvString `json:"clientCertificate,omitempty" mapstructure:"clientCertificate" yaml:"clientCertificate,omitempty"`
+	ClientCertificate *utils.EnvString `json:"clientCertificate,omitempty"          mapstructure:"clientCertificate"          yaml:"clientCertificate,omitempty"`
 	// Path to a PEM or PKCS12 certificate file including the private key.
-	ClientCertificatePath *utils.EnvString `json:"clientCertificatePath,omitempty" mapstructure:"clientCertificatePath" yaml:"clientCertificatePath,omitempty"`
+	ClientCertificatePath *utils.EnvString `json:"clientCertificatePath,omitempty"      mapstructure:"clientCertificatePath"      yaml:"clientCertificatePath,omitempty"`
 	// Optional password for the certificate
-	ClientCertificatePassword *utils.EnvString `json:"clientCertificatePassword,omitempty" mapstructure:"clientCertificatePassword" yaml:"clientCertificatePassword,omitempty"`
+	ClientCertificatePassword *utils.EnvString `json:"clientCertificatePassword,omitempty"  mapstructure:"clientCertificatePassword"  yaml:"clientCertificatePassword,omitempty"`
 	// SendCertificateChain controls whether the credential sends the public certificate chain in the x5c header of each token request's JWT.
 	// This is required for Subject Name/Issuer (SNI) authentication. Defaults to False.
-	SendCertificateChain bool `json:"sendCertificateChain,omitempty" mapstructure:"sendCertificateChain" yaml:"sendCertificateChain,omitempty"`
+	SendCertificateChain bool `json:"sendCertificateChain,omitempty"       mapstructure:"sendCertificateChain"       yaml:"sendCertificateChain,omitempty"`
 	// TokenFilePath is the path of a file containing a Kubernetes service account token.
-	TokenFilePath *utils.EnvString `json:"tokenFilePath,omitempty" mapstructure:"tokenFilePath" yaml:"tokenFilePath,omitempty"`
+	TokenFilePath *utils.EnvString `json:"tokenFilePath,omitempty"              mapstructure:"tokenFilePath"              yaml:"tokenFilePath,omitempty"`
 	// DisableInstanceDiscovery should be set true only by applications authenticating in disconnected clouds, or
 	// private clouds such as Azure Stack. It determines whether the credential requests Microsoft Entra instance metadata
 	// from https://login.microsoft.com before authenticating. Setting this to true will skip this request, making
 	// the application responsible for ensuring the configured authority is valid and trustworthy.
-	DisableInstanceDiscovery bool `json:"disableInstanceDiscovery,omitempty" mapstructure:"disableInstanceDiscovery" yaml:"disableInstanceDiscovery,omitempty"`
+	DisableInstanceDiscovery bool `json:"disableInstanceDiscovery,omitempty"   mapstructure:"disableInstanceDiscovery"   yaml:"disableInstanceDiscovery,omitempty"`
 	// Enable multitenant authentication. The credential may request tokens from in addition to the tenant specified by AZURE_TENANT_ID.
 	// Set this value to "*" to enable the credential to request a token from any tenant.
 	AdditionallyAllowedTenants []string `json:"additionallyAllowedTenants,omitempty" mapstructure:"additionallyAllowedTenants" yaml:"additionallyAllowedTenants,omitempty"`
 	// Audience to use when requesting tokens for Azure Active Directory authentication.
-	Audience *utils.EnvString `json:"audience,omitempty" mapstructure:"audience" yaml:"audience,omitempty"`
+	Audience *utils.EnvString `json:"audience,omitempty"                   mapstructure:"audience"                   yaml:"audience,omitempty"`
 }
 
 // JSONSchema is used to generate a custom jsonschema.
-func (ac AuthCredentials) JSONSchema() *jsonschema.Schema { //nolint:funlen
+func (ac AuthCredentials) JSONSchema() *jsonschema.Schema {
 	envStringRefName := "#/$defs/EnvString"
 	staticProps := jsonschema.NewProperties()
 	staticProps.Set("type", &jsonschema.Schema{
@@ -310,7 +314,10 @@ func (ac AuthCredentials) JSONSchema() *jsonschema.Schema { //nolint:funlen
 	}
 }
 
-func (ac AuthCredentials) toAzureBlobClient(endpoint string, options *azblob.ClientOptions) (*azblob.Client, error) {
+func (ac AuthCredentials) toAzureBlobClient(
+	endpoint string,
+	options *azblob.ClientOptions,
+) (*azblob.Client, error) {
 	accountName, accountKey, err := ac.parseAccountNameAndKey()
 	if err != nil {
 		return nil, err
@@ -381,6 +388,7 @@ func (ac AuthCredentials) toAzureBlobClient(endpoint string, options *azblob.Cli
 
 func (ac AuthCredentials) parseAccountNameAndKey() (string, string, error) {
 	var accountName, accountKey string
+
 	var err error
 
 	if ac.AccountName != nil {
@@ -401,7 +409,9 @@ func (ac AuthCredentials) parseAccountNameAndKey() (string, string, error) {
 }
 
 // toDefaultAzureCredential creates a DefaultAzureCredential. Pass nil for options to accept defaults.
-func (ac AuthCredentials) toDefaultAzureCredential(options *azblob.ClientOptions) (azcore.TokenCredential, error) {
+func (ac AuthCredentials) toDefaultAzureCredential(
+	options *azblob.ClientOptions,
+) (azcore.TokenCredential, error) {
 	var creds []azcore.TokenCredential
 
 	if ac.TenantID == nil {
@@ -479,7 +489,10 @@ func (ac AuthCredentials) toDefaultAzureCredential(options *azblob.ClientOptions
 	return azidentity.NewChainedTokenCredential(creds, nil)
 }
 
-func (ac AuthCredentials) toClientSecretCredential(tenantID, clientID string, options *azblob.ClientOptions) (azcore.TokenCredential, error) {
+func (ac AuthCredentials) toClientSecretCredential(
+	tenantID, clientID string,
+	options *azblob.ClientOptions,
+) (azcore.TokenCredential, error) {
 	if clientID == "" || ac.ClientSecret == nil {
 		return nil, nil
 	}
@@ -502,7 +515,10 @@ func (ac AuthCredentials) toClientSecretCredential(tenantID, clientID string, op
 	return azidentity.NewClientSecretCredential(tenantID, clientID, clientSecret, o)
 }
 
-func (ac AuthCredentials) toWorkloadIdentityCredential(tenantID, clientID string, options *azblob.ClientOptions) (azcore.TokenCredential, error) {
+func (ac AuthCredentials) toWorkloadIdentityCredential(
+	tenantID, clientID string,
+	options *azblob.ClientOptions,
+) (azcore.TokenCredential, error) {
 	if clientID == "" || ac.TokenFilePath == nil {
 		return nil, nil
 	}
@@ -526,7 +542,10 @@ func (ac AuthCredentials) toWorkloadIdentityCredential(tenantID, clientID string
 	})
 }
 
-func (ac AuthCredentials) toUsernamePasswordCredential(tenantID, clientID string, options *azblob.ClientOptions) (azcore.TokenCredential, error) {
+func (ac AuthCredentials) toUsernamePasswordCredential(
+	tenantID, clientID string,
+	options *azblob.ClientOptions,
+) (azcore.TokenCredential, error) {
 	if clientID == "" || ac.Username == nil {
 		return nil, nil
 	}
@@ -549,7 +568,7 @@ func (ac AuthCredentials) toUsernamePasswordCredential(tenantID, clientID string
 		return nil, err
 	}
 
-	o := &azidentity.UsernamePasswordCredentialOptions{
+	o := &azidentity.UsernamePasswordCredentialOptions{ //nolint:staticcheck
 		AdditionallyAllowedTenants: ac.AdditionallyAllowedTenants,
 		ClientOptions:              options.ClientOptions,
 		DisableInstanceDiscovery:   ac.DisableInstanceDiscovery,
@@ -558,7 +577,10 @@ func (ac AuthCredentials) toUsernamePasswordCredential(tenantID, clientID string
 	return azidentity.NewUsernamePasswordCredential(tenantID, clientID, username, password, o)
 }
 
-func (ac AuthCredentials) toCertificateCredential(tenantID, clientID string, options *azblob.ClientOptions) (azcore.TokenCredential, error) {
+func (ac AuthCredentials) toCertificateCredential(
+	tenantID, clientID string,
+	options *azblob.ClientOptions,
+) (azcore.TokenCredential, error) {
 	if clientID == "" || (ac.ClientCertificate == nil || ac.ClientCertificatePath == nil) {
 		return nil, nil
 	}
@@ -574,7 +596,10 @@ func (ac AuthCredentials) toCertificateCredential(tenantID, clientID string, opt
 		if inlineCert != "" {
 			b64, err := base64.StdEncoding.DecodeString(inlineCert)
 			if err != nil {
-				return nil, fmt.Errorf("failed to decode client certificate from base64 string: %w", err)
+				return nil, fmt.Errorf(
+					"failed to decode client certificate from base64 string: %w",
+					err,
+				)
 			}
 
 			certData = b64
@@ -610,7 +635,10 @@ func (ac AuthCredentials) toCertificateCredential(tenantID, clientID string, opt
 
 	certs, key, err := azidentity.ParseCertificates(certData, password)
 	if err != nil {
-		return nil, fmt.Errorf("failed to parse certificate due to error %w. This may be due to a limitation of this module's certificate loader. Consider calling NewClientCertificateCredential instead", err)
+		return nil, fmt.Errorf(
+			"failed to parse certificate due to error %w. This may be due to a limitation of this module's certificate loader. Consider calling NewClientCertificateCredential instead",
+			err,
+		)
 	}
 
 	o := &azidentity.ClientCertificateCredentialOptions{

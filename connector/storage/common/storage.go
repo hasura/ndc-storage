@@ -13,7 +13,11 @@ type StorageClient interface { //nolint:interfacebloat
 	// MakeBucket creates a new bucket.
 	MakeBucket(ctx context.Context, options *MakeStorageBucketOptions) error
 	// ListBuckets list all buckets.
-	ListBuckets(ctx context.Context, options *ListStorageBucketsOptions, predicate func(string) bool) (*StorageBucketListResults, error)
+	ListBuckets(
+		ctx context.Context,
+		options *ListStorageBucketsOptions,
+		predicate func(string) bool,
+	) (*StorageBucketListResults, error)
 	// GetBucket gets a bucket by name.
 	GetBucket(ctx context.Context, name string, options BucketOptions) (*StorageBucket, error)
 	// BucketExists checks if a bucket exists.
@@ -23,31 +27,85 @@ type StorageClient interface { //nolint:interfacebloat
 	// UpdateBucket updates configurations for the bucket.
 	UpdateBucket(ctx context.Context, bucketName string, opts UpdateStorageBucketOptions) error
 	// ListObjects list objects in a bucket.
-	ListObjects(ctx context.Context, bucketName string, opts *ListStorageObjectsOptions, predicate func(string) bool) (*StorageObjectListResults, error)
+	ListObjects(
+		ctx context.Context,
+		bucketName string,
+		opts *ListStorageObjectsOptions,
+		predicate func(string) bool,
+	) (*StorageObjectListResults, error)
 	// ListIncompleteUploads list partially uploaded objects in a bucket.
-	ListIncompleteUploads(ctx context.Context, bucketName string, args ListIncompleteUploadsOptions) ([]StorageObjectMultipartInfo, error)
+	ListIncompleteUploads(
+		ctx context.Context,
+		bucketName string,
+		args ListIncompleteUploadsOptions,
+	) ([]StorageObjectMultipartInfo, error)
 	// ListDeletedObjects list deleted objects in a bucket.
-	ListDeletedObjects(ctx context.Context, bucketName string, opts *ListStorageObjectsOptions, predicate func(string) bool) (*StorageObjectListResults, error)
+	ListDeletedObjects(
+		ctx context.Context,
+		bucketName string,
+		opts *ListStorageObjectsOptions,
+		predicate func(string) bool,
+	) (*StorageObjectListResults, error)
 	// GetObject returns a stream of the object data. Most of the common errors occur when reading the stream.
-	GetObject(ctx context.Context, bucketName string, objectName string, opts GetStorageObjectOptions) (io.ReadCloser, error)
+	GetObject(
+		ctx context.Context,
+		bucketName string,
+		objectName string,
+		opts GetStorageObjectOptions,
+	) (io.ReadCloser, error)
 	// PutObject uploads objects that are less than 128MiB in a single PUT operation. For objects that are greater than 128MiB in size,
 	// PutObject seamlessly uploads the object as parts of 128MiB or more depending on the actual file size. The max upload size for an object is 5TB.
-	PutObject(ctx context.Context, bucketName string, objectName string, opts *PutStorageObjectOptions, reader io.Reader, objectSize int64) (*StorageUploadInfo, error)
+	PutObject(
+		ctx context.Context,
+		bucketName string,
+		objectName string,
+		opts *PutStorageObjectOptions,
+		reader io.Reader,
+		objectSize int64,
+	) (*StorageUploadInfo, error)
 	// CopyObject creates or replaces an object through server-side copying of an existing object.
 	// It supports conditional copying, copying a part of an object and server-side encryption of destination and decryption of source.
 	// To copy multiple source objects into a single destination object see the ComposeObject API.
-	CopyObject(ctx context.Context, dest StorageCopyDestOptions, src StorageCopySrcOptions) (*StorageUploadInfo, error)
+	CopyObject(
+		ctx context.Context,
+		dest StorageCopyDestOptions,
+		src StorageCopySrcOptions,
+	) (*StorageUploadInfo, error)
 	// ComposeObject creates an object by concatenating a list of source objects using server-side copying.
-	ComposeObject(ctx context.Context, dest StorageCopyDestOptions, srcs []StorageCopySrcOptions) (*StorageUploadInfo, error)
+	ComposeObject(
+		ctx context.Context,
+		dest StorageCopyDestOptions,
+		srcs []StorageCopySrcOptions,
+	) (*StorageUploadInfo, error)
 	// StatObject fetches metadata of an object.
-	StatObject(ctx context.Context, bucketName string, objectName string, opts GetStorageObjectOptions) (*StorageObject, error)
+	StatObject(
+		ctx context.Context,
+		bucketName string,
+		objectName string,
+		opts GetStorageObjectOptions,
+	) (*StorageObject, error)
 	// RemoveObject removes an object with some specified options
-	RemoveObject(ctx context.Context, bucketName string, objectName string, opts RemoveStorageObjectOptions) error
+	RemoveObject(
+		ctx context.Context,
+		bucketName string,
+		objectName string,
+		opts RemoveStorageObjectOptions,
+	) error
 	// RemoveObjects remove a list of objects obtained from an input channel. The call sends a delete request to the server up to 1000 objects at a time.
 	// The errors observed are sent over the error channel.
-	RemoveObjects(ctx context.Context, bucketName string, opts *RemoveStorageObjectsOptions, predicate func(string) bool) []RemoveStorageObjectError
+	RemoveObjects(
+		ctx context.Context,
+		bucketName string,
+		opts *RemoveStorageObjectsOptions,
+		predicate func(string) bool,
+	) []RemoveStorageObjectError
 	// UpdateObject updates object configurations.
-	UpdateObject(ctx context.Context, bucketName string, objectName string, opts UpdateStorageObjectOptions) error
+	UpdateObject(
+		ctx context.Context,
+		bucketName string,
+		objectName string,
+		opts UpdateStorageObjectOptions,
+	) error
 	// RestoreObject restores a soft-deleted object.
 	RestoreObject(ctx context.Context, bucketName string, objectName string) error
 	// RemoveIncompleteUpload removes a partially uploaded object.
@@ -55,12 +113,22 @@ type StorageClient interface { //nolint:interfacebloat
 	// PresignedGetObject generates a presigned URL for HTTP GET operations. Browsers/Mobile clients may point to this URL to directly download objects even if the bucket is private.
 	// This presigned URL can have an associated expiration time in seconds after which it is no longer operational.
 	// The maximum expiry is 604800 seconds (i.e. 7 days) and minimum is 1 second.
-	PresignedGetObject(ctx context.Context, bucketName string, objectName string, opts PresignedGetStorageObjectOptions) (string, error)
+	PresignedGetObject(
+		ctx context.Context,
+		bucketName string,
+		objectName string,
+		opts PresignedGetStorageObjectOptions,
+	) (string, error)
 	// PresignedPutObject generates a presigned URL for HTTP PUT operations.
 	// Browsers/Mobile clients may point to this URL to upload objects directly to a bucket even if it is private.
 	// This presigned URL can have an associated expiration time in seconds after which it is no longer operational.
 	// The default expiry is set to 7 days.
-	PresignedPutObject(ctx context.Context, bucketName string, objectName string, expiry time.Duration) (string, error)
+	PresignedPutObject(
+		ctx context.Context,
+		bucketName string,
+		objectName string,
+		expiry time.Duration,
+	) (string, error)
 }
 
 // ListStorageBucketsOptions holds all options of a list bucket request.
@@ -206,9 +274,7 @@ type BucketLogging struct {
 	LogObjectPrefix string `json:"log_object_prefix"`
 }
 
-// GoogleStorageRPO (Recovery Point Objective) configures the turbo replication feature. See
-// https://cloud.google.com/storage/docs/managing-turbo-replication for more information.
-// @enum DEFAULT,ASYNC_TURBO
+// @enum DEFAULT,ASYNC_TURBO.
 type GoogleStorageRPO string
 
 // BucketCors is the bucket's Cross-Origin Resource Sharing (CORS) configuration.
@@ -438,8 +504,7 @@ type StorageObjectListResults struct {
 	PageInfo StoragePaginationInfo `json:"pageInfo"`
 }
 
-// StorageObjectReplicationStatus represents the x-amz-replication-status value enum.
-// @enum COMPLETED,PENDING,FAILED,REPLICA
+// @enum COMPLETED,PENDING,FAILED,REPLICA.
 type StorageObjectReplicationStatus string
 
 // StorageObjectChecksum represents checksum values of the object.
@@ -498,8 +563,7 @@ type StorageObjectMultipartInfo struct {
 // @enum SSE_C,KMS,S3
 // type ServerSideEncryptionMethod string
 
-// StorageRetentionMode the object retention mode.
-// @enum Locked,Unlocked,Mutable,Delete
+// @enum Locked,Unlocked,Mutable,Delete.
 type StorageRetentionMode string
 
 // RemoveStorageObjectError the container of Multi Delete S3 API error.
@@ -509,8 +573,7 @@ type RemoveStorageObjectError struct {
 	Error      string `json:"error"`
 }
 
-// ChecksumType contains information about the checksum type.
-// @enum SHA256,SHA1,CRC32,CRC32C,CRC64NVME,FullObjectCRC32,FullObjectCRC32C,None
+// @enum SHA256,SHA1,CRC32,CRC32C,CRC64NVME,FullObjectCRC32,FullObjectCRC32C,None.
 type ChecksumType string
 
 // NotificationCommonConfig - represents one single notification configuration
@@ -522,19 +585,19 @@ type NotificationCommonConfig struct {
 	Filter *NotificationFilter `json:"filter,omitempty"`
 }
 
-// NotificationTopicConfig carries one single topic notification configuration
+// NotificationTopicConfig carries one single topic notification configuration.
 type NotificationTopicConfig struct {
 	NotificationCommonConfig
 	Topic string `json:"topic"`
 }
 
-// NotificationQueueConfig carries one single queue notification configuration
+// NotificationQueueConfig carries one single queue notification configuration.
 type NotificationQueueConfig struct {
 	NotificationCommonConfig
 	Queue string `json:"queue"`
 }
 
-// NotificationLambdaConfig carries one single cloudfunction notification configuration
+// NotificationLambdaConfig carries one single cloudfunction notification configuration.
 type NotificationLambdaConfig struct {
 	NotificationCommonConfig
 	Lambda string `json:"cloud_function"`
@@ -547,25 +610,23 @@ type NotificationConfig struct {
 	QueueConfigs  []NotificationQueueConfig  `json:"queue_configurations"`
 }
 
-// NotificationFilter - a tag in the notification xml structure which carries suffix/prefix filters
+// NotificationFilter - a tag in the notification xml structure which carries suffix/prefix filters.
 type NotificationFilter struct {
 	S3Key *NotificationS3Key `json:"s3_key,omitempty"`
 }
 
-// NotificationFilterRule child of S3Key, a tag in the notification xml which
-// carries suffix/prefix filters
+// carries suffix/prefix filters.
 type NotificationFilterRule struct {
 	Name  string `json:"name"`
 	Value string `json:"value"`
 }
 
-// NotificationS3Key child of Filter, a tag in the notification xml which
-// carries suffix/prefix filters
+// carries suffix/prefix filters.
 type NotificationS3Key struct {
 	FilterRules []NotificationFilterRule `json:"filter_rule,omitempty"`
 }
 
-// ObjectLifecycleRule represents a single rule in lifecycle configuration
+// ObjectLifecycleRule represents a single rule in lifecycle configuration.
 type ObjectLifecycleRule struct {
 	ID                             string                                      `json:"id,omitempty"`
 	Enabled                        bool                                        `json:"enabled,omitempty"`
@@ -585,12 +646,12 @@ type ObjectLifecycleConfiguration struct {
 	Rules []ObjectLifecycleRule `json:"rules"`
 }
 
-// AbortIncompleteMultipartUpload structure, not supported yet on MinIO
+// AbortIncompleteMultipartUpload structure, not supported yet on MinIO.
 type ObjectAbortIncompleteMultipartUpload struct {
 	DaysAfterInitiation *int `json:"days_after_initiation"`
 }
 
-// ObjectLifecycleExpiration expiration details of lifecycle configuration
+// ObjectLifecycleExpiration expiration details of lifecycle configuration.
 type ObjectLifecycleExpiration struct {
 	Date         *scalar.Date `json:"date,omitempty"`
 	Days         *int         `json:"days,omitempty"`
@@ -603,25 +664,25 @@ func (fe ObjectLifecycleExpiration) IsEmpty() bool {
 	return fe.DeleteAll == nil && fe.Date == nil && fe.Days == nil && fe.DeleteMarker == nil
 }
 
-// ObjectLifecycleTransition transition details of lifecycle configuration
+// ObjectLifecycleTransition transition details of lifecycle configuration.
 type ObjectLifecycleTransition struct {
 	Date         *scalar.Date `json:"date"`
 	StorageClass *string      `json:"storage_class"`
 	Days         *int         `json:"days"`
 }
 
-// LifecycleDelMarkerExpiration represents DelMarkerExpiration actions element in an ILM policy
+// LifecycleDelMarkerExpiration represents DelMarkerExpiration actions element in an ILM policy.
 type ObjectLifecycleDelMarkerExpiration struct {
 	Days *int `json:"days"`
 }
 
-// ObjectLifecycleAllVersionsExpiration represents AllVersionsExpiration actions element in an ILM policy
+// ObjectLifecycleAllVersionsExpiration represents AllVersionsExpiration actions element in an ILM policy.
 type ObjectLifecycleAllVersionsExpiration struct {
 	Days         *int  `json:"days"`
 	DeleteMarker *bool `json:"delete_marker"`
 }
 
-// ObjectLifecycleFilter will be used in selecting rule(s) for lifecycle configuration
+// ObjectLifecycleFilter will be used in selecting rule(s) for lifecycle configuration.
 type ObjectLifecycleFilter struct {
 	// MatchesPrefix is the condition matching an object if any of the
 	// matches_prefix strings are an exact prefix of the object's name.
@@ -673,25 +734,24 @@ func (ssec ServerSideEncryptionConfiguration) IsEmpty() bool {
 	return ssec.KmsMasterKeyID == "" && ssec.SSEAlgorithm == ""
 }
 
-// SetStorageObjectLockConfig represents the object lock configuration options in given bucket
+// SetStorageObjectLockConfig represents the object lock configuration options in given bucket.
 type SetStorageObjectLockConfig struct {
 	Mode     *StorageRetentionMode         `json:"mode"`
 	Validity *uint                         `json:"validity"`
 	Unit     *StorageRetentionValidityUnit `json:"unit"`
 }
 
-// StorageObjectLockConfig represents the object lock configuration in given bucket
+// StorageObjectLockConfig represents the object lock configuration in given bucket.
 type StorageObjectLockConfig struct {
 	SetStorageObjectLockConfig
 
 	Enabled bool `json:"enabled"`
 }
 
-// StorageRetentionValidityUnit retention validity unit.
-// @enum DAYS,YEARS
+// @enum DAYS,YEARS.
 type StorageRetentionValidityUnit string
 
-// StorageBucketVersioningConfiguration is the versioning configuration structure
+// StorageBucketVersioningConfiguration is the versioning configuration structure.
 type StorageBucketVersioningConfiguration struct {
 	Enabled   bool    `json:"enabled"`
 	MFADelete *string `json:"mfa_delete"`
@@ -727,13 +787,12 @@ type StorageReplicationDestination struct {
 	StorageClass *string `json:"storage_class,omitempty"`
 }
 
-// ExistingObjectReplication whether existing object replication is enabled
+// ExistingObjectReplication whether existing object replication is enabled.
 type ExistingObjectReplication struct {
 	Status StorageReplicationRuleStatus `json:"status"` // should be set to "Disabled" by default
 }
 
-// StorageReplicationRuleStatus represents Enabled/Disabled status
-// @enum Enabled,Disabled
+// @enum Enabled,Disabled.
 type StorageReplicationRuleStatus string
 
 // DeleteMarkerReplication whether delete markers are replicated -
@@ -742,12 +801,12 @@ type DeleteMarkerReplication struct {
 	Status StorageReplicationRuleStatus `json:"status"` // should be set to "Disabled" by default
 }
 
-// DeleteReplication whether versioned deletes are replicated. This is a MinIO specific extension
+// DeleteReplication whether versioned deletes are replicated. This is a MinIO specific extension.
 type DeleteReplication struct {
 	Status StorageReplicationRuleStatus `json:"status"` // should be set to "Disabled" by default
 }
 
-// ReplicaModifications specifies if replica modification sync is enabled
+// ReplicaModifications specifies if replica modification sync is enabled.
 type ReplicaModifications struct {
 	Status StorageReplicationRuleStatus `json:"status"` // should be set to "Enabled" by default
 }

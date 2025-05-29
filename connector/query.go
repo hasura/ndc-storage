@@ -13,12 +13,22 @@ import (
 )
 
 // QueryExplain explains a query by creating an execution plan.
-func (c *Connector) QueryExplain(ctx context.Context, configuration *types.Configuration, state *types.State, request *schema.QueryRequest) (*schema.ExplainResponse, error) {
+func (c *Connector) QueryExplain(
+	ctx context.Context,
+	configuration *types.Configuration,
+	state *types.State,
+	request *schema.QueryRequest,
+) (*schema.ExplainResponse, error) {
 	return nil, schema.NotSupportedError("query explain has not been supported yet", nil)
 }
 
 // Query executes a query.
-func (c *Connector) Query(ctx context.Context, configuration *types.Configuration, state *types.State, request *schema.QueryRequest) (schema.QueryResponse, error) {
+func (c *Connector) Query(
+	ctx context.Context,
+	configuration *types.Configuration,
+	state *types.State,
+	request *schema.QueryRequest,
+) (schema.QueryResponse, error) {
 	requestVars := request.Variables
 	if len(requestVars) == 0 {
 		requestVars = []schema.QueryRequestVariablesElem{make(schema.QueryRequestVariablesElem)}
@@ -32,7 +42,12 @@ func (c *Connector) Query(ctx context.Context, configuration *types.Configuratio
 	return c.execQueryAsync(ctx, state, request, requestVars)
 }
 
-func (c *Connector) execQuerySync(ctx context.Context, state *types.State, req *schema.QueryRequest, requestVars []schema.QueryRequestVariablesElem) (schema.QueryResponse, error) {
+func (c *Connector) execQuerySync(
+	ctx context.Context,
+	state *types.State,
+	req *schema.QueryRequest,
+	requestVars []schema.QueryRequestVariablesElem,
+) (schema.QueryResponse, error) {
 	rowSets := make([]schema.RowSet, len(requestVars))
 
 	for i, requestVar := range requestVars {
@@ -47,7 +62,12 @@ func (c *Connector) execQuerySync(ctx context.Context, state *types.State, req *
 	return rowSets, nil
 }
 
-func (c *Connector) execQueryAsync(ctx context.Context, state *types.State, request *schema.QueryRequest, requestVars []schema.QueryRequestVariablesElem) (schema.QueryResponse, error) {
+func (c *Connector) execQueryAsync(
+	ctx context.Context,
+	state *types.State,
+	request *schema.QueryRequest,
+	requestVars []schema.QueryRequestVariablesElem,
+) (schema.QueryResponse, error) {
 	rowSets := make([]schema.RowSet, len(requestVars))
 	eg, ctx := errgroup.WithContext(ctx)
 	eg.SetLimit(c.config.Concurrency.Query)
@@ -74,7 +94,13 @@ func (c *Connector) execQueryAsync(ctx context.Context, state *types.State, requ
 	return rowSets, nil
 }
 
-func (c *Connector) execQuery(ctx context.Context, state *types.State, request *schema.QueryRequest, variables map[string]any, index int) (*schema.RowSet, error) {
+func (c *Connector) execQuery(
+	ctx context.Context,
+	state *types.State,
+	request *schema.QueryRequest,
+	variables map[string]any,
+	index int,
+) (*schema.RowSet, error) {
 	ctx, span := state.Tracer.Start(ctx, fmt.Sprintf("Execute Query %d", index))
 	defer span.End()
 
@@ -83,9 +109,12 @@ func (c *Connector) execQuery(ctx context.Context, state *types.State, request *
 		span.SetStatus(codes.Error, "failed to resolve argument variables")
 		span.RecordError(err)
 
-		return nil, schema.UnprocessableContentError("failed to resolve argument variables", map[string]any{
-			"cause": err.Error(),
-		})
+		return nil, schema.UnprocessableContentError(
+			"failed to resolve argument variables",
+			map[string]any{
+				"cause": err.Error(),
+			},
+		)
 	}
 
 	var result *schema.RowSet
@@ -110,7 +139,12 @@ func (c *Connector) execQuery(ctx context.Context, state *types.State, request *
 		}
 		result, err = executor.Execute(ctx)
 	default:
-		result, err = c.apiHandler.Query(context.WithValue(ctx, types.QueryVariablesContextKey, variables), state, request, rawArgs)
+		result, err = c.apiHandler.Query(
+			context.WithValue(ctx, types.QueryVariablesContextKey, variables),
+			state,
+			request,
+			rawArgs,
+		)
 	}
 
 	if err != nil {

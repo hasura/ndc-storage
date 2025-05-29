@@ -11,8 +11,7 @@ import (
 	"github.com/hasura/ndc-sdk-go/schema"
 )
 
-// DownloadHTTPMethod represents the http method enum to download files.
-// @enum GET,POST
+// @enum GET,POST.
 type DownloadHTTPMethod string
 
 // RequestOptions hold HTTP request options.
@@ -23,13 +22,16 @@ type HTTPRequestOptions struct {
 	BodyText string              `json:"body_text,omitempty"`
 }
 
-// HTTPClient extends the native http.Client with custom configurations and methods
+// HTTPClient extends the native http.Client with custom configurations and methods.
 type HTTPClient struct {
 	client *http.Client
 }
 
 // NewHTTPClient creates an HTTP client from an HTTP transport configuration.
-func NewHTTPClient(config *exhttp.HTTPTransportTLSConfig, logger *slog.Logger) (*HTTPClient, error) {
+func NewHTTPClient(
+	config *exhttp.HTTPTransportTLSConfig,
+	logger *slog.Logger,
+) (*HTTPClient, error) {
 	var httpTransport *http.Transport
 
 	if config != nil {
@@ -54,7 +56,10 @@ func NewHTTPClient(config *exhttp.HTTPTransportTLSConfig, logger *slog.Logger) (
 }
 
 // Request sends a HTTP request to the remote endpoint.
-func (hc HTTPClient) Request(ctx context.Context, options *HTTPRequestOptions) (*http.Response, error) {
+func (hc HTTPClient) Request(
+	ctx context.Context,
+	options *HTTPRequestOptions,
+) (*http.Response, error) {
 	method := http.MethodGet
 
 	if options.Method != nil && *options.Method != "" {

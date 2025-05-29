@@ -66,7 +66,11 @@ func New(ctx context.Context, config *ClientConfig, logger *slog.Logger) (*Clien
 	return mc, nil
 }
 
-func (c *Client) startOtelSpan(ctx context.Context, name string, bucketName string) (context.Context, trace.Span) {
+func (c *Client) startOtelSpan(
+	ctx context.Context,
+	name string,
+	bucketName string,
+) (context.Context, trace.Span) {
 	spanKind := trace.SpanKindClient
 	if c.useCustomClient {
 		spanKind = trace.SpanKindInternal

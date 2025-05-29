@@ -18,9 +18,12 @@ import (
 
 var tracer = connector.NewTracer("connector/storage/azblob")
 
-var errNotSupported = schema.NotSupportedError("Azure Blob Storage doesn't support this method", nil)
+var errNotSupported = schema.NotSupportedError(
+	"Azure Blob Storage doesn't support this method",
+	nil,
+)
 
-func serializeObjectInfo(item *container.BlobItem) common.StorageObject { //nolint:funlen,cyclop
+func serializeObjectInfo(item *container.BlobItem) common.StorageObject {
 	object := common.StorageObject{
 		IsLatest:  item.IsCurrentVersion,
 		Deleted:   item.Deleted,

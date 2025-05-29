@@ -56,7 +56,11 @@ func NewOSFileSystem(config *ClientConfig) (*Client, error) {
 	return New(afero.NewOsFs(), config)
 }
 
-func (c *Client) startOtelSpan(ctx context.Context, name string, bucketName string) (context.Context, trace.Span) {
+func (c *Client) startOtelSpan(
+	ctx context.Context,
+	name string,
+	bucketName string,
+) (context.Context, trace.Span) {
 	ctx, span := tracer.Start(ctx, name, trace.WithSpanKind(trace.SpanKindClient))
 	span.SetAttributes(
 		common.NewDBSystemAttribute(),

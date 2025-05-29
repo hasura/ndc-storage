@@ -12,12 +12,10 @@ const (
 	HeaderContentLanguage    string = "content-language"
 )
 
-// StorageClientID the storage client ID enum.
-// @scalar StorageClientID string
+// @scalar StorageClientID string.
 type StorageClientID string
 
-// StorageProviderType represents a storage provider type enum.
-// @enum s3,gcs,azblob,fs
+// @enum s3,gcs,azblob,fs.
 type StorageProviderType string
 
 // Validate checks if the provider type is valid.

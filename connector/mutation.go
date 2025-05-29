@@ -12,12 +12,22 @@ import (
 )
 
 // MutationExplain explains a mutation by creating an execution plan.
-func (c *Connector) MutationExplain(ctx context.Context, configuration *types.Configuration, state *types.State, request *schema.MutationRequest) (*schema.ExplainResponse, error) {
+func (c *Connector) MutationExplain(
+	ctx context.Context,
+	configuration *types.Configuration,
+	state *types.State,
+	request *schema.MutationRequest,
+) (*schema.ExplainResponse, error) {
 	return nil, schema.NotSupportedError("mutation explain has not been supported yet", nil)
 }
 
 // Mutation executes a mutation.
-func (c *Connector) Mutation(ctx context.Context, configuration *types.Configuration, state *types.State, request *schema.MutationRequest) (*schema.MutationResponse, error) {
+func (c *Connector) Mutation(
+	ctx context.Context,
+	configuration *types.Configuration,
+	state *types.State,
+	request *schema.MutationRequest,
+) (*schema.MutationResponse, error) {
 	concurrencyLimit := c.config.Concurrency.Mutation
 	if len(request.Operations) <= 1 || concurrencyLimit <= 1 {
 		return c.execMutationSync(ctx, state, request)
@@ -26,7 +36,11 @@ func (c *Connector) Mutation(ctx context.Context, configuration *types.Configura
 	return c.execMutationAsync(ctx, state, request)
 }
 
-func (c *Connector) execMutationSync(ctx context.Context, state *types.State, request *schema.MutationRequest) (*schema.MutationResponse, error) {
+func (c *Connector) execMutationSync(
+	ctx context.Context,
+	state *types.State,
+	request *schema.MutationRequest,
+) (*schema.MutationResponse, error) {
 	operationResults := make([]schema.MutationOperationResults, len(request.Operations))
 
 	for i, operation := range request.Operations {
@@ -43,7 +57,11 @@ func (c *Connector) execMutationSync(ctx context.Context, state *types.State, re
 	}, nil
 }
 
-func (c *Connector) execMutationAsync(ctx context.Context, state *types.State, request *schema.MutationRequest) (*schema.MutationResponse, error) {
+func (c *Connector) execMutationAsync(
+	ctx context.Context,
+	state *types.State,
+	request *schema.MutationRequest,
+) (*schema.MutationResponse, error) {
 	operationResults := make([]schema.MutationOperationResults, len(request.Operations))
 	eg, ctx := errgroup.WithContext(ctx)
 	eg.SetLimit(c.config.Concurrency.Mutation)
@@ -72,7 +90,12 @@ func (c *Connector) execMutationAsync(ctx context.Context, state *types.State, r
 	}, nil
 }
 
-func (c *Connector) execMutation(ctx context.Context, state *types.State, operation schema.MutationOperation, index int) (schema.MutationOperationResults, error) {
+func (c *Connector) execMutation(
+	ctx context.Context,
+	state *types.State,
+	operation schema.MutationOperation,
+	index int,
+) (schema.MutationOperationResults, error) {
 	ctx, span := state.Tracer.Start(ctx, fmt.Sprintf("Execute Procedure %d", index))
 	defer span.End()
 
@@ -100,6 +123,10 @@ func (c *Connector) execMutation(ctx context.Context, state *types.State, operat
 	}
 }
 
-func (c *Connector) execProcedure(ctx context.Context, state *types.State, operation *schema.MutationOperation) (schema.MutationOperationResults, error) {
+func (c *Connector) execProcedure(
+	ctx context.Context,
+	state *types.State,
+	operation *schema.MutationOperation,
+) (schema.MutationOperationResults, error) {
 	return c.apiHandler.Mutation(ctx, state, operation)
 }

@@ -20,7 +20,10 @@ const (
 	size256K = 256 * 1024
 )
 
-var errNotSupported = schema.NotSupportedError("Google Cloud Storage doesn't support this method", nil)
+var errNotSupported = schema.NotSupportedError(
+	"Google Cloud Storage doesn't support this method",
+	nil,
+)
 
 func serializeBucketInfo(bucket *storage.BucketAttrs) common.StorageBucket {
 	result := common.StorageBucket{
@@ -120,7 +123,9 @@ func serializeBucketInfo(bucket *storage.BucketAttrs) common.StorageBucket {
 	return result
 }
 
-func serializeRetentionPolicy(retentionPolicy *storage.RetentionPolicy) *common.StorageObjectLockConfig {
+func serializeRetentionPolicy(
+	retentionPolicy *storage.RetentionPolicy,
+) *common.StorageObjectLockConfig {
 	if retentionPolicy == nil {
 		return nil
 	}
@@ -143,7 +148,7 @@ func serializeRetentionPolicy(retentionPolicy *storage.RetentionPolicy) *common.
 	}
 }
 
-func serializeObjectInfo(obj *storage.ObjectAttrs) common.StorageObject { //nolint:cyclop
+func serializeObjectInfo(obj *storage.ObjectAttrs) common.StorageObject {
 	object := common.StorageObject{
 		Bucket:       obj.Bucket,
 		Name:         obj.Name,
@@ -246,7 +251,11 @@ func serializeObjectInfo(obj *storage.ObjectAttrs) common.StorageObject { //noli
 	return object
 }
 
-func (c *Client) validateListObjectsOptions(span trace.Span, opts *common.ListStorageObjectsOptions, includeDeleted bool) *storage.Query {
+func (c *Client) validateListObjectsOptions(
+	span trace.Span,
+	opts *common.ListStorageObjectsOptions,
+	includeDeleted bool,
+) *storage.Query {
 	span.SetAttributes(
 		attribute.Bool("storage.options.recursive", opts.Recursive),
 		attribute.Bool("storage.options.with_deleted", includeDeleted),
@@ -320,16 +329,22 @@ func validateLifecycleRule(rule common.ObjectLifecycleRule) storage.LifecycleRul
 	for _, filter := range rule.RuleFilter {
 		r.Condition.MatchesPrefix = append(r.Condition.MatchesPrefix, filter.MatchesPrefix...)
 		r.Condition.MatchesSuffix = append(r.Condition.MatchesSuffix, filter.MatchesSuffix...)
-		r.Condition.MatchesStorageClasses = append(r.Condition.MatchesStorageClasses, filter.MatchesStorageClasses...)
+		r.Condition.MatchesStorageClasses = append(
+			r.Condition.MatchesStorageClasses,
+			filter.MatchesStorageClasses...)
 	}
 
 	if rule.NoncurrentVersionExpiration != nil {
 		if rule.NoncurrentVersionExpiration.NewerNoncurrentVersions != nil {
-			r.Condition.NumNewerVersions = int64(*rule.NoncurrentVersionExpiration.NewerNoncurrentVersions)
+			r.Condition.NumNewerVersions = int64(
+				*rule.NoncurrentVersionExpiration.NewerNoncurrentVersions,
+			)
 		}
 
 		if rule.NoncurrentVersionExpiration.NoncurrentDays != nil {
-			r.Condition.DaysSinceNoncurrentTime = int64(*rule.NoncurrentVersionExpiration.NoncurrentDays)
+			r.Condition.DaysSinceNoncurrentTime = int64(
+				*rule.NoncurrentVersionExpiration.NoncurrentDays,
+			)
 		}
 
 		r.Action.Type = storage.DeleteAction
@@ -337,11 +352,15 @@ func validateLifecycleRule(rule common.ObjectLifecycleRule) storage.LifecycleRul
 
 	if rule.NoncurrentVersionTransition != nil {
 		if rule.NoncurrentVersionTransition.NewerNoncurrentVersions != nil {
-			r.Condition.NumNewerVersions = int64(*rule.NoncurrentVersionTransition.NewerNoncurrentVersions)
+			r.Condition.NumNewerVersions = int64(
+				*rule.NoncurrentVersionTransition.NewerNoncurrentVersions,
+			)
 		}
 
 		if rule.NoncurrentVersionTransition.NoncurrentDays != nil {
-			r.Condition.DaysSinceNoncurrentTime = int64(*rule.NoncurrentVersionTransition.NoncurrentDays)
+			r.Condition.DaysSinceNoncurrentTime = int64(
+				*rule.NoncurrentVersionTransition.NoncurrentDays,
+			)
 		}
 
 		if rule.NoncurrentVersionTransition.StorageClass != nil {
@@ -374,7 +393,8 @@ func validateLifecycleRule(rule common.ObjectLifecycleRule) storage.LifecycleRul
 		return r
 	}
 
-	if rule.AbortIncompleteMultipartUpload != nil && rule.AbortIncompleteMultipartUpload.DaysAfterInitiation != nil {
+	if rule.AbortIncompleteMultipartUpload != nil &&
+		rule.AbortIncompleteMultipartUpload.DaysAfterInitiation != nil {
 		r.Action.Type = storage.AbortIncompleteMPUAction
 		r.Condition.AgeInDays = int64(*rule.AbortIncompleteMultipartUpload.DaysAfterInitiation)
 		r.Condition.AllObjects = r.Condition.AgeInDays == 0
@@ -426,7 +446,8 @@ func serializeLifecycleConfiguration(input storage.Lifecycle) *common.ObjectLife
 func serializeLifecycleRule(rule storage.LifecycleRule) common.ObjectLifecycleRule {
 	r := common.ObjectLifecycleRule{}
 
-	if len(rule.Condition.MatchesPrefix) > 0 || len(rule.Condition.MatchesSuffix) > 0 || len(rule.Condition.MatchesStorageClasses) > 0 {
+	if len(rule.Condition.MatchesPrefix) > 0 || len(rule.Condition.MatchesSuffix) > 0 ||
+		len(rule.Condition.MatchesStorageClasses) > 0 {
 		r.RuleFilter = []common.ObjectLifecycleFilter{
 			{
 				MatchesPrefix:         rule.Condition.MatchesPrefix,

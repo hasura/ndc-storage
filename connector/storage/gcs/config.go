@@ -34,7 +34,7 @@ type ClientConfig struct {
 func (cc ClientConfig) JSONSchema() *jsonschema.Schema {
 	envStringRef := "#/$defs/EnvString"
 
-	result := cc.BaseClientConfig.GetJSONSchema([]any{common.StorageProviderTypeGcs})
+	result := cc.GetJSONSchema([]any{common.StorageProviderTypeGcs})
 	result.Required = append(result.Required, "authentication", "projectId")
 	result.Properties.Set("authentication", cc.Authentication.JSONSchema())
 
@@ -53,22 +53,25 @@ func (cc ClientConfig) JSONSchema() *jsonschema.Schema {
 	return result
 }
 
-// OtherConfig holds MinIO-specific configurations
+// OtherConfig holds MinIO-specific configurations.
 type OtherConfig struct {
 	// Project ID of the Google Cloud account.
-	ProjectID utils.EnvString `json:"projectId" mapstructure:"projectId" yaml:"projectId"`
+	ProjectID utils.EnvString `json:"projectId"                  mapstructure:"projectId"        yaml:"projectId"`
 	// The public host to be used for presigned URL generation.
-	PublicHost *utils.EnvString `json:"publicHost,omitempty" mapstructure:"publicHost" yaml:"publicHost,omitempty"`
-	UseGRPC    bool             `json:"useGrpc,omitempty"    mapstructure:"useGrpc"    yaml:"useGrpc,omitempty"`
+	PublicHost *utils.EnvString `json:"publicHost,omitempty"       mapstructure:"publicHost"       yaml:"publicHost,omitempty"`
+	UseGRPC    bool             `json:"useGrpc,omitempty"          mapstructure:"useGrpc"          yaml:"useGrpc,omitempty"`
 	// GRPCConnPoolSize enable the connection pool for gRPC connections that requests will be balanced.
 	GRPCConnPoolSize int `json:"grpcConnPoolSize,omitempty" mapstructure:"grpcConnPoolSize" yaml:"grpcConnPoolSize,omitempty"`
 	// Authentication credentials.
-	Authentication AuthCredentials `json:"authentication" mapstructure:"authentication" yaml:"authentication"`
+	Authentication AuthCredentials `json:"authentication"             mapstructure:"authentication"   yaml:"authentication"`
 	// Configuration for the http client that is used for uploading files from URL.
-	HTTP *exhttp.HTTPTransportTLSConfig `json:"http" mapstructure:"http" yaml:"http"`
+	HTTP *exhttp.HTTPTransportTLSConfig `json:"http"                       mapstructure:"http"             yaml:"http"`
 }
 
-func (cc ClientConfig) toClientOptions(ctx context.Context, logger *slog.Logger) ([]option.ClientOption, error) {
+func (cc ClientConfig) toClientOptions(
+	ctx context.Context,
+	logger *slog.Logger,
+) ([]option.ClientOption, error) {
 	opts := []option.ClientOption{
 		option.WithLogger(logger),
 	}
@@ -80,7 +83,7 @@ func (cc ClientConfig) toClientOptions(ctx context.Context, logger *slog.Logger)
 
 	opts = append(opts, cred)
 
-	endpointURL, port, _, err := cc.BaseClientConfig.ValidateEndpoint()
+	endpointURL, port, _, err := cc.ValidateEndpoint()
 	if err != nil {
 		return nil, err
 	}
@@ -107,13 +110,20 @@ func (cc ClientConfig) toClientOptions(ctx context.Context, logger *slog.Logger)
 			}
 		}
 
-		httpTransport, err := ghttp.NewTransport(ctx,
+		httpTransport, err := ghttp.NewTransport(
+			ctx,
 			common.NewTransport(baseTransport, common.HTTPTransportOptions{
 				Logger:             logger,
 				Port:               port,
 				DisableCompression: true,
 			}),
-			append(opts, option.WithScopes(storage.ScopeFullControl, "https://www.googleapis.com/auth/cloud-platform"))...,
+			append(
+				opts,
+				option.WithScopes(
+					storage.ScopeFullControl,
+					"https://www.googleapis.com/auth/cloud-platform",
+				),
+			)...,
 		)
 		if err != nil {
 			return nil, err
@@ -169,7 +179,11 @@ var enumValues_AuthType = []AuthType{
 func ParseAuthType(input string) (AuthType, error) {
 	result := AuthType(input)
 	if !slices.Contains(enumValues_AuthType, result) {
-		return "", fmt.Errorf("invalid AuthType, expected one of %v, got: %s", enumValues_AuthType, input)
+		return "", fmt.Errorf(
+			"invalid AuthType, expected one of %v, got: %s",
+			enumValues_AuthType,
+			input,
+		)
 	}
 
 	return result, nil
@@ -185,9 +199,9 @@ func (at AuthType) Validate() error {
 // AuthCredentials represent the authentication credentials information.
 type AuthCredentials struct {
 	// The authentication type
-	Type AuthType `json:"type" mapstructure:"type" yaml:"type"`
+	Type AuthType `json:"type"                      mapstructure:"type"            yaml:"type"`
 	// The given service account or refresh token JSON credentials in JSON string format.
-	Credentials *utils.EnvString `json:"credentials,omitempty" mapstructure:"credentials" yaml:"credentials,omitempty"`
+	Credentials *utils.EnvString `json:"credentials,omitempty"     mapstructure:"credentials"     yaml:"credentials,omitempty"`
 	// The given service account or refresh token JSON credentials file.
 	CredentialsFile *utils.EnvString `json:"credentialsFile,omitempty" mapstructure:"credentialsFile" yaml:"credentialsFile,omitempty"`
 }

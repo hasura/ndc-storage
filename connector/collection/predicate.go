@@ -24,7 +24,12 @@ type PredicateEvaluator struct {
 }
 
 // EvalBucketPredicate evaluates the predicate bucket condition of the query request.
-func EvalBucketPredicate(bucketArguments common.StorageClientCredentialArguments, preOperator *StringComparisonOperator, predicate schema.Expression, variables map[string]any) (*PredicateEvaluator, error) {
+func EvalBucketPredicate(
+	bucketArguments common.StorageClientCredentialArguments,
+	preOperator *StringComparisonOperator,
+	predicate schema.Expression,
+	variables map[string]any,
+) (*PredicateEvaluator, error) {
 	result := &PredicateEvaluator{
 		StorageClientCredentialArguments: bucketArguments,
 		Include:                          common.StorageObjectIncludeOptions{},
@@ -52,7 +57,12 @@ func EvalBucketPredicate(bucketArguments common.StorageClientCredentialArguments
 }
 
 // EvalObjectPredicate evaluates the predicate object condition of the query request.
-func EvalObjectPredicate(bucketInfo common.StorageBucketArguments, preOperator *StringComparisonOperator, predicate schema.Expression, variables map[string]any) (*PredicateEvaluator, error) {
+func EvalObjectPredicate(
+	bucketInfo common.StorageBucketArguments,
+	preOperator *StringComparisonOperator,
+	predicate schema.Expression,
+	variables map[string]any,
+) (*PredicateEvaluator, error) {
 	result := &PredicateEvaluator{
 		StorageClientCredentialArguments: bucketInfo.StorageClientCredentialArguments,
 		Include:                          common.StorageObjectIncludeOptions{},
@@ -89,7 +99,7 @@ func EvalObjectPredicate(bucketInfo common.StorageBucketArguments, preOperator *
 	return result, nil
 }
 
-// GetBucketArguments get bucket arguments information
+// GetBucketArguments get bucket arguments information.
 func (pe PredicateEvaluator) GetBucketArguments() common.StorageBucketArguments {
 	result := common.StorageBucketArguments{
 		StorageClientCredentialArguments: common.StorageClientCredentialArguments{
@@ -105,7 +115,7 @@ func (pe PredicateEvaluator) GetBucketArguments() common.StorageBucketArguments 
 	return result
 }
 
-// EvalArguments evaluate other request arguments
+// EvalArguments evaluate other request arguments.
 func (pe *PredicateEvaluator) EvalArguments(arguments map[string]any) error {
 	if clientType, err := utils.GetNullableString(arguments, ArgumentClientType); err != nil {
 		return schema.UnprocessableContentError(err.Error(), nil)
@@ -213,7 +223,10 @@ func (pe *PredicateEvaluator) evalQuerySelectionFields(fields map[string]schema.
 	}
 }
 
-func (pe *PredicateEvaluator) evalQueryPredicate(expression schema.Expression, forBucket bool) (bool, error) {
+func (pe *PredicateEvaluator) evalQueryPredicate(
+	expression schema.Expression,
+	forBucket bool,
+) (bool, error) {
 	exprT, err := expression.InterfaceT()
 	if err != nil {
 		return false, err
@@ -240,7 +253,10 @@ func (pe *PredicateEvaluator) evalQueryPredicate(expression schema.Expression, f
 	}
 }
 
-func (pe *PredicateEvaluator) evalExpressionBinaryComparisonOperator(expr *schema.ExpressionBinaryComparisonOperator, forBucket bool) (bool, error) {
+func (pe *PredicateEvaluator) evalExpressionBinaryComparisonOperator(
+	expr *schema.ExpressionBinaryComparisonOperator,
+	forBucket bool,
+) (bool, error) {
 	columnT, err := expr.Column.InterfaceT()
 	if err != nil {
 		return false, err
@@ -269,6 +285,7 @@ func (pe *PredicateEvaluator) evalExpressionBinaryComparisonOperator(expr *schem
 			return ok, nil
 		case StorageObjectColumnName:
 			var ok bool
+
 			var err error
 
 			if forBucket {
@@ -290,7 +307,9 @@ func (pe *PredicateEvaluator) evalExpressionBinaryComparisonOperator(expr *schem
 	}
 }
 
-func (pe *PredicateEvaluator) evalIsNullBoolExp(expr *schema.ExpressionBinaryComparisonOperator) (*bool, error) {
+func (pe *PredicateEvaluator) evalIsNullBoolExp(
+	expr *schema.ExpressionBinaryComparisonOperator,
+) (*bool, error) {
 	if expr.Operator != OperatorIsNull {
 		return nil, nil
 	}
@@ -298,7 +317,9 @@ func (pe *PredicateEvaluator) evalIsNullBoolExp(expr *schema.ExpressionBinaryCom
 	return getComparisonValueBoolean(expr.Value, pe.variables)
 }
 
-func (pe *PredicateEvaluator) evalPredicateClientID(expr *schema.ExpressionBinaryComparisonOperator) (bool, error) {
+func (pe *PredicateEvaluator) evalPredicateClientID(
+	expr *schema.ExpressionBinaryComparisonOperator,
+) (bool, error) {
 	switch expr.Operator {
 	case OperatorEqual:
 		value, err := getComparisonValueString(expr.Value, pe.variables)
@@ -323,7 +344,10 @@ func (pe *PredicateEvaluator) evalPredicateClientID(expr *schema.ExpressionBinar
 	}
 }
 
-func (pe *PredicateEvaluator) evalStringFilter(predicate *StringFilterPredicate, expr *schema.ExpressionBinaryComparisonOperator) (bool, error) { //nolint:gocognit,cyclop
+func (pe *PredicateEvaluator) evalStringFilter(
+	predicate *StringFilterPredicate,
+	expr *schema.ExpressionBinaryComparisonOperator,
+) (bool, error) {
 	value, err := getComparisonValueString(expr.Value, pe.variables)
 	if err != nil {
 		return false, err
@@ -407,10 +431,16 @@ func (pe *PredicateEvaluator) evalStringFilter(predicate *StringFilterPredicate,
 				Operator: expr.Operator,
 			})
 		case OperatorEqual:
-			return strings.Contains(strings.ToLower(predicate.Pre.Value), strings.ToLower(valueStr)), nil
+			return strings.Contains(
+				strings.ToLower(predicate.Pre.Value),
+				strings.ToLower(valueStr),
+			), nil
 		}
 	default:
-		return false, fmt.Errorf("unsupported operator `%s` for string filter expression", expr.Operator)
+		return false, fmt.Errorf(
+			"unsupported operator `%s` for string filter expression",
+			expr.Operator,
+		)
 	}
 
 	return true, nil
@@ -422,7 +452,7 @@ type StringFilterPredicate struct {
 	Post []StringComparisonOperator
 }
 
-// HasPostPredicate checks if the request has post-predicate expressions
+// HasPostPredicate checks if the request has post-predicate expressions.
 func (sfp StringFilterPredicate) GetPrefix() string {
 	if sfp.Pre != nil {
 		return sfp.Pre.Value
@@ -431,12 +461,12 @@ func (sfp StringFilterPredicate) GetPrefix() string {
 	return ""
 }
 
-// HasPostPredicate checks if the request has post-predicate expressions
+// HasPostPredicate checks if the request has post-predicate expressions.
 func (sfp StringFilterPredicate) HasPostPredicate() bool {
 	return len(sfp.Post) > 0
 }
 
-// CheckPostObjectPredicate the predicate function to filter the object with post conditions
+// CheckPostObjectPredicate the predicate function to filter the object with post conditions.
 func (sfp StringFilterPredicate) CheckPostPredicate(input string) bool {
 	for _, pred := range sfp.Post {
 		if (pred.Operator == OperatorContains && !strings.Contains(input, pred.Value)) ||

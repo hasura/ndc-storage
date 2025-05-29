@@ -28,7 +28,12 @@ type Manager struct {
 }
 
 // NewManager creates a storage client manager instance.
-func NewManager(ctx context.Context, configs []ClientConfig, runtimeSettings RuntimeSettings, logger *slog.Logger) (*Manager, error) {
+func NewManager(
+	ctx context.Context,
+	configs []ClientConfig,
+	runtimeSettings RuntimeSettings,
+	logger *slog.Logger,
+) (*Manager, error) {
 	httpClient, err := common.NewHTTPClient(runtimeSettings.HTTP, logger)
 	if err != nil {
 		return nil, fmt.Errorf("failed to initialize the http client: %w", err)
@@ -54,7 +59,11 @@ func NewManager(ctx context.Context, configs []ClientConfig, runtimeSettings Run
 
 		defaultBucket, err := baseConfig.DefaultBucket.GetOrDefault("")
 		if err != nil {
-			return nil, fmt.Errorf("failed to initialize storage client %s; defaultBucket: %w", configID, err)
+			return nil, fmt.Errorf(
+				"failed to initialize storage client %s; defaultBucket: %w",
+				configID,
+				err,
+			)
 		}
 
 		c := Client{
@@ -67,7 +76,11 @@ func NewManager(ctx context.Context, configs []ClientConfig, runtimeSettings Run
 		if baseConfig.DefaultPresignedExpiry != nil {
 			presignedExpiry, err := time.ParseDuration(*baseConfig.DefaultPresignedExpiry)
 			if err != nil {
-				return nil, fmt.Errorf("failed to parse defaultPresignedExpiry in client %s: %w", configID, err)
+				return nil, fmt.Errorf(
+					"failed to parse defaultPresignedExpiry in client %s: %w",
+					configID,
+					err,
+				)
 			}
 
 			c.defaultPresignedExpiry = &presignedExpiry
@@ -113,7 +126,10 @@ func (m *Manager) GetClientIDs() []string {
 	return results
 }
 
-func (m *Manager) GetOrCreateClient(ctx context.Context, arguments common.StorageClientCredentialArguments) (*Client, error) {
+func (m *Manager) GetOrCreateClient(
+	ctx context.Context,
+	arguments common.StorageClientCredentialArguments,
+) (*Client, error) {
 	if len(m.clients) == 0 || !arguments.IsEmpty() {
 		return m.createTemporaryClient(ctx, arguments)
 	}
@@ -127,8 +143,11 @@ func (m *Manager) GetOrCreateClient(ctx context.Context, arguments common.Storag
 }
 
 // GetClient gets the inner client by key and bucket name.
-func (m *Manager) GetClientAndBucket(ctx context.Context, arguments common.StorageBucketArguments) (*Client, string, error) {
-	if len(m.clients) == 0 || !arguments.StorageClientCredentialArguments.IsEmpty() {
+func (m *Manager) GetClientAndBucket(
+	ctx context.Context,
+	arguments common.StorageBucketArguments,
+) (*Client, string, error) {
+	if len(m.clients) == 0 || !arguments.IsEmpty() {
 		if arguments.Bucket == "" {
 			return nil, "", schema.UnprocessableContentError("bucket is required", nil)
 		}
@@ -151,7 +170,10 @@ func (m *Manager) GetClientAndBucket(ctx context.Context, arguments common.Stora
 	if hasClientID {
 		client, ok := m.GetClient(arguments.ClientID)
 		if !ok {
-			return nil, "", schema.InternalServerError("client not found: "+string(*arguments.ClientID), nil)
+			return nil, "", schema.InternalServerError(
+				"client not found: "+string(*arguments.ClientID),
+				nil,
+			)
 		}
 
 		bucketName, err := client.ValidateBucket(arguments.Bucket)
@@ -163,7 +185,8 @@ func (m *Manager) GetClientAndBucket(ctx context.Context, arguments common.Stora
 	}
 
 	for _, c := range m.clients {
-		if c.defaultBucket == arguments.Bucket || slices.Contains(c.allowedBuckets, arguments.Bucket) {
+		if c.defaultBucket == arguments.Bucket ||
+			slices.Contains(c.allowedBuckets, arguments.Bucket) {
 			return &c, arguments.Bucket, nil
 		}
 	}
@@ -172,7 +195,10 @@ func (m *Manager) GetClientAndBucket(ctx context.Context, arguments common.Stora
 	return &m.clients[0], arguments.Bucket, nil
 }
 
-func (m *Manager) createTemporaryClient(ctx context.Context, arguments common.StorageClientCredentialArguments) (*Client, error) {
+func (m *Manager) createTemporaryClient(
+	ctx context.Context,
+	arguments common.StorageClientCredentialArguments,
+) (*Client, error) {
 	_, span := tracer.Start(ctx, "createTemporaryClient")
 	defer span.End()
 
@@ -194,7 +220,10 @@ func (m *Manager) createTemporaryClient(ctx context.Context, arguments common.St
 		fallthrough
 	default:
 		if arguments.AccessKeyID == "" && arguments.SecretAccessKey == "" {
-			return nil, schema.UnprocessableContentError("accessKeyId and secretAccessKey arguments are required", nil)
+			return nil, schema.UnprocessableContentError(
+				"accessKeyId and secretAccessKey arguments are required",
+				nil,
+			)
 		}
 
 		clientConfig := &minio.ClientConfig{
@@ -216,7 +245,7 @@ func (m *Manager) createTemporaryClient(ctx context.Context, arguments common.St
 		}
 
 		if arguments.Endpoint != "" {
-			clientConfig.BaseClientConfig.Endpoint = &utils.EnvString{
+			clientConfig.Endpoint = &utils.EnvString{
 				Value: &arguments.Endpoint,
 			}
 		}
@@ -234,7 +263,10 @@ func (m *Manager) createTemporaryClient(ctx context.Context, arguments common.St
 	}
 }
 
-func (m *Manager) createTemporaryAzblobClient(ctx context.Context, arguments common.StorageClientCredentialArguments) (*Client, error) {
+func (m *Manager) createTemporaryAzblobClient(
+	ctx context.Context,
+	arguments common.StorageClientCredentialArguments,
+) (*Client, error) {
 	if arguments.Endpoint == "" {
 		return nil, schema.UnprocessableContentError("endpoint is required for azblob", nil)
 	}
@@ -255,7 +287,7 @@ func (m *Manager) createTemporaryAzblobClient(ctx context.Context, arguments com
 			Value: &arguments.Endpoint,
 		}
 
-		clientConfig.OtherConfig.Authentication = azblob.AuthCredentials{
+		clientConfig.Authentication = azblob.AuthCredentials{
 			Type: azblob.AuthTypeSharedKey,
 			AccountName: &utils.EnvString{
 				Value: utils.ToPtr(arguments.AccessKeyID),
@@ -265,7 +297,7 @@ func (m *Manager) createTemporaryAzblobClient(ctx context.Context, arguments com
 			},
 		}
 	} else {
-		clientConfig.OtherConfig.Authentication = azblob.AuthCredentials{
+		clientConfig.Authentication = azblob.AuthCredentials{
 			Type: azblob.AuthTypeConnectionString,
 			ConnectionString: &utils.EnvString{
 				Value: utils.ToPtr(arguments.Endpoint),

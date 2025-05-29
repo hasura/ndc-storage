@@ -12,7 +12,11 @@ import (
 )
 
 // ProcedureCreateStorageBucket creates a new bucket.
-func ProcedureCreateStorageBucket(ctx context.Context, state *types.State, args *common.MakeStorageBucketArguments) (SuccessResponse, error) {
+func ProcedureCreateStorageBucket(
+	ctx context.Context,
+	state *types.State,
+	args *common.MakeStorageBucketArguments,
+) (SuccessResponse, error) {
 	if err := state.Storage.MakeBucket(ctx, args.ClientID, &args.MakeStorageBucketOptions); err != nil {
 		return SuccessResponse{}, err
 	}
@@ -21,15 +25,27 @@ func ProcedureCreateStorageBucket(ctx context.Context, state *types.State, args 
 }
 
 // FunctionStorageBucketConnections list all buckets using the relay style.
-func FunctionStorageBucketConnections(ctx context.Context, state *types.State, args *common.ListStorageBucketArguments) (StorageConnection[common.StorageBucket], error) {
+func FunctionStorageBucketConnections(
+	ctx context.Context,
+	state *types.State,
+	args *common.ListStorageBucketArguments,
+) (StorageConnection[common.StorageBucket], error) {
 	if args.First != nil && *args.First <= 0 {
-		return StorageConnection[common.StorageBucket]{}, schema.UnprocessableContentError("$first argument must be larger than 0", nil)
+		return StorageConnection[common.StorageBucket]{}, schema.UnprocessableContentError(
+			"$first argument must be larger than 0",
+			nil,
+		)
 	}
 
-	request, err := collection.EvalBucketPredicate(args.StorageClientCredentialArguments, &collection.StringComparisonOperator{
-		Value:    args.Prefix,
-		Operator: collection.OperatorStartsWith,
-	}, args.Where, types.QueryVariablesFromContext(ctx))
+	request, err := collection.EvalBucketPredicate(
+		args.StorageClientCredentialArguments,
+		&collection.StringComparisonOperator{
+			Value:    args.Prefix,
+			Operator: collection.OperatorStartsWith,
+		},
+		args.Where,
+		types.QueryVariablesFromContext(ctx),
+	)
 	if err != nil {
 		return StorageConnection[common.StorageBucket]{}, err
 	}
@@ -51,19 +67,24 @@ func FunctionStorageBucketConnections(ctx context.Context, state *types.State, a
 
 	bucketArguments := request.GetBucketArguments()
 
-	buckets, err := state.Storage.ListBuckets(ctx, bucketArguments.StorageClientCredentialArguments, &common.ListStorageBucketsOptions{
-		Prefix:     request.BucketPredicate.GetPrefix(),
-		MaxResults: args.First,
-		StartAfter: args.After,
-		Include: common.BucketIncludeOptions{
-			Tags:       request.Include.Tags,
-			Versioning: request.Include.Versions,
-			Lifecycle:  request.Include.Lifecycle,
-			Encryption: request.Include.Encryption,
-			ObjectLock: request.IncludeObjectLock,
+	buckets, err := state.Storage.ListBuckets(
+		ctx,
+		bucketArguments.StorageClientCredentialArguments,
+		&common.ListStorageBucketsOptions{
+			Prefix:     request.BucketPredicate.GetPrefix(),
+			MaxResults: args.First,
+			StartAfter: args.After,
+			Include: common.BucketIncludeOptions{
+				Tags:       request.Include.Tags,
+				Versioning: request.Include.Versions,
+				Lifecycle:  request.Include.Lifecycle,
+				Encryption: request.Include.Encryption,
+				ObjectLock: request.IncludeObjectLock,
+			},
+			NumThreads: state.Concurrency.Query,
 		},
-		NumThreads: state.Concurrency.Query,
-	}, predicate)
+		predicate,
+	)
 	if err != nil {
 		return StorageConnection[common.StorageBucket]{}, err
 	}
@@ -84,11 +105,20 @@ func FunctionStorageBucketConnections(ctx context.Context, state *types.State, a
 }
 
 // FunctionStorageBucket gets a bucket by name.
-func FunctionStorageBucket(ctx context.Context, state *types.State, args *common.GetStorageBucketArguments) (*common.StorageBucket, error) {
-	request, err := collection.EvalBucketPredicate(args.StorageClientCredentialArguments, &collection.StringComparisonOperator{
-		Value:    args.Name,
-		Operator: collection.OperatorEqual,
-	}, args.Where, types.QueryVariablesFromContext(ctx))
+func FunctionStorageBucket(
+	ctx context.Context,
+	state *types.State,
+	args *common.GetStorageBucketArguments,
+) (*common.StorageBucket, error) {
+	request, err := collection.EvalBucketPredicate(
+		args.StorageClientCredentialArguments,
+		&collection.StringComparisonOperator{
+			Value:    args.Name,
+			Operator: collection.OperatorEqual,
+		},
+		args.Where,
+		types.QueryVariablesFromContext(ctx),
+	)
 	if err != nil {
 		return nil, err
 	}
@@ -114,11 +144,20 @@ func FunctionStorageBucket(ctx context.Context, state *types.State, args *common
 }
 
 // FunctionStorageBucketExists checks if a bucket exists.
-func FunctionStorageBucketExists(ctx context.Context, state *types.State, args *common.GetStorageBucketArguments) (ExistsResponse, error) {
-	request, err := collection.EvalBucketPredicate(args.StorageClientCredentialArguments, &collection.StringComparisonOperator{
-		Value:    args.Name,
-		Operator: collection.OperatorEqual,
-	}, args.Where, types.QueryVariablesFromContext(ctx))
+func FunctionStorageBucketExists(
+	ctx context.Context,
+	state *types.State,
+	args *common.GetStorageBucketArguments,
+) (ExistsResponse, error) {
+	request, err := collection.EvalBucketPredicate(
+		args.StorageClientCredentialArguments,
+		&collection.StringComparisonOperator{
+			Value:    args.Name,
+			Operator: collection.OperatorEqual,
+		},
+		args.Where,
+		types.QueryVariablesFromContext(ctx),
+	)
 	if err != nil {
 		return ExistsResponse{}, err
 	}
@@ -136,11 +175,20 @@ func FunctionStorageBucketExists(ctx context.Context, state *types.State, args *
 }
 
 // ProcedureRemoveStorageBucket removes a bucket, bucket should be empty to be successfully removed.
-func ProcedureRemoveStorageBucket(ctx context.Context, state *types.State, args *common.GetStorageBucketArguments) (SuccessResponse, error) {
-	request, err := collection.EvalBucketPredicate(args.StorageClientCredentialArguments, &collection.StringComparisonOperator{
-		Value:    args.Name,
-		Operator: collection.OperatorEqual,
-	}, args.Where, types.QueryVariablesFromContext(ctx))
+func ProcedureRemoveStorageBucket(
+	ctx context.Context,
+	state *types.State,
+	args *common.GetStorageBucketArguments,
+) (SuccessResponse, error) {
+	request, err := collection.EvalBucketPredicate(
+		args.StorageClientCredentialArguments,
+		&collection.StringComparisonOperator{
+			Value:    args.Name,
+			Operator: collection.OperatorEqual,
+		},
+		args.Where,
+		types.QueryVariablesFromContext(ctx),
+	)
 	if err != nil {
 		return SuccessResponse{}, err
 	}
@@ -157,11 +205,20 @@ func ProcedureRemoveStorageBucket(ctx context.Context, state *types.State, args 
 }
 
 // ProcedureUpdateStorageBucket updates the bucket's configuration.
-func ProcedureUpdateStorageBucket(ctx context.Context, state *types.State, args *common.UpdateBucketArguments) (SuccessResponse, error) {
-	request, err := collection.EvalBucketPredicate(args.StorageClientCredentialArguments, &collection.StringComparisonOperator{
-		Value:    args.Name,
-		Operator: collection.OperatorEqual,
-	}, args.Where, types.QueryVariablesFromContext(ctx))
+func ProcedureUpdateStorageBucket(
+	ctx context.Context,
+	state *types.State,
+	args *common.UpdateBucketArguments,
+) (SuccessResponse, error) {
+	request, err := collection.EvalBucketPredicate(
+		args.StorageClientCredentialArguments,
+		&collection.StringComparisonOperator{
+			Value:    args.Name,
+			Operator: collection.OperatorEqual,
+		},
+		args.Where,
+		types.QueryVariablesFromContext(ctx),
+	)
 	if err != nil {
 		return SuccessResponse{}, err
 	}

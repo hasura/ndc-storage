@@ -40,7 +40,11 @@ func (c *Client) MakeBucket(ctx context.Context, args *common.MakeStorageBucketO
 }
 
 // ListBuckets lists all buckets.
-func (c *Client) ListBuckets(ctx context.Context, options *common.ListStorageBucketsOptions, predicate func(string) bool) (*common.StorageBucketListResults, error) { //nolint:gocognit,cyclop,funlen
+func (c *Client) ListBuckets(
+	ctx context.Context,
+	options *common.ListStorageBucketsOptions,
+	predicate func(string) bool,
+) (*common.StorageBucketListResults, error) {
 	ctx, span := c.startOtelSpan(ctx, "ListBuckets", "")
 	defer span.End()
 
@@ -70,7 +74,9 @@ func (c *Client) ListBuckets(ctx context.Context, options *common.ListStorageBuc
 	pager := c.client.NewListContainersPager(opts)
 
 	var count int32
+
 	var results []common.StorageBucket
+
 	pageInfo := common.StoragePaginationInfo{}
 
 L:
@@ -172,7 +178,11 @@ func (c *Client) BucketExists(ctx context.Context, bucketName string) (bool, err
 }
 
 // GetBucket gets a bucket by name.
-func (c *Client) GetBucket(ctx context.Context, bucketName string, options common.BucketOptions) (*common.StorageBucket, error) {
+func (c *Client) GetBucket(
+	ctx context.Context,
+	bucketName string,
+	options common.BucketOptions,
+) (*common.StorageBucket, error) {
 	ctx, span := c.startOtelSpan(ctx, "GetBucket", bucketName)
 	defer span.End()
 
@@ -187,7 +197,11 @@ func (c *Client) GetBucket(ctx context.Context, bucketName string, options commo
 	return result, nil
 }
 
-func (c *Client) getBucket(ctx context.Context, bucketName string, options common.BucketOptions) (*common.StorageBucket, error) {
+func (c *Client) getBucket(
+	ctx context.Context,
+	bucketName string,
+	options common.BucketOptions,
+) (*common.StorageBucket, error) {
 	pager := c.client.NewListContainersPager(&service.ListContainersOptions{
 		Prefix: &bucketName,
 		Include: service.ListContainersInclude{
@@ -235,7 +249,11 @@ func (c *Client) getBucket(ctx context.Context, bucketName string, options commo
 }
 
 // UpdateBucket updates configurations for the bucket.
-func (c *Client) UpdateBucket(ctx context.Context, bucketName string, opts common.UpdateStorageBucketOptions) error {
+func (c *Client) UpdateBucket(
+	ctx context.Context,
+	bucketName string,
+	opts common.UpdateStorageBucketOptions,
+) error {
 	ctx, span := c.startOtelSpan(ctx, "UpdateBucket", bucketName)
 	defer span.End()
 
@@ -257,7 +275,8 @@ func (c *Client) RemoveBucket(ctx context.Context, bucketName string) error {
 	if err != nil {
 		var respErr *azcore.ResponseError
 		if errors.As(err, &respErr) {
-			if respErr.ErrorCode == string(bloberror.ContainerBeingDeleted) || respErr.ErrorCode == string(bloberror.ContainerNotFound) {
+			if respErr.ErrorCode == string(bloberror.ContainerBeingDeleted) ||
+				respErr.ErrorCode == string(bloberror.ContainerNotFound) {
 				return nil
 			}
 
@@ -277,7 +296,11 @@ func (c *Client) RemoveBucket(ctx context.Context, bucketName string) error {
 }
 
 // SetBucketTagging sets tags to a bucket.
-func (c *Client) SetBucketTagging(ctx context.Context, bucketName string, bucketTags map[string]string) error {
+func (c *Client) SetBucketTagging(
+	ctx context.Context,
+	bucketName string,
+	bucketTags map[string]string,
+) error {
 	ctx, span := c.startOtelSpan(ctx, "SetBucketTagging", bucketName)
 	defer span.End()
 

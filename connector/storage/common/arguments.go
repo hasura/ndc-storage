@@ -8,7 +8,7 @@ import (
 	"github.com/hasura/ndc-storage/connector/storage/common/encoding"
 )
 
-// StorageKeyValue represent a key-value string pair
+// StorageKeyValue represent a key-value string pair.
 type StorageKeyValue struct {
 	Key   string `json:"key"`
 	Value string `json:"value"`
@@ -24,7 +24,7 @@ type ListStorageBucketArguments struct {
 	First *int `json:"first"`
 	// After start listing lexically at this bucket onwards.
 	After string            `json:"after,omitempty"`
-	Where schema.Expression `json:"where"           ndc:"predicate=StorageBucketFilter"`
+	Where schema.Expression `json:"where"            ndc:"predicate=StorageBucketFilter"`
 }
 
 // StorageBucketArguments represent the common input arguments for bucket-related methods.
@@ -62,7 +62,8 @@ type StorageClientCredentialArguments struct {
 
 // IsEmpty checks if all properties are empty.
 func (ca StorageClientCredentialArguments) IsEmpty() bool {
-	return ca.ClientType == nil || !ca.ClientType.IsValid() || (ca.AccessKeyID == "" && ca.SecretAccessKey == "" && ca.Endpoint == "")
+	return ca.ClientType == nil || !ca.ClientType.IsValid() ||
+		(ca.AccessKeyID == "" && ca.SecretAccessKey == "" && ca.Endpoint == "")
 }
 
 // MakeStorageBucketArguments holds all arguments to tweak bucket creation.
@@ -179,7 +180,7 @@ type StorageObjectIncludeOptions struct {
 	Encryption  bool
 }
 
-// IsEmpty checks if all include options are empty
+// IsEmpty checks if all include options are empty.
 func (soi StorageObjectIncludeOptions) IsEmpty() bool {
 	return !soi.Checksum && !soi.Tags && !soi.Versions && !soi.Metadata &&
 		!soi.Copy && !soi.Snapshots && !soi.LegalHold && !soi.Retention && !soi.Permissions &&

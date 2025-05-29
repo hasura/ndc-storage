@@ -11,7 +11,12 @@ import (
 )
 
 // DecodeArbitraryData guesses and decodes the arbitrary data of a file from the content type.
-func DecodeArbitraryData(ctx context.Context, name string, contentType string, reader io.Reader) (any, error) {
+func DecodeArbitraryData(
+	ctx context.Context,
+	name string,
+	contentType string,
+	reader io.Reader,
+) (any, error) {
 	result, decoded, err := decodeArbitraryDataFromContentType(ctx, reader, contentType)
 	if err != nil {
 		return nil, err
@@ -40,7 +45,11 @@ func DecodeArbitraryData(ctx context.Context, name string, contentType string, r
 	return result, nil
 }
 
-func decodeArbitraryDataFromContentType(ctx context.Context, reader io.Reader, contentType string) (any, bool, error) {
+func decodeArbitraryDataFromContentType(
+	ctx context.Context,
+	reader io.Reader,
+	contentType string,
+) (any, bool, error) {
 	if contentType == "" {
 		return nil, false, nil
 	}

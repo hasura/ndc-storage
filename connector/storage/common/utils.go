@@ -2,7 +2,7 @@ package common
 
 import (
 	"bytes"
-	"crypto/md5"
+	"crypto/md5" //nolint:gosec
 	"hash"
 	"io"
 	"net/http"
@@ -12,7 +12,7 @@ import (
 	md5simd "github.com/minio/md5-simd"
 )
 
-var md5Pool = sync.Pool{New: func() any { return md5.New() }}
+var md5Pool = sync.Pool{New: func() any { return md5.New() }} //nolint:gosec
 
 func newMd5Hasher() md5simd.Hasher {
 	hash, _ := md5Pool.Get().(hash.Hash)
@@ -60,7 +60,7 @@ func CalculateContentMd5(reader io.Reader) (io.Reader, []byte, error) {
 			return nil, nil, err
 		}
 
-		hash.Write(rawBytes)
+		_, _ = hash.Write(rawBytes)
 		reader = bytes.NewReader(rawBytes)
 	}
 

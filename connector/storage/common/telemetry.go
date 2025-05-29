@@ -19,11 +19,15 @@ func SetObjectChecksumSpanAttributes(span trace.Span, object *StorageObjectCheck
 	}
 
 	if object.ChecksumCRC32C != nil {
-		span.SetAttributes(attribute.String("storage.object.checksum_crc32c", *object.ChecksumCRC32C))
+		span.SetAttributes(
+			attribute.String("storage.object.checksum_crc32c", *object.ChecksumCRC32C),
+		)
 	}
 
 	if object.ChecksumCRC64NVME != nil {
-		span.SetAttributes(attribute.String("storage.object.checksum_crc64nvme", *object.ChecksumCRC64NVME))
+		span.SetAttributes(
+			attribute.String("storage.object.checksum_crc64nvme", *object.ChecksumCRC64NVME),
+		)
 	}
 
 	if object.ChecksumSHA1 != nil {
@@ -31,7 +35,9 @@ func SetObjectChecksumSpanAttributes(span trace.Span, object *StorageObjectCheck
 	}
 
 	if object.ChecksumSHA256 != nil {
-		span.SetAttributes(attribute.String("storage.object.checksum_sha256", *object.ChecksumSHA256))
+		span.SetAttributes(
+			attribute.String("storage.object.checksum_sha256", *object.ChecksumSHA256),
+		)
 	}
 }
 
@@ -64,15 +70,21 @@ func SetObjectInfoSpanAttributes(span trace.Span, object *StorageObject) {
 	}
 
 	if object.Expires != nil && !object.Expires.IsZero() {
-		span.SetAttributes(attribute.String("storage.object.expires", object.Expires.Format(time.RFC3339)))
+		span.SetAttributes(
+			attribute.String("storage.object.expires", object.Expires.Format(time.RFC3339)),
+		)
 	}
 
 	if object.Expiration != nil && !object.Expiration.IsZero() {
-		span.SetAttributes(attribute.String("storage.object.expiration", object.Expiration.Format(time.RFC3339)))
+		span.SetAttributes(
+			attribute.String("storage.object.expiration", object.Expiration.Format(time.RFC3339)),
+		)
 	}
 
 	if object.ExpirationRuleID != nil {
-		span.SetAttributes(attribute.String("storage.object.expiration_rule_id", *object.ExpirationRuleID))
+		span.SetAttributes(
+			attribute.String("storage.object.expiration_rule_id", *object.ExpirationRuleID),
+		)
 	}
 }
 
@@ -93,10 +105,14 @@ func SetUploadInfoAttributes(span trace.Span, object *StorageUploadInfo) {
 	}
 
 	if object.Expiration != nil && !object.Expiration.IsZero() {
-		span.SetAttributes(attribute.String("storage.object.expiration", object.Expiration.Format(time.RFC3339)))
+		span.SetAttributes(
+			attribute.String("storage.object.expiration", object.Expiration.Format(time.RFC3339)),
+		)
 	}
 
 	if object.ExpirationRuleID != nil {
-		span.SetAttributes(attribute.String("storage.object.expiration_rule_id", *object.ExpirationRuleID))
+		span.SetAttributes(
+			attribute.String("storage.object.expiration_rule_id", *object.ExpirationRuleID),
+		)
 	}
 }

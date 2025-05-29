@@ -66,7 +66,11 @@ func (mrt roundTripper) getRequestSpanName(req *http.Request) string {
 
 // RoundTrip wraps the base RoundTripper with telemetry.
 func (mrt roundTripper) RoundTrip(req *http.Request) (*http.Response, error) {
-	ctx, span := httpTracer.Start(req.Context(), mrt.getRequestSpanName(req), trace.WithSpanKind(trace.SpanKindClient))
+	ctx, span := httpTracer.Start(
+		req.Context(),
+		mrt.getRequestSpanName(req),
+		trace.WithSpanKind(trace.SpanKindClient),
+	)
 	defer span.End()
 
 	port := mrt.port
@@ -104,7 +108,7 @@ func (mrt roundTripper) RoundTrip(req *http.Request) (*http.Response, error) {
 
 		requestLogAttrs["body"] = string(rawBody)
 
-		req.Body.Close()
+		_ = req.Body.Close()
 		req.Body = io.NopCloser(bytes.NewBuffer(rawBody))
 	}
 
@@ -139,10 +143,12 @@ func (mrt roundTripper) RoundTrip(req *http.Request) (*http.Response, error) {
 		if err != nil {
 			span.SetStatus(codes.Error, err.Error())
 			span.RecordError(err)
+
 			logAttrs = append(logAttrs, slog.Any("response", respLogAttrs))
 
 			slog.Debug("failed to read response body: "+err.Error(), logAttrs...)
-			resp.Body.Close()
+
+			_ = resp.Body.Close()
 
 			return resp, err
 		}
@@ -150,7 +156,7 @@ func (mrt roundTripper) RoundTrip(req *http.Request) (*http.Response, error) {
 		respLogAttrs["body"] = string(respBody)
 		logAttrs = append(logAttrs, slog.Any("response", respLogAttrs))
 
-		resp.Body.Close()
+		_ = resp.Body.Close()
 		resp.Body = io.NopCloser(bytes.NewBuffer(respBody))
 
 		span.SetAttributes(attribute.Int("http.response.size", len(respBody)))

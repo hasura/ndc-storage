@@ -186,7 +186,8 @@ func isValidCSVContentType(contentType string) bool {
 
 	mediaType, _, err := mime.ParseMediaType(contentType)
 
-	return err == nil && (mediaType == ContentTypeTextPlain || slices.Contains(enums_contentTypeCSV, contentType))
+	return err == nil &&
+		(mediaType == ContentTypeTextPlain || slices.Contains(enums_contentTypeCSV, contentType))
 }
 
 // CSVCommaFromContentType parses the csv comma from object name or content type.

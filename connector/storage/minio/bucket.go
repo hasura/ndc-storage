@@ -46,7 +46,11 @@ func (mc *Client) MakeBucket(ctx context.Context, args *common.MakeStorageBucket
 }
 
 // ListBuckets lists all buckets.
-func (mc *Client) ListBuckets(ctx context.Context, options *common.ListStorageBucketsOptions, predicate func(string) bool) (*common.StorageBucketListResults, error) {
+func (mc *Client) ListBuckets(
+	ctx context.Context,
+	options *common.ListStorageBucketsOptions,
+	predicate func(string) bool,
+) (*common.StorageBucketListResults, error) {
 	ctx, span := mc.startOtelSpan(ctx, "ListBuckets", "")
 	defer span.End()
 
@@ -128,7 +132,11 @@ func (mc *Client) ListBuckets(ctx context.Context, options *common.ListStorageBu
 }
 
 // GetBucket gets a bucket by name.
-func (mc *Client) GetBucket(ctx context.Context, name string, options common.BucketOptions) (*common.StorageBucket, error) {
+func (mc *Client) GetBucket(
+	ctx context.Context,
+	name string,
+	options common.BucketOptions,
+) (*common.StorageBucket, error) {
 	ctx, span := mc.startOtelSpan(ctx, "GetBucket", "")
 	defer span.End()
 
@@ -194,7 +202,11 @@ func (mc *Client) RemoveBucket(ctx context.Context, bucketName string) error {
 }
 
 // UpdateBucket updates configurations for the bucket.
-func (mc *Client) UpdateBucket(ctx context.Context, bucketName string, opts common.UpdateStorageBucketOptions) error {
+func (mc *Client) UpdateBucket(
+	ctx context.Context,
+	bucketName string,
+	opts common.UpdateStorageBucketOptions,
+) error {
 	ctx, span := mc.startOtelSpanWithKind(ctx, trace.SpanKindInternal, "UpdateBucket", bucketName)
 	defer span.End()
 
@@ -238,7 +250,10 @@ func (mc *Client) UpdateBucket(ctx context.Context, bucketName string, opts comm
 }
 
 // GetBucketTagging gets tags of a bucket.
-func (mc *Client) GetBucketTagging(ctx context.Context, bucketName string) (map[string]string, error) {
+func (mc *Client) GetBucketTagging(
+	ctx context.Context,
+	bucketName string,
+) (map[string]string, error) {
 	ctx, span := mc.startOtelSpan(ctx, "GetBucketTagging", bucketName)
 	defer span.End()
 
@@ -287,7 +302,11 @@ func (mc *Client) RemoveBucketTagging(ctx context.Context, bucketName string) er
 }
 
 // SetBucketTagging sets tags to a bucket.
-func (mc *Client) SetBucketTagging(ctx context.Context, bucketName string, bucketTags map[string]string) error {
+func (mc *Client) SetBucketTagging(
+	ctx context.Context,
+	bucketName string,
+	bucketTags map[string]string,
+) error {
 	if len(bucketTags) == 0 {
 		return mc.RemoveBucketTagging(ctx, bucketName)
 	}
@@ -335,7 +354,10 @@ func (mc *Client) GetBucketPolicy(ctx context.Context, bucketName string) (strin
 }
 
 // GetBucketNotification gets notification configuration on a bucket.
-func (mc *Client) GetBucketNotification(ctx context.Context, bucketName string) (*common.NotificationConfig, error) {
+func (mc *Client) GetBucketNotification(
+	ctx context.Context,
+	bucketName string,
+) (*common.NotificationConfig, error) {
 	ctx, span := mc.startOtelSpan(ctx, "GetBucketNotification", bucketName)
 	defer span.End()
 
@@ -351,7 +373,11 @@ func (mc *Client) GetBucketNotification(ctx context.Context, bucketName string) 
 }
 
 // SetBucketNotification sets a new bucket notification on a bucket.
-func (mc *Client) SetBucketNotification(ctx context.Context, bucketName string, config common.NotificationConfig) error {
+func (mc *Client) SetBucketNotification(
+	ctx context.Context,
+	bucketName string,
+	config common.NotificationConfig,
+) error {
 	ctx, span := mc.startOtelSpan(ctx, "SetBucketNotification", bucketName)
 	defer span.End()
 
@@ -390,7 +416,10 @@ func (mc *Client) RemoveAllBucketNotification(ctx context.Context, bucketName st
 }
 
 // GetBucketVersioning gets the versioning configuration set on a bucket.
-func (mc *Client) GetBucketVersioning(ctx context.Context, bucketName string) (*common.StorageBucketVersioningConfiguration, error) {
+func (mc *Client) GetBucketVersioning(
+	ctx context.Context,
+	bucketName string,
+) (*common.StorageBucketVersioningConfiguration, error) {
 	ctx, span := mc.startOtelSpan(ctx, "GetBucketVersioning", bucketName)
 	defer span.End()
 
@@ -453,7 +482,11 @@ func (mc *Client) SuspendVersioning(ctx context.Context, bucketName string) erro
 
 // SetBucketReplication sets replication configuration on a bucket. Role can be obtained by first defining the replication target
 // to associate the source and destination buckets for replication with the replication endpoint.
-func (mc *Client) SetBucketReplication(ctx context.Context, bucketName string, cfg common.StorageReplicationConfig) error {
+func (mc *Client) SetBucketReplication(
+	ctx context.Context,
+	bucketName string,
+	cfg common.StorageReplicationConfig,
+) error {
 	ctx, span := mc.startOtelSpan(ctx, "SetBucketReplication", bucketName)
 	defer span.End()
 
@@ -471,7 +504,10 @@ func (mc *Client) SetBucketReplication(ctx context.Context, bucketName string, c
 }
 
 // Get current replication config on a bucket.
-func (mc *Client) GetBucketReplication(ctx context.Context, bucketName string) (*common.StorageReplicationConfig, error) {
+func (mc *Client) GetBucketReplication(
+	ctx context.Context,
+	bucketName string,
+) (*common.StorageReplicationConfig, error) {
 	ctx, span := mc.startOtelSpan(ctx, "GetBucketReplication", bucketName)
 	defer span.End()
 
@@ -503,11 +539,19 @@ func (mc *Client) RemoveBucketReplication(ctx context.Context, bucketName string
 }
 
 // SetBucketEncryption sets default encryption configuration on a bucket.
-func (mc *Client) SetBucketEncryption(ctx context.Context, bucketName string, input common.ServerSideEncryptionConfiguration) error {
+func (mc *Client) SetBucketEncryption(
+	ctx context.Context,
+	bucketName string,
+	input common.ServerSideEncryptionConfiguration,
+) error {
 	ctx, span := mc.startOtelSpan(ctx, "SetBucketEncryption", bucketName)
 	defer span.End()
 
-	err := mc.client.SetBucketEncryption(ctx, bucketName, validateBucketEncryptionConfiguration(input))
+	err := mc.client.SetBucketEncryption(
+		ctx,
+		bucketName,
+		validateBucketEncryptionConfiguration(input),
+	)
 	if err != nil {
 		span.SetStatus(codes.Error, err.Error())
 		span.RecordError(err)
@@ -519,7 +563,10 @@ func (mc *Client) SetBucketEncryption(ctx context.Context, bucketName string, in
 }
 
 // GetBucketEncryption gets default encryption configuration set on a bucket.
-func (mc *Client) GetBucketEncryption(ctx context.Context, bucketName string) (*common.ServerSideEncryptionConfiguration, error) {
+func (mc *Client) GetBucketEncryption(
+	ctx context.Context,
+	bucketName string,
+) (*common.ServerSideEncryptionConfiguration, error) {
 	ctx, span := mc.startOtelSpan(ctx, "GetBucketEncryption", bucketName)
 	defer span.End()
 
@@ -583,7 +630,9 @@ func validateBucketReplicationRule(item common.StorageReplicationRule) replicati
 	}
 
 	if item.DeleteMarkerReplication != nil && item.DeleteMarkerReplication.Status != "" {
-		rule.DeleteMarkerReplication.Status = replication.Status(item.DeleteMarkerReplication.Status)
+		rule.DeleteMarkerReplication.Status = replication.Status(
+			item.DeleteMarkerReplication.Status,
+		)
 	}
 
 	if item.DeleteReplication != nil && item.DeleteReplication.Status != "" {
@@ -591,11 +640,17 @@ func validateBucketReplicationRule(item common.StorageReplicationRule) replicati
 	}
 
 	if item.ExistingObjectReplication != nil && item.ExistingObjectReplication.Status != "" {
-		rule.ExistingObjectReplication.Status = replication.Status(item.ExistingObjectReplication.Status)
+		rule.ExistingObjectReplication.Status = replication.Status(
+			item.ExistingObjectReplication.Status,
+		)
 	}
 
-	if item.SourceSelectionCriteria != nil && item.SourceSelectionCriteria.ReplicaModifications != nil && item.SourceSelectionCriteria.ReplicaModifications.Status != "" {
-		rule.SourceSelectionCriteria.ReplicaModifications.Status = replication.Status(item.SourceSelectionCriteria.ReplicaModifications.Status)
+	if item.SourceSelectionCriteria != nil &&
+		item.SourceSelectionCriteria.ReplicaModifications != nil &&
+		item.SourceSelectionCriteria.ReplicaModifications.Status != "" {
+		rule.SourceSelectionCriteria.ReplicaModifications.Status = replication.Status(
+			item.SourceSelectionCriteria.ReplicaModifications.Status,
+		)
 	}
 
 	if item.Destination != nil {
@@ -672,21 +727,29 @@ func serializeBucketReplicationRule(item replication.Rule) common.StorageReplica
 	}
 
 	if item.DeleteMarkerReplication.Status != "" {
-		rule.DeleteMarkerReplication.Status = common.StorageReplicationRuleStatus(item.DeleteMarkerReplication.Status)
+		rule.DeleteMarkerReplication.Status = common.StorageReplicationRuleStatus(
+			item.DeleteMarkerReplication.Status,
+		)
 	}
 
 	if item.DeleteReplication.Status != "" {
-		rule.DeleteReplication.Status = common.StorageReplicationRuleStatus(item.DeleteReplication.Status)
+		rule.DeleteReplication.Status = common.StorageReplicationRuleStatus(
+			item.DeleteReplication.Status,
+		)
 	}
 
 	if item.ExistingObjectReplication.Status != "" {
-		rule.ExistingObjectReplication.Status = common.StorageReplicationRuleStatus(item.ExistingObjectReplication.Status)
+		rule.ExistingObjectReplication.Status = common.StorageReplicationRuleStatus(
+			item.ExistingObjectReplication.Status,
+		)
 	}
 
 	if item.SourceSelectionCriteria.ReplicaModifications.Status != "" {
 		rule.SourceSelectionCriteria = &common.SourceSelectionCriteria{
 			ReplicaModifications: &common.ReplicaModifications{
-				Status: common.StorageReplicationRuleStatus(item.SourceSelectionCriteria.ReplicaModifications.Status),
+				Status: common.StorageReplicationRuleStatus(
+					item.SourceSelectionCriteria.ReplicaModifications.Status,
+				),
 			},
 		}
 	}
@@ -729,7 +792,11 @@ func serializeBucketReplicationRule(item replication.Rule) common.StorageReplica
 	return rule
 }
 
-func (mc *Client) populateBucket(ctx context.Context, item minio.BucketInfo, options common.BucketOptions) (common.StorageBucket, error) {
+func (mc *Client) populateBucket(
+	ctx context.Context,
+	item minio.BucketInfo,
+	options common.BucketOptions,
+) (common.StorageBucket, error) {
 	bucket := common.StorageBucket{
 		Name:         item.Name,
 		CreationTime: &item.CreationDate,
@@ -783,14 +850,20 @@ func (mc *Client) populateBucket(ctx context.Context, item minio.BucketInfo, opt
 	return bucket, nil
 }
 
-func filterBuckets(bucketInfos []minio.BucketInfo, options *common.ListStorageBucketsOptions, predicate func(string) bool) ([]minio.BucketInfo, common.StoragePaginationInfo) {
+func filterBuckets(
+	bucketInfos []minio.BucketInfo,
+	options *common.ListStorageBucketsOptions,
+	predicate func(string) bool,
+) ([]minio.BucketInfo, common.StoragePaginationInfo) {
 	pageInfo := common.StoragePaginationInfo{}
 
-	if len(bucketInfos) == 0 || (options.Prefix == "" && predicate == nil && options.MaxResults == nil && options.StartAfter == "") {
+	if len(bucketInfos) == 0 ||
+		(options.Prefix == "" && predicate == nil && options.MaxResults == nil && options.StartAfter == "") {
 		return bucketInfos, pageInfo
 	}
 
 	var count int
+
 	filteredBuckets := make([]minio.BucketInfo, 0)
 	started := options.StartAfter == ""
 	bucketLength := len(bucketInfos)

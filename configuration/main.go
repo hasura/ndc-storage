@@ -45,7 +45,10 @@ func main() {
 			os.Exit(1)
 		}
 
-		slog.Info("introspected successfully", slog.String("exec_time", time.Since(start).Round(time.Millisecond).String()))
+		slog.Info(
+			"introspected successfully",
+			slog.String("exec_time", time.Since(start).Round(time.Millisecond).String()),
+		)
 	case "version":
 		_, _ = fmt.Fprint(os.Stdout, version.BuildVersion)
 	default:

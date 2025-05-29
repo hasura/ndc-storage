@@ -30,7 +30,10 @@ type Connector struct {
 
 // ParseConfiguration validates the configuration files provided by the user, returning a validated 'Configuration',
 // or throwing an error to prevents Connector startup.
-func (c *Connector) ParseConfiguration(ctx context.Context, configurationDir string) (*types.Configuration, error) {
+func (c *Connector) ParseConfiguration(
+	ctx context.Context,
+	configurationDir string,
+) (*types.Configuration, error) {
 	configBytes, err := os.ReadFile(filepath.Join(configurationDir, types.ConfigurationFileName))
 	if err != nil {
 		return nil, fmt.Errorf("failed to read configuration: %w", err)
@@ -75,7 +78,11 @@ func (c *Connector) ParseConfiguration(ctx context.Context, configurationDir str
 //
 // In addition, this function should register any
 // connector-specific metrics with the metrics registry.
-func (c *Connector) TryInitState(ctx context.Context, configuration *types.Configuration, metrics *connector.TelemetryState) (*types.State, error) {
+func (c *Connector) TryInitState(
+	ctx context.Context,
+	configuration *types.Configuration,
+	metrics *connector.TelemetryState,
+) (*types.State, error) {
 	logger := connector.GetLogger(ctx)
 
 	manager, err := storage.NewManager(ctx, configuration.Clients, configuration.Runtime, logger)
@@ -83,7 +90,13 @@ func (c *Connector) TryInitState(ctx context.Context, configuration *types.Confi
 		return nil, err
 	}
 
-	connectorSchema, errs := utils.MergeSchemas(GetConnectorSchema(), collection.GetConnectorSchema(manager.GetClientIDs(), c.config.Generator.DynamicCredentials))
+	connectorSchema, errs := utils.MergeSchemas(
+		GetConnectorSchema(),
+		collection.GetConnectorSchema(
+			manager.GetClientIDs(),
+			c.config.Generator.DynamicCredentials,
+		),
+	)
 	for _, err := range errs {
 		slog.Debug(err.Error())
 	}
@@ -110,17 +123,27 @@ func (c *Connector) TryInitState(ctx context.Context, configuration *types.Confi
 // is able to reach its data source over the network.
 //
 // Should throw if the check fails, else resolve.
-func (c *Connector) HealthCheck(ctx context.Context, configuration *types.Configuration, state *types.State) error {
+func (c *Connector) HealthCheck(
+	ctx context.Context,
+	configuration *types.Configuration,
+	state *types.State,
+) error {
 	return nil
 }
 
 // GetCapabilities get the connector's capabilities.
-func (c *Connector) GetCapabilities(configuration *types.Configuration) schema.CapabilitiesResponseMarshaler {
+func (c *Connector) GetCapabilities(
+	configuration *types.Configuration,
+) schema.CapabilitiesResponseMarshaler {
 	return c.capabilities
 }
 
 // GetSchema gets the connector's schema.
-func (c *Connector) GetSchema(ctx context.Context, configuration *types.Configuration, _ *types.State) (schema.SchemaResponseMarshaler, error) {
+func (c *Connector) GetSchema(
+	ctx context.Context,
+	configuration *types.Configuration,
+	_ *types.State,
+) (schema.SchemaResponseMarshaler, error) {
 	return c.rawSchema, nil
 }
 
@@ -155,7 +178,11 @@ func (c *Connector) evalSchema(connectorSchema *schema.SchemaResponse) {
 	}
 
 	for i, f := range connectorSchema.Functions {
-		if c.config.Generator.PromptQLCompatible && !slices.Contains([]string{"storageBucketConnections", "storageObjectConnections"}, f.Name) {
+		if c.config.Generator.PromptQLCompatible &&
+			!slices.Contains(
+				[]string{"storageBucketConnections", "storageObjectConnections"},
+				f.Name,
+			) {
 			// remove boolean expression arguments in commands
 			delete(f.Arguments, "where")
 		}

@@ -32,7 +32,11 @@ func New(ctx context.Context, cfg *ClientConfig, logger *slog.Logger) (*Client, 
 	}, nil
 }
 
-func (c *Client) startOtelSpan(ctx context.Context, name string, bucketName string) (context.Context, trace.Span) {
+func (c *Client) startOtelSpan(
+	ctx context.Context,
+	name string,
+	bucketName string,
+) (context.Context, trace.Span) {
 	ctx, span := tracer.Start(ctx, name, trace.WithSpanKind(trace.SpanKindInternal))
 	span.SetAttributes(
 		common.NewDBSystemAttribute(),
