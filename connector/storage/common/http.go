@@ -28,7 +28,10 @@ type HTTPClient struct {
 }
 
 // NewTransport creates a new http transport from config.
-func NewTransport(config *exhttp.HTTPTransportTLSConfig, telemetry exhttp.TelemetryConfig) (http.RoundTripper, error) {
+func NewTransport(
+	config *exhttp.HTTPTransportTLSConfig,
+	telemetry exhttp.TelemetryConfig,
+) (http.RoundTripper, error) {
 	var httpTransport *http.Transport
 
 	if config != nil {
