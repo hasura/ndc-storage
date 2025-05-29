@@ -116,7 +116,8 @@ func (cc ClientConfig) getStorageType() (common.StorageProviderType, error) {
 	return storageType, nil
 }
 
-func (cc ClientConfig) toStorageClient(ctx context.Context, logger *slog.Logger) (*common.BaseClientConfig, common.StorageClient, error) {
+// ToStorageClient initializes a storage client from the current config.
+func (cc ClientConfig) ToStorageClient(ctx context.Context, logger *slog.Logger) (*common.BaseClientConfig, common.StorageClient, error) {
 	storageType, err := cc.getStorageType()
 	if err != nil {
 		return nil, nil, err

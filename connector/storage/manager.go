@@ -42,7 +42,7 @@ func NewManager(ctx context.Context, configs []ClientConfig, runtimeSettings Run
 	}
 
 	for i, config := range configs {
-		baseConfig, client, err := config.toStorageClient(ctx, logger)
+		baseConfig, client, err := config.ToStorageClient(ctx, logger)
 		if err != nil {
 			return nil, fmt.Errorf("failed to initialize storage client %d: %w", i, err)
 		}

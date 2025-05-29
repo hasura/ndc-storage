@@ -234,20 +234,30 @@ func (pe *PredicateEvaluator) evalQueryPredicate(expression schema.Expression, f
 
 		return true, nil
 	case *schema.ExpressionBinaryComparisonOperator:
-		if expr.Column.Type != schema.ComparisonTargetTypeColumn {
-			return false, fmt.Errorf("%s: unsupported comparison target `%s`", expr.Column.Name, expr.Column.Type)
-		}
+		return pe.evalExpressionBinaryComparisonOperator(expr, forBucket)
+	default:
+		return false, fmt.Errorf("unsupported expression: %+v", expression)
+	}
+}
 
+func (pe *PredicateEvaluator) evalExpressionBinaryComparisonOperator(expr *schema.ExpressionBinaryComparisonOperator, forBucket bool) (bool, error) {
+	columnT, err := expr.Column.InterfaceT()
+	if err != nil {
+		return false, err
+	}
+
+	switch column := columnT.(type) {
+	case *schema.ComparisonTargetColumn:
 		isNull, err := pe.evalIsNullBoolExp(expr)
 		if err != nil {
-			return false, err
+			return false, fmt.Errorf("%s: %w", column.Name, err)
 		}
 
 		if isNull != nil && *isNull {
 			return false, nil
 		}
 
-		switch expr.Column.Name {
+		switch column.Name {
 		case StorageObjectColumnClientID:
 			return pe.evalPredicateClientID(expr)
 		case StorageObjectColumnBucket:
@@ -273,10 +283,10 @@ func (pe *PredicateEvaluator) evalQueryPredicate(expression schema.Expression, f
 
 			return ok, nil
 		default:
-			return false, errors.New("unsupported predicate on column " + expr.Column.Name)
+			return false, errors.New("unsupported predicate on column " + column.Name)
 		}
 	default:
-		return false, fmt.Errorf("unsupported expression: %+v", expression)
+		return false, fmt.Errorf("unsupported comparison target `%v`", columnT)
 	}
 }
 
@@ -285,12 +295,7 @@ func (pe *PredicateEvaluator) evalIsNullBoolExp(expr *schema.ExpressionBinaryCom
 		return nil, nil
 	}
 
-	boolValue, err := getComparisonValueBoolean(expr.Value, pe.variables)
-	if err != nil {
-		return nil, fmt.Errorf("%s: %w", expr.Column.Name, err)
-	}
-
-	return boolValue, nil
+	return getComparisonValueBoolean(expr.Value, pe.variables)
 }
 
 func (pe *PredicateEvaluator) evalPredicateClientID(expr *schema.ExpressionBinaryComparisonOperator) (bool, error) {

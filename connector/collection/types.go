@@ -72,7 +72,6 @@ func GetConnectorSchema(clientIDs []string, dynamicCredentials bool) *schema.Sch
 				Type:                  StorageObjectName,
 				Arguments:             storageObjectArguments,
 				UniquenessConstraints: schema.CollectionInfoUniquenessConstraints{},
-				ForeignKeys:           schema.CollectionInfoForeignKeys{},
 			},
 			{
 				Name:        CollectionStorageBuckets,
@@ -84,7 +83,6 @@ func GetConnectorSchema(clientIDs []string, dynamicCredentials bool) *schema.Sch
 					},
 				}, dynamicCredentials),
 				UniquenessConstraints: schema.CollectionInfoUniquenessConstraints{},
-				ForeignKeys:           schema.CollectionInfoForeignKeys{},
 			},
 		},
 		ObjectTypes: schema.SchemaResponseObjectTypes{
