@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/hasura/ndc-sdk-go/utils"
+	"github.com/hasura/ndc-sdk-go/v2/utils"
 	"github.com/hasura/ndc-storage/connector/storage/common"
 	"github.com/invopop/jsonschema"
 )
@@ -17,13 +17,13 @@ var defaultFilePermissions FilePermissionConfig = FilePermissionConfig{
 // ClientConfig represent the raw configuration of a MinIO client.
 type ClientConfig struct {
 	// The unique identity of a client. Use this setting if there are many configured clients.
-	ID string `json:"id,omitempty" mapstructure:"id" yaml:"id,omitempty"`
+	ID string `json:"id,omitempty"                 mapstructure:"id"                 yaml:"id,omitempty"`
 	// Cloud provider type of the storage client.
-	Type common.StorageProviderType `json:"type" mapstructure:"type" yaml:"type"`
+	Type common.StorageProviderType `json:"type"                         mapstructure:"type"               yaml:"type"`
 	// Default directory for storage files.
-	Permissions *FilePermissionConfig `json:"permissions,omitempty" mapstructure:"permissions" yaml:"permissions"`
+	Permissions *FilePermissionConfig `json:"permissions,omitempty"        mapstructure:"permissions"        yaml:"permissions"`
 	// Default directory for storage files.
-	DefaultDirectory utils.EnvString `json:"defaultDirectory" mapstructure:"defaultDirectory" yaml:"defaultDirectory"`
+	DefaultDirectory utils.EnvString `json:"defaultDirectory"             mapstructure:"defaultDirectory"   yaml:"defaultDirectory"`
 	// Allowed directories. This setting prevents users to browse files outside the list.
 	AllowedDirectories []string `json:"allowedDirectories,omitempty" mapstructure:"allowedDirectories" yaml:"allowedDirectories,omitempty"`
 }
@@ -90,16 +90,18 @@ type FilePermissionConfig struct {
 	// Default directory permission.
 	Directory int `json:"directory" mapstructure:"directory" yaml:"directory"`
 	// Default file permission.
-	File int `json:"file" mapstructure:"file" yaml:"file"`
+	File int `json:"file"      mapstructure:"file"      yaml:"file"`
 }
 
 // Validate checks if the configuration is valid.
 func (fpc FilePermissionConfig) Validate() error {
-	if err := fpc.validatePermission("directory", fpc.Directory); err != nil {
+	err := fpc.validatePermission("directory", fpc.Directory)
+	if err != nil {
 		return err
 	}
 
-	if err := fpc.validatePermission("file", fpc.File); err != nil {
+	err = fpc.validatePermission("file", fpc.File)
+	if err != nil {
 		return err
 	}
 

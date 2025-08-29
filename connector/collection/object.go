@@ -3,13 +3,13 @@ package collection
 import (
 	"context"
 
-	"github.com/hasura/ndc-sdk-go/schema"
-	"github.com/hasura/ndc-sdk-go/utils"
+	"github.com/hasura/ndc-sdk-go/v2/schema"
+	"github.com/hasura/ndc-sdk-go/v2/utils"
 	"github.com/hasura/ndc-storage/connector/storage"
 	"github.com/hasura/ndc-storage/connector/storage/common"
 )
 
-// CollectionObjectExecutor evaluates and executes a storage object collection query
+// CollectionObjectExecutor evaluates and executes a storage object collection query.
 type CollectionObjectExecutor struct {
 	Storage     *storage.Manager
 	Request     *schema.QueryRequest
@@ -19,7 +19,9 @@ type CollectionObjectExecutor struct {
 }
 
 // Execute executes the query request to get list of storage objects.
-func (coe *CollectionObjectExecutor) Execute(ctx context.Context) (*schema.RowSet, error) { //nolint:cyclop,funlen
+func (coe *CollectionObjectExecutor) Execute(
+	ctx context.Context,
+) (*schema.RowSet, error) {
 	if coe.Request.Query.Offset != nil && *coe.Request.Query.Offset < 0 {
 		return nil, schema.UnprocessableContentError("offset must be positive", nil)
 	}
@@ -39,7 +41,12 @@ func (coe *CollectionObjectExecutor) Execute(ctx context.Context) (*schema.RowSe
 		bucketArguments.Bucket = *bucket
 	}
 
-	request, err := EvalObjectPredicate(bucketArguments, nil, coe.Request.Query.Predicate, coe.Variables)
+	request, err := EvalObjectPredicate(
+		bucketArguments,
+		nil,
+		coe.Request.Query.Predicate,
+		coe.Variables,
+	)
 	if err != nil {
 		return nil, schema.UnprocessableContentError(err.Error(), nil)
 	}

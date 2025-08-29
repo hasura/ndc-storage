@@ -7,7 +7,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/hasura/ndc-sdk-go/utils"
+	"github.com/hasura/ndc-sdk-go/v2/utils"
 	"github.com/hasura/ndc-storage/connector/storage"
 	"github.com/hasura/ndc-storage/connector/storage/common"
 	"github.com/hasura/ndc-storage/connector/storage/minio"
@@ -43,17 +43,24 @@ func UpdateConfig(dir string) error {
 
 func writeConfig(filePath string, config *types.Configuration) error {
 	var buf bytes.Buffer
+
 	writer := bufio.NewWriter(&buf)
 
-	_, _ = writer.WriteString("# yaml-language-server: $schema=https://raw.githubusercontent.com/hasura/ndc-storage/main/jsonschema/configuration.json\n")
+	_, _ = writer.WriteString(
+		"# yaml-language-server: $schema=https://raw.githubusercontent.com/hasura/ndc-storage/main/jsonschema/configuration.json\n",
+	)
 	encoder := yaml.NewEncoder(writer)
 	encoder.SetIndent(2)
 
-	if err := encoder.Encode(config); err != nil {
+	err := encoder.Encode(config)
+	if err != nil {
 		return fmt.Errorf("failed to encode the configuration file: %w", err)
 	}
 
-	writer.Flush()
+	err = writer.Flush()
+	if err != nil {
+		return fmt.Errorf("failed to flush the configuration file writer: %w", err)
+	}
 
 	return os.WriteFile(filePath, buf.Bytes(), 0o644)
 }

@@ -21,7 +21,12 @@ type objectWalker struct {
 }
 
 // NewObjectWalker creates an objectWalker instance.
-func NewObjectWalker(client afero.Fs, bucketName string, options *common.ListStorageObjectsOptions, predicate func(string) bool) *objectWalker {
+func NewObjectWalker(
+	client afero.Fs,
+	bucketName string,
+	options *common.ListStorageObjectsOptions,
+	predicate func(string) bool,
+) *objectWalker {
 	startAfter := strings.TrimRight(options.StartAfter, "/")
 
 	return &objectWalker{
@@ -37,7 +42,8 @@ func NewObjectWalker(client afero.Fs, bucketName string, options *common.ListSto
 
 // WalkDir walks and filters child objects in the directory.
 func (ow *objectWalker) WalkDir(root string) (*common.StorageObjectListResults, error) {
-	if err := ow.walkDir(root); err != nil {
+	err := ow.walkDir(root)
+	if err != nil {
 		return nil, err
 	}
 
@@ -46,7 +52,8 @@ func (ow *objectWalker) WalkDir(root string) (*common.StorageObjectListResults, 
 
 // WalkDirEntries walks and filters child objects in the directory.
 func (ow *objectWalker) WalkDirEntries(root string) (*common.StorageObjectListResults, error) {
-	if err := ow.walkDirEntries(root); err != nil {
+	err := ow.walkDirEntries(root)
+	if err != nil {
 		return nil, err
 	}
 
@@ -79,7 +86,7 @@ func (ow *objectWalker) walkDirEntries(root string) error {
 	}
 
 	names, err := dir.Readdirnames(-1)
-	dir.Close()
+	_ = dir.Close()
 
 	if err != nil {
 		return err
@@ -89,6 +96,7 @@ func (ow *objectWalker) walkDirEntries(root string) error {
 
 	for i, name := range names {
 		var stopped bool
+
 		relPath := filepath.Join(root, name)
 		absPath := filepath.Join(ow.bucketName, relPath)
 		stat, err := lstatIfPossible(ow.client, absPath)
@@ -106,7 +114,8 @@ func (ow *objectWalker) walkDirEntries(root string) error {
 		case !ow.options.Recursive || !stat.IsDir():
 			stopped = ow.addObject(serializeStorageObject(relPath, stat))
 		default:
-			if err = ow.walkDirEntries(relPath); err != nil {
+			err = ow.walkDirEntries(relPath)
+			if err != nil {
 				return err
 			}
 

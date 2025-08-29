@@ -3,14 +3,18 @@ package minio
 import (
 	"context"
 
-	"github.com/hasura/ndc-sdk-go/scalar"
+	"github.com/hasura/ndc-sdk-go/v2/scalar"
 	"github.com/hasura/ndc-storage/connector/storage/common"
 	"github.com/minio/minio-go/v7/pkg/lifecycle"
 	"go.opentelemetry.io/otel/codes"
 )
 
 // SetBucketLifecycle sets lifecycle on bucket or an object prefix.
-func (mc *Client) SetBucketLifecycle(ctx context.Context, bucketName string, config common.ObjectLifecycleConfiguration) error {
+func (mc *Client) SetBucketLifecycle(
+	ctx context.Context,
+	bucketName string,
+	config common.ObjectLifecycleConfiguration,
+) error {
 	ctx, span := mc.startOtelSpan(ctx, "SetBucketLifecycle", bucketName)
 	defer span.End()
 
@@ -28,7 +32,10 @@ func (mc *Client) SetBucketLifecycle(ctx context.Context, bucketName string, con
 }
 
 // GetBucketLifecycle gets lifecycle on a bucket or a prefix.
-func (mc *Client) GetBucketLifecycle(ctx context.Context, bucketName string) (*common.ObjectLifecycleConfiguration, error) {
+func (mc *Client) GetBucketLifecycle(
+	ctx context.Context,
+	bucketName string,
+) (*common.ObjectLifecycleConfiguration, error) {
 	ctx, span := mc.startOtelSpan(ctx, "GetBucketLifecycle", bucketName)
 	defer span.End()
 
@@ -63,17 +70,23 @@ func validateLifecycleRule(rule common.ObjectLifecycleRule) lifecycle.Rule {
 		r.Status = "Disabled"
 	}
 
-	if rule.AbortIncompleteMultipartUpload != nil && rule.AbortIncompleteMultipartUpload.DaysAfterInitiation != nil {
-		r.AbortIncompleteMultipartUpload.DaysAfterInitiation = lifecycle.ExpirationDays(*rule.AbortIncompleteMultipartUpload.DaysAfterInitiation)
+	if rule.AbortIncompleteMultipartUpload != nil &&
+		rule.AbortIncompleteMultipartUpload.DaysAfterInitiation != nil {
+		r.AbortIncompleteMultipartUpload.DaysAfterInitiation = lifecycle.ExpirationDays(
+			*rule.AbortIncompleteMultipartUpload.DaysAfterInitiation,
+		)
 	}
 
-	if rule.AllVersionsExpiration != nil && (rule.AllVersionsExpiration.Days != nil || rule.AllVersionsExpiration.DeleteMarker != nil) {
+	if rule.AllVersionsExpiration != nil &&
+		(rule.AllVersionsExpiration.Days != nil || rule.AllVersionsExpiration.DeleteMarker != nil) {
 		if rule.AllVersionsExpiration.Days != nil {
 			r.AllVersionsExpiration.Days = *rule.AllVersionsExpiration.Days
 		}
 
 		if rule.DelMarkerExpiration != nil {
-			r.AllVersionsExpiration.DeleteMarker = lifecycle.ExpireDeleteMarker(*rule.AllVersionsExpiration.DeleteMarker)
+			r.AllVersionsExpiration.DeleteMarker = lifecycle.ExpireDeleteMarker(
+				*rule.AllVersionsExpiration.DeleteMarker,
+			)
 		}
 	}
 
@@ -87,7 +100,9 @@ func validateLifecycleRule(rule common.ObjectLifecycleRule) lifecycle.Rule {
 		}
 
 		if rule.NoncurrentVersionExpiration.NoncurrentDays != nil {
-			r.NoncurrentVersionExpiration.NoncurrentDays = lifecycle.ExpirationDays(*rule.NoncurrentVersionExpiration.NoncurrentDays)
+			r.NoncurrentVersionExpiration.NoncurrentDays = lifecycle.ExpirationDays(
+				*rule.NoncurrentVersionExpiration.NoncurrentDays,
+			)
 		}
 	}
 
@@ -97,7 +112,9 @@ func validateLifecycleRule(rule common.ObjectLifecycleRule) lifecycle.Rule {
 		}
 
 		if rule.NoncurrentVersionTransition.NoncurrentDays != nil {
-			r.NoncurrentVersionTransition.NoncurrentDays = lifecycle.ExpirationDays(*rule.NoncurrentVersionTransition.NoncurrentDays)
+			r.NoncurrentVersionTransition.NoncurrentDays = lifecycle.ExpirationDays(
+				*rule.NoncurrentVersionTransition.NoncurrentDays,
+			)
 		}
 
 		if rule.NoncurrentVersionTransition.StorageClass != nil {
@@ -160,7 +177,9 @@ func validateLifecycleTransition(input *common.ObjectLifecycleTransition) lifecy
 	return result
 }
 
-func validateLifecycleConfiguration(input common.ObjectLifecycleConfiguration) lifecycle.Configuration {
+func validateLifecycleConfiguration(
+	input common.ObjectLifecycleConfiguration,
+) lifecycle.Configuration {
 	result := lifecycle.Configuration{
 		Rules: make([]lifecycle.Rule, len(input.Rules)),
 	}
@@ -274,7 +293,8 @@ func serializeLifecycleRule(rule lifecycle.Rule) common.ObjectLifecycleRule {
 		}
 	}
 
-	if !rule.NoncurrentVersionExpiration.IsDaysNull() || rule.NoncurrentVersionExpiration.NewerNoncurrentVersions != 0 {
+	if !rule.NoncurrentVersionExpiration.IsDaysNull() ||
+		rule.NoncurrentVersionExpiration.NewerNoncurrentVersions != 0 {
 		r.NoncurrentVersionExpiration = &common.ObjectLifecycleNoncurrentVersionExpiration{}
 
 		if rule.NoncurrentVersionExpiration.NewerNoncurrentVersions != 0 {
@@ -287,7 +307,9 @@ func serializeLifecycleRule(rule lifecycle.Rule) common.ObjectLifecycleRule {
 		}
 	}
 
-	if !rule.NoncurrentVersionTransition.IsDaysNull() || rule.NoncurrentVersionTransition.NewerNoncurrentVersions != 0 && rule.NoncurrentVersionTransition.StorageClass != "" {
+	if !rule.NoncurrentVersionTransition.IsDaysNull() ||
+		rule.NoncurrentVersionTransition.NewerNoncurrentVersions != 0 &&
+			rule.NoncurrentVersionTransition.StorageClass != "" {
 		if rule.NoncurrentVersionTransition.NewerNoncurrentVersions != 0 {
 			r.NoncurrentVersionTransition.NewerNoncurrentVersions = &rule.NoncurrentVersionTransition.NewerNoncurrentVersions
 		}
@@ -331,7 +353,9 @@ func serializeLifecycleTransition(input lifecycle.Transition) *common.ObjectLife
 	return &result
 }
 
-func serializeLifecycleConfiguration(input lifecycle.Configuration) common.ObjectLifecycleConfiguration {
+func serializeLifecycleConfiguration(
+	input lifecycle.Configuration,
+) common.ObjectLifecycleConfiguration {
 	result := common.ObjectLifecycleConfiguration{
 		Rules: make([]common.ObjectLifecycleRule, len(input.Rules)),
 	}

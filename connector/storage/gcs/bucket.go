@@ -6,7 +6,7 @@ import (
 	"strings"
 
 	"cloud.google.com/go/storage"
-	"github.com/hasura/ndc-sdk-go/schema"
+	"github.com/hasura/ndc-sdk-go/v2/schema"
 	"github.com/hasura/ndc-storage/connector/storage/common"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/codes"
@@ -42,7 +42,11 @@ func (c *Client) MakeBucket(ctx context.Context, args *common.MakeStorageBucketO
 }
 
 // ListBuckets lists all buckets.
-func (c *Client) ListBuckets(ctx context.Context, options *common.ListStorageBucketsOptions, predicate func(string) bool) (*common.StorageBucketListResults, error) {
+func (c *Client) ListBuckets(
+	ctx context.Context,
+	options *common.ListStorageBucketsOptions,
+	predicate func(string) bool,
+) (*common.StorageBucketListResults, error) {
 	ctx, span := c.startOtelSpan(ctx, "ListBuckets", "")
 	defer span.End()
 
@@ -50,7 +54,9 @@ func (c *Client) ListBuckets(ctx context.Context, options *common.ListStorageBuc
 	pager.Prefix = options.Prefix
 
 	var count, maxResults int
+
 	var results []common.StorageBucket
+
 	pageInfo := common.StoragePaginationInfo{}
 
 	if options.MaxResults != nil {
@@ -78,7 +84,8 @@ func (c *Client) ListBuckets(ctx context.Context, options *common.ListStorageBuc
 			continue
 		}
 
-		if (options.Prefix != "" && !strings.HasPrefix(bucket.Name, options.Prefix)) || (predicate != nil && !predicate(bucket.Name)) {
+		if (options.Prefix != "" && !strings.HasPrefix(bucket.Name, options.Prefix)) ||
+			(predicate != nil && !predicate(bucket.Name)) {
 			continue
 		}
 
@@ -102,7 +109,11 @@ func (c *Client) ListBuckets(ctx context.Context, options *common.ListStorageBuc
 }
 
 // GetBucket gets a bucket by name.
-func (c *Client) GetBucket(ctx context.Context, name string, options common.BucketOptions) (*common.StorageBucket, error) {
+func (c *Client) GetBucket(
+	ctx context.Context,
+	name string,
+	options common.BucketOptions,
+) (*common.StorageBucket, error) {
 	ctx, span := c.startOtelSpan(ctx, "GetBucket", name)
 	defer span.End()
 
@@ -139,7 +150,11 @@ func (c *Client) BucketExists(ctx context.Context, bucketName string) (bool, err
 }
 
 // UpdateBucket updates configurations for the bucket.
-func (c *Client) UpdateBucket(ctx context.Context, bucketName string, opts common.UpdateStorageBucketOptions) error {
+func (c *Client) UpdateBucket(
+	ctx context.Context,
+	bucketName string,
+	opts common.UpdateStorageBucketOptions,
+) error {
 	ctx, span := c.startOtelSpan(ctx, "UpdateBucket", bucketName)
 	defer span.End()
 

@@ -9,9 +9,9 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/hasura/ndc-sdk-go/connector"
-	"github.com/hasura/ndc-sdk-go/ndctest"
-	"github.com/hasura/ndc-sdk-go/schema"
+	"github.com/hasura/ndc-sdk-go/v2/connector"
+	"github.com/hasura/ndc-sdk-go/v2/ndctest"
+	"github.com/hasura/ndc-sdk-go/v2/schema"
 	"gotest.tools/v3/assert"
 )
 
@@ -52,7 +52,7 @@ func TestConnectorQueries(t *testing.T) {
 					"name": "%s"
 				}`, cid, bucketName)),
 					Fields: schema.NewNestedObject(map[string]schema.FieldEncoder{
-						"success": schema.NewColumnField("success", nil),
+						"success": schema.NewColumnField("success"),
 					}).Encode(),
 				})
 			}
@@ -126,8 +126,8 @@ func TestConnectorQueries(t *testing.T) {
 							Name:      "upload_storage_object_from_url",
 							Arguments: rawArguments,
 							Fields: schema.NewNestedObject(map[string]schema.FieldEncoder{
-								"name": schema.NewColumnField("name", nil),
-								"size": schema.NewColumnField("size", nil),
+								"name": schema.NewColumnField("name"),
+								"size": schema.NewColumnField("size"),
 							}).Encode(),
 						},
 					},

@@ -6,8 +6,8 @@ import (
 	"net/url"
 	"strings"
 
-	"github.com/hasura/ndc-sdk-go/schema"
-	"github.com/hasura/ndc-sdk-go/utils"
+	"github.com/hasura/ndc-sdk-go/v2/schema"
+	"github.com/hasura/ndc-sdk-go/v2/utils"
 	"github.com/hasura/ndc-storage/connector/storage/common"
 	"github.com/minio/minio-go/v7"
 	"github.com/minio/minio-go/v7/pkg/notification"
@@ -28,7 +28,8 @@ func serializeGrant(grant minio.Grant) common.StorageGrant {
 		g.Permission = &grant.Permission
 	}
 
-	if !isStringNull(grant.Grantee.ID) || !isStringNull(grant.Grantee.DisplayName) || !isStringNull(grant.Grantee.URI) {
+	if !isStringNull(grant.Grantee.ID) || !isStringNull(grant.Grantee.DisplayName) ||
+		!isStringNull(grant.Grantee.URI) {
 		g.Grantee = &common.StorageGrantee{}
 
 		if !isStringNull(grant.Grantee.ID) {
@@ -47,7 +48,10 @@ func serializeGrant(grant minio.Grant) common.StorageGrant {
 	return g
 }
 
-func serializeObjectInfo(obj *minio.ObjectInfo, fromList bool) common.StorageObject { //nolint:funlen,gocognit,gocyclo,cyclop
+func serializeObjectInfo(
+	obj *minio.ObjectInfo,
+	fromList bool,
+) common.StorageObject {
 	grants := make([]common.StorageGrant, len(obj.Grant))
 
 	for i, grant := range obj.Grant {
@@ -203,7 +207,10 @@ func serializeObjectInfo(obj *minio.ObjectInfo, fromList bool) common.StorageObj
 	return object
 }
 
-func (mc *Client) validateListObjectsOptions(span trace.Span, opts *common.ListStorageObjectsOptions) minio.ListObjectsOptions {
+func (mc *Client) validateListObjectsOptions(
+	span trace.Span,
+	opts *common.ListStorageObjectsOptions,
+) minio.ListObjectsOptions {
 	if mc.providerType == common.StorageProviderTypeGcs && opts.Include.Versions {
 		// Force versioning off. GCS doesn't support AWS S3 compatible versioning API.
 		opts.Include.Versions = false
@@ -291,7 +298,10 @@ func serializeUploadObjectInfo(obj minio.UploadInfo) common.StorageUploadInfo {
 	return object
 }
 
-func serializeGetObjectOptions(span trace.Span, opts common.GetStorageObjectOptions) minio.GetObjectOptions {
+func serializeGetObjectOptions(
+	span trace.Span,
+	opts common.GetStorageObjectOptions,
+) minio.GetObjectOptions {
 	options := minio.GetObjectOptions{
 		Checksum: opts.Include.Checksum,
 	}
@@ -309,7 +319,9 @@ func serializeGetObjectOptions(span trace.Span, opts common.GetStorageObjectOpti
 	}
 
 	for _, item := range opts.Headers {
-		span.SetAttributes(attribute.StringSlice("http.request.header."+item.Key, []string{item.Value}))
+		span.SetAttributes(
+			attribute.StringSlice("http.request.header."+item.Key, []string{item.Value}),
+		)
 		options.Set(item.Key, item.Value)
 	}
 
@@ -406,7 +418,9 @@ func serializeObjectRetentionMode(input *minio.RetentionMode) *common.StorageRet
 	return &result
 }
 
-func serializeBucketNotificationCommonConfig(item notification.Config) common.NotificationCommonConfig {
+func serializeBucketNotificationCommonConfig(
+	item notification.Config,
+) common.NotificationCommonConfig {
 	cfg := common.NotificationCommonConfig{
 		Events: make([]string, len(item.Events)),
 	}
@@ -416,13 +430,17 @@ func serializeBucketNotificationCommonConfig(item notification.Config) common.No
 	}
 
 	if item.Filter != nil {
-		cfg.Filter.S3Key.FilterRules = make([]common.NotificationFilterRule, len(item.Filter.S3Key.FilterRules))
+		cfg.Filter.S3Key.FilterRules = make(
+			[]common.NotificationFilterRule,
+			len(item.Filter.S3Key.FilterRules),
+		)
 		for i, rule := range item.Filter.S3Key.FilterRules {
 			cfg.Filter.S3Key.FilterRules[i] = common.NotificationFilterRule(rule)
 		}
 	}
 
-	if item.Arn.AccountID != "" || item.Arn.Partition != "" || item.Arn.Resource != "" || item.Arn.Service != "" {
+	if item.Arn.AccountID != "" || item.Arn.Partition != "" || item.Arn.Resource != "" ||
+		item.Arn.Service != "" {
 		arn := item.Arn.String()
 		cfg.Arn = &arn
 	}
@@ -434,7 +452,9 @@ func serializeBucketNotificationCommonConfig(item notification.Config) common.No
 	return cfg
 }
 
-func validateBucketNotificationCommonConfig(item common.NotificationCommonConfig) (*notification.Config, error) {
+func validateBucketNotificationCommonConfig(
+	item common.NotificationCommonConfig,
+) (*notification.Config, error) {
 	cfg := notification.Config{
 		Events: make([]notification.EventType, len(item.Events)),
 	}
@@ -471,7 +491,9 @@ func validateBucketNotificationCommonConfig(item common.NotificationCommonConfig
 	return &cfg, nil
 }
 
-func validateBucketNotificationConfig(input common.NotificationConfig) (*notification.Configuration, error) {
+func validateBucketNotificationConfig(
+	input common.NotificationConfig,
+) (*notification.Configuration, error) {
 	result := notification.Configuration{
 		LambdaConfigs: make([]notification.LambdaConfig, len(input.LambdaConfigs)),
 		TopicConfigs:  make([]notification.TopicConfig, len(input.TopicConfigs)),
@@ -523,7 +545,9 @@ func validateBucketNotificationConfig(input common.NotificationConfig) (*notific
 	return &result, nil
 }
 
-func serializeBucketNotificationConfig(input notification.Configuration) *common.NotificationConfig {
+func serializeBucketNotificationConfig(
+	input notification.Configuration,
+) *common.NotificationConfig {
 	result := common.NotificationConfig{
 		LambdaConfigs: make([]common.NotificationLambdaConfig, len(input.LambdaConfigs)),
 		TopicConfigs:  make([]common.NotificationTopicConfig, len(input.TopicConfigs)),
@@ -660,7 +684,9 @@ func isStringNull(input string) bool {
 	return input == "" || input == "null"
 }
 
-func validateBucketEncryptionConfiguration(input common.ServerSideEncryptionConfiguration) *sse.Configuration {
+func validateBucketEncryptionConfiguration(
+	input common.ServerSideEncryptionConfiguration,
+) *sse.Configuration {
 	if input.SSEAlgorithm == "AES256" {
 		return sse.NewConfigurationSSES3()
 	}
@@ -668,7 +694,9 @@ func validateBucketEncryptionConfiguration(input common.ServerSideEncryptionConf
 	return sse.NewConfigurationSSEKMS(input.KmsMasterKeyID)
 }
 
-func serializeBucketEncryptionConfiguration(input *sse.Configuration) *common.ServerSideEncryptionConfiguration {
+func serializeBucketEncryptionConfiguration(
+	input *sse.Configuration,
+) *common.ServerSideEncryptionConfiguration {
 	if input == nil || len(input.Rules) == 0 {
 		return nil
 	}

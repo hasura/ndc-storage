@@ -4,7 +4,7 @@ set -o pipefail
 trap 'docker compose down -v' EXIT
 
 mkdir -p ./tmp
-NDC_SPEC_BASE_URL=https://github.com/hasura/ndc-spec/releases/download/v0.1.6
+NDC_SPEC_BASE_URL=https://github.com/hasura/ndc-spec/releases/download/v0.2.10
 
 if [ ! -f ./tmp/ndc-test ]; then
   if [ "$(uname -s)" == "Darwin" ] && [ "$(uname -m)" == "arm64" ]; then

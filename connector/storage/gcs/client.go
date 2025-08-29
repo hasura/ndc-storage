@@ -7,8 +7,8 @@ import (
 	"net/url"
 
 	"cloud.google.com/go/storage"
-	"github.com/hasura/ndc-sdk-go/connector"
-	"github.com/hasura/ndc-sdk-go/utils"
+	"github.com/hasura/ndc-sdk-go/v2/connector"
+	"github.com/hasura/ndc-sdk-go/v2/utils"
 	"github.com/hasura/ndc-storage/connector/storage/common"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/trace"
@@ -66,7 +66,11 @@ func New(ctx context.Context, config *ClientConfig, logger *slog.Logger) (*Clien
 	return mc, nil
 }
 
-func (c *Client) startOtelSpan(ctx context.Context, name string, bucketName string) (context.Context, trace.Span) {
+func (c *Client) startOtelSpan(
+	ctx context.Context,
+	name string,
+	bucketName string,
+) (context.Context, trace.Span) {
 	spanKind := trace.SpanKindClient
 	if c.useCustomClient {
 		spanKind = trace.SpanKindInternal

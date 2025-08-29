@@ -3,7 +3,7 @@ package types
 import (
 	"context"
 
-	"github.com/hasura/ndc-sdk-go/connector"
+	"github.com/hasura/ndc-sdk-go/v2/connector"
 	"github.com/hasura/ndc-storage/connector/storage"
 )
 
@@ -17,6 +17,7 @@ const (
 // State is the global state which is shared for every connector request.
 type State struct {
 	*connector.TelemetryState
+
 	Storage     *storage.Manager
 	Concurrency ConcurrencySettings
 }

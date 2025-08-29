@@ -6,8 +6,8 @@ import (
 	"log/slog"
 	"net/url"
 
-	"github.com/hasura/ndc-sdk-go/connector"
-	"github.com/hasura/ndc-sdk-go/utils"
+	"github.com/hasura/ndc-sdk-go/v2/connector"
+	"github.com/hasura/ndc-sdk-go/v2/utils"
 	"github.com/hasura/ndc-storage/connector/storage/common"
 	"github.com/minio/minio-go/v7"
 	"go.opentelemetry.io/otel/attribute"
@@ -27,7 +27,12 @@ type Client struct {
 var _ common.StorageClient = &Client{}
 
 // New creates a new Minio client.
-func New(ctx context.Context, providerType common.StorageProviderType, cfg *ClientConfig, logger *slog.Logger) (*Client, error) {
+func New(
+	ctx context.Context,
+	providerType common.StorageProviderType,
+	cfg *ClientConfig,
+	logger *slog.Logger,
+) (*Client, error) {
 	publicHost, err := cfg.ValidatePublicHost()
 	if err != nil {
 		return nil, err
@@ -54,7 +59,11 @@ func New(ctx context.Context, providerType common.StorageProviderType, cfg *Clie
 	return mc, nil
 }
 
-func (mc *Client) startOtelSpan(ctx context.Context, name string, bucketName string) (context.Context, trace.Span) {
+func (mc *Client) startOtelSpan(
+	ctx context.Context,
+	name string,
+	bucketName string,
+) (context.Context, trace.Span) {
 	spanKind := trace.SpanKindClient
 	if mc.isDebug {
 		spanKind = trace.SpanKindInternal
@@ -63,7 +72,12 @@ func (mc *Client) startOtelSpan(ctx context.Context, name string, bucketName str
 	return mc.startOtelSpanWithKind(ctx, spanKind, name, bucketName)
 }
 
-func (mc *Client) startOtelSpanWithKind(ctx context.Context, spanKind trace.SpanKind, name string, bucketName string) (context.Context, trace.Span) {
+func (mc *Client) startOtelSpanWithKind(
+	ctx context.Context,
+	spanKind trace.SpanKind,
+	name string,
+	bucketName string,
+) (context.Context, trace.Span) {
 	ctx, span := tracer.Start(ctx, name, trace.WithSpanKind(spanKind))
 	span.SetAttributes(
 		common.NewDBSystemAttribute(),

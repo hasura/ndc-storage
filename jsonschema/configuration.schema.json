@@ -244,11 +244,13 @@
                     },
                     "username": {
                       "$ref": "#/$defs/EnvString",
-                      "description": "The username (usually an email address)"
+                      "description": "The username (usually an email address).",
+                      "deprecated": true
                     },
                     "password": {
                       "$ref": "#/$defs/EnvString",
-                      "description": "The user's password"
+                      "description": "The user's password",
+                      "deprecated": true
                     },
                     "clientCertificate": {
                       "$ref": "#/$defs/EnvString",

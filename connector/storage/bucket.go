@@ -7,7 +7,11 @@ import (
 )
 
 // MakeBucket creates a new bucket.
-func (m *Manager) MakeBucket(ctx context.Context, clientID *common.StorageClientID, args *common.MakeStorageBucketOptions) error {
+func (m *Manager) MakeBucket(
+	ctx context.Context,
+	clientID *common.StorageClientID,
+	args *common.MakeStorageBucketOptions,
+) error {
 	client, bucketName, err := m.GetClientAndBucket(ctx, common.StorageBucketArguments{
 		StorageClientCredentialArguments: common.StorageClientCredentialArguments{
 			ClientID: clientID,
@@ -25,11 +29,11 @@ func (m *Manager) MakeBucket(ctx context.Context, clientID *common.StorageClient
 
 // UpdateBucket updates configurations for the bucket.
 func (m *Manager) UpdateBucket(ctx context.Context, args *common.UpdateBucketArguments) error {
-	if args.UpdateStorageBucketOptions.IsEmpty() {
+	if args.IsEmpty() {
 		return nil
 	}
 
-	client, bucketName, err := m.GetClientAndBucket(ctx, *args.GetStorageBucketArguments.ToStorageBucketArguments())
+	client, bucketName, err := m.GetClientAndBucket(ctx, *args.ToStorageBucketArguments())
 	if err != nil {
 		return err
 	}
@@ -38,7 +42,12 @@ func (m *Manager) UpdateBucket(ctx context.Context, args *common.UpdateBucketArg
 }
 
 // ListBuckets list all buckets.
-func (m *Manager) ListBuckets(ctx context.Context, clientInfo common.StorageClientCredentialArguments, options *common.ListStorageBucketsOptions, predicate func(string) bool) (*common.StorageBucketListResults, error) {
+func (m *Manager) ListBuckets(
+	ctx context.Context,
+	clientInfo common.StorageClientCredentialArguments,
+	options *common.ListStorageBucketsOptions,
+	predicate func(string) bool,
+) (*common.StorageBucketListResults, error) {
 	client, err := m.GetOrCreateClient(ctx, clientInfo)
 	if err != nil {
 		return nil, err
@@ -63,7 +72,11 @@ func (m *Manager) ListBuckets(ctx context.Context, clientInfo common.StorageClie
 }
 
 // GetBucket gets bucket by name.
-func (m *Manager) GetBucket(ctx context.Context, bucketInfo *common.StorageBucketArguments, options common.BucketOptions) (*common.StorageBucket, error) {
+func (m *Manager) GetBucket(
+	ctx context.Context,
+	bucketInfo *common.StorageBucketArguments,
+	options common.BucketOptions,
+) (*common.StorageBucket, error) {
 	client, bucketName, err := m.GetClientAndBucket(ctx, *bucketInfo)
 	if err != nil {
 		return nil, err
@@ -84,7 +97,10 @@ func (m *Manager) GetBucket(ctx context.Context, bucketInfo *common.StorageBucke
 }
 
 // BucketExists checks if a bucket exists.
-func (m *Manager) BucketExists(ctx context.Context, args *common.StorageBucketArguments) (bool, error) {
+func (m *Manager) BucketExists(
+	ctx context.Context,
+	args *common.StorageBucketArguments,
+) (bool, error) {
 	client, bucketName, err := m.GetClientAndBucket(ctx, *args)
 	if err != nil {
 		return false, err

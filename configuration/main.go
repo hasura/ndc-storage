@@ -39,13 +39,17 @@ func main() {
 
 		slog.Info("introspecting metadata", slog.String("dir", cli.Update.Dir))
 
-		if err := UpdateConfig(cli.Update.Dir); err != nil {
+		err := UpdateConfig(cli.Update.Dir)
+		if err != nil {
 			logger.Error(fmt.Sprintf("failed to update configuration: %s", err))
 			stop()
 			os.Exit(1)
 		}
 
-		slog.Info("introspected successfully", slog.String("exec_time", time.Since(start).Round(time.Millisecond).String()))
+		slog.Info(
+			"introspected successfully",
+			slog.String("exec_time", time.Since(start).Round(time.Millisecond).String()),
+		)
 	case "version":
 		_, _ = fmt.Fprint(os.Stdout, version.BuildVersion)
 	default:

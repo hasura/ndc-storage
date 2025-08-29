@@ -8,11 +8,10 @@ import (
 	"strings"
 
 	"github.com/hasura/ndc-http/exhttp"
-	"github.com/hasura/ndc-sdk-go/schema"
+	"github.com/hasura/ndc-sdk-go/v2/schema"
 )
 
-// DownloadHTTPMethod represents the http method enum to download files.
-// @enum GET,POST
+// @enum GET,POST.
 type DownloadHTTPMethod string
 
 // RequestOptions hold HTTP request options.
@@ -23,28 +22,46 @@ type HTTPRequestOptions struct {
 	BodyText string              `json:"body_text,omitempty"`
 }
 
-// HTTPClient extends the native http.Client with custom configurations and methods
+// HTTPClient extends the native http.Client with custom configurations and methods.
 type HTTPClient struct {
 	client *http.Client
 }
 
-// NewHTTPClient creates an HTTP client from an HTTP transport configuration.
-func NewHTTPClient(config *exhttp.HTTPTransportTLSConfig, logger *slog.Logger) (*HTTPClient, error) {
+// NewTransport creates a new http transport from config.
+func NewTransport(
+	config *exhttp.HTTPTransportTLSConfig,
+	telemetry exhttp.TelemetryConfig,
+) (http.RoundTripper, error) {
 	var httpTransport *http.Transport
 
 	if config != nil {
 		var err error
 
-		httpTransport, err = config.ToTransport(logger)
+		httpTransport, err = config.ToTransport(telemetry.Logger)
 		if err != nil {
 			return nil, err
 		}
+	} else {
+		httpTransport = exhttp.HTTPTransportConfig{}.ToTransport()
 	}
 
-	transport := NewTransport(httpTransport, HTTPTransportOptions{
+	httpTransport.DisableCompression = true
+
+	return exhttp.NewTelemetryTransport(httpTransport, telemetry), nil
+}
+
+// NewHTTPClient creates an HTTP client from an HTTP transport configuration.
+func NewHTTPClient(
+	config *exhttp.HTTPTransportTLSConfig,
+	logger *slog.Logger,
+) (*HTTPClient, error) {
+	transport, err := NewTransport(config, exhttp.TelemetryConfig{
 		Logger:                     logger,
 		DisableHighCardinalityPath: true,
 	})
+	if err != nil {
+		return nil, err
+	}
 
 	return &HTTPClient{
 		client: &http.Client{
@@ -54,7 +71,10 @@ func NewHTTPClient(config *exhttp.HTTPTransportTLSConfig, logger *slog.Logger) (
 }
 
 // Request sends a HTTP request to the remote endpoint.
-func (hc HTTPClient) Request(ctx context.Context, options *HTTPRequestOptions) (*http.Response, error) {
+func (hc HTTPClient) Request(
+	ctx context.Context,
+	options *HTTPRequestOptions,
+) (*http.Response, error) {
 	method := http.MethodGet
 
 	if options.Method != nil && *options.Method != "" {

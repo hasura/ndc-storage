@@ -4,13 +4,12 @@ import (
 	"errors"
 	"fmt"
 	"log/slog"
-	"net/http"
 	"net/url"
 	"slices"
 	"strings"
 
 	"github.com/hasura/ndc-http/exhttp"
-	"github.com/hasura/ndc-sdk-go/utils"
+	"github.com/hasura/ndc-sdk-go/v2/utils"
 	"github.com/hasura/ndc-storage/connector/storage/common"
 	"github.com/invopop/jsonschema"
 	"github.com/minio/minio-go/v7"
@@ -33,7 +32,7 @@ type ClientConfig struct {
 func (cc ClientConfig) JSONSchema() *jsonschema.Schema {
 	envStringRef := "#/$defs/EnvString"
 
-	result := cc.BaseClientConfig.GetJSONSchema([]any{common.StorageProviderTypeS3})
+	result := cc.GetJSONSchema([]any{common.StorageProviderTypeS3})
 	result.Required = append(result.Required, "authentication")
 
 	result.Properties.Set("region", &jsonschema.Schema{
@@ -59,23 +58,26 @@ func (cc ClientConfig) JSONSchema() *jsonschema.Schema {
 	return result
 }
 
-// OtherConfig holds MinIO-specific configurations
+// OtherConfig holds MinIO-specific configurations.
 type OtherConfig struct {
 	// The public host to be used for presigned URL generation.
-	PublicHost *utils.EnvString `json:"publicHost,omitempty" mapstructure:"publicHost" yaml:"publicHost,omitempty"`
+	PublicHost *utils.EnvString `json:"publicHost,omitempty"      mapstructure:"publicHost"      yaml:"publicHost,omitempty"`
 	// Optional region.
-	Region *utils.EnvString `json:"region,omitempty" mapstructure:"region" yaml:"region,omitempty"`
+	Region *utils.EnvString `json:"region,omitempty"          mapstructure:"region"          yaml:"region,omitempty"`
 	// Authentication credentials.
-	Authentication AuthCredentials `json:"authentication" mapstructure:"authentication" yaml:"authentication"`
+	Authentication AuthCredentials `json:"authentication"            mapstructure:"authentication"  yaml:"authentication"`
 	// TrailingHeaders indicates server support of trailing headers.
 	// Only supported for v4 signatures.
 	TrailingHeaders bool `json:"trailingHeaders,omitempty" mapstructure:"trailingHeaders" yaml:"trailingHeaders,omitempty"`
 	// Configuration for the http client that is used for uploading files from URL.
-	HTTP *exhttp.HTTPTransportTLSConfig `json:"http" mapstructure:"http" yaml:"http"`
+	HTTP *exhttp.HTTPTransportTLSConfig `json:"http"                      mapstructure:"http"            yaml:"http"`
 }
 
-func (cc ClientConfig) toMinioOptions(providerType common.StorageProviderType, logger *slog.Logger) (*minio.Options, string, error) {
-	endpointURL, port, useSSL, err := cc.BaseClientConfig.ValidateEndpoint()
+func (cc ClientConfig) toMinioOptions(
+	providerType common.StorageProviderType,
+	logger *slog.Logger,
+) (*minio.Options, string, error) {
+	endpointURL, port, useSSL, err := cc.ValidateEndpoint()
 	if err != nil {
 		return nil, "", err
 	}
@@ -97,20 +99,13 @@ func (cc ClientConfig) toMinioOptions(providerType common.StorageProviderType, l
 		endpoint = endpointURL.Host
 	}
 
-	var httpTransport *http.Transport
-
-	if cc.HTTP != nil {
-		httpTransport, err = cc.HTTP.ToTransport(logger)
-		if err != nil {
-			return nil, "", err
-		}
-	}
-
-	transport := common.NewTransport(httpTransport, common.HTTPTransportOptions{
-		Logger:             logger,
-		Port:               port,
-		DisableCompression: true,
+	transport, err := common.NewTransport(cc.HTTP, exhttp.TelemetryConfig{
+		Logger: logger,
+		Port:   port,
 	})
+	if err != nil {
+		return nil, "", err
+	}
 
 	opts := &minio.Options{
 		Secure:          useSSL,
@@ -183,7 +178,11 @@ var enumValues_AuthType = []AuthType{
 func ParseAuthType(input string) (AuthType, error) {
 	result := AuthType(input)
 	if !slices.Contains(enumValues_AuthType, result) {
-		return "", fmt.Errorf("invalid AuthType, expected one of %v, got: %s", enumValues_AuthType, input)
+		return "", fmt.Errorf(
+			"invalid AuthType, expected one of %v, got: %s",
+			enumValues_AuthType,
+			input,
+		)
 	}
 
 	return result, nil
@@ -199,14 +198,14 @@ func (at AuthType) Validate() error {
 // AuthCredentials represent the authentication credentials information.
 type AuthCredentials struct {
 	// The authentication type
-	Type AuthType `json:"type" mapstructure:"type" yaml:"type"`
+	Type AuthType `json:"type"                      mapstructure:"type"            yaml:"type"`
 	// Access Key ID.
-	AccessKeyID *utils.EnvString `json:"accessKeyId,omitempty" mapstructure:"accessKeyId" yaml:"accessKeyId,omitempty"`
+	AccessKeyID *utils.EnvString `json:"accessKeyId,omitempty"     mapstructure:"accessKeyId"     yaml:"accessKeyId,omitempty"`
 	// Secret Access Key.
 	SecretAccessKey *utils.EnvString `json:"secretAccessKey,omitempty" mapstructure:"secretAccessKey" yaml:"secretAccessKey,omitempty"`
 	// Optional temporary session token credentials. Used for testing only.
 	// See https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_temp_use-resources.html
-	SessionToken *utils.EnvString `json:"sessionToken,omitempty" mapstructure:"sessionToken" yaml:"sessionToken,omitempty"`
+	SessionToken *utils.EnvString `json:"sessionToken,omitempty"    mapstructure:"sessionToken"    yaml:"sessionToken,omitempty"`
 	// Custom endpoint to fetch IAM role credentials.
 	IAMAuthEndpoint *utils.EnvString `json:"iamAuthEndpoint,omitempty" mapstructure:"iamAuthEndpoint" yaml:"iamAuthEndpoint,omitempty"`
 }

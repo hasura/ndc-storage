@@ -9,8 +9,8 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/hasura/ndc-sdk-go/connector"
-	"github.com/hasura/ndc-sdk-go/schema"
+	"github.com/hasura/ndc-sdk-go/v2/connector"
+	"github.com/hasura/ndc-sdk-go/v2/schema"
 	"github.com/hasura/ndc-storage/connector/storage/common"
 	"github.com/minio/minio-go/v7"
 	"github.com/minio/minio-go/v7/pkg/tags"
@@ -21,7 +21,12 @@ import (
 )
 
 // ListObjects list objects in a bucket.
-func (mc *Client) ListObjects(ctx context.Context, bucketName string, opts *common.ListStorageObjectsOptions, predicate func(string) bool) (*common.StorageObjectListResults, error) {
+func (mc *Client) ListObjects(
+	ctx context.Context,
+	bucketName string,
+	opts *common.ListStorageObjectsOptions,
+	predicate func(string) bool,
+) (*common.StorageObjectListResults, error) {
 	ctx, span := mc.startOtelSpan(ctx, "ListObjects", bucketName)
 	defer span.End()
 
@@ -113,9 +118,13 @@ func (mc *Client) ListObjects(ctx context.Context, bucketName string, opts *comm
 		lhFunc(object, i)
 	}
 
-	if err := eg.Wait(); err != nil {
+	err := eg.Wait()
+	if err != nil {
 		logger.Error("failed to include object data: " + err.Error())
-		span.AddEvent("fetch_legal_holds_error", trace.WithAttributes(attribute.String("error", err.Error())))
+		span.AddEvent(
+			"fetch_legal_holds_error",
+			trace.WithAttributes(attribute.String("error", err.Error())),
+		)
 	}
 
 	return &common.StorageObjectListResults{
@@ -125,7 +134,11 @@ func (mc *Client) ListObjects(ctx context.Context, bucketName string, opts *comm
 }
 
 // ListIncompleteUploads list partially uploaded objects in a bucket.
-func (mc *Client) ListIncompleteUploads(ctx context.Context, bucketName string, args common.ListIncompleteUploadsOptions) ([]common.StorageObjectMultipartInfo, error) {
+func (mc *Client) ListIncompleteUploads(
+	ctx context.Context,
+	bucketName string,
+	args common.ListIncompleteUploadsOptions,
+) ([]common.StorageObjectMultipartInfo, error) {
 	ctx, span := mc.startOtelSpan(ctx, "ListIncompleteUploads", bucketName)
 	defer span.End()
 
@@ -171,14 +184,23 @@ func (mc *Client) ListIncompleteUploads(ctx context.Context, bucketName string, 
 }
 
 // ListDeletedObjects list soft-deleted objects in a bucket.
-func (mc *Client) ListDeletedObjects(ctx context.Context, bucketName string, opts *common.ListStorageObjectsOptions, predicate func(string) bool) (*common.StorageObjectListResults, error) {
+func (mc *Client) ListDeletedObjects(
+	ctx context.Context,
+	bucketName string,
+	opts *common.ListStorageObjectsOptions,
+	predicate func(string) bool,
+) (*common.StorageObjectListResults, error) {
 	return &common.StorageObjectListResults{
 		Objects: []common.StorageObject{},
 	}, nil
 }
 
 // RemoveIncompleteUpload removes a partially uploaded object.
-func (mc *Client) RemoveIncompleteUpload(ctx context.Context, bucketName string, objectName string) error {
+func (mc *Client) RemoveIncompleteUpload(
+	ctx context.Context,
+	bucketName string,
+	objectName string,
+) error {
 	ctx, span := mc.startOtelSpan(ctx, "RemoveIncompleteUpload", bucketName)
 	defer span.End()
 
@@ -196,7 +218,11 @@ func (mc *Client) RemoveIncompleteUpload(ctx context.Context, bucketName string,
 }
 
 // GetObject returns a stream of the object data. Most of the common errors occur when reading the stream.
-func (mc *Client) GetObject(ctx context.Context, bucketName, objectName string, opts common.GetStorageObjectOptions) (io.ReadCloser, error) {
+func (mc *Client) GetObject(
+	ctx context.Context,
+	bucketName, objectName string,
+	opts common.GetStorageObjectOptions,
+) (io.ReadCloser, error) {
 	ctx, span := mc.startOtelSpan(ctx, "GetObject", bucketName)
 	defer span.End()
 
@@ -216,7 +242,14 @@ func (mc *Client) GetObject(ctx context.Context, bucketName, objectName string, 
 
 // PutObject uploads objects that are less than 128MiB in a single PUT operation. For objects that are greater than 128MiB in size,
 // PutObject seamlessly uploads the object as parts of 128MiB or more depending on the actual file size. The max upload size for an object is 5TB.
-func (mc *Client) PutObject(ctx context.Context, bucketName string, objectName string, opts *common.PutStorageObjectOptions, reader io.Reader, objectSize int64) (*common.StorageUploadInfo, error) {
+func (mc *Client) PutObject(
+	ctx context.Context,
+	bucketName string,
+	objectName string,
+	opts *common.PutStorageObjectOptions,
+	reader io.Reader,
+	objectSize int64,
+) (*common.StorageUploadInfo, error) {
 	ctx, span := mc.startOtelSpan(ctx, "PutObject", bucketName)
 	defer span.End()
 
@@ -254,7 +287,10 @@ func (mc *Client) PutObject(ctx context.Context, bucketName string, objectName s
 
 		span.SetAttributes(
 			attribute.String("storage.options.retention_mode", string(opts.Retention.Mode)),
-			attribute.String("storage.options.retain_util_date", opts.Retention.RetainUntilDate.Format(time.RFC3339)),
+			attribute.String(
+				"storage.options.retain_util_date",
+				opts.Retention.RetainUntilDate.Format(time.RFC3339),
+			),
 		)
 	}
 
@@ -283,7 +319,11 @@ func (mc *Client) PutObject(ctx context.Context, bucketName string, objectName s
 // CopyObject creates or replaces an object through server-side copying of an existing object.
 // It supports conditional copying, copying a part of an object and server-side encryption of destination and decryption of source.
 // To copy multiple source objects into a single destination object see the ComposeObject API.
-func (mc *Client) CopyObject(ctx context.Context, dest common.StorageCopyDestOptions, src common.StorageCopySrcOptions) (*common.StorageUploadInfo, error) {
+func (mc *Client) CopyObject(
+	ctx context.Context,
+	dest common.StorageCopyDestOptions,
+	src common.StorageCopySrcOptions,
+) (*common.StorageUploadInfo, error) {
 	ctx, span := mc.startOtelSpan(ctx, "CopyObject", dest.Bucket)
 	defer span.End()
 
@@ -310,7 +350,11 @@ func (mc *Client) CopyObject(ctx context.Context, dest common.StorageCopyDestOpt
 }
 
 // ComposeObject creates an object by concatenating a list of source objects using server-side copying.
-func (mc *Client) ComposeObject(ctx context.Context, dest common.StorageCopyDestOptions, sources []common.StorageCopySrcOptions) (*common.StorageUploadInfo, error) {
+func (mc *Client) ComposeObject(
+	ctx context.Context,
+	dest common.StorageCopyDestOptions,
+	sources []common.StorageCopySrcOptions,
+) (*common.StorageUploadInfo, error) {
 	ctx, span := mc.startOtelSpan(ctx, "ComposeObject", dest.Bucket)
 	defer span.End()
 
@@ -344,7 +388,11 @@ func (mc *Client) ComposeObject(ctx context.Context, dest common.StorageCopyDest
 }
 
 // StatObject fetches metadata of an object.
-func (mc *Client) StatObject(ctx context.Context, bucketName, objectName string, opts common.GetStorageObjectOptions) (*common.StorageObject, error) {
+func (mc *Client) StatObject(
+	ctx context.Context,
+	bucketName, objectName string,
+	opts common.GetStorageObjectOptions,
+) (*common.StorageObject, error) {
 	ctx, span := mc.startOtelSpan(ctx, "StatObject", bucketName)
 	defer span.End()
 
@@ -373,7 +421,12 @@ func (mc *Client) StatObject(ctx context.Context, bucketName, objectName string,
 }
 
 // RemoveObject removes an object with some specified options.
-func (mc *Client) RemoveObject(ctx context.Context, bucketName string, objectName string, opts common.RemoveStorageObjectOptions) error {
+func (mc *Client) RemoveObject(
+	ctx context.Context,
+	bucketName string,
+	objectName string,
+	opts common.RemoveStorageObjectOptions,
+) error {
 	ctx, span := mc.startOtelSpan(ctx, "RemoveObject", bucketName)
 	defer span.End()
 
@@ -406,7 +459,12 @@ func (mc *Client) RemoveObject(ctx context.Context, bucketName string, objectNam
 
 // RemoveObjects removes a list of objects obtained from an input channel. The call sends a delete request to the server up to 1000 objects at a time.
 // The errors observed are sent over the error channel.
-func (mc *Client) RemoveObjects(ctx context.Context, bucketName string, opts *common.RemoveStorageObjectsOptions, predicate func(string) bool) []common.RemoveStorageObjectError {
+func (mc *Client) RemoveObjects(
+	ctx context.Context,
+	bucketName string,
+	opts *common.RemoveStorageObjectsOptions,
+	predicate func(string) bool,
+) []common.RemoveStorageObjectError {
 	ctx, span := mc.startOtelSpan(ctx, "RemoveObjects", bucketName)
 	defer span.End()
 
@@ -453,7 +511,12 @@ func (mc *Client) RemoveObjects(ctx context.Context, bucketName string, opts *co
 }
 
 // UpdateObject updates object configurations.
-func (mc *Client) UpdateObject(ctx context.Context, bucketName string, objectName string, opts common.UpdateStorageObjectOptions) error {
+func (mc *Client) UpdateObject(
+	ctx context.Context,
+	bucketName string,
+	objectName string,
+	opts common.UpdateStorageObjectOptions,
+) error {
 	ctx, span := mc.startOtelSpanWithKind(ctx, trace.SpanKindInternal, "UpdateObject", bucketName)
 	defer span.End()
 
@@ -464,19 +527,28 @@ func (mc *Client) UpdateObject(ctx context.Context, bucketName string, objectNam
 	}
 
 	if opts.LegalHold != nil {
-		if err := mc.SetObjectLegalHold(ctx, bucketName, objectName, opts.VersionID, opts.LegalHold); err != nil {
+		err := mc.SetObjectLegalHold(ctx, bucketName, objectName, opts.VersionID, opts.LegalHold)
+		if err != nil {
 			return err
 		}
 	}
 
 	if opts.Tags != nil {
-		if err := mc.SetObjectTags(ctx, bucketName, objectName, opts.VersionID, common.KeyValuesToStringMap(*opts.Tags)); err != nil {
+		err := mc.SetObjectTags(
+			ctx,
+			bucketName,
+			objectName,
+			opts.VersionID,
+			common.KeyValuesToStringMap(*opts.Tags),
+		)
+		if err != nil {
 			return err
 		}
 	}
 
 	if opts.Retention != nil {
-		if err := mc.SetObjectRetention(ctx, bucketName, objectName, opts.VersionID, *opts.Retention); err != nil {
+		err := mc.SetObjectRetention(ctx, bucketName, objectName, opts.VersionID, *opts.Retention)
+		if err != nil {
 			return err
 		}
 	}
@@ -490,7 +562,12 @@ func (mc *Client) RestoreObject(ctx context.Context, bucketName string, objectNa
 }
 
 // SetObjectRetention applies object retention lock onto an object.
-func (mc *Client) SetObjectRetention(ctx context.Context, bucketName string, objectName, versionID string, opts common.SetStorageObjectRetentionOptions) error {
+func (mc *Client) SetObjectRetention(
+	ctx context.Context,
+	bucketName string,
+	objectName, versionID string,
+	opts common.SetStorageObjectRetentionOptions,
+) error {
 	ctx, span := mc.startOtelSpan(ctx, "SetObjectRetention", bucketName)
 	defer span.End()
 
@@ -504,7 +581,12 @@ func (mc *Client) SetObjectRetention(ctx context.Context, bucketName string, obj
 	}
 
 	if opts.RetainUntilDate != nil {
-		span.SetAttributes(attribute.String("storage.options.retain_util_date", opts.RetainUntilDate.Format(time.RFC3339)))
+		span.SetAttributes(
+			attribute.String(
+				"storage.options.retain_util_date",
+				opts.RetainUntilDate.Format(time.RFC3339),
+			),
+		)
 	}
 
 	options := minio.PutObjectRetentionOptions{
@@ -531,7 +613,11 @@ func (mc *Client) SetObjectRetention(ctx context.Context, bucketName string, obj
 }
 
 // SetObjectLegalHold applies legal-hold onto an object.
-func (mc *Client) SetObjectLegalHold(ctx context.Context, bucketName, objectName, versionID string, status *bool) error {
+func (mc *Client) SetObjectLegalHold(
+	ctx context.Context,
+	bucketName, objectName, versionID string,
+	status *bool,
+) error {
 	ctx, span := mc.startOtelSpan(ctx, "SetObjectLegalHold", bucketName)
 	defer span.End()
 
@@ -563,7 +649,12 @@ func (mc *Client) SetObjectLegalHold(ctx context.Context, bucketName, objectName
 }
 
 // GetObjectLegalHold returns legal-hold status on a given object.
-func (mc *Client) GetObjectLegalHold(ctx context.Context, bucketName string, objectName string, versionID *string) (bool, error) {
+func (mc *Client) GetObjectLegalHold(
+	ctx context.Context,
+	bucketName string,
+	objectName string,
+	versionID *string,
+) (bool, error) {
 	ctx, span := mc.startOtelSpan(ctx, "GetObjectLegalHold", bucketName)
 	defer span.End()
 
@@ -588,7 +679,12 @@ func (mc *Client) GetObjectLegalHold(ctx context.Context, bucketName string, obj
 }
 
 // SetObjectTags sets new object Tags to the given object, replaces/overwrites any existing tags.
-func (mc *Client) SetObjectTags(ctx context.Context, bucketName string, objectName, versionID string, objectTags map[string]string) error {
+func (mc *Client) SetObjectTags(
+	ctx context.Context,
+	bucketName string,
+	objectName, versionID string,
+	objectTags map[string]string,
+) error {
 	if len(objectTags) == 0 {
 		return mc.RemoveObjectTags(ctx, bucketName, objectName, versionID)
 	}
@@ -624,7 +720,11 @@ func (mc *Client) SetObjectTags(ctx context.Context, bucketName string, objectNa
 }
 
 // GetObjectTags fetches Object Tags from the given object.
-func (mc *Client) GetObjectTags(ctx context.Context, bucketName, objectName string, versionID *string) (map[string]string, error) {
+func (mc *Client) GetObjectTags(
+	ctx context.Context,
+	bucketName, objectName string,
+	versionID *string,
+) (map[string]string, error) {
 	ctx, span := mc.startOtelSpan(ctx, "GetObjectTags", bucketName)
 	defer span.End()
 
@@ -649,7 +749,10 @@ func (mc *Client) GetObjectTags(ctx context.Context, bucketName, objectName stri
 }
 
 // RemoveObjectTags removes Object Tags from the given object.
-func (mc *Client) RemoveObjectTags(ctx context.Context, bucketName, objectName, versionID string) error {
+func (mc *Client) RemoveObjectTags(
+	ctx context.Context,
+	bucketName, objectName, versionID string,
+) error {
 	ctx, span := mc.startOtelSpan(ctx, "RemoveObjectTags", bucketName)
 	defer span.End()
 
@@ -677,18 +780,34 @@ func (mc *Client) RemoveObjectTags(ctx context.Context, bucketName, objectName, 
 // PresignedGetObject generates a presigned URL for HTTP GET operations. Browsers/Mobile clients may point to this URL to directly download objects even if the bucket is private.
 // This presigned URL can have an associated expiration time in seconds after which it is no longer operational.
 // The maximum expiry is 604800 seconds (i.e. 7 days) and minimum is 1 second.
-func (mc *Client) PresignedGetObject(ctx context.Context, bucketName string, objectName string, opts common.PresignedGetStorageObjectOptions) (string, error) {
+func (mc *Client) PresignedGetObject(
+	ctx context.Context,
+	bucketName string,
+	objectName string,
+	opts common.PresignedGetStorageObjectOptions,
+) (string, error) {
 	return mc.presignObject(ctx, http.MethodGet, bucketName, objectName, opts)
 }
 
 // PresignedHeadObject generates a presigned URL for HTTP HEAD operations.
 // Browsers/Mobile clients may point to this URL to directly get metadata from objects even if the bucket is private.
 // This presigned URL can have an associated expiration time in seconds after which it is no longer operational. The default expiry is set to 7 days.
-func (mc *Client) PresignedHeadObject(ctx context.Context, bucketName string, objectName string, opts common.PresignedGetStorageObjectOptions) (string, error) {
+func (mc *Client) PresignedHeadObject(
+	ctx context.Context,
+	bucketName string,
+	objectName string,
+	opts common.PresignedGetStorageObjectOptions,
+) (string, error) {
 	return mc.presignObject(ctx, http.MethodHead, bucketName, objectName, opts)
 }
 
-func (mc *Client) presignObject(ctx context.Context, method string, bucketName string, objectName string, opts common.PresignedGetStorageObjectOptions) (string, error) {
+func (mc *Client) presignObject(
+	ctx context.Context,
+	method string,
+	bucketName string,
+	objectName string,
+	opts common.PresignedGetStorageObjectOptions,
+) (string, error) {
 	ctx, span := mc.startOtelSpan(ctx, method+" PresignedObject", bucketName)
 	defer span.End()
 
@@ -707,17 +826,30 @@ func (mc *Client) presignObject(ctx context.Context, method string, bucketName s
 
 	fileName := filepath.Base(objectName)
 	// Set request Parameters: for content-disposition.
-	reqParams.Set("response-content-disposition", fmt.Sprintf(`attachment; filename="%s"`, fileName))
+	reqParams.Set(
+		"response-content-disposition",
+		fmt.Sprintf(`attachment; filename="%s"`, fileName),
+	)
 
 	var result *url.URL
+
 	var err error
+
 	header := http.Header{}
 
 	if mc.publicHost != nil {
 		header.Set("Host", mc.publicHost.Host)
 	}
 
-	result, err = mc.client.PresignHeader(ctx, method, bucketName, objectName, expiry, reqParams, header)
+	result, err = mc.client.PresignHeader(
+		ctx,
+		method,
+		bucketName,
+		objectName,
+		expiry,
+		reqParams,
+		header,
+	)
 	if err != nil {
 		span.SetStatus(codes.Error, err.Error())
 		span.RecordError(err)
@@ -737,7 +869,12 @@ func (mc *Client) presignObject(ctx context.Context, method string, bucketName s
 
 // PresignedPutObject generates a presigned URL for HTTP PUT operations. Browsers/Mobile clients may point to this URL to upload objects directly to a bucket even if it is private.
 // This presigned URL can have an associated expiration time in seconds after which it is no longer operational. The default expiry is set to 7 days.
-func (mc *Client) PresignedPutObject(ctx context.Context, bucketName string, objectName string, expiry time.Duration) (string, error) {
+func (mc *Client) PresignedPutObject(
+	ctx context.Context,
+	bucketName string,
+	objectName string,
+	expiry time.Duration,
+) (string, error) {
 	ctx, span := mc.startOtelSpan(ctx, "PresignedPutObject", bucketName)
 	defer span.End()
 
@@ -750,7 +887,15 @@ func (mc *Client) PresignedPutObject(ctx context.Context, bucketName string, obj
 		header.Set("Host", mc.publicHost.Host)
 	}
 
-	result, err := mc.client.PresignHeader(ctx, http.MethodPut, bucketName, objectName, expiry, url.Values{}, header)
+	result, err := mc.client.PresignHeader(
+		ctx,
+		http.MethodPut,
+		bucketName,
+		objectName,
+		expiry,
+		url.Values{},
+		header,
+	)
 	if err != nil {
 		span.SetStatus(codes.Error, err.Error())
 		span.RecordError(err)
@@ -769,7 +914,11 @@ func (mc *Client) PresignedPutObject(ctx context.Context, bucketName string, obj
 }
 
 // Set object lock configuration in given bucket. mode, validity and unit are either all set or all nil.
-func (mc *Client) SetObjectLockConfig(ctx context.Context, bucketname string, opts common.SetStorageObjectLockConfig) error {
+func (mc *Client) SetObjectLockConfig(
+	ctx context.Context,
+	bucketname string,
+	opts common.SetStorageObjectLockConfig,
+) error {
 	ctx, span := mc.startOtelSpan(ctx, "SetObjectLockConfig", bucketname)
 	defer span.End()
 
@@ -789,7 +938,13 @@ func (mc *Client) SetObjectLockConfig(ctx context.Context, bucketname string, op
 		span.SetAttributes(attribute.Int("storage.lock_validity", int(*opts.Validity)))
 	}
 
-	err := mc.client.SetObjectLockConfig(ctx, bucketname, retentionMode, opts.Validity, (*minio.ValidityUnit)(opts.Unit))
+	err := mc.client.SetObjectLockConfig(
+		ctx,
+		bucketname,
+		retentionMode,
+		opts.Validity,
+		(*minio.ValidityUnit)(opts.Unit),
+	)
 	if err != nil {
 		span.SetStatus(codes.Error, err.Error())
 		span.RecordError(err)
@@ -801,7 +956,10 @@ func (mc *Client) SetObjectLockConfig(ctx context.Context, bucketname string, op
 }
 
 // Get object lock configuration of given bucket.
-func (mc *Client) GetObjectLockConfig(ctx context.Context, bucketName string) (*common.StorageObjectLockConfig, error) {
+func (mc *Client) GetObjectLockConfig(
+	ctx context.Context,
+	bucketName string,
+) (*common.StorageObjectLockConfig, error) {
 	ctx, span := mc.startOtelSpan(ctx, "GetObjectLockConfig", bucketName)
 	defer span.End()
 
@@ -831,7 +989,11 @@ func (mc *Client) GetObjectLockConfig(ctx context.Context, bucketName string) (*
 	return result, nil
 }
 
-func (mc *Client) populateObject(ctx context.Context, result *common.StorageObject, include common.StorageObjectIncludeOptions) error {
+func (mc *Client) populateObject(
+	ctx context.Context,
+	result *common.StorageObject,
+	include common.StorageObjectIncludeOptions,
+) error {
 	if include.Tags {
 		userTags, err := mc.GetObjectTags(ctx, result.Bucket, result.Name, result.VersionID)
 		if err != nil {

@@ -10,17 +10,20 @@ import (
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore"
 	"github.com/Azure/azure-sdk-for-go/sdk/storage/azblob"
 	"github.com/Azure/azure-sdk-for-go/sdk/storage/azblob/container"
-	"github.com/hasura/ndc-sdk-go/connector"
-	"github.com/hasura/ndc-sdk-go/schema"
-	"github.com/hasura/ndc-sdk-go/utils"
+	"github.com/hasura/ndc-sdk-go/v2/connector"
+	"github.com/hasura/ndc-sdk-go/v2/schema"
+	"github.com/hasura/ndc-sdk-go/v2/utils"
 	"github.com/hasura/ndc-storage/connector/storage/common"
 )
 
 var tracer = connector.NewTracer("connector/storage/azblob")
 
-var errNotSupported = schema.NotSupportedError("Azure Blob Storage doesn't support this method", nil)
+var errNotSupported = schema.NotSupportedError(
+	"Azure Blob Storage doesn't support this method",
+	nil,
+)
 
-func serializeObjectInfo(item *container.BlobItem) common.StorageObject { //nolint:funlen,cyclop
+func serializeObjectInfo(item *container.BlobItem) common.StorageObject {
 	object := common.StorageObject{
 		IsLatest:  item.IsCurrentVersion,
 		Deleted:   item.Deleted,

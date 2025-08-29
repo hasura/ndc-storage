@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/hasura/ndc-sdk-go/schema"
-	"github.com/hasura/ndc-sdk-go/utils"
+	"github.com/hasura/ndc-sdk-go/v2/schema"
+	"github.com/hasura/ndc-sdk-go/v2/utils"
 )
 
 func normalizeObjectName(objectName string) string {
@@ -32,7 +32,10 @@ func getComparisonValue(input schema.ComparisonValue, variables map[string]any) 
 	}
 }
 
-func getComparisonValueString(input schema.ComparisonValue, variables map[string]any) (*string, error) {
+func getComparisonValueString(
+	input schema.ComparisonValue,
+	variables map[string]any,
+) (*string, error) {
 	rawValue, err := getComparisonValue(input, variables)
 	if err != nil {
 		return nil, err
@@ -41,7 +44,10 @@ func getComparisonValueString(input schema.ComparisonValue, variables map[string
 	return utils.DecodeNullableString(rawValue)
 }
 
-func getComparisonValueBoolean(input schema.ComparisonValue, variables map[string]any) (*bool, error) {
+func getComparisonValueBoolean(
+	input schema.ComparisonValue,
+	variables map[string]any,
+) (*bool, error) {
 	rawValue, err := getComparisonValue(input, variables)
 	if err != nil {
 		return nil, err

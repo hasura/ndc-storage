@@ -1,8 +1,8 @@
 package collection
 
 import (
-	"github.com/hasura/ndc-sdk-go/schema"
-	"github.com/hasura/ndc-sdk-go/utils"
+	"github.com/hasura/ndc-sdk-go/v2/schema"
+	"github.com/hasura/ndc-sdk-go/v2/utils"
 )
 
 const (
@@ -39,7 +39,13 @@ const (
 	ArgumentSecretAccessKey = "secret_access_key"
 )
 
-var checksumColumnNames = []string{"checksum_crc32", "checksum_crc32c", "checksum_crc64_nvme", "checksum_sha1", "checksum_sha256"}
+var checksumColumnNames = []string{
+	"checksum_crc32",
+	"checksum_crc32c",
+	"checksum_crc64_nvme",
+	"checksum_sha1",
+	"checksum_sha256",
+}
 
 // StringComparisonOperator represents the explicit comparison expression for string columns.
 type StringComparisonOperator struct {
@@ -72,7 +78,6 @@ func GetConnectorSchema(clientIDs []string, dynamicCredentials bool) *schema.Sch
 				Type:                  StorageObjectName,
 				Arguments:             storageObjectArguments,
 				UniquenessConstraints: schema.CollectionInfoUniquenessConstraints{},
-				ForeignKeys:           schema.CollectionInfoForeignKeys{},
 			},
 			{
 				Name:        CollectionStorageBuckets,
@@ -84,7 +89,6 @@ func GetConnectorSchema(clientIDs []string, dynamicCredentials bool) *schema.Sch
 					},
 				}, dynamicCredentials),
 				UniquenessConstraints: schema.CollectionInfoUniquenessConstraints{},
-				ForeignKeys:           schema.CollectionInfoForeignKeys{},
 			},
 		},
 		ObjectTypes: schema.SchemaResponseObjectTypes{
@@ -123,10 +127,13 @@ func GetConnectorSchema(clientIDs []string, dynamicCredentials bool) *schema.Sch
 			ScalarStringFilter: schema.ScalarType{
 				AggregateFunctions: schema.ScalarTypeAggregateFunctions{},
 				ComparisonOperators: map[string]schema.ComparisonOperatorDefinition{
-					OperatorEqual:               schema.NewComparisonOperatorEqual().Encode(),
-					OperatorStartsWith:          schema.NewComparisonOperatorCustom(schema.NewNamedType(ScalarStringFilter)).Encode(),
-					OperatorContains:            schema.NewComparisonOperatorCustom(schema.NewNamedType(ScalarStringFilter)).Encode(),
-					OperatorInsensitiveContains: schema.NewComparisonOperatorCustom(schema.NewNamedType(ScalarStringFilter)).Encode(),
+					OperatorEqual: schema.NewComparisonOperatorEqual().Encode(),
+					OperatorStartsWith: schema.NewComparisonOperatorCustom(schema.NewNamedType(ScalarStringFilter)).
+						Encode(),
+					OperatorContains: schema.NewComparisonOperatorCustom(schema.NewNamedType(ScalarStringFilter)).
+						Encode(),
+					OperatorInsensitiveContains: schema.NewComparisonOperatorCustom(schema.NewNamedType(ScalarStringFilter)).
+						Encode(),
 				},
 				Representation: schema.NewTypeRepresentationString().Encode(),
 			},
@@ -141,7 +148,10 @@ func GetConnectorSchema(clientIDs []string, dynamicCredentials bool) *schema.Sch
 	}
 }
 
-func buildDynamicCredentialArguments(arguments map[string]schema.ArgumentInfo, dynamicCredentials bool) map[string]schema.ArgumentInfo {
+func buildDynamicCredentialArguments(
+	arguments map[string]schema.ArgumentInfo,
+	dynamicCredentials bool,
+) map[string]schema.ArgumentInfo {
 	if !dynamicCredentials {
 		return arguments
 	}
@@ -149,7 +159,8 @@ func buildDynamicCredentialArguments(arguments map[string]schema.ArgumentInfo, d
 	results := map[string]schema.ArgumentInfo{
 		ArgumentClientType: {
 			Description: utils.ToPtr("The cloud storage provider type"),
-			Type:        schema.NewNullableType(schema.NewNamedType("StorageProviderType")).Encode(),
+			Type: schema.NewNullableType(schema.NewNamedType("StorageProviderType")).
+				Encode(),
 		},
 		ArgumentEndpoint: {
 			Description: utils.ToPtr("Endpoint of the cloud storage service"),

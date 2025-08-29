@@ -7,7 +7,7 @@ import (
 	"slices"
 	"strings"
 
-	"github.com/hasura/ndc-sdk-go/schema"
+	"github.com/hasura/ndc-sdk-go/v2/schema"
 	"github.com/hasura/ndc-storage/connector/storage/common"
 	"github.com/spf13/afero"
 	"go.opentelemetry.io/otel/attribute"
@@ -31,7 +31,11 @@ func (c *Client) MakeBucket(ctx context.Context, args *common.MakeStorageBucketO
 }
 
 // ListBuckets lists all buckets.
-func (c *Client) ListBuckets(ctx context.Context, options *common.ListStorageBucketsOptions, predicate func(string) bool) (*common.StorageBucketListResults, error) {
+func (c *Client) ListBuckets(
+	ctx context.Context,
+	options *common.ListStorageBucketsOptions,
+	predicate func(string) bool,
+) (*common.StorageBucketListResults, error) {
 	_, span := c.startOtelSpan(ctx, "ListBuckets", "")
 	defer span.End()
 
@@ -54,7 +58,8 @@ func (c *Client) ListBuckets(ctx context.Context, options *common.ListStorageBuc
 			continue
 		}
 
-		if (options.Prefix != "" && !strings.HasPrefix(dir, options.Prefix)) || (predicate != nil && !predicate(dir)) {
+		if (options.Prefix != "" && !strings.HasPrefix(dir, options.Prefix)) ||
+			(predicate != nil && !predicate(dir)) {
 			continue
 		}
 
@@ -78,7 +83,11 @@ func (c *Client) ListBuckets(ctx context.Context, options *common.ListStorageBuc
 }
 
 // GetBucket gets a bucket by name.
-func (c *Client) GetBucket(ctx context.Context, name string, options common.BucketOptions) (*common.StorageBucket, error) {
+func (c *Client) GetBucket(
+	ctx context.Context,
+	name string,
+	options common.BucketOptions,
+) (*common.StorageBucket, error) {
 	_, span := c.startOtelSpan(ctx, "GetBucket", name)
 	defer span.End()
 
@@ -103,7 +112,11 @@ func (c *Client) BucketExists(ctx context.Context, bucketName string) (bool, err
 }
 
 // UpdateBucket updates configurations for the bucket.
-func (c *Client) UpdateBucket(ctx context.Context, bucketName string, opts common.UpdateStorageBucketOptions) error {
+func (c *Client) UpdateBucket(
+	ctx context.Context,
+	bucketName string,
+	opts common.UpdateStorageBucketOptions,
+) error {
 	_, span := c.startOtelSpan(ctx, "UpdateBucket", bucketName)
 	defer span.End()
 

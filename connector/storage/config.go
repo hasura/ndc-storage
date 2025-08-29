@@ -10,8 +10,8 @@ import (
 	"time"
 
 	"github.com/hasura/ndc-http/exhttp"
-	"github.com/hasura/ndc-sdk-go/schema"
-	"github.com/hasura/ndc-sdk-go/utils"
+	"github.com/hasura/ndc-sdk-go/v2/schema"
+	"github.com/hasura/ndc-sdk-go/v2/utils"
 	"github.com/hasura/ndc-storage/connector/storage/azblob"
 	"github.com/hasura/ndc-storage/connector/storage/common"
 	"github.com/hasura/ndc-storage/connector/storage/fs"
@@ -24,22 +24,26 @@ var errConfigEmpty = errors.New("the configuration is empty")
 
 // Client wraps the storage client with additional information.
 type Client struct {
+	common.StorageClient
+
 	id                     common.StorageClientID
 	defaultBucket          string
 	defaultPresignedExpiry *time.Duration
 	allowedBuckets         []string
-
-	common.StorageClient
 }
 
 // ValidateBucket checks if the bucket name is valid, or returns the default bucket if empty.
 func (c *Client) ValidateBucket(key string) (string, error) {
 	if key != "" {
-		if key == c.defaultBucket || len(c.allowedBuckets) == 0 || slices.Contains(c.allowedBuckets, key) {
+		if key == c.defaultBucket || len(c.allowedBuckets) == 0 ||
+			slices.Contains(c.allowedBuckets, key) {
 			return key, nil
 		}
 
-		return "", schema.UnprocessableContentError(fmt.Sprintf("you are not allowed to access `%s` bucket, client id `%s`", key, c.id), nil)
+		return "", schema.UnprocessableContentError(
+			fmt.Sprintf("you are not allowed to access `%s` bucket, client id `%s`", key, c.id),
+			nil,
+		)
 	}
 
 	if c.defaultBucket == "" {
@@ -67,28 +71,36 @@ func (cc ClientConfig) Validate() error {
 	switch storageType {
 	case common.StorageProviderTypeS3:
 		var config minio.ClientConfig
-		if err := json.Unmarshal(rawConfig, &config); err != nil {
+
+		err := json.Unmarshal(rawConfig, &config)
+		if err != nil {
 			return err
 		}
 
 		return config.Validate()
 	case common.StorageProviderTypeGcs:
 		var config gcs.ClientConfig
-		if err := json.Unmarshal(rawConfig, &config); err != nil {
+
+		err := json.Unmarshal(rawConfig, &config)
+		if err != nil {
 			return err
 		}
 
 		return config.Validate()
 	case common.StorageProviderTypeAzblob:
 		var config azblob.ClientConfig
-		if err := json.Unmarshal(rawConfig, &config); err != nil {
+
+		err := json.Unmarshal(rawConfig, &config)
+		if err != nil {
 			return err
 		}
 
 		return config.Validate()
 	case common.StorageProviderTypeFs:
 		var config fs.ClientConfig
-		if err := json.Unmarshal(rawConfig, &config); err != nil {
+
+		err := json.Unmarshal(rawConfig, &config)
+		if err != nil {
 			return err
 		}
 
@@ -116,7 +128,11 @@ func (cc ClientConfig) getStorageType() (common.StorageProviderType, error) {
 	return storageType, nil
 }
 
-func (cc ClientConfig) toStorageClient(ctx context.Context, logger *slog.Logger) (*common.BaseClientConfig, common.StorageClient, error) {
+// ToStorageClient initializes a storage client from the current config.
+func (cc ClientConfig) ToStorageClient(
+	ctx context.Context,
+	logger *slog.Logger,
+) (*common.BaseClientConfig, common.StorageClient, error) {
 	storageType, err := cc.getStorageType()
 	if err != nil {
 		return nil, nil, err
@@ -188,7 +204,7 @@ type RuntimeSettings struct {
 	MaxDownloadSizeMBs int64 `json:"maxDownloadSizeMBs" jsonschema:"min=1,default=20" yaml:"maxDownloadSizeMBs"`
 	// Maximum size in MB of the object is allowed to upload the content from HTTP URL
 	// to avoid memory leaks. Pre-signed URLs are recommended for large files.
-	MaxUploadSizeMBs int64 `json:"maxUploadSizeMBs" jsonschema:"min=1,default=20" yaml:"maxUploadSizeMBs"`
+	MaxUploadSizeMBs int64 `json:"maxUploadSizeMBs"   jsonschema:"min=1,default=20" yaml:"maxUploadSizeMBs"`
 	// Configuration for the http client that is used for uploading files from URL.
-	HTTP *exhttp.HTTPTransportTLSConfig `json:"http,omitempty" yaml:"http"`
+	HTTP *exhttp.HTTPTransportTLSConfig `json:"http,omitempty"                                   yaml:"http"`
 }

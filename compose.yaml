@@ -71,7 +71,7 @@ services:
 
   # https://github.com/Azure/Azurite
   azurite:
-    image: mcr.microsoft.com/azure-storage/azurite
+    image: mcr.microsoft.com/azure-storage/azurite:3.34.0
     restart: always
     command:
       [
