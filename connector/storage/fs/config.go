@@ -95,11 +95,13 @@ type FilePermissionConfig struct {
 
 // Validate checks if the configuration is valid.
 func (fpc FilePermissionConfig) Validate() error {
-	if err := fpc.validatePermission("directory", fpc.Directory); err != nil {
+	err := fpc.validatePermission("directory", fpc.Directory)
+	if err != nil {
 		return err
 	}
 
-	if err := fpc.validatePermission("file", fpc.File); err != nil {
+	err = fpc.validatePermission("file", fpc.File)
+	if err != nil {
 		return err
 	}
 

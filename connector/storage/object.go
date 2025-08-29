@@ -102,7 +102,8 @@ func (m *Manager) GetObject(
 	}
 
 	if opts.PreValidate != nil {
-		if err := opts.PreValidate(objectStat); err != nil {
+		err := opts.PreValidate(objectStat)
+		if err != nil {
 			return nil, nil, schema.UnprocessableContentError(err.Error(), nil)
 		}
 	}

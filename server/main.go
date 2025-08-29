@@ -14,12 +14,13 @@ import (
 //
 // [NDC Go SDK]: https://github.com/hasura/ndc-sdk-go
 func main() {
-	if err := connector.Start(
+	err := connector.Start(
 		&storage.Connector{},
 		connector.WithMetricsPrefix("ndc_storage"),
 		connector.WithDefaultServiceName("ndc-storage"),
 		connector.WithVersion(version.BuildVersion),
-	); err != nil {
+	)
+	if err != nil {
 		panic(err)
 	}
 }

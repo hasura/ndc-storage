@@ -10,7 +10,8 @@ import (
 )
 
 func main() {
-	if err := jsonSchemaConfiguration(); err != nil {
+	err := jsonSchemaConfiguration()
+	if err != nil {
 		panic(fmt.Errorf("failed to write jsonschema for Configuration: %w", err))
 	}
 }

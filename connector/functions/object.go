@@ -614,7 +614,8 @@ func ProcedureRemoveIncompleteStorageUpload(
 	state *types.State,
 	args *common.RemoveIncompleteUploadArguments,
 ) (SuccessResponse, error) {
-	if err := state.Storage.RemoveIncompleteUpload(ctx, args); err != nil {
+	err := state.Storage.RemoveIncompleteUpload(ctx, args)
+	if err != nil {
 		return SuccessResponse{}, err
 	}
 

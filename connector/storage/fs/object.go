@@ -179,7 +179,9 @@ func (c *Client) PutObject(
 	if strings.Contains(objectName, "/") || strings.Contains(objectName, "\\") {
 		// ensure that the directory exists
 		baseDir := filepath.Dir(filePath)
-		if err := c.client.MkdirAll(baseDir, os.FileMode(c.permissions.Directory)); err != nil {
+
+		err := c.client.MkdirAll(baseDir, os.FileMode(c.permissions.Directory))
+		if err != nil {
 			span.SetStatus(codes.Error, err.Error())
 			span.RecordError(err)
 
@@ -407,7 +409,8 @@ func (c *Client) RemoveObjects(
 			removeFunc(item.Name)
 		}
 
-		if err := eg.Wait(); err != nil {
+		err := eg.Wait()
+		if err != nil {
 			return []common.RemoveStorageObjectError{
 				{
 					Error: err.Error(),

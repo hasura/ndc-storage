@@ -155,7 +155,9 @@ func decodeCSVCellValue(cellValue string) (any, error) {
 
 	if cellValue[0] == '[' || cellValue[0] == '{' || cellValue[0] == '"' {
 		var result any
-		if err := json.Unmarshal([]byte(cellValue), &result); err != nil {
+
+		err := json.Unmarshal([]byte(cellValue), &result)
+		if err != nil {
 			return cellValue, err
 		}
 

@@ -118,7 +118,8 @@ func (mc *Client) ListObjects(
 		lhFunc(object, i)
 	}
 
-	if err := eg.Wait(); err != nil {
+	err := eg.Wait()
+	if err != nil {
 		logger.Error("failed to include object data: " + err.Error())
 		span.AddEvent(
 			"fetch_legal_holds_error",
@@ -526,19 +527,28 @@ func (mc *Client) UpdateObject(
 	}
 
 	if opts.LegalHold != nil {
-		if err := mc.SetObjectLegalHold(ctx, bucketName, objectName, opts.VersionID, opts.LegalHold); err != nil {
+		err := mc.SetObjectLegalHold(ctx, bucketName, objectName, opts.VersionID, opts.LegalHold)
+		if err != nil {
 			return err
 		}
 	}
 
 	if opts.Tags != nil {
-		if err := mc.SetObjectTags(ctx, bucketName, objectName, opts.VersionID, common.KeyValuesToStringMap(*opts.Tags)); err != nil {
+		err := mc.SetObjectTags(
+			ctx,
+			bucketName,
+			objectName,
+			opts.VersionID,
+			common.KeyValuesToStringMap(*opts.Tags),
+		)
+		if err != nil {
 			return err
 		}
 	}
 
 	if opts.Retention != nil {
-		if err := mc.SetObjectRetention(ctx, bucketName, objectName, opts.VersionID, *opts.Retention); err != nil {
+		err := mc.SetObjectRetention(ctx, bucketName, objectName, opts.VersionID, *opts.Retention)
+		if err != nil {
 			return err
 		}
 	}

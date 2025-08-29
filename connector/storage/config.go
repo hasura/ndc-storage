@@ -24,12 +24,12 @@ var errConfigEmpty = errors.New("the configuration is empty")
 
 // Client wraps the storage client with additional information.
 type Client struct {
+	common.StorageClient
+
 	id                     common.StorageClientID
 	defaultBucket          string
 	defaultPresignedExpiry *time.Duration
 	allowedBuckets         []string
-
-	common.StorageClient
 }
 
 // ValidateBucket checks if the bucket name is valid, or returns the default bucket if empty.
@@ -71,28 +71,36 @@ func (cc ClientConfig) Validate() error {
 	switch storageType {
 	case common.StorageProviderTypeS3:
 		var config minio.ClientConfig
-		if err := json.Unmarshal(rawConfig, &config); err != nil {
+
+		err := json.Unmarshal(rawConfig, &config)
+		if err != nil {
 			return err
 		}
 
 		return config.Validate()
 	case common.StorageProviderTypeGcs:
 		var config gcs.ClientConfig
-		if err := json.Unmarshal(rawConfig, &config); err != nil {
+
+		err := json.Unmarshal(rawConfig, &config)
+		if err != nil {
 			return err
 		}
 
 		return config.Validate()
 	case common.StorageProviderTypeAzblob:
 		var config azblob.ClientConfig
-		if err := json.Unmarshal(rawConfig, &config); err != nil {
+
+		err := json.Unmarshal(rawConfig, &config)
+		if err != nil {
 			return err
 		}
 
 		return config.Validate()
 	case common.StorageProviderTypeFs:
 		var config fs.ClientConfig
-		if err := json.Unmarshal(rawConfig, &config); err != nil {
+
+		err := json.Unmarshal(rawConfig, &config)
+		if err != nil {
 			return err
 		}
 

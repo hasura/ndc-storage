@@ -2,6 +2,8 @@ version: "2"
 
 linters:
   default: all
+  enable:
+    - wsl_v5
   disable:
     - err113
     - lll
@@ -19,6 +21,8 @@ linters:
     - recvcheck
     - funcorder
     - tagalign
+    - wsl
+    - noinlineerr
 
   settings:
     nestif:

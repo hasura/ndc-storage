@@ -440,7 +440,8 @@ func (c *Client) RemoveObjects(
 			removeFunc(item.Name)
 		}
 
-		if err := eg.Wait(); err != nil {
+		err := eg.Wait()
+		if err != nil {
 			return []common.RemoveStorageObjectError{
 				{
 					Error: err.Error(),

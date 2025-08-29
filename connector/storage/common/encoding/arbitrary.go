@@ -62,7 +62,9 @@ func decodeArbitraryDataFromContentType(
 	switch {
 	case mediaType == ContentTypeApplicationJSON || strings.Contains(mediaType, "+json"):
 		var result any
-		if err := json.NewDecoder(reader).Decode(&result); err != nil {
+
+		err := json.NewDecoder(reader).Decode(&result)
+		if err != nil {
 			return nil, false, err
 		}
 

@@ -34,7 +34,8 @@ func (mc *Client) MakeBucket(ctx context.Context, args *common.MakeStorageBucket
 	}
 
 	if len(args.Tags) > 0 {
-		if err := mc.SetBucketTagging(ctx, args.Name, common.KeyValuesToStringMap(args.Tags)); err != nil {
+		err := mc.SetBucketTagging(ctx, args.Name, common.KeyValuesToStringMap(args.Tags))
+		if err != nil {
 			span.SetStatus(codes.Error, err.Error())
 			span.RecordError(err)
 
@@ -211,29 +212,36 @@ func (mc *Client) UpdateBucket(
 	defer span.End()
 
 	if opts.Tags != nil {
-		if err := mc.SetBucketTagging(ctx, bucketName, common.KeyValuesToStringMap(*opts.Tags)); err != nil {
+		err := mc.SetBucketTagging(ctx, bucketName, common.KeyValuesToStringMap(*opts.Tags))
+		if err != nil {
 			return err
 		}
 	}
 
 	if opts.VersioningEnabled != nil {
 		if *opts.VersioningEnabled {
-			if err := mc.EnableVersioning(ctx, bucketName); err != nil {
+			err := mc.EnableVersioning(ctx, bucketName)
+			if err != nil {
 				return err
 			}
-		} else if err := mc.SuspendVersioning(ctx, bucketName); err != nil {
-			return err
+		} else {
+			err := mc.SuspendVersioning(ctx, bucketName)
+			if err != nil {
+				return err
+			}
 		}
 	}
 
 	if opts.Lifecycle != nil {
-		if err := mc.SetBucketLifecycle(ctx, bucketName, *opts.Lifecycle); err != nil {
+		err := mc.SetBucketLifecycle(ctx, bucketName, *opts.Lifecycle)
+		if err != nil {
 			return err
 		}
 	}
 
 	if opts.ObjectLock != nil {
-		if err := mc.SetObjectLockConfig(ctx, bucketName, *opts.ObjectLock); err != nil {
+		err := mc.SetObjectLockConfig(ctx, bucketName, *opts.ObjectLock)
+		if err != nil {
 			return err
 		}
 	}

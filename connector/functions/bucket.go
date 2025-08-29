@@ -17,7 +17,8 @@ func ProcedureCreateStorageBucket(
 	state *types.State,
 	args *common.MakeStorageBucketArguments,
 ) (SuccessResponse, error) {
-	if err := state.Storage.MakeBucket(ctx, args.ClientID, &args.MakeStorageBucketOptions); err != nil {
+	err := state.Storage.MakeBucket(ctx, args.ClientID, &args.MakeStorageBucketOptions)
+	if err != nil {
 		return SuccessResponse{}, err
 	}
 

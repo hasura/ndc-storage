@@ -31,9 +31,10 @@ type BaseClientConfig struct {
 	AllowedBuckets []string `json:"allowedBuckets,omitempty"         mapstructure:"allowedBuckets"         yaml:"allowedBuckets,omitempty"`
 }
 
-// Validate checks if the configration is valid.
+// Validate checks if the configuration is valid.
 func (bcc BaseClientConfig) Validate() error {
-	if err := bcc.Type.Validate(); err != nil {
+	err := bcc.Type.Validate()
+	if err != nil {
 		return fmt.Errorf("type: %w", err)
 	}
 

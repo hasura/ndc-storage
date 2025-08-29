@@ -43,6 +43,7 @@ func UpdateConfig(dir string) error {
 
 func writeConfig(filePath string, config *types.Configuration) error {
 	var buf bytes.Buffer
+
 	writer := bufio.NewWriter(&buf)
 
 	_, _ = writer.WriteString(
@@ -51,11 +52,13 @@ func writeConfig(filePath string, config *types.Configuration) error {
 	encoder := yaml.NewEncoder(writer)
 	encoder.SetIndent(2)
 
-	if err := encoder.Encode(config); err != nil {
+	err := encoder.Encode(config)
+	if err != nil {
 		return fmt.Errorf("failed to encode the configuration file: %w", err)
 	}
 
-	if err := writer.Flush(); err != nil {
+	err = writer.Flush()
+	if err != nil {
 		return fmt.Errorf("failed to flush the configuration file writer: %w", err)
 	}
 

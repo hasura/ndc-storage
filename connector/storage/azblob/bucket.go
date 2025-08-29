@@ -258,7 +258,8 @@ func (c *Client) UpdateBucket(
 	defer span.End()
 
 	if opts.Tags != nil {
-		if err := c.SetBucketTagging(ctx, bucketName, common.KeyValuesToStringMap(*opts.Tags)); err != nil {
+		err := c.SetBucketTagging(ctx, bucketName, common.KeyValuesToStringMap(*opts.Tags))
+		if err != nil {
 			return err
 		}
 	}

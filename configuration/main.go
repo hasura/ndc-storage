@@ -39,7 +39,8 @@ func main() {
 
 		slog.Info("introspecting metadata", slog.String("dir", cli.Update.Dir))
 
-		if err := UpdateConfig(cli.Update.Dir); err != nil {
+		err := UpdateConfig(cli.Update.Dir)
+		if err != nil {
 			logger.Error(fmt.Sprintf("failed to update configuration: %s", err))
 			stop()
 			os.Exit(1)

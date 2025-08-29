@@ -702,7 +702,8 @@ func (c *Client) RemoveObjects(
 		}
 
 		for _, obj := range chunk {
-			if err := batchBuilder.Delete(obj.Name, &container.BatchDeleteOptions{}); err != nil {
+			err := batchBuilder.Delete(obj.Name, &container.BatchDeleteOptions{})
+			if err != nil {
 				return []common.RemoveStorageObjectError{
 					{
 						Error: err.Error(),
@@ -738,19 +739,28 @@ func (c *Client) UpdateObject(
 	}
 
 	if opts.LegalHold != nil {
-		if err := c.SetObjectLegalHold(ctx, bucketName, objectName, opts.VersionID, *opts.LegalHold); err != nil {
+		err := c.SetObjectLegalHold(ctx, bucketName, objectName, opts.VersionID, *opts.LegalHold)
+		if err != nil {
 			return err
 		}
 	}
 
 	if opts.Tags != nil {
-		if err := c.SetObjectTags(ctx, bucketName, objectName, opts.VersionID, common.KeyValuesToStringMap(*opts.Tags)); err != nil {
+		err := c.SetObjectTags(
+			ctx,
+			bucketName,
+			objectName,
+			opts.VersionID,
+			common.KeyValuesToStringMap(*opts.Tags),
+		)
+		if err != nil {
 			return err
 		}
 	}
 
 	if opts.Retention != nil {
-		if err := c.SetObjectRetention(ctx, bucketName, objectName, opts.VersionID, *opts.Retention); err != nil {
+		err := c.SetObjectRetention(ctx, bucketName, objectName, opts.VersionID, *opts.Retention)
+		if err != nil {
 			return err
 		}
 	}

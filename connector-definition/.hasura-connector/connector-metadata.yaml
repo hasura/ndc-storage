@@ -15,6 +15,35 @@ supportedEnvironmentVariables:
   - name: DEFAULT_BUCKET
     description: The default bucket to be used. If not set the client must input the bucket in input arguments
     required: false
+nativeToolchainDefinition:
+  commands:
+    start:
+      type: ShellScript
+      bash: |
+        #!/usr/bin/env bash
+        set -eu -o pipefail        
+        HASURA_CONFIGURATION_DIRECTORY="$HASURA_PLUGIN_CONNECTOR_CONTEXT_PATH" "$HASURA_DDN_NATIVE_CONNECTOR_DIR/ndc-cli" serve
+      powershell: |
+        $ErrorActionPreference = "Stop"
+        $env:HASURA_CONFIGURATION_DIRECTORY="$env:HASURA_PLUGIN_CONNECTOR_CONTEXT_PATH"; & "$env:HASURA_DDN_NATIVE_CONNECTOR_DIR\ndc-cli.exe" serve
+    update:
+      type: ShellScript
+      bash: |
+        #!/usr/bin/env bash
+        set -eu -o pipefail
+        "$HASURA_DDN_NATIVE_CONNECTOR_PLUGIN_DIR/hasura-ndc-storage" update
+      powershell: |
+        $ErrorActionPreference = "Stop"
+        & "$env:HASURA_DDN_NATIVE_CONNECTOR_PLUGIN_DIR\hasura-ndc-storage.exe" update
+    watch:
+      type: ShellScript
+      bash: |
+        #!/usr/bin/env bash
+        echo "Watch is not supported for this connector"
+        exit 1
+      powershell: |
+        Write-Output "Watch is not supported for this connector"
+        exit 1
 commands:
   update: hasura-ndc-storage update
   upgradeConfiguration: hasura-ndc-storage version

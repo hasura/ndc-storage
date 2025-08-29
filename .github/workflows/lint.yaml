@@ -36,7 +36,7 @@ jobs:
         run: |
           diff -u <(echo -n) <(gofmt -d -s .)
       - name: golangci-lint ${{ matrix.modules }}
-        uses: golangci/golangci-lint-action@v7
+        uses: golangci/golangci-lint-action@v8
         with:
           args: --timeout=5m
           working-directory: ${{ matrix.modules }}

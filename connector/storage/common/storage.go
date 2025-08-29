@@ -388,6 +388,9 @@ type StorageRestoreInfo struct {
 
 // StorageObject container for object metadata.
 type StorageObject struct {
+	// Checksum values
+	StorageObjectChecksum
+
 	// An ETag is optionally set to md5sum of an object.  In case of multipart objects,
 	// ETag is of the form MD5SUM-N where MD5SUM is md5sum of all individual md5sums of
 	// each parts concatenated into one string.
@@ -443,9 +446,6 @@ type StorageObject struct {
 	ExpirationRuleID *string    `json:"expiration_rule_id"`
 
 	Restore *StorageRestoreInfo `json:"restore"`
-
-	// Checksum values
-	StorageObjectChecksum
 
 	// Azure Blob Store properties
 	ACL                       any                    `json:"acl,omitempty"`
@@ -518,6 +518,9 @@ type StorageObjectChecksum struct {
 
 // StorageUploadInfo represents the information of the uploaded object.
 type StorageUploadInfo struct {
+	// Checksum values
+	StorageObjectChecksum
+
 	// An ETag is optionally set to md5sum of an object.  In case of multipart objects,
 	// ETag is of the form MD5SUM-N where MD5SUM is md5sum of all individual md5sums of
 	// each parts concatenated into one string.
@@ -536,9 +539,6 @@ type StorageUploadInfo struct {
 	// not to be confused with `Expires` HTTP header.
 	Expiration       *time.Time `json:"expiration"`
 	ExpirationRuleID *string    `json:"expiration_rule_id"`
-
-	// Checksum values
-	StorageObjectChecksum
 }
 
 // StorageObjectMultipartInfo container for multipart object metadata.
@@ -588,18 +588,21 @@ type NotificationCommonConfig struct {
 // NotificationTopicConfig carries one single topic notification configuration.
 type NotificationTopicConfig struct {
 	NotificationCommonConfig
+
 	Topic string `json:"topic"`
 }
 
 // NotificationQueueConfig carries one single queue notification configuration.
 type NotificationQueueConfig struct {
 	NotificationCommonConfig
+
 	Queue string `json:"queue"`
 }
 
 // NotificationLambdaConfig carries one single cloudfunction notification configuration.
 type NotificationLambdaConfig struct {
 	NotificationCommonConfig
+
 	Lambda string `json:"cloud_function"`
 }
 

@@ -30,7 +30,8 @@ func (c Configuration) Validate() error {
 	}
 
 	for i, c := range c.Clients {
-		if err := c.Validate(); err != nil {
+		err := c.Validate()
+		if err != nil {
 			return fmt.Errorf("invalid client configuration at %d: %w", i, err)
 		}
 	}

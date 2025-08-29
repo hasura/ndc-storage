@@ -45,10 +45,10 @@ func (arg GetStorageBucketArguments) ToStorageBucketArguments() *StorageBucketAr
 
 // StorageBucketArguments represent the common input arguments for bucket-related methods.
 type StorageBucketArguments struct {
+	StorageClientCredentialArguments
+
 	// The bucket name.
 	Bucket string `json:"bucket,omitempty"`
-
-	StorageClientCredentialArguments
 }
 
 // StorageClientCredentials hold common storage client credential arguments.
