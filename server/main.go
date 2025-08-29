@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/hasura/ndc-sdk-go/connector"
+	"github.com/hasura/ndc-sdk-go/v2/connector"
 	"github.com/hasura/ndc-storage/configuration/version"
 	storage "github.com/hasura/ndc-storage/connector"
 )

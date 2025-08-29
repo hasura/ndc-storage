@@ -2,7 +2,7 @@
 package encoding
 
 import (
-	"github.com/hasura/ndc-sdk-go/utils"
+	"github.com/hasura/ndc-sdk-go/v2/utils"
 )
 
 // FromValue decodes values from map

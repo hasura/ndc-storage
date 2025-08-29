@@ -10,9 +10,9 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/hasura/ndc-sdk-go/scalar"
-	"github.com/hasura/ndc-sdk-go/schema"
-	"github.com/hasura/ndc-sdk-go/utils"
+	"github.com/hasura/ndc-sdk-go/v2/scalar"
+	"github.com/hasura/ndc-sdk-go/v2/schema"
+	"github.com/hasura/ndc-sdk-go/v2/utils"
 	"github.com/hasura/ndc-storage/connector/storage/common"
 	"github.com/hasura/ndc-storage/connector/storage/common/encoding"
 	"github.com/minio/minio-go/v7/pkg/s3utils"

@@ -3,7 +3,7 @@ package minio
 import (
 	"context"
 
-	"github.com/hasura/ndc-sdk-go/scalar"
+	"github.com/hasura/ndc-sdk-go/v2/scalar"
 	"github.com/hasura/ndc-storage/connector/storage/common"
 	"github.com/minio/minio-go/v7/pkg/lifecycle"
 	"go.opentelemetry.io/otel/codes"

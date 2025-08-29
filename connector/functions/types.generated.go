@@ -4,14 +4,15 @@ package functions
 import (
 	"context"
 	"encoding/json"
-	"github.com/hasura/ndc-sdk-go/connector"
-	"github.com/hasura/ndc-sdk-go/schema"
-	"github.com/hasura/ndc-sdk-go/utils"
+	"log/slog"
+	"slices"
+
+	"github.com/hasura/ndc-sdk-go/v2/connector"
+	"github.com/hasura/ndc-sdk-go/v2/schema"
+	"github.com/hasura/ndc-sdk-go/v2/utils"
 	"github.com/hasura/ndc-storage/connector/storage/common"
 	"github.com/hasura/ndc-storage/connector/types"
 	"go.opentelemetry.io/otel/trace"
-	"log/slog"
-	"slices"
 )
 
 // ToMap encodes the struct to a value map

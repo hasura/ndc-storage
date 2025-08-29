@@ -5,7 +5,7 @@ import (
 	"io"
 	"time"
 
-	"github.com/hasura/ndc-sdk-go/scalar"
+	"github.com/hasura/ndc-sdk-go/v2/scalar"
 )
 
 // StorageClient abstracts required methods of the storage client.

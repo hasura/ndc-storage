@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/hasura/ndc-sdk-go/schema"
+	"github.com/hasura/ndc-sdk-go/v2/schema"
 	"github.com/hasura/ndc-storage/connector/types"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/codes"

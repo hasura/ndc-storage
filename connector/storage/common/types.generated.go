@@ -4,11 +4,12 @@ package common
 import (
 	"encoding/json"
 	"errors"
-	"github.com/hasura/ndc-sdk-go/scalar"
-	"github.com/hasura/ndc-sdk-go/schema"
-	"github.com/hasura/ndc-sdk-go/utils"
-	"github.com/hasura/ndc-storage/connector/storage/common/encoding"
 	"slices"
+
+	"github.com/hasura/ndc-sdk-go/v2/scalar"
+	"github.com/hasura/ndc-sdk-go/v2/schema"
+	"github.com/hasura/ndc-sdk-go/v2/utils"
+	"github.com/hasura/ndc-storage/connector/storage/common/encoding"
 )
 
 // FromValue decodes values from map

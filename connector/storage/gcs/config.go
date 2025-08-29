@@ -12,7 +12,7 @@ import (
 
 	"cloud.google.com/go/storage"
 	"github.com/hasura/ndc-http/exhttp"
-	"github.com/hasura/ndc-sdk-go/utils"
+	"github.com/hasura/ndc-sdk-go/v2/utils"
 	"github.com/hasura/ndc-storage/connector/storage/common"
 	"github.com/invopop/jsonschema"
 	"google.golang.org/api/option"

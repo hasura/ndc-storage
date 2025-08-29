@@ -8,7 +8,7 @@ import (
 	"net/http"
 	"sync"
 
-	"github.com/hasura/ndc-sdk-go/utils"
+	"github.com/hasura/ndc-sdk-go/v2/utils"
 	md5simd "github.com/minio/md5-simd"
 )
 

@@ -11,7 +11,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/hasura/ndc-sdk-go/schema"
+	"github.com/hasura/ndc-sdk-go/v2/schema"
 	"github.com/hasura/ndc-storage/connector/storage/common"
 	"github.com/spf13/afero"
 	"go.opentelemetry.io/otel/attribute"
