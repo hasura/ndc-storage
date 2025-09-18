@@ -244,3 +244,8 @@ func (c *Connector) evalSchema(connectorSchema *schema.SchemaResponse) {
 		}
 	}
 }
+
+// Close handles the graceful shutdown that cleans up the connector's state.
+func (c *Connector) Close(state *types.State) error {
+	return nil
+}
