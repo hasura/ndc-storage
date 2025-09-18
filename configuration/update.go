@@ -12,7 +12,7 @@ import (
 	"github.com/hasura/ndc-storage/connector/storage/common"
 	"github.com/hasura/ndc-storage/connector/storage/minio"
 	"github.com/hasura/ndc-storage/connector/types"
-	"gopkg.in/yaml.v3"
+	"go.yaml.in/yaml/v4"
 )
 
 // UpdateArguments represent input arguments of the `update` command.

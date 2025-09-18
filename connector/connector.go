@@ -17,7 +17,7 @@ import (
 	"github.com/hasura/ndc-storage/connector/functions"
 	"github.com/hasura/ndc-storage/connector/storage"
 	"github.com/hasura/ndc-storage/connector/types"
-	"gopkg.in/yaml.v3"
+	"go.yaml.in/yaml/v4"
 )
 
 // Connector implements the SDK interface of NDC specification.
