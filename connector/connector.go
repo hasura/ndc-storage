@@ -17,7 +17,7 @@ import (
 	"github.com/hasura/ndc-storage/connector/functions"
 	"github.com/hasura/ndc-storage/connector/storage"
 	"github.com/hasura/ndc-storage/connector/types"
-	"gopkg.in/yaml.v3"
+	"go.yaml.in/yaml/v4"
 )
 
 // Connector implements the SDK interface of NDC specification.
@@ -243,4 +243,9 @@ func (c *Connector) evalSchema(connectorSchema *schema.SchemaResponse) {
 			connectorSchema.ObjectTypes[name] = object
 		}
 	}
+}
+
+// Close handles the graceful shutdown that cleans up the connector's state.
+func (c *Connector) Close(state *types.State) error {
+	return nil
 }
