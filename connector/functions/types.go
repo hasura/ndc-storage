@@ -8,7 +8,7 @@ import (
 
 var errPermissionDenied = schema.ForbiddenError("permission dennied", nil)
 
-// StorageConnectionEdge the connection information of the relay pagination response.
+// StorageConnection the connection information of the relay pagination response.
 type StorageConnection[T any] struct {
 	Edges    []StorageConnectionEdge[T]   `json:"edges"`
 	PageInfo common.StoragePaginationInfo `json:"pageInfo"`
@@ -50,7 +50,7 @@ type DownloadStorageObjectJsonResponse struct {
 	Data any `json:"data"`
 }
 
-// PutStorageObjectArguments represents input arguments of the PutObject method.
+// PutStorageObjectBase64Arguments represents input arguments of the PutObject method.
 type PutStorageObjectBase64Arguments struct {
 	common.PutStorageObjectArguments
 

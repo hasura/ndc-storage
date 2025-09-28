@@ -27,7 +27,7 @@ type ListStorageBucketArguments struct {
 	Where schema.Expression `json:"where"            ndc:"predicate=StorageBucketFilter"`
 }
 
-// StorageBucketArguments represent the common input arguments for bucket-related methods.
+// GetStorageBucketArguments represent the common input arguments for bucket-related methods.
 type GetStorageBucketArguments struct {
 	StorageClientCredentialArguments
 
@@ -51,7 +51,7 @@ type StorageBucketArguments struct {
 	Bucket string `json:"bucket,omitempty"`
 }
 
-// StorageClientCredentials hold common storage client credential arguments.
+// StorageClientCredentialArguments hold common storage client credential arguments.
 type StorageClientCredentialArguments struct {
 	ClientID        *StorageClientID     `json:"client_id,omitempty"`
 	ClientType      *StorageProviderType `json:"client_type,omitempty"`

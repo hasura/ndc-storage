@@ -45,7 +45,7 @@ func (m *Manager) ListObjects(
 	return results, nil
 }
 
-// ListObjects lists deleted objects in a bucket.
+// ListDeletedObjects lists deleted objects in a bucket.
 func (m *Manager) ListDeletedObjects(
 	ctx context.Context,
 	bucketInfo common.StorageBucketArguments,

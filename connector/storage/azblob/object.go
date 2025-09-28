@@ -871,7 +871,7 @@ func (c *Client) SetObjectLegalHold(
 	return nil
 }
 
-// PutObjectTagging sets new object Tags to the given object, replaces/overwrites any existing tags.
+// SetObjectTags sets new object Tags to the given object, replaces/overwrites any existing tags.
 func (c *Client) SetObjectTags(
 	ctx context.Context,
 	bucketName string,

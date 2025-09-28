@@ -12,9 +12,11 @@ const (
 	HeaderContentLanguage    string = "content-language"
 )
 
+// StorageClientID represents a storage client ID string.
 // @scalar StorageClientID string.
 type StorageClientID string
 
+// StorageProviderType represents a storage provider type enum.
 // @enum s3,gcs,azblob,fs.
 type StorageProviderType string
 

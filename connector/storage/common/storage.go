@@ -254,7 +254,7 @@ type StorageBucket struct {
 	HierarchicalNamespace *BucketHierarchicalNamespace `json:"hierarchical_namespace"`
 }
 
-// HierarchicalNamespace contains the bucket's hierarchical namespace
+// BucketHierarchicalNamespace contains the bucket's hierarchical namespace
 // configuration. Hierarchical namespace enabled buckets can contain
 // [cloud.google.com/go/storage/control/apiv2/controlpb.Folder] resources.
 type BucketHierarchicalNamespace struct {
@@ -274,6 +274,7 @@ type BucketLogging struct {
 	LogObjectPrefix string `json:"log_object_prefix"`
 }
 
+// GoogleStorageRPO represents an enum of Google storage RPO
 // @enum DEFAULT,ASYNC_TURBO.
 type GoogleStorageRPO string
 
@@ -324,7 +325,7 @@ type CustomPlacementConfig struct {
 	DataLocations []string `json:"data_locations"`
 }
 
-// Autoclass holds the bucket's autoclass configuration. If enabled,
+// BucketAutoclass holds the bucket's autoclass configuration. If enabled,
 // allows for the automatic selection of the best storage class
 // based on object access patterns. See
 // https://cloud.google.com/storage/docs/using-autoclass for more information.
@@ -504,6 +505,7 @@ type StorageObjectListResults struct {
 	PageInfo StoragePaginationInfo `json:"pageInfo"`
 }
 
+// StorageObjectReplicationStatus represents an enum of the storage object replication status.
 // @enum COMPLETED,PENDING,FAILED,REPLICA.
 type StorageObjectReplicationStatus string
 
@@ -563,6 +565,7 @@ type StorageObjectMultipartInfo struct {
 // @enum SSE_C,KMS,S3
 // type ServerSideEncryptionMethod string
 
+// StorageRetentionMode represents a storage retention mode enum.
 // @enum Locked,Unlocked,Mutable,Delete.
 type StorageRetentionMode string
 
@@ -573,6 +576,7 @@ type RemoveStorageObjectError struct {
 	Error      string `json:"error"`
 }
 
+// ChecksumType represents a checksum type enum.
 // @enum SHA256,SHA1,CRC32,CRC32C,CRC64NVME,FullObjectCRC32,FullObjectCRC32C,None.
 type ChecksumType string
 
@@ -618,13 +622,13 @@ type NotificationFilter struct {
 	S3Key *NotificationS3Key `json:"s3_key,omitempty"`
 }
 
-// carries suffix/prefix filters.
+// NotificationFilterRule carries suffix/prefix filters.
 type NotificationFilterRule struct {
 	Name  string `json:"name"`
 	Value string `json:"value"`
 }
 
-// carries suffix/prefix filters.
+// NotificationS3Key represents a notification S3 key filters.
 type NotificationS3Key struct {
 	FilterRules []NotificationFilterRule `json:"filter_rule,omitempty"`
 }
@@ -649,7 +653,7 @@ type ObjectLifecycleConfiguration struct {
 	Rules []ObjectLifecycleRule `json:"rules"`
 }
 
-// AbortIncompleteMultipartUpload structure, not supported yet on MinIO.
+// ObjectAbortIncompleteMultipartUpload structure, not supported yet on MinIO.
 type ObjectAbortIncompleteMultipartUpload struct {
 	DaysAfterInitiation *int `json:"days_after_initiation"`
 }
@@ -674,7 +678,7 @@ type ObjectLifecycleTransition struct {
 	Days         *int         `json:"days"`
 }
 
-// LifecycleDelMarkerExpiration represents DelMarkerExpiration actions element in an ILM policy.
+// ObjectLifecycleDelMarkerExpiration represents DelMarkerExpiration actions element in an ILM policy.
 type ObjectLifecycleDelMarkerExpiration struct {
 	Days *int `json:"days"`
 }
@@ -751,6 +755,7 @@ type StorageObjectLockConfig struct {
 	Enabled bool `json:"enabled"`
 }
 
+// StorageRetentionValidityUnit represents a storage retention validity unit enum.
 // @enum DAYS,YEARS.
 type StorageRetentionValidityUnit string
 
@@ -784,7 +789,7 @@ type StorageReplicationRule struct {
 	ExistingObjectReplication *ExistingObjectReplication     `json:"existing_object_replication,omitempty"`
 }
 
-// Destination the destination in ReplicationConfiguration.
+// StorageReplicationDestination the destination in ReplicationConfiguration.
 type StorageReplicationDestination struct {
 	Bucket       string  `json:"bucket"`
 	StorageClass *string `json:"storage_class,omitempty"`
@@ -795,6 +800,7 @@ type ExistingObjectReplication struct {
 	Status StorageReplicationRuleStatus `json:"status"` // should be set to "Disabled" by default
 }
 
+// StorageReplicationRuleStatus represents a storage replication rule status enum.
 // @enum Enabled,Disabled.
 type StorageReplicationRuleStatus string
 

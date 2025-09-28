@@ -11,10 +11,11 @@ import (
 	"github.com/hasura/ndc-sdk-go/v2/schema"
 )
 
+// DownloadHTTPMethod represents an enum of the HTTP method for downloading.
 // @enum GET,POST.
 type DownloadHTTPMethod string
 
-// RequestOptions hold HTTP request options.
+// HTTPRequestOptions hold HTTP request options.
 type HTTPRequestOptions struct {
 	URL      string              `json:"url"`
 	Method   *DownloadHTTPMethod `json:"method"`

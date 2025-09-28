@@ -293,7 +293,7 @@ func (mc *Client) GetBucketTagging(
 	return result, nil
 }
 
-// Removes all tags on a bucket.
+// RemoveBucketTagging removes all tags on a bucket.
 func (mc *Client) RemoveBucketTagging(ctx context.Context, bucketName string) error {
 	ctx, span := mc.startOtelSpan(ctx, "RemoveBucketTagging", bucketName)
 	defer span.End()
@@ -511,7 +511,7 @@ func (mc *Client) SetBucketReplication(
 	return nil
 }
 
-// Get current replication config on a bucket.
+// GetBucketReplication gets current replication config on a bucket.
 func (mc *Client) GetBucketReplication(
 	ctx context.Context,
 	bucketName string,
