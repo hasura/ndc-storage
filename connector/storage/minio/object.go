@@ -913,7 +913,7 @@ func (mc *Client) PresignedPutObject(
 	return result.String(), nil
 }
 
-// Set object lock configuration in given bucket. mode, validity and unit are either all set or all nil.
+// SetObjectLockConfig sets object lock configuration in given bucket. mode, validity and unit are either all set or all nil.
 func (mc *Client) SetObjectLockConfig(
 	ctx context.Context,
 	bucketname string,
@@ -955,7 +955,7 @@ func (mc *Client) SetObjectLockConfig(
 	return nil
 }
 
-// Get object lock configuration of given bucket.
+// GetObjectLockConfig gets the object lock configuration of given bucket.
 func (mc *Client) GetObjectLockConfig(
 	ctx context.Context,
 	bucketName string,

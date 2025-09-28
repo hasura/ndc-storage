@@ -101,7 +101,7 @@ func StringMapToKeyValues(inputs map[string]string) []StorageKeyValue {
 	return result
 }
 
-// KeyValuesToHeader converts a storage key value slice to a http.Header instance.
+// KeyValuesToHeaders converts a storage key value slice to a http.Header instance.
 func KeyValuesToHeaders(inputs []StorageKeyValue) http.Header {
 	result := http.Header{}
 

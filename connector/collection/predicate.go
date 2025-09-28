@@ -452,7 +452,7 @@ type StringFilterPredicate struct {
 	Post []StringComparisonOperator
 }
 
-// HasPostPredicate checks if the request has post-predicate expressions.
+// GetPrefix checks if the request has post-predicate expressions.
 func (sfp StringFilterPredicate) GetPrefix() string {
 	if sfp.Pre != nil {
 		return sfp.Pre.Value
@@ -466,7 +466,7 @@ func (sfp StringFilterPredicate) HasPostPredicate() bool {
 	return len(sfp.Post) > 0
 }
 
-// CheckPostObjectPredicate the predicate function to filter the object with post conditions.
+// CheckPostPredicate the predicate function to filter the object with post conditions.
 func (sfp StringFilterPredicate) CheckPostPredicate(input string) bool {
 	for _, pred := range sfp.Post {
 		if (pred.Operator == OperatorContains && !strings.Contains(input, pred.Value)) ||

@@ -142,7 +142,7 @@ func (m *Manager) GetOrCreateClient(
 	return client, nil
 }
 
-// GetClient gets the inner client by key and bucket name.
+// GetClientAndBucket gets the inner client by key and bucket name.
 func (m *Manager) GetClientAndBucket(
 	ctx context.Context,
 	arguments common.StorageBucketArguments,
