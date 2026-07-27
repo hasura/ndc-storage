@@ -274,6 +274,12 @@ func (ac AuthCredentials) parseIAMAuth() (*credentials.Credentials, error) {
 		if !strings.HasPrefix(iamEndpoint.Scheme, "http") {
 			return nil, errors.New("iamAuthEndpoint: invalid http scheme " + iamEndpoint.Scheme)
 		}
+
+		// Block SSRF to cloud metadata and internal networks via the IAM
+		// authentication endpoint.
+		if err := common.ValidateEgressURL(rawIAMEndpoint, common.URLSafetyDynamicCredential); err != nil {
+			return nil, fmt.Errorf("iamAuthEndpoint: %w", err)
+		}
 	}
 
 	return credentials.NewIAM(rawIAMEndpoint), nil
