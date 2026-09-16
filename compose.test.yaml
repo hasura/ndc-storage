@@ -1,0 +1,48 @@
+# Run with compose.yaml. Keep the SSRF policy enabled in integration tests by
+# placing emulators on TEST-NET-1, a subnet reserved for documentation.
+# They share MinIO's network namespace so the existing TLS certificate and
+# fixtures can use local.hasura.dev for every storage service.
+services:
+  minio:
+    ports: !reset []
+    networks:
+      default:
+        aliases:
+          - local.hasura.dev
+
+  s3mock:
+    ports: !reset []
+    network_mode: service:minio
+
+  azurite:
+    ports: !reset []
+    extra_hosts: !reset []
+    network_mode: service:minio
+
+  gcp-storage-emulator:
+    ports: !reset []
+    extra_hosts: !reset []
+    network_mode: service:minio
+
+  ndc-storage:
+    ports: !override
+      - "127.0.0.1::8080"
+    extra_hosts: !reset []
+    environment:
+      STORAGE_ENDPOINT: http://local.hasura.dev:9000
+      S3_STORAGE_ENDPOINT: http://local.hasura.dev:9090
+
+  test-runner:
+    image: golang:${GO_VERSION:-1.24.7}
+    working_dir: /workspace
+    command: sleep infinity
+    volumes:
+      - .:/workspace
+      - ${NDC_STORAGE_TEST_CACHE:-/tmp/ndc-storage-test-cache}/go-mod:/go/pkg/mod
+      - ${NDC_STORAGE_TEST_CACHE:-/tmp/ndc-storage-test-cache}/go-build:/root/.cache/go-build
+
+networks:
+  default:
+    ipam:
+      config:
+        - subnet: 192.0.2.0/24

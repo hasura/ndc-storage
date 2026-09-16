@@ -31,6 +31,23 @@ AWS S3 environment variables are the default settings in the interactive prompt.
 - [Configuration](./docs/configuration.md)
 - [Manage Objects](./docs/objects.md)
 
+## Development tests
+
+Run `./scripts/test.sh` from the repository root with Docker Compose 2.24.4 or
+newer. It runs the NDC conformance checks and Go tests (with the race detector)
+against both static and dynamic credential configurations, then writes
+`coverage.out`.
+
+The Go tests run inside Docker alongside the storage emulators. The test-only
+Compose override uses the documentation subnet `192.0.2.0/24` so that emulator
+requests exercise the normal SSRF validation without allowing loopback or
+private destinations. Only the connector's HTTP port is published, on a random
+local port. The `ndc-storage-test` project and its data volumes are cleaned up
+when the script exits.
+
+Go caches are retained under `/tmp/ndc-storage-test-cache`; set
+`NDC_STORAGE_TEST_CACHE` to use a different cache directory.
+
 ## License
 
 Storage Connector is available under the [Apache License 2.0](./LICENSE).

@@ -13,7 +13,7 @@
         "expiration_rule_id": null,
         "expires": null,
         "last_modified": null,
-        "location": "http://localhost:9000/minio-bucket-test/a9cSGZGzM2",
+        "location": "http://local.hasura.dev:9000/minio-bucket-test/a9cSGZGzM2",
         "name": "a9cSGZGzM2",
         "size": 10
       },

@@ -126,7 +126,7 @@ func ValidateAzureConnectionString(raw string, mode URLSafetyMode) error {
 
 	// Otherwise best-effort parse connection-string segments and validate the
 	// BlobEndpoint value if present.
-	for _, part := range strings.Split(raw, ";") {
+	for part := range strings.SplitSeq(raw, ";") {
 		key, value, found := strings.Cut(part, "=")
 		if !found {
 			continue
@@ -163,7 +163,7 @@ func validateEgressHost(host string, mode URLSafetyMode) error {
 	// the outbound request would simply fail to connect.
 	ips, err := lookupIP(host)
 	if err != nil {
-		return nil
+		return nil //nolint:nilerr // DNS failures are left to the outbound client's error handling.
 	}
 
 	for _, ip := range ips {
