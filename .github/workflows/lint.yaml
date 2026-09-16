@@ -38,5 +38,7 @@ jobs:
       - name: golangci-lint ${{ matrix.modules }}
         uses: golangci/golangci-lint-action@v8
         with:
+          # Upgrade explicitly: default: all enables new linters on each release.
+          version: v2.5.0
           args: --timeout=5m
           working-directory: ${{ matrix.modules }}

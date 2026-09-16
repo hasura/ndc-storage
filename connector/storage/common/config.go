@@ -68,6 +68,12 @@ func (bcc BaseClientConfig) ValidateEndpoint() (*url.URL, int, bool, error) {
 		return nil, port, false, fmt.Errorf("invalid endpoint url: %w", err)
 	}
 
+	// Static configuration endpoints may point at private MinIO servers but
+	// must never target cloud metadata, loopback or link-local addresses.
+	if err := ValidateEgressURL(rawEndpoint, URLSafetyStaticConfig); err != nil {
+		return nil, port, false, err
+	}
+
 	useSSL = endpointURL.Scheme == "https"
 
 	port, err = exhttp.ParsePort(endpointURL.Port(), endpointURL.Scheme)

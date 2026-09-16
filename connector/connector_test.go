@@ -30,7 +30,7 @@ func TestConnector(t *testing.T) {
 		}
 
 		ndctest.TestConnector(t, &Connector{}, ndctest.TestConnectorOptions{
-			Configuration: "../tests/configuration",
+			Configuration: configDir,
 			TestDataDir:   filepath.Join("testdata", "static", dir),
 			ServerOptions: serverOptions,
 		})
@@ -68,11 +68,11 @@ func setConnectorTestEnv(t *testing.T) {
 	azureAccountName := "local"
 	azureAccountKey := "Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw=="
 
-	t.Setenv("STORAGE_ENDPOINT", "http://localhost:9000")
+	t.Setenv("STORAGE_ENDPOINT", "http://local.hasura.dev:9000")
 	t.Setenv("DEFAULT_BUCKET", "default")
 	t.Setenv("ACCESS_KEY_ID", "test-key")
 	t.Setenv("SECRET_ACCESS_KEY", "randomsecret")
-	t.Setenv("S3_STORAGE_ENDPOINT", "http://localhost:9010")
+	t.Setenv("S3_STORAGE_ENDPOINT", "http://local.hasura.dev:9090")
 	t.Setenv("S3_DEFAULT_BUCKET", "bucket1")
 	t.Setenv("S3_ACCESS_KEY_ID", "test-key")
 	t.Setenv("S3_SECRET_ACCESS_KEY", "randomsecret")

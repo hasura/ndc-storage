@@ -87,6 +87,12 @@ func (hc HTTPClient) Request(
 		return nil, schema.UnprocessableContentError(err.Error(), nil)
 	}
 
+	// The download URL is caller-supplied, so block SSRF to cloud metadata,
+	// loopback, link-local and private/internal ranges.
+	if err := ValidateEgressURL(options.URL, URLSafetyDynamicCredential); err != nil {
+		return nil, schema.UnprocessableContentError(err.Error(), nil)
+	}
+
 	var body io.Reader
 
 	if method == http.MethodPost && options.BodyText != "" {

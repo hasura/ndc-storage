@@ -245,6 +245,12 @@ func (m *Manager) createTemporaryClient(
 		}
 
 		if arguments.Endpoint != "" {
+			// The endpoint is supplied by the GraphQL caller via dynamic
+			// credentials; block SSRF to cloud metadata and internal networks.
+			if err := common.ValidateEgressURL(arguments.Endpoint, common.URLSafetyDynamicCredential); err != nil {
+				return nil, schema.UnprocessableContentError(err.Error(), nil)
+			}
+
 			clientConfig.Endpoint = &utils.EnvString{
 				Value: &arguments.Endpoint,
 			}
@@ -269,6 +275,12 @@ func (m *Manager) createTemporaryAzblobClient(
 ) (*Client, error) {
 	if arguments.Endpoint == "" {
 		return nil, schema.UnprocessableContentError("endpoint is required for azblob", nil)
+	}
+
+	// The endpoint (raw URL or connection string) is caller-supplied; block
+	// SSRF to cloud metadata and internal networks.
+	if err := common.ValidateAzureConnectionString(arguments.Endpoint, common.URLSafetyDynamicCredential); err != nil {
+		return nil, schema.UnprocessableContentError(err.Error(), nil)
 	}
 
 	clientId := "azblob-temp"
