@@ -26,6 +26,7 @@ linters:
     - noinlineerr
     - gomodguard
     - goconst
+    - modernize
 
   settings:
     nestif:
