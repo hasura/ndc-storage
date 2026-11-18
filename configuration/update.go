@@ -77,12 +77,12 @@ var defaultConfiguration = types.Configuration{
 	Clients: []storage.ClientConfig{
 		{
 			"type":          common.StorageProviderTypeS3,
-			"endpoint":      utils.ToPtr(utils.NewEnvStringVariable("STORAGE_ENDPOINT")),
+			"endpoint":      new(utils.NewEnvStringVariable("STORAGE_ENDPOINT")),
 			"defaultBucket": utils.NewEnvStringVariable("DEFAULT_BUCKET"),
 			"authentication": minio.AuthCredentials{
 				Type:            minio.AuthTypeStatic,
-				AccessKeyID:     utils.ToPtr(utils.NewEnvStringVariable("ACCESS_KEY_ID")),
-				SecretAccessKey: utils.ToPtr(utils.NewEnvStringVariable("SECRET_ACCESS_KEY")),
+				AccessKeyID:     new(utils.NewEnvStringVariable("ACCESS_KEY_ID")),
+				SecretAccessKey: new(utils.NewEnvStringVariable("SECRET_ACCESS_KEY")),
 			},
 		},
 	},

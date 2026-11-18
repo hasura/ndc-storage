@@ -102,14 +102,12 @@ func EvalObjectPredicate(
 // GetBucketArguments get bucket arguments information.
 func (pe PredicateEvaluator) GetBucketArguments() common.StorageBucketArguments {
 	result := common.StorageBucketArguments{
-		StorageClientCredentialArguments: common.StorageClientCredentialArguments{
-			ClientID:        pe.ClientID,
-			ClientType:      pe.ClientType,
-			Endpoint:        pe.Endpoint,
-			AccessKeyID:     pe.AccessKeyID,
-			SecretAccessKey: pe.SecretAccessKey,
-		},
-		Bucket: pe.BucketPredicate.GetPrefix(),
+		ClientID:        pe.ClientID,
+		ClientType:      pe.ClientType,
+		Endpoint:        pe.Endpoint,
+		AccessKeyID:     pe.AccessKeyID,
+		SecretAccessKey: pe.SecretAccessKey,
+		Bucket:          pe.BucketPredicate.GetPrefix(),
 	}
 
 	return result
@@ -135,7 +133,10 @@ func (pe *PredicateEvaluator) EvalArguments(arguments map[string]any) error {
 		pe.AccessKeyID = *accessKey
 	}
 
-	if secretAccessKey, err := utils.GetNullableString(arguments, ArgumentSecretAccessKey); err != nil {
+	if secretAccessKey, err := utils.GetNullableString(
+		arguments,
+		ArgumentSecretAccessKey,
+	); err != nil {
 		return schema.UnprocessableContentError(err.Error(), nil)
 	} else if secretAccessKey != nil {
 		pe.SecretAccessKey = *secretAccessKey

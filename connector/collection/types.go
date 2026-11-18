@@ -1,8 +1,9 @@
 package collection
 
 import (
+	"maps"
+
 	"github.com/hasura/ndc-sdk-go/v2/schema"
-	"github.com/hasura/ndc-sdk-go/v2/utils"
 )
 
 const (
@@ -74,14 +75,14 @@ func GetConnectorSchema(clientIDs []string, dynamicCredentials bool) *schema.Sch
 		Collections: []schema.CollectionInfo{
 			{
 				Name:                  CollectionStorageObjects,
-				Description:           utils.ToPtr("List storage objects"),
+				Description:           new("List storage objects"),
 				Type:                  StorageObjectName,
 				Arguments:             storageObjectArguments,
 				UniquenessConstraints: schema.CollectionInfoUniquenessConstraints{},
 			},
 			{
 				Name:        CollectionStorageBuckets,
-				Description: utils.ToPtr("List storage buckets"),
+				Description: new("List storage buckets"),
 				Type:        StorageBucketName,
 				Arguments: buildDynamicCredentialArguments(schema.CollectionInfoArguments{
 					argumentAfter: {
@@ -158,27 +159,25 @@ func buildDynamicCredentialArguments(
 
 	results := map[string]schema.ArgumentInfo{
 		ArgumentClientType: {
-			Description: utils.ToPtr("The cloud storage provider type"),
+			Description: new("The cloud storage provider type"),
 			Type: schema.NewNullableType(schema.NewNamedType("StorageProviderType")).
 				Encode(),
 		},
 		ArgumentEndpoint: {
-			Description: utils.ToPtr("Endpoint of the cloud storage service"),
+			Description: new("Endpoint of the cloud storage service"),
 			Type:        schema.NewNullableType(schema.NewNamedType("String")).Encode(),
 		},
 		ArgumentAccessKeyID: {
-			Description: utils.ToPtr("Access key ID or Account name credential"),
+			Description: new("Access key ID or Account name credential"),
 			Type:        schema.NewNullableType(schema.NewNamedType("String")).Encode(),
 		},
 		ArgumentSecretAccessKey: {
-			Description: utils.ToPtr("Secret Access key ID or Account key credential"),
+			Description: new("Secret Access key ID or Account key credential"),
 			Type:        schema.NewNullableType(schema.NewNamedType("String")).Encode(),
 		},
 	}
 
-	for key, arg := range arguments {
-		results[key] = arg
-	}
+	maps.Copy(results, arguments)
 
 	return results
 }

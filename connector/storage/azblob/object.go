@@ -641,8 +641,7 @@ func (c *Client) removeObject(
 
 	_, err := c.client.DeleteBlob(ctx, bucketName, objectName, options)
 	if err != nil {
-		var respErr *azcore.ResponseError
-		if errors.As(err, &respErr) {
+		if respErr, ok := errors.AsType[*azcore.ResponseError](err); ok {
 			if respErr.ErrorCode == string(bloberror.BlobNotFound) {
 				return nil
 			}

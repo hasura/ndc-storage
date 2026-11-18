@@ -139,12 +139,10 @@ func serializeRetentionPolicy(
 	}
 
 	return &common.StorageObjectLockConfig{
-		Enabled: true,
-		SetStorageObjectLockConfig: common.SetStorageObjectLockConfig{
-			Mode:     &mode,
-			Validity: &validity,
-			Unit:     &unit,
-		},
+		Enabled:  true,
+		Mode:     &mode,
+		Validity: &validity,
+		Unit:     &unit,
 	}
 }
 

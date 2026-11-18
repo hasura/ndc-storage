@@ -534,7 +534,12 @@ func ProcedureUpdateStorageObject(
 		return SuccessResponse{}, errPermissionDenied
 	}
 
-	if err := state.Storage.UpdateObject(ctx, request.GetBucketArguments(), request.ObjectNamePredicate.GetPrefix(), args.UpdateStorageObjectOptions); err != nil {
+	if err := state.Storage.UpdateObject(
+		ctx,
+		request.GetBucketArguments(),
+		request.ObjectNamePredicate.GetPrefix(),
+		args.UpdateStorageObjectOptions,
+	); err != nil {
 		return SuccessResponse{}, err
 	}
 
@@ -564,7 +569,12 @@ func ProcedureRemoveStorageObject(
 		return SuccessResponse{}, errPermissionDenied
 	}
 
-	if err := state.Storage.RemoveObject(ctx, request.GetBucketArguments(), request.ObjectNamePredicate.GetPrefix(), args.RemoveStorageObjectOptions); err != nil {
+	if err := state.Storage.RemoveObject(
+		ctx,
+		request.GetBucketArguments(),
+		request.ObjectNamePredicate.GetPrefix(),
+		args.RemoveStorageObjectOptions,
+	); err != nil {
 		return SuccessResponse{}, err
 	}
 
@@ -645,7 +655,11 @@ func ProcedureRestoreStorageObject(
 		return SuccessResponse{}, errPermissionDenied
 	}
 
-	if err := state.Storage.RestoreObject(ctx, request.GetBucketArguments(), request.ObjectNamePredicate.GetPrefix()); err != nil {
+	if err := state.Storage.RestoreObject(
+		ctx,
+		request.GetBucketArguments(),
+		request.ObjectNamePredicate.GetPrefix(),
+	); err != nil {
 		return SuccessResponse{}, err
 	}
 

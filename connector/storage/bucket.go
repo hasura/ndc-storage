@@ -13,10 +13,8 @@ func (m *Manager) MakeBucket(
 	args *common.MakeStorageBucketOptions,
 ) error {
 	client, bucketName, err := m.GetClientAndBucket(ctx, common.StorageBucketArguments{
-		StorageClientCredentialArguments: common.StorageClientCredentialArguments{
-			ClientID: clientID,
-		},
-		Bucket: args.Name,
+		ClientID: clientID,
+		Bucket:   args.Name,
 	})
 	if err != nil {
 		return err

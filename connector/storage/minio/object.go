@@ -978,12 +978,10 @@ func (mc *Client) GetObjectLockConfig(
 	}
 
 	result := &common.StorageObjectLockConfig{
-		Enabled: objectLock == "Enabled",
-		SetStorageObjectLockConfig: common.SetStorageObjectLockConfig{
-			Mode:     serializeObjectRetentionMode(mode),
-			Validity: validity,
-			Unit:     (*common.StorageRetentionValidityUnit)(unit),
-		},
+		Enabled:  objectLock == "Enabled",
+		Mode:     serializeObjectRetentionMode(mode),
+		Validity: validity,
+		Unit:     (*common.StorageRetentionValidityUnit)(unit),
 	}
 
 	return result, nil

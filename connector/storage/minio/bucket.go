@@ -267,8 +267,7 @@ func (mc *Client) GetBucketTagging(
 
 	bucketTags, err := mc.client.GetBucketTagging(ctx, bucketName)
 	if err != nil {
-		var errResponse minio.ErrorResponse
-		if errors.As(err, &errResponse) {
+		if errResponse, ok := errors.AsType[minio.ErrorResponse](err); ok {
 			if errResponse.StatusCode == http.StatusNotFound {
 				return nil, nil
 			}

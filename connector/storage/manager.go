@@ -227,27 +227,26 @@ func (m *Manager) createTemporaryClient(
 		}
 
 		clientConfig := &minio.ClientConfig{
-			BaseClientConfig: common.BaseClientConfig{
-				ID: string(clientId),
-			},
-			OtherConfig: minio.OtherConfig{
-				Authentication: minio.AuthCredentials{
-					Type: minio.AuthTypeStatic,
-					AccessKeyID: &utils.EnvString{
-						Value: utils.ToPtr(arguments.AccessKeyID),
-					},
-					SecretAccessKey: &utils.EnvString{
-						Value: utils.ToPtr(arguments.SecretAccessKey),
-					},
+			ID: string(clientId),
+			Authentication: minio.AuthCredentials{
+				Type: minio.AuthTypeStatic,
+				AccessKeyID: &utils.EnvString{
+					Value: new(arguments.AccessKeyID),
 				},
-				HTTP: m.runtime.HTTP,
+				SecretAccessKey: &utils.EnvString{
+					Value: new(arguments.SecretAccessKey),
+				},
 			},
+			HTTP: m.runtime.HTTP,
 		}
 
 		if arguments.Endpoint != "" {
 			// The endpoint is supplied by the GraphQL caller via dynamic
 			// credentials; block SSRF to cloud metadata and internal networks.
-			if err := common.ValidateEgressURL(arguments.Endpoint, common.URLSafetyDynamicCredential); err != nil {
+			if err := common.ValidateEgressURL(
+				arguments.Endpoint,
+				common.URLSafetyDynamicCredential,
+			); err != nil {
 				return nil, schema.UnprocessableContentError(err.Error(), nil)
 			}
 
@@ -279,19 +278,18 @@ func (m *Manager) createTemporaryAzblobClient(
 
 	// The endpoint (raw URL or connection string) is caller-supplied; block
 	// SSRF to cloud metadata and internal networks.
-	if err := common.ValidateAzureConnectionString(arguments.Endpoint, common.URLSafetyDynamicCredential); err != nil {
+	if err := common.ValidateAzureConnectionString(
+		arguments.Endpoint,
+		common.URLSafetyDynamicCredential,
+	); err != nil {
 		return nil, schema.UnprocessableContentError(err.Error(), nil)
 	}
 
 	clientId := "azblob-temp"
 	defaultPresignedExpiry := 24 * time.Hour
 	clientConfig := &azblob.ClientConfig{
-		BaseClientConfig: common.BaseClientConfig{
-			ID: clientId,
-		},
-		OtherConfig: azblob.OtherConfig{
-			HTTP: m.runtime.HTTP,
-		},
+		ID:   clientId,
+		HTTP: m.runtime.HTTP,
 	}
 
 	if arguments.AccessKeyID != "" || arguments.SecretAccessKey != "" {
@@ -302,17 +300,17 @@ func (m *Manager) createTemporaryAzblobClient(
 		clientConfig.Authentication = azblob.AuthCredentials{
 			Type: azblob.AuthTypeSharedKey,
 			AccountName: &utils.EnvString{
-				Value: utils.ToPtr(arguments.AccessKeyID),
+				Value: new(arguments.AccessKeyID),
 			},
 			AccountKey: &utils.EnvString{
-				Value: utils.ToPtr(arguments.SecretAccessKey),
+				Value: new(arguments.SecretAccessKey),
 			},
 		}
 	} else {
 		clientConfig.Authentication = azblob.AuthCredentials{
 			Type: azblob.AuthTypeConnectionString,
 			ConnectionString: &utils.EnvString{
-				Value: utils.ToPtr(arguments.Endpoint),
+				Value: new(arguments.Endpoint),
 			},
 		}
 	}
