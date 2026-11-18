@@ -67,17 +67,15 @@ func (cc ClientConfig) toAzureBlobClient(logger *slog.Logger) (*azblob.Client, e
 	}
 
 	opts := &azblob.ClientOptions{
-		ClientOptions: policy.ClientOptions{
-			Retry: policy.RetryOptions{
-				MaxRetries: int32(maxRetries),
-			},
-			Logging: policy.LogOptions{
-				IncludeBody: isDebug,
-			},
-			InsecureAllowCredentialWithHTTP: !useSSL,
-			Transport: &http.Client{
-				Transport: transport,
-			},
+		Retry: policy.RetryOptions{
+			MaxRetries: int32(maxRetries),
+		},
+		Logging: policy.LogOptions{
+			IncludeBody: isDebug,
+		},
+		InsecureAllowCredentialWithHTTP: !useSSL,
+		Transport: &http.Client{
+			Transport: transport,
 		},
 	}
 

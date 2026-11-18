@@ -227,21 +227,17 @@ func (m *Manager) createTemporaryClient(
 		}
 
 		clientConfig := &minio.ClientConfig{
-			BaseClientConfig: common.BaseClientConfig{
-				ID: string(clientId),
-			},
-			OtherConfig: minio.OtherConfig{
-				Authentication: minio.AuthCredentials{
-					Type: minio.AuthTypeStatic,
-					AccessKeyID: &utils.EnvString{
-						Value: new(arguments.AccessKeyID),
-					},
-					SecretAccessKey: &utils.EnvString{
-						Value: new(arguments.SecretAccessKey),
-					},
+			ID: string(clientId),
+			Authentication: minio.AuthCredentials{
+				Type: minio.AuthTypeStatic,
+				AccessKeyID: &utils.EnvString{
+					Value: new(arguments.AccessKeyID),
 				},
-				HTTP: m.runtime.HTTP,
+				SecretAccessKey: &utils.EnvString{
+					Value: new(arguments.SecretAccessKey),
+				},
 			},
+			HTTP: m.runtime.HTTP,
 		}
 
 		if arguments.Endpoint != "" {
@@ -292,12 +288,8 @@ func (m *Manager) createTemporaryAzblobClient(
 	clientId := "azblob-temp"
 	defaultPresignedExpiry := 24 * time.Hour
 	clientConfig := &azblob.ClientConfig{
-		BaseClientConfig: common.BaseClientConfig{
-			ID: clientId,
-		},
-		OtherConfig: azblob.OtherConfig{
-			HTTP: m.runtime.HTTP,
-		},
+		ID:   clientId,
+		HTTP: m.runtime.HTTP,
 	}
 
 	if arguments.AccessKeyID != "" || arguments.SecretAccessKey != "" {

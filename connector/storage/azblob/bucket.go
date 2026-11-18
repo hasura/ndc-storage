@@ -130,12 +130,10 @@ L:
 					days := uint(*container.Properties.RemainingRetentionDays)
 
 					result.ObjectLock = &common.StorageObjectLockConfig{
-						Enabled: true,
-						SetStorageObjectLockConfig: common.SetStorageObjectLockConfig{
-							Mode:     &mode,
-							Unit:     &unit,
-							Validity: &days,
-						},
+						Enabled:  true,
+						Mode:     &mode,
+						Unit:     &unit,
+						Validity: &days,
 					}
 				}
 			}

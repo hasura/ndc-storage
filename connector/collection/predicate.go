@@ -102,14 +102,12 @@ func EvalObjectPredicate(
 // GetBucketArguments get bucket arguments information.
 func (pe PredicateEvaluator) GetBucketArguments() common.StorageBucketArguments {
 	result := common.StorageBucketArguments{
-		StorageClientCredentialArguments: common.StorageClientCredentialArguments{
-			ClientID:        pe.ClientID,
-			ClientType:      pe.ClientType,
-			Endpoint:        pe.Endpoint,
-			AccessKeyID:     pe.AccessKeyID,
-			SecretAccessKey: pe.SecretAccessKey,
-		},
-		Bucket: pe.BucketPredicate.GetPrefix(),
+		ClientID:        pe.ClientID,
+		ClientType:      pe.ClientType,
+		Endpoint:        pe.Endpoint,
+		AccessKeyID:     pe.AccessKeyID,
+		SecretAccessKey: pe.SecretAccessKey,
+		Bucket:          pe.BucketPredicate.GetPrefix(),
 	}
 
 	return result

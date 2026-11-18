@@ -175,10 +175,8 @@ func (m *Manager) CopyObject(
 	args *common.CopyStorageObjectArguments,
 ) (*common.StorageUploadInfo, error) {
 	client, bucketName, err := m.GetClientAndBucket(ctx, common.StorageBucketArguments{
-		StorageClientCredentialArguments: common.StorageClientCredentialArguments{
-			ClientID: args.ClientID,
-		},
-		Bucket: args.Dest.Bucket,
+		ClientID: args.ClientID,
+		Bucket:   args.Dest.Bucket,
 	})
 	if err != nil {
 		return nil, err
@@ -206,10 +204,8 @@ func (m *Manager) ComposeObject(
 	args *common.ComposeStorageObjectArguments,
 ) (*common.StorageUploadInfo, error) {
 	client, bucketName, err := m.GetClientAndBucket(ctx, common.StorageBucketArguments{
-		StorageClientCredentialArguments: common.StorageClientCredentialArguments{
-			ClientID: args.ClientID,
-		},
-		Bucket: args.Dest.Bucket,
+		ClientID: args.ClientID,
+		Bucket:   args.Dest.Bucket,
 	})
 	if err != nil {
 		return nil, err
@@ -342,10 +338,8 @@ func (m *Manager) RemoveIncompleteUpload(
 	args *common.RemoveIncompleteUploadArguments,
 ) error {
 	client, bucketName, err := m.GetClientAndBucket(ctx, common.StorageBucketArguments{
-		StorageClientCredentialArguments: common.StorageClientCredentialArguments{
-			ClientID: args.ClientID,
-		},
-		Bucket: args.Bucket,
+		ClientID: args.ClientID,
+		Bucket:   args.Bucket,
 	})
 	if err != nil {
 		return err
