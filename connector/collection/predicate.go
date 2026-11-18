@@ -135,7 +135,10 @@ func (pe *PredicateEvaluator) EvalArguments(arguments map[string]any) error {
 		pe.AccessKeyID = *accessKey
 	}
 
-	if secretAccessKey, err := utils.GetNullableString(arguments, ArgumentSecretAccessKey); err != nil {
+	if secretAccessKey, err := utils.GetNullableString(
+		arguments,
+		ArgumentSecretAccessKey,
+	); err != nil {
 		return schema.UnprocessableContentError(err.Error(), nil)
 	} else if secretAccessKey != nil {
 		pe.SecretAccessKey = *secretAccessKey

@@ -61,16 +61,16 @@ func (cc ClientConfig) JSONSchema() *jsonschema.Schema {
 // OtherConfig holds MinIO-specific configurations.
 type OtherConfig struct {
 	// The public host to be used for presigned URL generation.
-	PublicHost *utils.EnvString `json:"publicHost,omitempty"      mapstructure:"publicHost"      yaml:"publicHost,omitempty"`
+	PublicHost *utils.EnvString `json:"publicHost,omitempty" mapstructure:"publicHost" yaml:"publicHost,omitempty"`
 	// Optional region.
-	Region *utils.EnvString `json:"region,omitempty"          mapstructure:"region"          yaml:"region,omitempty"`
+	Region *utils.EnvString `json:"region,omitempty" mapstructure:"region" yaml:"region,omitempty"`
 	// Authentication credentials.
-	Authentication AuthCredentials `json:"authentication"            mapstructure:"authentication"  yaml:"authentication"`
+	Authentication AuthCredentials `json:"authentication" mapstructure:"authentication" yaml:"authentication"`
 	// TrailingHeaders indicates server support of trailing headers.
 	// Only supported for v4 signatures.
 	TrailingHeaders bool `json:"trailingHeaders,omitempty" mapstructure:"trailingHeaders" yaml:"trailingHeaders,omitempty"`
 	// Configuration for the http client that is used for uploading files from URL.
-	HTTP *exhttp.HTTPTransportTLSConfig `json:"http"                      mapstructure:"http"            yaml:"http"`
+	HTTP *exhttp.HTTPTransportTLSConfig `json:"http" mapstructure:"http" yaml:"http"`
 }
 
 func (cc ClientConfig) toMinioOptions(
@@ -198,14 +198,14 @@ func (at AuthType) Validate() error {
 // AuthCredentials represent the authentication credentials information.
 type AuthCredentials struct {
 	// The authentication type
-	Type AuthType `json:"type"                      mapstructure:"type"            yaml:"type"`
+	Type AuthType `json:"type" mapstructure:"type" yaml:"type"`
 	// Access Key ID.
-	AccessKeyID *utils.EnvString `json:"accessKeyId,omitempty"     mapstructure:"accessKeyId"     yaml:"accessKeyId,omitempty"`
+	AccessKeyID *utils.EnvString `json:"accessKeyId,omitempty" mapstructure:"accessKeyId" yaml:"accessKeyId,omitempty"`
 	// Secret Access Key.
 	SecretAccessKey *utils.EnvString `json:"secretAccessKey,omitempty" mapstructure:"secretAccessKey" yaml:"secretAccessKey,omitempty"`
 	// Optional temporary session token credentials. Used for testing only.
 	// See https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_temp_use-resources.html
-	SessionToken *utils.EnvString `json:"sessionToken,omitempty"    mapstructure:"sessionToken"    yaml:"sessionToken,omitempty"`
+	SessionToken *utils.EnvString `json:"sessionToken,omitempty" mapstructure:"sessionToken" yaml:"sessionToken,omitempty"`
 	// Custom endpoint to fetch IAM role credentials.
 	IAMAuthEndpoint *utils.EnvString `json:"iamAuthEndpoint,omitempty" mapstructure:"iamAuthEndpoint" yaml:"iamAuthEndpoint,omitempty"`
 }
@@ -277,7 +277,10 @@ func (ac AuthCredentials) parseIAMAuth() (*credentials.Credentials, error) {
 
 		// Block SSRF to cloud metadata and internal networks via the IAM
 		// authentication endpoint.
-		if err := common.ValidateEgressURL(rawIAMEndpoint, common.URLSafetyDynamicCredential); err != nil {
+		if err := common.ValidateEgressURL(
+			rawIAMEndpoint,
+			common.URLSafetyDynamicCredential,
+		); err != nil {
 			return nil, fmt.Errorf("iamAuthEndpoint: %w", err)
 		}
 	}

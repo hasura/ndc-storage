@@ -204,7 +204,7 @@ type RuntimeSettings struct {
 	MaxDownloadSizeMBs int64 `json:"maxDownloadSizeMBs" jsonschema:"min=1,default=20" yaml:"maxDownloadSizeMBs"`
 	// Maximum size in MB of the object is allowed to upload the content from HTTP URL
 	// to avoid memory leaks. Pre-signed URLs are recommended for large files.
-	MaxUploadSizeMBs int64 `json:"maxUploadSizeMBs"   jsonschema:"min=1,default=20" yaml:"maxUploadSizeMBs"`
+	MaxUploadSizeMBs int64 `json:"maxUploadSizeMBs" jsonschema:"min=1,default=20" yaml:"maxUploadSizeMBs"`
 	// Configuration for the http client that is used for uploading files from URL.
-	HTTP *exhttp.HTTPTransportTLSConfig `json:"http,omitempty"                                   yaml:"http"`
+	HTTP *exhttp.HTTPTransportTLSConfig `json:"http,omitempty" yaml:"http"`
 }

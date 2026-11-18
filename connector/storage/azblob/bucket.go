@@ -274,8 +274,7 @@ func (c *Client) RemoveBucket(ctx context.Context, bucketName string) error {
 
 	_, err := c.client.DeleteContainer(ctx, bucketName, nil)
 	if err != nil {
-		var respErr *azcore.ResponseError
-		if errors.As(err, &respErr) {
+		if respErr, ok := errors.AsType[*azcore.ResponseError](err); ok {
 			if respErr.ErrorCode == string(bloberror.ContainerBeingDeleted) ||
 				respErr.ErrorCode == string(bloberror.ContainerNotFound) {
 				return nil

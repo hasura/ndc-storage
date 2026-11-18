@@ -35,7 +35,10 @@ func (coe *CollectionObjectExecutor) Execute(
 
 	bucketArguments := common.StorageBucketArguments{}
 
-	if bucket, err := utils.GetNullableString(coe.Arguments, StorageObjectColumnBucket); err != nil {
+	if bucket, err := utils.GetNullableString(
+		coe.Arguments,
+		StorageObjectColumnBucket,
+	); err != nil {
 		return nil, schema.UnprocessableContentError(err.Error(), nil)
 	} else if bucket != nil {
 		bucketArguments.Bucket = *bucket

@@ -56,16 +56,16 @@ func (cc ClientConfig) JSONSchema() *jsonschema.Schema {
 // OtherConfig holds MinIO-specific configurations.
 type OtherConfig struct {
 	// Project ID of the Google Cloud account.
-	ProjectID utils.EnvString `json:"projectId"                  mapstructure:"projectId"        yaml:"projectId"`
+	ProjectID utils.EnvString `json:"projectId" mapstructure:"projectId" yaml:"projectId"`
 	// The public host to be used for presigned URL generation.
-	PublicHost *utils.EnvString `json:"publicHost,omitempty"       mapstructure:"publicHost"       yaml:"publicHost,omitempty"`
-	UseGRPC    bool             `json:"useGrpc,omitempty"          mapstructure:"useGrpc"          yaml:"useGrpc,omitempty"`
+	PublicHost *utils.EnvString `json:"publicHost,omitempty" mapstructure:"publicHost" yaml:"publicHost,omitempty"`
+	UseGRPC    bool             `json:"useGrpc,omitempty"    mapstructure:"useGrpc"    yaml:"useGrpc,omitempty"`
 	// GRPCConnPoolSize enable the connection pool for gRPC connections that requests will be balanced.
 	GRPCConnPoolSize int `json:"grpcConnPoolSize,omitempty" mapstructure:"grpcConnPoolSize" yaml:"grpcConnPoolSize,omitempty"`
 	// Authentication credentials.
-	Authentication AuthCredentials `json:"authentication"             mapstructure:"authentication"   yaml:"authentication"`
+	Authentication AuthCredentials `json:"authentication" mapstructure:"authentication" yaml:"authentication"`
 	// Configuration for the http client that is used for uploading files from URL.
-	HTTP *exhttp.HTTPTransportTLSConfig `json:"http"                       mapstructure:"http"             yaml:"http"`
+	HTTP *exhttp.HTTPTransportTLSConfig `json:"http" mapstructure:"http" yaml:"http"`
 }
 
 func (cc ClientConfig) toClientOptions(
@@ -194,9 +194,9 @@ func (at AuthType) Validate() error {
 // AuthCredentials represent the authentication credentials information.
 type AuthCredentials struct {
 	// The authentication type
-	Type AuthType `json:"type"                      mapstructure:"type"            yaml:"type"`
+	Type AuthType `json:"type" mapstructure:"type" yaml:"type"`
 	// The given service account or refresh token JSON credentials in JSON string format.
-	Credentials *utils.EnvString `json:"credentials,omitempty"     mapstructure:"credentials"     yaml:"credentials,omitempty"`
+	Credentials *utils.EnvString `json:"credentials,omitempty" mapstructure:"credentials" yaml:"credentials,omitempty"`
 	// The given service account or refresh token JSON credentials file.
 	CredentialsFile *utils.EnvString `json:"credentialsFile,omitempty" mapstructure:"credentialsFile" yaml:"credentialsFile,omitempty"`
 }

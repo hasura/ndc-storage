@@ -18,15 +18,27 @@ func main() {
 
 func jsonSchemaConfiguration() error {
 	r := new(jsonschema.Reflector)
-	if err := r.AddGoComments("github.com/hasura/ndc-storage/connector/types", "../connector/types", jsonschema.WithFullComment()); err != nil {
+	if err := r.AddGoComments(
+		"github.com/hasura/ndc-storage/connector/types",
+		"../connector/types",
+		jsonschema.WithFullComment(),
+	); err != nil {
 		return err
 	}
 
-	if err := r.AddGoComments("github.com/hasura/ndc-storage/connector/storage", "../connector/storage", jsonschema.WithFullComment()); err != nil {
+	if err := r.AddGoComments(
+		"github.com/hasura/ndc-storage/connector/storage",
+		"../connector/storage",
+		jsonschema.WithFullComment(),
+	); err != nil {
 		return err
 	}
 
-	if err := r.AddGoComments("github.com/hasura/ndc-storage/connector/storage/common", "../connector/storage/common", jsonschema.WithFullComment()); err != nil {
+	if err := r.AddGoComments(
+		"github.com/hasura/ndc-storage/connector/storage/common",
+		"../connector/storage/common",
+		jsonschema.WithFullComment(),
+	); err != nil {
 		return err
 	}
 
